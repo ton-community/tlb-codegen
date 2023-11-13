@@ -1,0 +1,41 @@
+
+export type Maybe<TheType> = {
+	value: TheType;
+};
+
+export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
+	return {
+		value: loadTheType(slice)
+	};
+}
+
+export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeSubType: (TheType: TheType) => ((builder: Builder) => void)): Builder {
+	return (builder: Builder) => {
+		storeSubType(maybe.value)(builder);
+	};
+}
+
+export type TheJust = {
+	x: Maybe<number>
+};
+
+function loadTheNumber(slice: Slice): number {
+	return slice.loadUint(32);
+}
+
+function storeTheNumber(n: number): ((builder: Builder) => void) {
+	return (builder: Builder) =>  {
+		builder.storeUint(n, 32);
+	}
+}
+
+export function loadTheJust(slice: Slice): TheJust {
+	return {
+		x: loadMaybe<number>(slice, loadTheNumber)
+	};
+}
+export function storeTheJust(theJust: TheJust): Builder {
+	return (builder: Builder) => {
+		storeMaybe<number>(theJust.x, storeTheNumber)(builder);
+	};
+}

@@ -1,0 +1,16 @@
+tmpa$_ a:# b:# = X;
+
+bool_false$0 a:# b:(## 7) c:# = Bool;
+bool_true$1 b:# = Bool; 
+
+tmpb$_ y:(## 5) = Y;
+
+tmpc$_ y:Y c:# = C;
+
+tmpd#_ y:Y c:# = D;
+
+just$1 {TheType:Type} value:TheType = Maybe TheType;
+thejust$_ x:(Maybe D) = TheJust;
+
+
+
