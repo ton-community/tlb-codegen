@@ -96,8 +96,9 @@ interface ObjectExpression extends ASTNode {
 
 interface FunctionCall extends ASTNode {
   type: "FunctionCall",
-  functionId: Expression
-  parameters: Array<Expression>
+  functionId: Expression,
+  parameters: Array<Expression>,
+  typeParameters: TypeParametersExpression | undefined
 }
 
 interface MemberExpression extends ASTNode {
@@ -187,8 +188,8 @@ function tReturnStatement(returnValue: Expression): ReturnStatement {
   return {type: "ReturnStatement", returnValue: returnValue}
 }
 
-function tFunctionCall(functionId: Expression, parameters: Array<Expression>): FunctionCall {
-  return {type: "FunctionCall", functionId: functionId, parameters: parameters}
+function tFunctionCall(functionId: Expression, parameters: Array<Expression>, typeParameters?: TypeParametersExpression): FunctionCall {
+  return {type: "FunctionCall", functionId: functionId, parameters: parameters, typeParameters: typeParameters}
 }
 
 function tMemberExpression(thisObject: Expression, memberName: Identifier): MemberExpression {
@@ -338,7 +339,7 @@ ${currentTabs}};`
   }
 
   if (node.type == "FunctionCall") {
-    result += `${toCode(node.functionId, printContext)}(${toCodeArray(node.parameters, ', ', '', printContext, '')})`
+    result += `${toCode(node.functionId, printContext)}${node.typeParameters ? toCode(node.typeParameters, printContext) : ''}(${toCodeArray(node.parameters, ', ', '', printContext, '')})`
   }
 
   if (node.type == "MemberExpression") {
@@ -468,10 +469,25 @@ describe('parsing into intermediate representation using grammar', () => {
                 }
               }
               if (field.expr instanceof CombinatorExpr) {
-                structProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), typeParameters)));
-                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier('slice')]))) 
-                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier('builder')])))   
+                let typeParameterArray: Array<Identifier> = []
+                let loadFunctionsArray: Array<Identifier> = []
+                let storeFunctionsArray: Array<Expression> = []
 
+                field.expr.args.forEach(element => {
+                  if (element instanceof NameExpr) {
+                    typeParameterArray.push(tIdentifier(element.name))
+                    loadFunctionsArray.push(tIdentifier('load' + element.name))
+                    storeFunctionsArray.push(tIdentifier('store' + element.name))
+                  }
+                });
+
+                let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
+
+                let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
+
+                structProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
+                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier('slice')].concat(loadFunctionsArray), currentTypeParameters))) 
+                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier('builder')])))   
               }
               if (field.expr instanceof NameExpr) {
                 structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));

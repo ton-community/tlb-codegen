@@ -112,15 +112,15 @@ export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theTyp
 	};
 }
 export type TheJust = {
-	x: Maybe;
+	x: Maybe<D>;
 };
 export function loadTheJust(slice: Slice): TheJust {
 	return {
-		x: loadMaybe(slice)
+		x: loadMaybe<D>(slice, loadD)
 	};
 }
 export function storeTheJust(theJust: TheJust): Builder {
 	return (builder: Builder) => {
-		storeMaybe(theJust.x)(builder);
+		storeMaybe<D>(theJust.x, storeD)(builder);
 	};
 }
