@@ -13,5 +13,8 @@ nothing$0 {TheType:Type} = Maybe TheType;
 just$1 {TheType:Type} value:TheType = Maybe TheType;
 thejust$_ x:(Maybe D) = TheJust;
 
+left$0 {X:Type} {Y:Type} value:X = Either X Y;
+right$1 {X:Type} {Y:Type} value:Y = Either X Y;
+pair$_ {X:Type} {Y:Type} first:X second:Y = Both X Y;
 
 

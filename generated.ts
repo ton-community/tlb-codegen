@@ -98,7 +98,7 @@ export function storeD(d: D): Builder {
 		builder.storeUint(d.c, 32);
 	};
 }
-export type Maybe = Maybe_nothing | Maybe_just;
+export type Maybe<TheType> = Maybe_nothing<TheType> | Maybe_just<TheType>;
 export type Maybe_nothing<TheType> = {
 
 };
@@ -140,5 +140,52 @@ export function loadTheJust(slice: Slice): TheJust {
 export function storeTheJust(theJust: TheJust): Builder {
 	return (builder: Builder) => {
 		storeMaybe<D>(theJust.x, storeD)(builder);
+	};
+}
+export type Either<X,Y> = Either_left<X,Y> | Either_right<X,Y>;
+export type Either_left<X,Y> = {
+	value: X;
+};
+export type Either_right<X,Y> = {
+	value: Y;
+};
+export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
+	if (slice.preloadUint(1) == 0b0) {
+		return {
+			value: loadX(slice)
+		};
+	};
+	if (slice.preloadUint(1) == 0b1) {
+		return {
+			value: loadY(slice)
+		};
+	};
+}
+export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): Builder {
+	if (either instanceof Either_left) {
+		return (builder: Builder) => {
+			storeX(either.value)(builder);
+		};
+	};
+	if (either instanceof Either_right) {
+		return (builder: Builder) => {
+			storeY(either.value)(builder);
+		};
+	};
+}
+export type Both<X,Y> = {
+	first: X;
+	second: Y;
+};
+export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Both<X,Y> {
+	return {
+		first: loadX(slice),
+		second: loadY(slice)
+	};
+}
+export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): Builder {
+	return (builder: Builder) => {
+		storeX(both.first)(builder);
+		storeY(both.second)(builder);
 	};
 }

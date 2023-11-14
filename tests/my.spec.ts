@@ -79,8 +79,8 @@ interface StructDeclaration extends ASTNode {
 
 interface UnionTypeDeclaration extends ASTNode {
   type: "UnionTypeDeclaration",
-  name: Identifier,
-  unionMembers: Array<Identifier>
+  name: TypeExpression,
+  unionMembers: Array<TypeExpression>
 }
 
 interface ObjectProperty extends ASTNode {
@@ -212,7 +212,7 @@ function tArrowFunctionExpression(parameters: Array<TypedIdentifier>, body: Arra
   return {type: "ArrowFunctionExpression", parameters: parameters, body: body}
 }
 
-function tUnionTypeDeclaration(name: Identifier, unionMembers: Array<Identifier>): UnionTypeDeclaration {
+function tUnionTypeDeclaration(name: TypeExpression, unionMembers: Array<TypeExpression>): UnionTypeDeclaration {
   return {type: "UnionTypeDeclaration", name: name, unionMembers: unionMembers}
 }
 
@@ -321,9 +321,7 @@ ${currentTabs}}`
   if (node.type == "TypeParametersExpression") {
     if (node.typeParameters.length > 0) {
       result += '<';
-      node.typeParameters.forEach(element => {
-        result += toCode(element, printContext);
-      });
+      result += toCodeArray(node.typeParameters, ',', '', printContext, '');
       result += '>';
     }
   }
@@ -418,7 +416,7 @@ describe('parsing into intermediate representation using grammar', () => {
         if (combinatorName == undefined) {
           return;
         }
-        let unionTypes: Identifier[] = []
+        let unionTypes: TypeExpression[] = []
         let tmpDeclarations: ASTNode[]  = []
         let loadStatements: Statement[] = []
         let storeStatements: Statement[] = []
@@ -433,7 +431,6 @@ describe('parsing into intermediate representation using grammar', () => {
           } else {
             structName = declaration.combinator.name;
           }
-          unionTypes.push(tIdentifier(structName));
           let variableStructName = firstLower(structName)
     
           let structProperties: TypedIdentifier[] = []
@@ -513,6 +510,9 @@ describe('parsing into intermediate representation using grammar', () => {
 
             typeParameters = tTypeParametersExpression(typeParameterArray);
           }
+
+          unionTypes.push(tTypeWithParameters(tIdentifier(structName), typeParameters));
+
           
           let structX = tStructDeclaration(tIdentifier(structName), structProperties, typeParameters);
 
@@ -555,7 +555,7 @@ describe('parsing into intermediate representation using grammar', () => {
         tmpDeclarations.push(storeFunction)
 
         if (value.length > 1) {
-          let unionTypeDecl = tUnionTypeDeclaration(tIdentifier(key), unionTypes)
+          let unionTypeDecl = tUnionTypeDeclaration(tTypeWithParameters(tIdentifier(key), typeParameters), unionTypes)
           jsCodeDeclarations.push(unionTypeDecl)
         }
         tmpDeclarations.forEach(element => {
