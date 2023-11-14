@@ -4,12 +4,12 @@ import util from 'util'
 
 import { parse } from '../src'
 import { ast } from '../src'
-import { BuiltinZeroArgs, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr } from '../src/ast/nodes'
+import { BuiltinZeroArgs, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef } from '../src/ast/nodes'
 
 import { parse as parseBabel } from "@babel/parser";
 import generate from "@babel/generator";
 // import { expressionStatement } from '@babel/types'
-import { ExportNamedDeclaration, ExpressionStatement as BabelExpressionStatement, Identifier as BabelIdentifier, ObjectProperty as BabelObjectProperty, TSPropertySignature, TSTypeReference, anyTypeAnnotation, arrowFunctionExpression, blockStatement, callExpression, exportNamedDeclaration, expressionStatement, functionDeclaration, identifier, importDeclaration, importSpecifier, memberExpression, numericLiteral, objectExpression, objectProperty, returnStatement, stringLiteral, tsPropertySignature, tsTypeAliasDeclaration, tsTypeAnnotation, tsTypeLiteral, tsTypeReference, tsUnionType, typeAnnotation, MemberExpression as BabelMemberExpression, typeParameter} from '@babel/types'
+import { ExportNamedDeclaration, ExpressionStatement as BabelExpressionStatement, Identifier as BabelIdentifier, ObjectProperty as BabelObjectProperty, TSPropertySignature, TSTypeReference, anyTypeAnnotation, arrowFunctionExpression, blockStatement, callExpression, exportNamedDeclaration, expressionStatement, functionDeclaration, identifier, importDeclaration, importSpecifier, memberExpression, numericLiteral, objectExpression, objectProperty, returnStatement, stringLiteral, tsPropertySignature, tsTypeAliasDeclaration, tsTypeAnnotation, tsTypeLiteral, tsTypeReference, tsUnionType, typeAnnotation, MemberExpression as BabelMemberExpression, typeParameter, tsLiteralType} from '@babel/types'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
 
@@ -422,9 +422,12 @@ describe('parsing into intermediate representation using grammar', () => {
         let storeStatements: Statement[] = []
 
         let typeParameters: TypeParametersExpression = tTypeParametersExpression([]);
+        let implicitFields = new Map<string, string>();
+
 
 
         value.forEach(declaration => {
+          console.log(value)
           let structName: string;
           if (value.length > 1) {
             structName = declaration.combinator.name + '_' + declaration.constructorDef.name;
@@ -448,26 +451,42 @@ describe('parsing into intermediate representation using grammar', () => {
           let tagBinary = '0b' + tag.slice(1);
 
           declaration?.fields.forEach(field => {
-            if (field instanceof FieldNamedDef) {
-              let bits = -1;
-                  console.log(util.inspect(field, false, null, true /* enable colors */))
+            if (field instanceof FieldBuiltinDef) {
+              implicitFields.set(field.name, field.type);
+            }
+          })
 
-              // console.log(field)
+          declaration?.fields.forEach(field => {
+            console.log(field)
+
+            if (field instanceof FieldBuiltinDef) {
+              structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number')));
+              loadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
+
+            }
+
+            if (field instanceof FieldNamedDef) {
+              let bits: Expression | undefined;
+
+
               if (field.expr instanceof BuiltinZeroArgs) {
                 if (field.expr.name == '#') {
-                  bits = 32;
+                  bits = tNumericLiteral(32);
                 }
               }
               if (field.expr instanceof BuiltinOneArgExpr) {
                 if (field.expr.name == '##') {
                   if (field.expr.arg instanceof NumberExpr) {
-                    bits = field.expr.arg.num;
+                    bits = tNumericLiteral(field.expr.arg.num);
+                  }
+                  if (field.expr.arg instanceof NameExpr) {
+                    bits = tIdentifier(field.expr.arg.name);
                   }
                 }
               }
               if (field.expr instanceof CombinatorExpr) {
                 let typeParameterArray: Array<Identifier> = []
-                let loadFunctionsArray: Array<Identifier> = []
+                let loadFunctionsArray: Array<Expression> = []
                 let storeFunctionsArray: Array<Expression> = []
 
                 field.expr.args.forEach(element => {
@@ -476,14 +495,18 @@ describe('parsing into intermediate representation using grammar', () => {
                     loadFunctionsArray.push(tIdentifier('load' + element.name))
                     storeFunctionsArray.push(tIdentifier('store' + element.name))
                   }
+                  if (element instanceof NumberExpr) {
+                    loadFunctionsArray.push(tNumericLiteral(element.num))
+                  }
                 });
 
                 let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
 
+                let insideLoadParameters: Array<Expression> = [tIdentifier('slice')];
                 let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
 
                 structProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
-                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier('slice')].concat(loadFunctionsArray), currentTypeParameters))) 
+                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters))) 
                 insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier('builder')])))   
               }
               if (field.expr instanceof NameExpr) {
@@ -491,10 +514,13 @@ describe('parsing into intermediate representation using grammar', () => {
                 loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier('slice')]))) 
                 insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier('builder')])))   
               }
-              if (bits != -1) {
+              if (bits != undefined) {
                 structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number'))) 
-                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(bits)]))) 
-                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name)), tNumericLiteral(bits)])))   
+                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [bits]))) 
+                if (bits.type == "Identifier") {
+                  bits = tMemberExpression(tIdentifier(variableCombinatorName), bits);
+                }
+                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name)), bits])))   
               }
             }
           })
@@ -504,7 +530,9 @@ describe('parsing into intermediate representation using grammar', () => {
 
             declaration.combinator.args.forEach(element => {
               if (element instanceof NameExpr) {
-                typeParameterArray.push(tIdentifier(element.name))
+                if (implicitFields.has(element.name) && implicitFields.get(element.name) == 'Type') {
+                  typeParameterArray.push(tIdentifier(element.name))
+                }
               }
             });
 
@@ -512,7 +540,6 @@ describe('parsing into intermediate representation using grammar', () => {
           }
 
           unionTypes.push(tTypeWithParameters(tIdentifier(structName), typeParameters));
-
           
           let structX = tStructDeclaration(tIdentifier(structName), structProperties, typeParameters);
 
@@ -538,6 +565,10 @@ describe('parsing into intermediate representation using grammar', () => {
         let loadFunctionParameters = [tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))]
         typeParameters.typeParameters.forEach(element => {
           loadFunctionParameters.push(tTypedIdentifier(tIdentifier('load' + element.name), tArrowFunctionType([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], element)))
+        });
+
+        implicitFields.forEach((value: string, key: string) => {
+          loadFunctionParameters.push(tTypedIdentifier(tIdentifier(key), tIdentifier('number')))
         });
 
         let loadFunction = tFunctionDeclaration(tIdentifier('load' + combinatorName), typeParameters, tTypeWithParameters(tIdentifier(combinatorName), typeParameters), loadFunctionParameters, loadStatements);

@@ -17,4 +17,11 @@ left$0 {X:Type} {Y:Type} value:X = Either X Y;
 right$1 {X:Type} {Y:Type} value:Y = Either X Y;
 pair$_ {X:Type} {Y:Type} first:X second:Y = Both X Y;
 
+unit$_ = Unit;
+true$_ = True;
 
+a$_ {x:#} value:(## x) = Example x;
+
+//a$_ {x:#} value:(## x) = Example (x * 2);
+
+a$_ t:(Example 4) = BitInteger;

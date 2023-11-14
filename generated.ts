@@ -100,19 +100,21 @@ export function storeD(d: D): Builder {
 }
 export type Maybe<TheType> = Maybe_nothing<TheType> | Maybe_just<TheType>;
 export type Maybe_nothing<TheType> = {
-
+	TheType: number;
 };
 export type Maybe_just<TheType> = {
+	TheType: number;
 	value: TheType;
 };
-export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
+export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType, TheType: number): Maybe<TheType> {
 	if (slice.preloadUint(1) == 0b0) {
 		return {
-
+			TheType: TheType
 		};
 	};
 	if (slice.preloadUint(1) == 0b1) {
 		return {
+			TheType: TheType,
 			value: loadTheType(slice)
 		};
 	};
@@ -144,19 +146,27 @@ export function storeTheJust(theJust: TheJust): Builder {
 }
 export type Either<X,Y> = Either_left<X,Y> | Either_right<X,Y>;
 export type Either_left<X,Y> = {
+	X: number;
+	Y: number;
 	value: X;
 };
 export type Either_right<X,Y> = {
+	X: number;
+	Y: number;
 	value: Y;
 };
-export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
+export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y, X: number, Y: number): Either<X,Y> {
 	if (slice.preloadUint(1) == 0b0) {
 		return {
+			X: X,
+			Y: Y,
 			value: loadX(slice)
 		};
 	};
 	if (slice.preloadUint(1) == 0b1) {
 		return {
+			X: X,
+			Y: Y,
 			value: loadY(slice)
 		};
 	};
@@ -174,11 +184,15 @@ export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder
 	};
 }
 export type Both<X,Y> = {
+	X: number;
+	Y: number;
 	first: X;
 	second: Y;
 };
-export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Both<X,Y> {
+export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y, X: number, Y: number): Both<X,Y> {
 	return {
+		X: X,
+		Y: Y,
 		first: loadX(slice),
 		second: loadY(slice)
 	};
@@ -187,5 +201,59 @@ export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Buil
 	return (builder: Builder) => {
 		storeX(both.first)(builder);
 		storeY(both.second)(builder);
+	};
+}
+export type Unit = {
+
+};
+export function loadUnit(slice: Slice): Unit {
+	return {
+
+	};
+}
+export function storeUnit(unit: Unit): Builder {
+	return (builder: Builder) => {
+
+	};
+}
+export type True = {
+
+};
+export function loadTrue(slice: Slice): True {
+	return {
+
+	};
+}
+export function storeTrue(true: True): Builder {
+	return (builder: Builder) => {
+
+	};
+}
+export type Example = {
+	x: number;
+	value: number;
+};
+export function loadExample(slice: Slice, x: number): Example {
+	return {
+		x: x,
+		value: slice.loadUint(x)
+	};
+}
+export function storeExample(example: Example): Builder {
+	return (builder: Builder) => {
+		builder.storeUint(example.value, example.x);
+	};
+}
+export type BitInteger = {
+	t: Example;
+};
+export function loadBitInteger(slice: Slice): BitInteger {
+	return {
+		t: loadExample(slice, 4)
+	};
+}
+export function storeBitInteger(bitInteger: BitInteger): Builder {
+	return (builder: Builder) => {
+		storeExample(bitInteger.t)(builder);
 	};
 }

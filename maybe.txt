@@ -39,3 +39,67 @@ export function storeTheJust(theJust: TheJust): Builder {
 		storeMaybe<number>(theJust.x, storeTheNumber)(builder);
 	};
 }
+
+
+
+export type Example = {
+	value: number;
+	x: number;
+};
+export function loadExample(slice: Slice, x: number): Example {
+	return {
+		value: slice.loadUint(x),
+		x: x
+	};
+}
+export function storeExample(example: Example): Builder {
+	return (builder: Builder) => {
+		builder.storeUint(example.value, example.x)
+	};
+}
+
+export type BitInteger = {
+	e: Example;
+};
+export function loadBitInteger(slice: Slice): BitInteger {
+	return {
+		e: loadExample(slice, 4)
+	};
+}
+export function storeBitInteger(bitInteger: BitInteger): Builder {
+	return (builder: Builder) => {
+		storeExample(bitInteger.e)(builder);
+	};
+}
+
+
+
+export type Example2 = {
+	value: number;
+	x: number;
+};
+export function loadExample2(slice: Slice, x: number): Example {
+	return {
+		value: slice.loadUint(x / 2),
+		x: x / 2
+	};
+}
+export function storeExample2(example: Example2): Builder {
+	return (builder: Builder) => {
+		builder.storeUint(example.value, example.x)
+	};
+}
+
+export type BitInteger2 = {
+	e: Example2;
+};
+export function loadBitInteger2(slice: Slice): BitInteger2 {
+	return {
+		e: loadExample2(slice, 4)
+	};
+}
+export function storeBitInteger2(bitInteger: BitInteger2): Builder {
+	return (builder: Builder) => {
+		storeExample2(bitInteger.e)(builder);
+	};
+}
