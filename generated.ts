@@ -98,17 +98,35 @@ export function storeD(d: D): Builder {
 		builder.storeUint(d.c, 32);
 	};
 }
-export type Maybe<TheType> = {
+export type Maybe = Maybe_nothing | Maybe_just;
+export type Maybe_nothing<TheType> = {
+
+};
+export type Maybe_just<TheType> = {
 	value: TheType;
 };
 export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
-	return {
-		value: loadTheType(slice)
+	if (slice.preloadUint(1) == 0b0) {
+		return {
+
+		};
+	};
+	if (slice.preloadUint(1) == 0b1) {
+		return {
+			value: loadTheType(slice)
+		};
 	};
 }
 export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theType: TheType) => (builder: Builder) => void): Builder {
-	return (builder: Builder) => {
-		storeTheType(maybe.value)(builder);
+	if (maybe instanceof Maybe_nothing) {
+		return (builder: Builder) => {
+
+		};
+	};
+	if (maybe instanceof Maybe_just) {
+		return (builder: Builder) => {
+			storeTheType(maybe.value)(builder);
+		};
 	};
 }
 export type TheJust = {

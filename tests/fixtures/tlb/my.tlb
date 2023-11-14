@@ -9,6 +9,7 @@ tmpc$_ y:Y c:# = C;
 
 tmpd#_ y:Y c:# = D;
 
+nothing$0 {TheType:Type} = Maybe TheType;
 just$1 {TheType:Type} value:TheType = Maybe TheType;
 thejust$_ x:(Maybe D) = TheJust;
 
