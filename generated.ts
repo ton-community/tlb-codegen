@@ -235,8 +235,8 @@ export type Example = {
 };
 export function loadExample(slice: Slice, x: number): Example {
 	return {
-		x: x,
-		value: slice.loadUint(x)
+		x: x / 2,
+		value: slice.loadUint(x / 2)
 	};
 }
 export function storeExample(example: Example): Builder {
