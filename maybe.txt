@@ -189,3 +189,29 @@ export function loadA(slice: Slice): A {
 		}
 	]
 }
+
+
+
+export function storeA(a: A): (builder: Builder) => void {
+	return (builder: Builder) => {
+		let cell1 = beginCell();
+		let cell2 = beginCell();
+		let cell21 = beginCell();
+		let cell22 = beginCell();
+		let cell221 = beginCell();
+
+		builder.storeUint(a.t, 32);
+		cell1.storeUint(a.q, 32);
+		cell2.storeUint(a.a, 32);
+		cell21.storeUint(a.e, 32);
+		cell22.storeUint(a.b, 32);
+		cell22.storeUint(a.d, 32);
+		cell221.storeUint(a.c, 32);
+
+		cell22.storeRef(cell221);
+		cell2.storeRef(cell21);
+		cell2.storeRef(cell22);
+		builder.storeRef(cell1);
+		builder.storeRef(cell2);
+	};
+}

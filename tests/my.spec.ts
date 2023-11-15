@@ -532,6 +532,7 @@ describe('parsing into intermediate representation using grammar', () => {
     let jsCodeDeclarations = []
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Builder'), 'ton')) // importDeclaration([importSpecifier(identifier('Builder'), identifier('Builder'))], stringLiteral('../boc/Builder')))
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Slice'), 'ton'))  // importDeclaration([importSpecifier(identifier('Slice'), identifier('Slice'))], stringLiteral('../boc/Slice')))
+    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('beginCell'), 'ton'))
 
     let declarationsMap = new Map<string, Declaration[]>();
     tree.declarations.forEach(declaration => {
@@ -617,36 +618,47 @@ describe('parsing into intermediate representation using grammar', () => {
             typeParameters = tTypeParametersExpression(typeParameterArray);
           }
 
-          function getCurrentSlice(slicePrefix: number[]): string {
-            let result = 'slice';
+          function getCurrentSlice(slicePrefix: number[], name:string): string {
+            let result = name;
             slicePrefix = slicePrefix.slice(0, slicePrefix.length - 1);
             slicePrefix.forEach(element => {
               result += element.toString();
             });
+            if (result == 'cell') {
+              return 'builder';
+            }
             return result;
           }
 
           let slicePrefix: number[] = [0];
 
           function handleField(field: FieldDefinition) {
-            let currentSlice = getCurrentSlice(slicePrefix);
+            let currentSlice = getCurrentSlice(slicePrefix, 'slice');
+            let currentCell = getCurrentSlice(slicePrefix, 'cell');
 
             if (field instanceof FieldAnonymousDef) {
               slicePrefix[slicePrefix.length - 1]++;  
               slicePrefix.push(0)
    
-              console.log(slicePrefix, currentSlice, getCurrentSlice(slicePrefix), field)
               loadStatements.push(
-                tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix)), 
+                tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')), 
                   tFunctionCall(tMemberExpression(
                     tFunctionCall(tMemberExpression(
                       tIdentifier(currentSlice), tIdentifier('loadRef')
                     ), []),
                     tIdentifier('beginParse')
                   ), []), )))
+
+              insideStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
+
               field.fields.forEach(element => {
                 handleField(element);
               });
+
+//              cell22.storeRef(cell221);
+
+              insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
+
               slicePrefix.pop();
             }
 
@@ -716,17 +728,17 @@ describe('parsing into intermediate representation using grammar', () => {
 
                 structProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
                 loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters))) 
-                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier('builder')])))   
+                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))   
               }
               if (field.expr instanceof NameExpr) {
                 structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
                 loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]))) 
-                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier('builder')])))   
+                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier(currentCell)])))   
               }
               if (bitsLoad != undefined && bitsStore != undefined) {
                 structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number'))) 
                 loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('loadUint')), [bitsLoad]))) 
-                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name)), bitsStore])))   
+                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeUint')), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name)), bitsStore])))   
               }
             }
           }
@@ -780,7 +792,7 @@ describe('parsing into intermediate representation using grammar', () => {
               [tTypedIdentifier(tIdentifier(firstLower(element.name)), tIdentifier(element.name))], 
               tArrowFunctionType([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], tIdentifier('void')))))
         });
-        let storeFunction = tFunctionDeclaration(tIdentifier('store' + combinatorName), typeParameters, tIdentifier('Builder'), storeFunctionParameters, storeStatements) 
+        let storeFunction = tFunctionDeclaration(tIdentifier('store' + combinatorName), typeParameters, tIdentifier('(builder: Builder) => void'), storeFunctionParameters, storeStatements) 
         tmpDeclarations.push(storeFunction)
 
         if (value.length > 1) {

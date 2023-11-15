@@ -1,5 +1,6 @@
 import { Builder } from "ton"
 import { Slice } from "ton"
+import { beginCell } from "ton"
 export type X = {
 	a: number;
 	b: number;
@@ -10,7 +11,7 @@ export function loadX(slice: Slice): X {
 		b: slice.loadUint(32)
 	};
 }
-export function storeX(x: X): Builder {
+export function storeX(x: X): (builder: Builder) => void {
 	return (builder: Builder) => {
 		builder.storeUint(x.a, 32);
 		builder.storeUint(x.b, 32);
@@ -39,7 +40,7 @@ export function loadBool(slice: Slice): Bool {
 		};
 	};
 }
-export function storeBool(bool: Bool): Builder {
+export function storeBool(bool: Bool): (builder: Builder) => void {
 	if (bool instanceof Bool_bool_false) {
 		return (builder: Builder) => {
 			builder.storeUint(0b0, 1);
@@ -63,7 +64,7 @@ export function loadY(slice: Slice): Y {
 		y: slice.loadUint(5)
 	};
 }
-export function storeY(y: Y): Builder {
+export function storeY(y: Y): (builder: Builder) => void {
 	return (builder: Builder) => {
 		builder.storeUint(y.y, 5);
 	};
@@ -78,7 +79,7 @@ export function loadC(slice: Slice): C {
 		c: slice.loadUint(32)
 	};
 }
-export function storeC(c: C): Builder {
+export function storeC(c: C): (builder: Builder) => void {
 	return (builder: Builder) => {
 		storeY(c.y)(builder);
 		builder.storeUint(c.c, 32);
@@ -94,7 +95,7 @@ export function loadD(slice: Slice): D {
 		c: slice.loadUint(32)
 	};
 }
-export function storeD(d: D): Builder {
+export function storeD(d: D): (builder: Builder) => void {
 	return (builder: Builder) => {
 		storeY(d.y)(builder);
 		builder.storeUint(d.c, 32);
@@ -121,7 +122,7 @@ export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => 
 		};
 	};
 }
-export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theType: TheType) => (builder: Builder) => void): Builder {
+export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theType: TheType) => (builder: Builder) => void): (builder: Builder) => void {
 	if (maybe instanceof Maybe_nothing) {
 		return (builder: Builder) => {
 			builder.storeUint(0b0, 1);
@@ -142,7 +143,7 @@ export function loadTheJust(slice: Slice): TheJust {
 		x: loadMaybe<D>(slice, loadD)
 	};
 }
-export function storeTheJust(theJust: TheJust): Builder {
+export function storeTheJust(theJust: TheJust): (builder: Builder) => void {
 	return (builder: Builder) => {
 		storeMaybe<D>(theJust.x, storeD)(builder);
 	};
@@ -174,7 +175,7 @@ export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY:
 		};
 	};
 }
-export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): Builder {
+export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
 	if (either instanceof Either_left) {
 		return (builder: Builder) => {
 			builder.storeUint(0b0, 1);
@@ -202,7 +203,7 @@ export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (
 		second: loadY(slice)
 	};
 }
-export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): Builder {
+export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
 	return (builder: Builder) => {
 		storeX(both.first)(builder);
 		storeY(both.second)(builder);
@@ -216,7 +217,7 @@ export function loadUnit(slice: Slice): Unit {
 
 	};
 }
-export function storeUnit(unit: Unit): Builder {
+export function storeUnit(unit: Unit): (builder: Builder) => void {
 	return (builder: Builder) => {
 
 	};
@@ -229,7 +230,7 @@ export function loadTrue(slice: Slice): True {
 
 	};
 }
-export function storeTrue(true: True): Builder {
+export function storeTrue(true: True): (builder: Builder) => void {
 	return (builder: Builder) => {
 
 	};
@@ -244,7 +245,7 @@ export function loadExample(slice: Slice, x: number): Example {
 		value: slice.loadUint(x - 2)
 	};
 }
-export function storeExample(example: Example): Builder {
+export function storeExample(example: Example): (builder: Builder) => void {
 	return (builder: Builder) => {
 		builder.storeUint(example.value, example.x);
 	};
@@ -257,7 +258,7 @@ export function loadBitInteger(slice: Slice): BitInteger {
 		t: loadExample(slice, 4)
 	};
 }
-export function storeBitInteger(bitInteger: BitInteger): Builder {
+export function storeBitInteger(bitInteger: BitInteger): (builder: Builder) => void {
 	return (builder: Builder) => {
 		storeExample(bitInteger.t)(builder);
 	};
@@ -283,7 +284,7 @@ export function loadUnary(slice: Slice, n: number): Unary {
 		};
 	};
 }
-export function storeUnary(unary: Unary): Builder {
+export function storeUnary(unary: Unary): (builder: Builder) => void {
 	if (unary instanceof Unary_unary_zero) {
 		return (builder: Builder) => {
 			builder.storeUint(0b0, 1);
@@ -304,7 +305,7 @@ export function loadNFG(slice: Slice): NFG {
 		a: loadBitInteger(slice)
 	};
 }
-export function storeNFG(nFG: NFG): Builder {
+export function storeNFG(nFG: NFG): (builder: Builder) => void {
 	return (builder: Builder) => {
 		storeBitInteger(nFG.a)(builder);
 	};
@@ -317,7 +318,7 @@ export function loadNFT(slice: Slice): NFT {
 
 	};
 }
-export function storeNFT(nFT: NFT): Builder {
+export function storeNFT(nFT: NFT): (builder: Builder) => void {
 	return (builder: Builder) => {
 
 	};
@@ -347,14 +348,24 @@ export function loadA(slice: Slice): A {
 		c: slice221.loadUint(32)
 	};
 }
-export function storeA(a: A): Builder {
+export function storeA(a: A): (builder: Builder) => void {
 	return (builder: Builder) => {
 		builder.storeUint(a.t, 32);
-		builder.storeUint(a.q, 32);
-		builder.storeUint(a.a, 32);
-		builder.storeUint(a.e, 32);
-		builder.storeUint(a.b, 32);
-		builder.storeUint(a.d, 32);
-		builder.storeUint(a.c, 32);
+		let cell1 = beginCell();
+		cell1.storeUint(a.q, 32);
+		builder.storeRef(cell1);
+		let cell2 = beginCell();
+		cell2.storeUint(a.a, 32);
+		let cell21 = beginCell();
+		cell21.storeUint(a.e, 32);
+		cell2.storeRef(cell21);
+		let cell22 = beginCell();
+		cell22.storeUint(a.b, 32);
+		cell22.storeUint(a.d, 32);
+		let cell221 = beginCell();
+		cell221.storeUint(a.c, 32);
+		cell22.storeRef(cell221);
+		cell2.storeRef(cell22);
+		builder.storeRef(cell2);
 	};
 }
