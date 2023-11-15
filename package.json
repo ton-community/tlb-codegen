@@ -30,7 +30,7 @@
   "dependencies": {
     "@babel/generator": "^7.23.0",
     "@babel/parser": "^7.23.0",
-    "@babel/types": "^7.23.0",
+    "@babel/types": "^7.23.3",
     "ohm-js": "^16.6.0",
     "ton": "^13.6.1"
   },
