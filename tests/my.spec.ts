@@ -655,8 +655,6 @@ describe('parsing into intermediate representation using grammar', () => {
                 handleField(element);
               });
 
-//              cell22.storeRef(cell221);
-
               insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
 
               slicePrefix.pop();
@@ -696,7 +694,26 @@ describe('parsing into intermediate representation using grammar', () => {
               }
 
               if (field.expr instanceof CellRefExpr) {
+                slicePrefix[slicePrefix.length - 1]++;  
+                slicePrefix.push(0)
+    
+                loadStatements.push(
+                  tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')), 
+                    tFunctionCall(tMemberExpression(
+                      tFunctionCall(tMemberExpression(
+                        tIdentifier(currentSlice), tIdentifier('loadRef')
+                      ), []),
+                      tIdentifier('beginParse')
+                    ), []), )))
 
+
+                insideStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
+
+                handleField(new FieldNamedDef(field.name, field.expr.expr))
+
+                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
+
+                slicePrefix.pop();              
               }
 
               if (field.expr instanceof CombinatorExpr) {

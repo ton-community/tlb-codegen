@@ -311,16 +311,19 @@ export function storeNFG(nFG: NFG): (builder: Builder) => void {
 	};
 }
 export type NFT = {
-
+	a: BitInteger;
 };
 export function loadNFT(slice: Slice): NFT {
+	let slice1 = slice.loadRef().beginParse();
 	return {
-
+		a: loadBitInteger(slice1)
 	};
 }
 export function storeNFT(nFT: NFT): (builder: Builder) => void {
 	return (builder: Builder) => {
-
+		let cell1 = beginCell();
+		storeBitInteger(nFT.a)(cell1);
+		builder.storeRef(cell1);
 	};
 }
 export type A = {
