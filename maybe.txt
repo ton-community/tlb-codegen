@@ -142,3 +142,50 @@ export function storeUnary(unary: Unary): Builder {
 		};
 	};
 }
+
+
+//a$_ t:# ^[ a:(## 32) ^[e:#] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = A;
+
+export function loadA(slice: Slice): A {
+	let slice1 = slice.loadRef().beginParse();
+	let slice11 = slice1.loadRef().beginParse();
+	let slice12 = slice1.loadRef().beginParse();
+	let slice121 = slice12.loadRef().beginParse();
+	return {
+		t: slice.loadUint(32),
+		a: slice1.loadUint(32),
+		e: slice11.loadUint(32),
+		b: slice12.loadUint(32),
+		d: slice12.loadUint(32),
+		c: slice121.loadUint(32)
+	};
+}
+
+
+
+<ref *1> FieldAnonymousDef {
+	name: null,
+	isRef: true,
+	fields: [
+		FieldNamedDef {
+			name: 'a',
+			expr: [BuiltinOneArgExpr],
+			locations: [Object],
+			parent: [Circular *1]
+		},
+		FieldAnonymousDef {
+			name: null,
+			isRef: true,
+			fields: [Array],
+			locations: [Object],
+			parent: [Circular *1]
+		},
+		FieldAnonymousDef {
+			name: null,
+			isRef: true,
+			fields: [Array],
+			locations: [Object],
+			parent: [Circular *1]
+		}
+	]
+}

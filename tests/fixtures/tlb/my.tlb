@@ -28,3 +28,11 @@ a$_ t:(Example 4) = BitInteger;
 
 unary_zero$0 = Unary ~0;
 unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
+
+a$_ a:BitInteger = NFG;
+
+a$_ a:^BitInteger = NFT;
+
+
+a$_ t:# ^[q:#] ^[ a:(## 32) ^[e:#] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = A;
+

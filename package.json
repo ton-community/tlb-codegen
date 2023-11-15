@@ -31,7 +31,8 @@
     "@babel/generator": "^7.23.0",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
-    "ohm-js": "^16.6.0"
+    "ohm-js": "^16.6.0",
+    "ton": "^13.6.1"
   },
   "devDependencies": {
     "@types/dedent": "^0.7.0",

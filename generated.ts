@@ -1,5 +1,5 @@
-import { Builder } from "../boc/Builder"
-import { Slice } from "../boc/Slice"
+import { Builder } from "ton"
+import { Slice } from "ton"
 export type X = {
 	a: number;
 	b: number;
@@ -294,5 +294,67 @@ export function storeUnary(unary: Unary): Builder {
 			builder.storeUint(0b1, 1);
 			storeUnary(unary.x)(builder);
 		};
+	};
+}
+export type NFG = {
+	a: BitInteger;
+};
+export function loadNFG(slice: Slice): NFG {
+	return {
+		a: loadBitInteger(slice)
+	};
+}
+export function storeNFG(nFG: NFG): Builder {
+	return (builder: Builder) => {
+		storeBitInteger(nFG.a)(builder);
+	};
+}
+export type NFT = {
+
+};
+export function loadNFT(slice: Slice): NFT {
+	return {
+
+	};
+}
+export function storeNFT(nFT: NFT): Builder {
+	return (builder: Builder) => {
+
+	};
+}
+export type A = {
+	t: number;
+	q: number;
+	a: number;
+	e: number;
+	b: number;
+	d: number;
+	c: number;
+};
+export function loadA(slice: Slice): A {
+	let slice1 = slice.loadRef().beginParse();
+	let slice2 = slice.loadRef().beginParse();
+	let slice21 = slice2.loadRef().beginParse();
+	let slice22 = slice2.loadRef().beginParse();
+	let slice221 = slice22.loadRef().beginParse();
+	return {
+		t: slice.loadUint(32),
+		q: slice1.loadUint(32),
+		a: slice2.loadUint(32),
+		e: slice21.loadUint(32),
+		b: slice22.loadUint(32),
+		d: slice22.loadUint(32),
+		c: slice221.loadUint(32)
+	};
+}
+export function storeA(a: A): Builder {
+	return (builder: Builder) => {
+		builder.storeUint(a.t, 32);
+		builder.storeUint(a.q, 32);
+		builder.storeUint(a.a, 32);
+		builder.storeUint(a.e, 32);
+		builder.storeUint(a.b, 32);
+		builder.storeUint(a.d, 32);
+		builder.storeUint(a.c, 32);
 	};
 }
