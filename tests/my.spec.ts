@@ -357,52 +357,116 @@ ${currentTabs}}`
   return result;
 }
 
-interface MyBinaryOp {
-  left: MyMathExpr
-  right: MyMathExpr
-  operation: string
-  hasX: boolean
+class MyBinaryOp {
+  constructor(
+    readonly left: MyMathExpr,
+    readonly right: MyMathExpr,
+    readonly operation: string,
+    readonly hasX: boolean) {
+  }
 }
 
-interface MyNumberExpr {
-  n: number
-  hasX: false
+class MyNumberExpr {
+  constructor(
+    readonly n: number,
+    readonly hasX: false
+  ) {
+
+  }
 }
 
-interface MyVarExpr {
-  x: string
-  hasX: true
+class MyVarExpr {
+  constructor(
+    readonly x: string,
+    readonly hasX: true
+  ) {
+
+  }
 }
 
 type MyMathExpr = MyBinaryOp | MyNumberExpr | MyVarExpr;
 
 function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr): MyMathExpr {
   if (mathExpr instanceof NameExpr) {
-    return {x: mathExpr.name, hasX: true};
+    return new MyVarExpr(mathExpr.name, true);
   }
   if (mathExpr instanceof NumberExpr) {
-    return {n: mathExpr.num, hasX: false};
+    return new MyNumberExpr(mathExpr.num, false);
   }
   if (mathExpr instanceof MathExpr) {
     let left = convertToMathExpr(mathExpr.left)
     let right = convertToMathExpr(mathExpr.right)
-    return {left: left, right: right, operation: mathExpr.op, hasX: left.hasX || right.hasX};
+    return new MyBinaryOp(left, right, mathExpr.op, left.hasX || right.hasX)
   }
   return {n: 0, hasX: false};
 }
 
-function reorganizeExpression(mathExpr: MyMathExpr): MyMathExpr {
+function convertToAST(mathExpr: MyMathExpr): Expression {
+  if (mathExpr instanceof MyVarExpr) {
+    return tIdentifier(mathExpr.x);
+  }
+  if (mathExpr instanceof MyNumberExpr) {
+    return tNumericLiteral(mathExpr.n)
+  }
   if (mathExpr instanceof MyBinaryOp) {
+    return tBinaryExpression(convertToAST(mathExpr.left), mathExpr.operation, convertToAST(mathExpr.right));
+  }
+  return tIdentifier('');
+}
+
+/*
+
+y = 2 + ((x + 5) * 7)
+x = ((y - 2) / 7) - 5
+
+y = 2 + t
+t = y - 2
+
+
+
+*/
+
+function reorganizeExpression(mathExpr: MyMathExpr): MyMathExpr {
+  if (mathExpr instanceof MyVarExpr || mathExpr instanceof MyNumberExpr) {
     return mathExpr
+  }
+  if (mathExpr instanceof MyBinaryOp) {
+    let op = '';
+    if (mathExpr.operation == '*') {
+      op = '/';
+    } else if (mathExpr.operation == '+') {
+      op = '-'
+    }
+    let left = undefined;
+    let right = undefined;
+    if (mathExpr.left.hasX) {
+      left = mathExpr.left;
+      right = mathExpr.right
+    } else {
+      right = mathExpr.left
+      left = mathExpr.right
+    }
+    return new MyBinaryOp(
+      reorganizeExpression(left),
+      reorganizeExpression(right),
+      op,
+      mathExpr.hasX
+    )
   }
   return {n: 0, hasX: false}
 }
 
 function deriveMathExpression(mathExpr: MathExpr) {
+  console.log(mathExpr)
   let myMathExpr = convertToMathExpr(mathExpr);
+  console.log(myMathExpr)
+  myMathExpr = reorganizeExpression(myMathExpr);
+  console.log(myMathExpr);
+  let derived = convertToAST(myMathExpr)
+  console.log(derived)
   return {
     name: 'x',
-    derived: tBinaryExpression(tIdentifier('x'), '/', tNumericLiteral(2)),
+    derived: derived,
   }
 }
 
@@ -517,7 +581,9 @@ describe('parsing into intermediate representation using grammar', () => {
                 implicitFieldsDerived.set(element.name, tIdentifier(element.name));
               }
               if (element instanceof MathExpr) {
+                console.log('here')
                 let derivedExpr = deriveMathExpression(element);
+                console.log(derivedExpr)
                 implicitFieldsDerived.set(derivedExpr.name, derivedExpr.derived);
               }
             });

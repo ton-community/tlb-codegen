@@ -22,6 +22,6 @@ true$_ = True;
 
 //a$_ {x:#} value:(## x) = Example x;
 
-a$_ {x:#} value:(## x) = Example (x * 2);
+a$_ {x:#} value:(## x) = Example (x + 2);
 
 a$_ t:(Example 4) = BitInteger;
