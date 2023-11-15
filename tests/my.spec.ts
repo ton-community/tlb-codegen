@@ -4,7 +4,7 @@ import util from 'util'
 
 import { parse } from '../src'
 import { ast } from '../src'
-import { BuiltinZeroArgs, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr } from '../src/ast/nodes'
+import { BuiltinZeroArgs, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr } from '../src/ast/nodes'
 
 import { parse as parseBabel } from "@babel/parser";
 import generate from "@babel/generator";
@@ -456,16 +456,26 @@ function reorganizeExpression(mathExpr: MyMathExpr): MyMathExpr {
   return {n: 0, hasX: false}
 }
 
+function getXname(myMathExpr: MyMathExpr): string {
+  if (myMathExpr instanceof MyVarExpr) {
+    return myMathExpr.x;
+  }
+  if (myMathExpr instanceof MyBinaryOp) {
+    if (myMathExpr.left.hasX) {
+      return getXname(myMathExpr.left);
+    } else {
+      return getXname(myMathExpr.right);
+    }
+  }
+  return '';
+}
+
 function deriveMathExpression(mathExpr: MathExpr) {
-  console.log(mathExpr)
   let myMathExpr = convertToMathExpr(mathExpr);
-  console.log(myMathExpr)
   myMathExpr = reorganizeExpression(myMathExpr);
-  console.log(myMathExpr);
   let derived = convertToAST(myMathExpr)
-  console.log(derived)
   return {
-    name: 'x',
+    name: getXname(myMathExpr),
     derived: derived,
   }
 }
@@ -581,9 +591,11 @@ describe('parsing into intermediate representation using grammar', () => {
                 implicitFieldsDerived.set(element.name, tIdentifier(element.name));
               }
               if (element instanceof MathExpr) {
-                console.log('here')
                 let derivedExpr = deriveMathExpression(element);
-                console.log(derivedExpr)
+                implicitFieldsDerived.set(derivedExpr.name, derivedExpr.derived);
+              }
+              if (element instanceof NegateExpr && element.expr instanceof MathExpr) {
+                let derivedExpr = deriveMathExpression(element.expr);
                 implicitFieldsDerived.set(derivedExpr.name, derivedExpr.derived);
               }
             });
@@ -593,7 +605,7 @@ describe('parsing into intermediate representation using grammar', () => {
 
 
           declaration?.fields.forEach(field => {
-
+            console.log(field)
             if (field instanceof FieldBuiltinDef) {
               structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number')));
               let derivedExpression = implicitFieldsDerived.get(field.name)
@@ -640,6 +652,12 @@ describe('parsing into intermediate representation using grammar', () => {
                   if (element instanceof NumberExpr) {
                     loadFunctionsArray.push(tNumericLiteral(element.num))
                   }
+                  if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
+                    let derivedExpression = implicitFieldsDerived.get(element.expr.name)
+                    if (derivedExpression) {
+                      loadFunctionsArray.push(derivedExpression)
+                    }
+                  }
                 });
 
                 let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
@@ -675,6 +693,10 @@ describe('parsing into intermediate representation using grammar', () => {
           }
           loadStatements.push(loadStatement)
 
+          if (value.length > 1) {
+            let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(tagBinary), tNumericLiteral(tagBitLen)]))];
+            insideStoreStatements = preStoreStatement.concat(insideStoreStatements)
+          }
           let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], insideStoreStatements));
           if (value.length > 1) {
             storeStatement = tIfStatement(tBinaryExpression(tIdentifier(variableCombinatorName), 'instanceof', tIdentifier(structName)), [storeStatement])

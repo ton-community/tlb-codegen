@@ -103,3 +103,42 @@ export function storeBitInteger2(bitInteger: BitInteger2): Builder {
 		storeExample2(bitInteger.e)(builder);
 	};
 }
+
+
+
+export type Unary = Unary_unary_zero | Unary_unary_succ;
+export type Unary_unary_zero = {
+
+};
+export type Unary_unary_succ = {
+	n: number;
+	x: Unary;
+};
+
+export function loadUnary(slice: Slice, n: number): Unary {
+	if (slice.preloadUint(1) == 0b0) {
+		return {
+
+		};
+	};
+	if (slice.preloadUint(1) == 0b1) {
+		return {
+			n: n - 1,
+			x: loadUnary(slice, n - 1)
+		};
+	};
+	return {}
+}
+export function storeUnary(unary: Unary): Builder {
+	if (unary instanceof Unary_unary_zero) {
+		return (builder: Builder) => {
+			builder.storeUint(0b0, 1);
+		};
+	};
+	if (unary instanceof Unary_unary_succ) {
+		return (builder: Builder) => {
+			builder.storeUint(0b1, 1);
+			storeUnary(unary.x)(builder);
+		};
+	};
+}

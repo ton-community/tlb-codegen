@@ -22,6 +22,9 @@ true$_ = True;
 
 //a$_ {x:#} value:(## x) = Example x;
 
-a$_ {x:#} value:(## x) = Example (x + 2);
+a$_ {x:#} value:(## x) = Example (2 + x);
 
 a$_ t:(Example 4) = BitInteger;
+
+unary_zero$0 = Unary ~0;
+unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);

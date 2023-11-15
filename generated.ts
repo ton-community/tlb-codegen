@@ -42,6 +42,7 @@ export function loadBool(slice: Slice): Bool {
 export function storeBool(bool: Bool): Builder {
 	if (bool instanceof Bool_bool_false) {
 		return (builder: Builder) => {
+			builder.storeUint(0b0, 1);
 			builder.storeUint(bool.a, 32);
 			builder.storeUint(bool.b, 7);
 			builder.storeUint(bool.c, 32);
@@ -49,6 +50,7 @@ export function storeBool(bool: Bool): Builder {
 	};
 	if (bool instanceof Bool_bool_true) {
 		return (builder: Builder) => {
+			builder.storeUint(0b1, 1);
 			builder.storeUint(bool.b, 32);
 		};
 	};
@@ -122,11 +124,12 @@ export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => 
 export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theType: TheType) => (builder: Builder) => void): Builder {
 	if (maybe instanceof Maybe_nothing) {
 		return (builder: Builder) => {
-
+			builder.storeUint(0b0, 1);
 		};
 	};
 	if (maybe instanceof Maybe_just) {
 		return (builder: Builder) => {
+			builder.storeUint(0b1, 1);
 			storeTheType(maybe.value)(builder);
 		};
 	};
@@ -174,11 +177,13 @@ export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY:
 export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): Builder {
 	if (either instanceof Either_left) {
 		return (builder: Builder) => {
+			builder.storeUint(0b0, 1);
 			storeX(either.value)(builder);
 		};
 	};
 	if (either instanceof Either_right) {
 		return (builder: Builder) => {
+			builder.storeUint(0b1, 1);
 			storeY(either.value)(builder);
 		};
 	};
@@ -255,5 +260,39 @@ export function loadBitInteger(slice: Slice): BitInteger {
 export function storeBitInteger(bitInteger: BitInteger): Builder {
 	return (builder: Builder) => {
 		storeExample(bitInteger.t)(builder);
+	};
+}
+export type Unary = Unary_unary_zero | Unary_unary_succ;
+export type Unary_unary_zero = {
+
+};
+export type Unary_unary_succ = {
+	n: number;
+	x: Unary;
+};
+export function loadUnary(slice: Slice, n: number): Unary {
+	if (slice.preloadUint(1) == 0b0) {
+		return {
+
+		};
+	};
+	if (slice.preloadUint(1) == 0b1) {
+		return {
+			n: n - 1,
+			x: loadUnary(slice, n - 1)
+		};
+	};
+}
+export function storeUnary(unary: Unary): Builder {
+	if (unary instanceof Unary_unary_zero) {
+		return (builder: Builder) => {
+			builder.storeUint(0b0, 1);
+		};
+	};
+	if (unary instanceof Unary_unary_succ) {
+		return (builder: Builder) => {
+			builder.storeUint(0b1, 1);
+			storeUnary(unary.x)(builder);
+		};
 	};
 }
