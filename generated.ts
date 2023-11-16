@@ -483,3 +483,21 @@ export function storeIntexArg(intexArg: IntexArg): (builder: Builder) => void {
 		})(builder);
 	};
 }
+export type LessThan = {
+	x: number;
+	y: number;
+};
+export function loadLessThan(slice: Slice): LessThan {
+	let x = slice.loadUint(2);
+	let y = slice.loadUint(3);
+	return {
+		x: x,
+		y: y
+	};
+}
+export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
+	return (builder: Builder) => {
+		builder.storeUint(lessThan.x, 2);
+		builder.storeUint(lessThan.y, 3);
+	};
+}

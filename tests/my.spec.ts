@@ -516,9 +516,14 @@ function splitForTypeValue(name: string, typeName: string) {
   return num
 }
 
+function bitLen(n: number) {
+  return n.toString(2).length;
+}
+
 
 describe('parsing into intermediate representation using grammar', () => {
   test('block.tlb can be parsed', () => { 
+    console.log(bitLen(8));
 
     const babelTestCode = `
     export type X = {}
@@ -708,6 +713,16 @@ describe('parsing into intermediate representation using grammar', () => {
                     }
                   }
                 }
+                if (field.expr.name == '#<') {
+                  if (field.expr.arg instanceof NumberExpr) {
+                    bitsLoad = bitsStore = tNumericLiteral(bitLen(field.expr.arg.num - 1));
+                  }
+                }
+                if (field.expr.name == '#<=') {
+                  if (field.expr.arg instanceof NumberExpr) {
+                    bitsLoad = bitsStore = tNumericLiteral(bitLen(field.expr.arg.num));
+                  }
+                }
               }
 
               if (field.expr instanceof CellRefExpr) {
@@ -765,7 +780,6 @@ describe('parsing into intermediate representation using grammar', () => {
 
                 if (bitsLoad == undefined) {
                   field.expr.args.forEach(element => {
-                    console.log(element)
                     if (element instanceof NameExpr) {
                       typeParameterArray.push(tIdentifier(element.name))
                       loadFunctionsArray.push(tIdentifier('load' + element.name))
