@@ -297,7 +297,7 @@ export type Unary_unary_succ = {
 	n: number;
 	x: Unary;
 };
-export function loadUnary(slice: Slice, n: number): Unary {
+export function loadUnary(slice: Slice): Unary {
 	if (slice.preloadUint(1) == 0b0) {
 		return {
 			kind: 'Unary_unary_zero'
@@ -557,21 +557,21 @@ export type Hashmap<X> = {
 	n: number;
 	l: number;
 	m: number;
-	label: HmLabel<n>;
-	node: HashmapNode<m,X>;
+	label: HmLabel;
+	node: HashmapNode<X>;
 };
-export function loadHashmap<X>(slice: Slice, loadX: (slice: Slice) => X, n: number, l: number, m: number): Hashmap<X> {
+export function loadHashmap<X>(slice: Slice, loadX: (slice: Slice) => X, n: number): Hashmap<X> {
 	return {
 		kind: 'Hashmap',
 		n: n,
-		label: loadHmLabel<n>(slice, loadn),
-		node: loadHashmapNode<m,X>(slice, loadm, loadX)
+		label: loadHmLabel(slice, n),
+		node: loadHashmapNode<X>(slice, m, loadX)
 	};
 }
 export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
 	return (builder: Builder) => {
-		storeHmLabel<n>(hashmap.label, storen)(builder);
-		storeHashmapNode<m,X>(hashmap.node, storem, storeX)(builder);
+		storeHmLabel(hashmap.label)(builder);
+		storeHashmapNode<X>(hashmap.node, storeX)(builder);
 	};
 }
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
@@ -582,10 +582,10 @@ export type HashmapNode_hmn_leaf<X> = {
 export type HashmapNode_hmn_fork<X> = {
 	kind: 'HashmapNode_hmn_fork';
 	n: number;
-	left: Hashmap<n,X>;
-	right: Hashmap<n,X>;
+	left: Hashmap<X>;
+	right: Hashmap<X>;
 };
-export function loadHashmapNode<X>(slice: Slice, loadX: (slice: Slice) => X, n: number): HashmapNode<X> {
+export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapNode<X> {
 	if (slice.preloadUint(1) == 0b_) {
 		return {
 			kind: 'HashmapNode_hmn_leaf',
@@ -597,8 +597,8 @@ export function loadHashmapNode<X>(slice: Slice, loadX: (slice: Slice) => X, n: 
 	if (slice.preloadUint(1) == 0b_) {
 		return {
 			kind: 'HashmapNode_hmn_fork',
-			left: loadHashmap<n,X>(slice1, loadn, loadX),
-			right: loadHashmap<n,X>(slice2, loadn, loadX)
+			left: loadHashmap<X>(slice1, n, loadX),
+			right: loadHashmap<X>(slice2, n, loadX)
 		};
 	};
 	throw new Error('');
@@ -614,10 +614,10 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
 		return (builder: Builder) => {
 			builder.storeUint(0b_, 1);
 			let cell1 = beginCell();
-			storeHashmap<n,X>(hashmapNode.left, storen, storeX)(cell1);
+			storeHashmap<X>(hashmapNode.left, storeX)(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
-			storeHashmap<n,X>(hashmapNode.right, storen, storeX)(cell2);
+			storeHashmap<X>(hashmapNode.right, storeX)(cell2);
 			builder.storeRef(cell2);
 		};
 	};
@@ -637,9 +637,9 @@ export type HmLabel_hml_long = {
 export type HmLabel_hml_same = {
 	kind: 'HmLabel_hml_same';
 	m: number;
-	v: Bit;
+	v: BitString;
 };
-export function loadHmLabel(slice: Slice, m: number, n: number): HmLabel {
+export function loadHmLabel(slice: Slice, m: number): HmLabel {
 	if (slice.preloadUint(1) == 0b0) {
 		return {
 			kind: 'HmLabel_hml_short',
@@ -653,11 +653,13 @@ export function loadHmLabel(slice: Slice, m: number, n: number): HmLabel {
 			m: m
 		};
 	};
+	let v: BitString;
+	v = slice.loadBits(1);
 	if (slice.preloadUint(2) == 0b11) {
 		return {
 			kind: 'HmLabel_hml_same',
 			m: m,
-			v: loadBit(slice)
+			v: v
 		};
 	};
 	throw new Error('');
@@ -677,7 +679,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 	if (hmLabel.kind == 'HmLabel_hml_same') {
 		return (builder: Builder) => {
 			builder.storeUint(0b11, 2);
-			storeBit(hmLabel.v)(builder);
+			builder.storeBits(hmLabel.v);
 		};
 	};
 	throw new Error('');

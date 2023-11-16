@@ -536,7 +536,6 @@ function bitLen(n: number) {
 
 describe('parsing into intermediate representation using grammar', () => {
   test('block.tlb can be parsed', () => { 
-    console.log(bitLen(8));
 
     const babelTestCode = `
     export type X = {}
@@ -601,6 +600,10 @@ describe('parsing into intermediate representation using grammar', () => {
         let implicitFieldsDerived = new Map<string, Expression>();
 
         let variablesDeclared = new Set<string>;  
+        let negatedVarialbes = new Set<string>;
+
+        let numberParametersArray = new Set<string>();
+
 
 
         value.forEach(declaration => {
@@ -632,23 +635,29 @@ describe('parsing into intermediate representation using grammar', () => {
             }
           })
 
-
           if (typeParameters.typeParameters.length == 0) {
             let typeParameterArray: Array<Identifier> = []
 
             declaration.combinator.args.forEach(element => {
               if (element instanceof NameExpr) {
-                if (implicitFields.has(element.name) && implicitFields.get(element.name) == 'Type') {
-                  typeParameterArray.push(tIdentifier(element.name))
+                  if (implicitFields.has(element.name)) {
+                    if (implicitFields.get(element.name) == 'Type') {
+                      typeParameterArray.push(tIdentifier(element.name))
+                    }
+                    else {
+                      numberParametersArray.add(element.name);
+                    }
+                  implicitFieldsDerived.set(element.name, tIdentifier(element.name));
                 }
-                implicitFieldsDerived.set(element.name, tIdentifier(element.name));
               }
               if (element instanceof MathExpr) {
                 let derivedExpr = deriveMathExpression(element);
+                numberParametersArray.add(derivedExpr.name);
                 implicitFieldsDerived.set(derivedExpr.name, derivedExpr.derived);
               }
               if (element instanceof NegateExpr && element.expr instanceof MathExpr) {
                 let derivedExpr = deriveMathExpression(element.expr);
+                numberParametersArray.add(derivedExpr.name);
                 implicitFieldsDerived.set(derivedExpr.name, derivedExpr.derived);
               }
             });
@@ -797,14 +806,19 @@ describe('parsing into intermediate representation using grammar', () => {
                 if (bitsLoad == undefined) {
                   field.expr.args.forEach(element => {
                     if (element instanceof NameExpr) {
-                      typeParameterArray.push(tIdentifier(element.name))
-                      loadFunctionsArray.push(tIdentifier('load' + element.name))
-                      storeFunctionsArray.push(tIdentifier('store' + element.name))
+                      if (implicitFields.get(element.name)?.startsWith('#')) {
+                        loadFunctionsArray.push(tIdentifier(element.name))
+                      } else {
+                        typeParameterArray.push(tIdentifier(element.name))
+                        loadFunctionsArray.push(tIdentifier('load' + element.name))
+                        storeFunctionsArray.push(tIdentifier('store' + element.name))
+                      }
                     }
                     if (element instanceof NumberExpr) {
                       loadFunctionsArray.push(tNumericLiteral(element.num))
                     }
                     if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
+                      negatedVarialbes.add(element.expr.name);
                       let derivedExpression = implicitFieldsDerived.get(element.expr.name)
                       if (derivedExpression) {
                         loadFunctionsArray.push(derivedExpression)
@@ -844,6 +858,7 @@ describe('parsing into intermediate representation using grammar', () => {
                   });
   
                   let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
+                  console.log(typeParameterArray)
   
                   let insideLoadParameters: Array<Expression> = [tIdentifier(currentSlice)];
                   let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
@@ -863,6 +878,11 @@ describe('parsing into intermediate representation using grammar', () => {
                   fieldType = 'BitString';
                   fieldLoadStoreName = 'Bits';
                   bitsLoad = bitsStore = tNumericLiteral(1023);
+                }
+                if (expName == 'Bit') {
+                  fieldType = 'BitString';
+                  fieldLoadStoreName = 'Bits';
+                  bitsLoad = bitsStore = tNumericLiteral(1);
                 }
                 if (expName == 'Uint') {
                   bitsLoad = bitsStore = tNumericLiteral(256);
@@ -955,9 +975,9 @@ describe('parsing into intermediate representation using grammar', () => {
           loadFunctionParameters.push(tTypedIdentifier(tIdentifier('load' + element.name), tArrowFunctionType([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], element)))
         });
 
-        implicitFields.forEach((value: string, key: string) => {
-          if (value != 'Type') {
-            loadFunctionParameters.push(tTypedIdentifier(tIdentifier(key), tIdentifier('number')))
+        numberParametersArray.forEach(element => {
+          if (!negatedVarialbes.has(element)) {
+             loadFunctionParameters.push(tTypedIdentifier(tIdentifier(element), tIdentifier('number')))
           }
         });
 
