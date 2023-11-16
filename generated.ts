@@ -390,7 +390,7 @@ export function storeA(a: A): (builder: Builder) => void {
 		builder.storeRef(cell2);
 	};
 }
-export type IntEx = {
+export type IntEx<Arg> = {
 	a: number;
 	b: BitString;
 	c: number;
@@ -402,8 +402,12 @@ export type IntEx = {
 	i: BitString;
 	j: number;
 	k: number;
+	tc: Slice;
+	Arg: number;
+	arg: Arg;
+	x: Slice;
 };
-export function loadIntEx(slice: Slice): IntEx {
+export function loadIntEx<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg, Arg: number): IntEx<Arg> {
 	let a = slice.loadUint(257);
 	let slice1 = slice.loadRef().beginParse();
 	let b = slice1.loadBits(1023);
@@ -416,6 +420,8 @@ export function loadIntEx(slice: Slice): IntEx {
 	let i = slice.loadBits(5 + e);
 	let j = slice.loadInt(5);
 	let k = slice.loadUint(e);
+	let tc = slice;
+	let x = slice;
 	return {
 		a: a,
 		b: b,
@@ -427,10 +433,14 @@ export function loadIntEx(slice: Slice): IntEx {
 		f: f,
 		i: i,
 		j: j,
-		k: k
+		k: k,
+		tc: tc,
+		Arg: Arg,
+		arg: loadArg(slice),
+		x: x
 	};
 }
-export function storeIntEx(intEx: IntEx): (builder: Builder) => void {
+export function storeIntEx<Arg>(intEx: IntEx<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
 	return (builder: Builder) => {
 		builder.storeUint(intEx.a, 257);
 		let cell1 = beginCell();
@@ -445,5 +455,31 @@ export function storeIntEx(intEx: IntEx): (builder: Builder) => void {
 		builder.storeBits(intEx.i);
 		builder.storeInt(intEx.j, 5);
 		builder.storeUint(intEx.k, intEx.e);
+		builder.storeSlice(intEx.tc);
+		storeArg(intEx.arg)(builder);
+		builder.storeSlice(intEx.x);
+	};
+}
+export type IntexArg = {
+	x: number;
+	a: IntEx<number>;
+};
+export function loadIntexArg(slice: Slice): IntexArg {
+	let x = slice.loadUint(32);
+	return {
+		x: x,
+		a: loadIntEx<number>(slice, () => {
+			return slice.loadInt(5 * x);
+		})
+	};
+}
+export function storeIntexArg(intexArg: IntexArg): (builder: Builder) => void {
+	return (builder: Builder) => {
+		builder.storeUint(intexArg.x, 32);
+		storeIntEx<number>(intexArg.a, (arg: number) => {
+			return (builder: Builder) => {
+				builder.storeInt(arg, 5 * intexArg.x);
+			};
+		})(builder);
 	};
 }

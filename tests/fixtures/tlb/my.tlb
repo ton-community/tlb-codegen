@@ -36,5 +36,5 @@ a$_ a:^BitInteger = NFT;
 
 a$_ t:# ^[q:#] ^[ a:(## 32) ^[e:#] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = A;
 
-a$_ a:Int b:^Bits c:Uint d:int73 e:uint89 g:bits10 h:(int (e * e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) = IntEx;
-
+a$_ a:Int b:^Bits c:Uint d:int73 e:uint89 g:bits10 h:(int (e * e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell {Arg:Type} arg:Arg x:Any = IntEx Arg;
+a$_ x:# a:(IntEx (int (5*x))) = IntexArg;

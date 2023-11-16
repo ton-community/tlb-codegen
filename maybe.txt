@@ -235,3 +235,22 @@ export function loadIntEx(slice: Slice): IntEx {
 		h: h
 	};
 }
+
+
+
+
+export type IntexArg = {
+	a: IntEx<number>;
+};
+export function loadIntexArg(slice: Slice): IntexArg {
+	return {
+		a: loadIntEx(slice, (slice: Slice) => {return slice.loadUint(22);})
+	};
+}
+
+
+export function storeIntexArg(intexArg: IntexArg): (builder: Builder) => void {
+	return (builder: Builder) => {
+		storeIntEx(intexArg.a, (arg: number) => {return (builder: Builder) => {builder.storeUint(arg, 22);}})(builder);
+	};
+}
