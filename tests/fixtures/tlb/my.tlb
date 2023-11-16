@@ -40,3 +40,14 @@ a$_ a:Int b:^Bits c:Uint d:int73 e:uint89 g:bits10 h:(int (e * e * 8)) f:(uint (
 a$_ x:# a:(IntEx (int (5*x))) = IntexArg;
 
 a$_ x:(#< 4) y:(#<= 4) = LessThan;
+
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+          {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
+
+hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+           right:^(Hashmap n X) = HashmapNode (n + 1) X;
+
+hml_short$0 {m:#} {n:#} len:(Unary ~n) {n <= m} s:(n * Bit) = HmLabel ~n m;
+hml_long$10 {m:#} n:(#<= m) s:(n * Bit) = HmLabel ~n m;
+hml_same$11 {m:#} v:Bit n:(#<= m) = HmLabel ~n m;

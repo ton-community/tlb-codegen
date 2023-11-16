@@ -44,10 +44,15 @@ interface BinaryNumericLiteral extends ASTNode {
   value: number
 }
 
+interface StringLiteral extends ASTNode {
+  type: "StringLiteral",
+  value: string
+}
+
 interface ImportDeclaration extends ASTNode {
   type: "ImportDeclaration",
   importValue: Identifier,
-  from: String
+  from: StringLiteral
 }
 
 interface FunctionDeclaration extends ASTNode {
@@ -62,7 +67,7 @@ interface FunctionDeclaration extends ASTNode {
 interface TypedIdentifier extends ASTNode {
   type: "TypedIdentifier",
   name: Identifier,
-  typeId: TypeExpression
+  typeId: TypeExpression | Literal
 }
 
 interface TypeParametersExpression extends ASTNode {
@@ -139,7 +144,7 @@ interface IfStatement extends ASTNode {
 interface DeclareVariable extends ASTNode {
   type: "DeclareVariable",
   name: Identifier,
-  init: Expression
+  init: Expression | undefined
 }
 
 interface BinaryExpression extends ASTNode {
@@ -149,10 +154,9 @@ interface BinaryExpression extends ASTNode {
   right: Expression
 }
 
-
-type TypeExpression = Identifier | TypeWithParameters | ArrowFunctionType
+type TypeExpression = Identifier | TypeWithParameters | ArrowFunctionType;
 type Statement = ReturnStatement | ExpressionStatement | IfStatement;
-type Literal = NumericLiteral | BinaryNumericLiteral;
+type Literal = NumericLiteral | BinaryNumericLiteral | StringLiteral;
 type Expression = Identifier | TypeExpression | Literal | ObjectExpression | FunctionCall | MemberExpression | ArrowFunctionExpression | BinaryExpression | ArrowFunctionType | TypeParametersExpression | DeclareVariable;
 type GenDeclaration = ImportDeclaration | StructDeclaration | UnionTypeDeclaration | FunctionDeclaration;
 
@@ -162,7 +166,11 @@ function tIdentifier(name: String): Identifier {
   return {type: "Identifier", name: name};
 }
 
-function tImportDeclaration(importValue: Identifier, from: String): ImportDeclaration {
+function tStringLiteral(value: string): StringLiteral {
+  return {type: "StringLiteral", value: value}
+}
+
+function tImportDeclaration(importValue: Identifier, from: StringLiteral): ImportDeclaration {
   return {type: "ImportDeclaration", importValue: importValue, from: from};
 }
 
@@ -170,7 +178,7 @@ function tFunctionDeclaration(name: Identifier, typeParameters: TypeParametersEx
   return {type: "FunctionDeclaration", name: name, typeParameters: typeParameters, returnType: returnType, parameters: parameters, body: body};
 }
 
-function tTypedIdentifier(name: Identifier, typeId: TypeExpression): TypedIdentifier {
+function tTypedIdentifier(name: Identifier, typeId: TypeExpression | StringLiteral): TypedIdentifier {
   return {type: "TypedIdentifier", name: name, typeId: typeId};
 }
 
@@ -239,7 +247,7 @@ function tArrowFunctionType(parameters: Array<TypedIdentifier>, returnType: Type
   return {type: "ArrowFunctionType", parameters: parameters, returnType: returnType};
 }
 
-function tDeclareVariable(name: Identifier, init: Expression): DeclareVariable {
+function tDeclareVariable(name: Identifier, init?: Expression): DeclareVariable {
   return {type: "DeclareVariable", name: name, init: init}
 }
 
@@ -283,7 +291,7 @@ function toCode(node: Node, printContext: PrintContext) : string {
   }
 
   if (node.type == "ImportDeclaration") {
-    result += currentTabs + `import { ${toCode(node.importValue, printContext)} } from "${node.from}"`;
+    result += currentTabs + `import { ${toCode(node.importValue, printContext)} } from ${toCode(node.from, printContext)}`;
   }
 
   if (node.type == "FunctionDeclaration") {
@@ -315,7 +323,7 @@ ${currentTabs}}`
   }
 
   if (node.type == "DeclareVariable") {
-    result += `let ${toCode(node.name, printContext)} = ${toCode(node.init, printContext)}`
+    result += `let ${toCode(node.name, printContext)}${node.init ? ' = ' + toCode(node.init, printContext) : ''}`
   }
 
   if (node.type == "ObjectExpression") {
@@ -352,6 +360,10 @@ ${currentTabs}};`
 
   if (node.type == "FunctionCall") {
     result += `${toCode(node.functionId, printContext)}${node.typeParameters ? toCode(node.typeParameters, printContext) : ''}(${toCodeArray(node.parameters, ', ', '', printContext, '')})`
+  }
+
+  if (node.type == "StringLiteral") {
+    result += `'${node.value}'`
   }
 
   if (node.type == "MemberExpression") {
@@ -552,10 +564,10 @@ describe('parsing into intermediate representation using grammar', () => {
 
 
     let jsCodeDeclarations = []
-    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Builder'), 'ton')) // importDeclaration([importSpecifier(identifier('Builder'), identifier('Builder'))], stringLiteral('../boc/Builder')))
-    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Slice'), 'ton'))  // importDeclaration([importSpecifier(identifier('Slice'), identifier('Slice'))], stringLiteral('../boc/Slice')))
-    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('beginCell'), 'ton'))
-    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('BitString'), 'ton'))
+    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Builder'), tStringLiteral('ton'))) // importDeclaration([importSpecifier(identifier('Builder'), identifier('Builder'))], stringLiteral('../boc/Builder')))
+    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Slice'), tStringLiteral('ton')))  // importDeclaration([importSpecifier(identifier('Slice'), identifier('Slice'))], stringLiteral('../boc/Slice')))
+    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('beginCell'), tStringLiteral('ton')))
+    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('BitString'), tStringLiteral('ton')))
 
 
     let declarationsMap = new Map<string, Declaration[]>();
@@ -587,6 +599,9 @@ describe('parsing into intermediate representation using grammar', () => {
         let implicitFields = new Map<string, string>();
         let implicitFieldsDerived = new Map<string, Expression>();
 
+        let variablesDeclared = new Set<string>;  
+
+
         value.forEach(declaration => {
           let structName: string;
           if (value.length > 1) {
@@ -596,9 +611,9 @@ describe('parsing into intermediate representation using grammar', () => {
           }
           let variableStructName = firstLower(structName)
     
-          let structProperties: TypedIdentifier[] = []
-          let loadProperties: ObjectProperty[] = []
-          let insideStoreStatements: Statement[] = []      
+          let structProperties: TypedIdentifier[] = [tTypedIdentifier(tIdentifier('kind'), tStringLiteral(structName))]
+          let loadProperties: ObjectProperty[] = [tObjectProperty(tIdentifier('kind'), tStringLiteral(structName))]
+          let insideStoreStatements: Statement[] = []    
           
           let tag = declaration?.constructorDef.tag;
           if (tag == undefined) {
@@ -884,7 +899,11 @@ describe('parsing into intermediate representation using grammar', () => {
                 if (fieldType == 'Slice') {
                   loadSt = tIdentifier(currentSlice)
                 }
-                loadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), loadSt)))
+                if (!variablesDeclared.has(field.name)) {
+                  variablesDeclared.add(field.name);
+                  loadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name))))
+                }
+                loadStatements.push(tExpressionStatement(tBinaryExpression(tIdentifier(field.name), '=', loadSt)))
                 structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType))) 
                 loadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
                 let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
@@ -915,7 +934,7 @@ describe('parsing into intermediate representation using grammar', () => {
           }
           let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], insideStoreStatements));
           if (value.length > 1) {
-            storeStatement = tIfStatement(tBinaryExpression(tIdentifier(variableCombinatorName), 'instanceof', tIdentifier(structName)), [storeStatement])
+            storeStatement = tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier('kind')), '==', tStringLiteral(structName)), [storeStatement])
           }
           storeStatements.push(storeStatement);
 
@@ -924,6 +943,11 @@ describe('parsing into intermediate representation using grammar', () => {
 
 
         // loadTheType: (slice: Slice) => TheType
+
+        if (value.length > 1) {
+          loadStatements.push(tExpressionStatement(tIdentifier("throw new Error('')")))
+          storeStatements.push(tExpressionStatement(tIdentifier("throw new Error('')")))
+        }
 
         let loadFunctionParameters = [tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))]
         typeParameters.typeParameters.forEach(element => {

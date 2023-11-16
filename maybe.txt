@@ -254,3 +254,6 @@ export function storeIntexArg(intexArg: IntexArg): (builder: Builder) => void {
 		storeIntEx(intexArg.a, (arg: number) => {return (builder: Builder) => {builder.storeUint(arg, 22);}})(builder);
 	};
 }
+
+let x;
+x = a;
