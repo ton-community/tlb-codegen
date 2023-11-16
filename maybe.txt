@@ -215,3 +215,23 @@ export function storeA(a: A): (builder: Builder) => void {
 		builder.storeRef(cell2);
 	};
 }
+
+export function loadIntEx(slice: Slice): IntEx {
+	let slice1 = slice.loadRef().beginParse();
+	let a = slice.loadUint(257);
+	let b = slice1.loadBits(1023);
+	let c = slice.loadUint(256);
+	let d = slice.loadInt(73);
+	let e = slice.loadUint(89);
+	let g = slice.loadBits(10);
+	let h = slice.loadUint(e * 8);
+	return {
+		a: a,
+		b: b,
+		c: c,
+		d: d,
+		e: e,
+		g: g,
+		h: h
+	};
+}

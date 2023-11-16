@@ -415,15 +415,18 @@ function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr): MyMath
   return {n: 0, hasX: false};
 }
 
-function convertToAST(mathExpr: MyMathExpr): Expression {
+function convertToAST(mathExpr: MyMathExpr, objectId?: Identifier): Expression {
   if (mathExpr instanceof MyVarExpr) {
+    if (objectId != undefined) {
+      return tMemberExpression(objectId, tIdentifier(mathExpr.x));
+    }
     return tIdentifier(mathExpr.x);
   }
   if (mathExpr instanceof MyNumberExpr) {
     return tNumericLiteral(mathExpr.n)
   }
   if (mathExpr instanceof MyBinaryOp) {
-    return tBinaryExpression(convertToAST(mathExpr.left), mathExpr.operation, convertToAST(mathExpr.right));
+    return tBinaryExpression(convertToAST(mathExpr.left, objectId), mathExpr.operation, convertToAST(mathExpr.right, objectId));
   }
   return tIdentifier('');
 }
@@ -499,6 +502,20 @@ function firstLower(structName: String) {
   return structName.charAt(0).toLowerCase() + structName.slice(1)
 }
 
+function splitForTypeValue(name: string, typeName: string) {
+  if (!name.startsWith(typeName)) {
+    return undefined;
+  }
+  let num = parseInt(name.slice(typeName.length))
+  if (num == undefined) {
+    return undefined
+  }
+  if (name != typeName + num.toString()) {
+    return undefined
+  }
+  return num
+}
+
 
 describe('parsing into intermediate representation using grammar', () => {
   test('block.tlb can be parsed', () => { 
@@ -533,6 +550,8 @@ describe('parsing into intermediate representation using grammar', () => {
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Builder'), 'ton')) // importDeclaration([importSpecifier(identifier('Builder'), identifier('Builder'))], stringLiteral('../boc/Builder')))
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Slice'), 'ton'))  // importDeclaration([importSpecifier(identifier('Slice'), identifier('Slice'))], stringLiteral('../boc/Slice')))
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('beginCell'), 'ton'))
+    jsCodeDeclarations.push(tImportDeclaration(tIdentifier('BitString'), 'ton'))
+
 
     let declarationsMap = new Map<string, Declaration[]>();
     tree.declarations.forEach(declaration => {
@@ -633,6 +652,7 @@ describe('parsing into intermediate representation using grammar', () => {
           let slicePrefix: number[] = [0];
 
           function handleField(field: FieldDefinition) {
+            console.log(field)
             let currentSlice = getCurrentSlice(slicePrefix, 'slice');
             let currentCell = getCurrentSlice(slicePrefix, 'cell');
 
@@ -716,46 +736,109 @@ describe('parsing into intermediate representation using grammar', () => {
                 slicePrefix.pop();              
               }
 
+
+              let fieldType = 'number';
+              let fieldLoadStoreName = 'Uint';
+
               if (field.expr instanceof CombinatorExpr) {
                 let typeParameterArray: Array<Identifier> = []
                 let loadFunctionsArray: Array<Expression> = []
                 let storeFunctionsArray: Array<Expression> = []
 
-                field.expr.args.forEach(element => {
-                  if (element instanceof NameExpr) {
-                    typeParameterArray.push(tIdentifier(element.name))
-                    loadFunctionsArray.push(tIdentifier('load' + element.name))
-                    storeFunctionsArray.push(tIdentifier('store' + element.name))
+                if (field.expr.args.length > 0 && (field.expr.args[0] instanceof MathExpr || field.expr.args[0] instanceof NumberExpr ||  field.expr.args[0] instanceof NameExpr)) {
+                  if (field.expr.name == 'int') {
+                      fieldLoadStoreName = 'Int'
+                      let myMathExpr = convertToMathExpr(field.expr.args[0])
+                      bitsLoad = convertToAST(myMathExpr);
+                      bitsStore = convertToAST(myMathExpr, tIdentifier(variableStructName))
                   }
-                  if (element instanceof NumberExpr) {
-                    loadFunctionsArray.push(tNumericLiteral(element.num))
+                  if (field.expr.name == 'uint') {
+                      let myMathExpr = convertToMathExpr(field.expr.args[0])
+                      bitsLoad = convertToAST(myMathExpr);
+                      bitsStore = convertToAST(myMathExpr, tIdentifier(variableStructName))
                   }
-                  if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
-                    let derivedExpression = implicitFieldsDerived.get(element.expr.name)
-                    if (derivedExpression) {
-                      loadFunctionsArray.push(derivedExpression)
+                  if (field.expr.name == 'bits') {
+                    fieldType = 'BitString'
+                    fieldLoadStoreName = 'Bits'
+                    let myMathExpr = convertToMathExpr(field.expr.args[0])
+                    bitsLoad = convertToAST(myMathExpr);
+                    bitsStore = convertToAST(myMathExpr, tIdentifier(variableStructName))
+                  }
+                }
+
+                if (bitsLoad == undefined) {
+                  field.expr.args.forEach(element => {
+                    if (element instanceof NameExpr) {
+                      typeParameterArray.push(tIdentifier(element.name))
+                      loadFunctionsArray.push(tIdentifier('load' + element.name))
+                      storeFunctionsArray.push(tIdentifier('store' + element.name))
                     }
-                  }
-                });
-
-                let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
-
-                let insideLoadParameters: Array<Expression> = [tIdentifier(currentSlice)];
-                let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
-
-                structProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
-                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters))) 
-                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))   
+                    if (element instanceof NumberExpr) {
+                      loadFunctionsArray.push(tNumericLiteral(element.num))
+                    }
+                    if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
+                      let derivedExpression = implicitFieldsDerived.get(element.expr.name)
+                      if (derivedExpression) {
+                        loadFunctionsArray.push(derivedExpression)
+                      }
+                    }
+                  });
+  
+                  let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
+  
+                  let insideLoadParameters: Array<Expression> = [tIdentifier(currentSlice)];
+                  let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
+  
+                  structProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
+                  loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters))) 
+                  insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))   
+  
+                }
               }
               if (field.expr instanceof NameExpr) {
-                structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
-                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]))) 
-                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier(currentCell)])))   
+                let expName = field.expr.name;
+                if (expName == 'Int') {
+                  bitsLoad = bitsStore = tNumericLiteral(257);
+                }
+                if (expName == 'Bits') {
+                  fieldType = 'BitString';
+                  fieldLoadStoreName = 'Bits';
+                  bitsLoad = bitsStore = tNumericLiteral(1023);
+                }
+                if (expName == 'Uint') {
+                  bitsLoad = bitsStore = tNumericLiteral(256);
+                }
+                let theNum = splitForTypeValue(expName, 'int') 
+                if (theNum != undefined) {
+                  fieldLoadStoreName = 'Int';
+                  bitsLoad = bitsStore = tNumericLiteral(theNum);
+                }
+                theNum = splitForTypeValue(expName, 'uint') 
+                if (theNum != undefined) {
+                  fieldLoadStoreName = 'Uint';
+                  bitsLoad = bitsStore = tNumericLiteral(theNum);
+                }
+                theNum = splitForTypeValue(expName, 'bits') 
+                if (theNum != undefined) {
+                  fieldLoadStoreName = 'Bits';
+                  fieldType = 'BitString';
+                  bitsLoad = bitsStore = tNumericLiteral(theNum);
+                }
+                if (bitsLoad == undefined) {
+                  structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
+                  loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]))) 
+                  insideStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier(currentCell)])))   
+                }
               }
               if (bitsLoad != undefined && bitsStore != undefined) {
-                structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number'))) 
-                loadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('loadUint')), [bitsLoad]))) 
-                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeUint')), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name)), bitsStore])))   
+                loadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + fieldLoadStoreName)), [bitsLoad]))))
+                structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType))) 
+                loadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
+                let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
+                if (fieldType != 'BitString') {
+                  storeParams.push(bitsStore);
+                }
+                insideStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + fieldLoadStoreName)), storeParams)))   
               }
             }
           }

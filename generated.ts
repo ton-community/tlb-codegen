@@ -1,14 +1,17 @@
 import { Builder } from "ton"
 import { Slice } from "ton"
 import { beginCell } from "ton"
+import { BitString } from "ton"
 export type X = {
 	a: number;
 	b: number;
 };
 export function loadX(slice: Slice): X {
+	let a = slice.loadUint(32);
+	let b = slice.loadUint(32);
 	return {
-		a: slice.loadUint(32),
-		b: slice.loadUint(32)
+		a: a,
+		b: b
 	};
 }
 export function storeX(x: X): (builder: Builder) => void {
@@ -27,16 +30,20 @@ export type Bool_bool_true = {
 	b: number;
 };
 export function loadBool(slice: Slice): Bool {
+	let a = slice.loadUint(32);
+	let b = slice.loadUint(7);
+	let c = slice.loadUint(32);
 	if (slice.preloadUint(1) == 0b0) {
 		return {
-			a: slice.loadUint(32),
-			b: slice.loadUint(7),
-			c: slice.loadUint(32)
+			a: a,
+			b: b,
+			c: c
 		};
 	};
+	let b = slice.loadUint(32);
 	if (slice.preloadUint(1) == 0b1) {
 		return {
-			b: slice.loadUint(32)
+			b: b
 		};
 	};
 }
@@ -60,8 +67,9 @@ export type Y = {
 	y: number;
 };
 export function loadY(slice: Slice): Y {
+	let y = slice.loadUint(5);
 	return {
-		y: slice.loadUint(5)
+		y: y
 	};
 }
 export function storeY(y: Y): (builder: Builder) => void {
@@ -74,9 +82,10 @@ export type C = {
 	c: number;
 };
 export function loadC(slice: Slice): C {
+	let c = slice.loadUint(32);
 	return {
 		y: loadY(slice),
-		c: slice.loadUint(32)
+		c: c
 	};
 }
 export function storeC(c: C): (builder: Builder) => void {
@@ -90,9 +99,10 @@ export type D = {
 	c: number;
 };
 export function loadD(slice: Slice): D {
+	let c = slice.loadUint(32);
 	return {
 		y: loadY(slice),
-		c: slice.loadUint(32)
+		c: c
 	};
 }
 export function storeD(d: D): (builder: Builder) => void {
@@ -240,9 +250,10 @@ export type Example = {
 	value: number;
 };
 export function loadExample(slice: Slice, x: number): Example {
+	let value = slice.loadUint(x - 2);
 	return {
 		x: x - 2,
-		value: slice.loadUint(x - 2)
+		value: value
 	};
 }
 export function storeExample(example: Example): (builder: Builder) => void {
@@ -336,19 +347,26 @@ export type A = {
 	c: number;
 };
 export function loadA(slice: Slice): A {
+	let t = slice.loadUint(32);
 	let slice1 = slice.loadRef().beginParse();
+	let q = slice1.loadUint(32);
 	let slice2 = slice.loadRef().beginParse();
+	let a = slice2.loadUint(32);
 	let slice21 = slice2.loadRef().beginParse();
+	let e = slice21.loadUint(32);
 	let slice22 = slice2.loadRef().beginParse();
+	let b = slice22.loadUint(32);
+	let d = slice22.loadUint(32);
 	let slice221 = slice22.loadRef().beginParse();
+	let c = slice221.loadUint(32);
 	return {
-		t: slice.loadUint(32),
-		q: slice1.loadUint(32),
-		a: slice2.loadUint(32),
-		e: slice21.loadUint(32),
-		b: slice22.loadUint(32),
-		d: slice22.loadUint(32),
-		c: slice221.loadUint(32)
+		t: t,
+		q: q,
+		a: a,
+		e: e,
+		b: b,
+		d: d,
+		c: c
 	};
 }
 export function storeA(a: A): (builder: Builder) => void {
@@ -370,5 +388,62 @@ export function storeA(a: A): (builder: Builder) => void {
 		cell22.storeRef(cell221);
 		cell2.storeRef(cell22);
 		builder.storeRef(cell2);
+	};
+}
+export type IntEx = {
+	a: number;
+	b: BitString;
+	c: number;
+	d: number;
+	e: number;
+	g: BitString;
+	h: number;
+	f: number;
+	i: BitString;
+	j: number;
+	k: number;
+};
+export function loadIntEx(slice: Slice): IntEx {
+	let a = slice.loadUint(257);
+	let slice1 = slice.loadRef().beginParse();
+	let b = slice1.loadBits(1023);
+	let c = slice.loadUint(256);
+	let d = slice.loadInt(73);
+	let e = slice.loadUint(89);
+	let g = slice.loadBits(10);
+	let h = slice.loadInt(e * e * 8);
+	let f = slice.loadUint(7 * e);
+	let i = slice.loadBits(5 + e);
+	let j = slice.loadInt(5);
+	let k = slice.loadUint(e);
+	return {
+		a: a,
+		b: b,
+		c: c,
+		d: d,
+		e: e,
+		g: g,
+		h: h,
+		f: f,
+		i: i,
+		j: j,
+		k: k
+	};
+}
+export function storeIntEx(intEx: IntEx): (builder: Builder) => void {
+	return (builder: Builder) => {
+		builder.storeUint(intEx.a, 257);
+		let cell1 = beginCell();
+		cell1.storeBits(intEx.b);
+		builder.storeRef(cell1);
+		builder.storeUint(intEx.c, 256);
+		builder.storeInt(intEx.d, 73);
+		builder.storeUint(intEx.e, 89);
+		builder.storeBits(intEx.g);
+		builder.storeInt(intEx.h, intEx.e * intEx.e * 8);
+		builder.storeUint(intEx.f, 7 * intEx.e);
+		builder.storeBits(intEx.i);
+		builder.storeInt(intEx.j, 5);
+		builder.storeUint(intEx.k, intEx.e);
 	};
 }
