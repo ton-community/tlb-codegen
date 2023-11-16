@@ -8,9 +8,9 @@ export type X = {
 	b: number;
 };
 export function loadX(slice: Slice): X {
-	let a;
+	let a: number;
 	a = slice.loadUint(32);
-	let b;
+	let b: number;
 	b = slice.loadUint(32);
 	return {
 		kind: 'X',
@@ -36,11 +36,11 @@ export type Bool_bool_true = {
 	b: number;
 };
 export function loadBool(slice: Slice): Bool {
-	let a;
+	let a: number;
 	a = slice.loadUint(32);
-	let b;
+	let b: number;
 	b = slice.loadUint(7);
-	let c;
+	let c: number;
 	c = slice.loadUint(32);
 	if (slice.preloadUint(1) == 0b0) {
 		return {
@@ -81,7 +81,7 @@ export type Y = {
 	y: number;
 };
 export function loadY(slice: Slice): Y {
-	let y;
+	let y: number;
 	y = slice.loadUint(5);
 	return {
 		kind: 'Y',
@@ -99,7 +99,7 @@ export type C = {
 	c: number;
 };
 export function loadC(slice: Slice): C {
-	let c;
+	let c: number;
 	c = slice.loadUint(32);
 	return {
 		kind: 'C',
@@ -119,7 +119,7 @@ export type D = {
 	c: number;
 };
 export function loadD(slice: Slice): D {
-	let c;
+	let c: number;
 	c = slice.loadUint(32);
 	return {
 		kind: 'D',
@@ -136,24 +136,20 @@ export function storeD(d: D): (builder: Builder) => void {
 export type Maybe<TheType> = Maybe_nothing<TheType> | Maybe_just<TheType>;
 export type Maybe_nothing<TheType> = {
 	kind: 'Maybe_nothing';
-	TheType: number;
 };
 export type Maybe_just<TheType> = {
 	kind: 'Maybe_just';
-	TheType: number;
 	value: TheType;
 };
-export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType, TheType: number): Maybe<TheType> {
+export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
 	if (slice.preloadUint(1) == 0b0) {
 		return {
-			kind: 'Maybe_nothing',
-			TheType: TheType
+			kind: 'Maybe_nothing'
 		};
 	};
 	if (slice.preloadUint(1) == 0b1) {
 		return {
 			kind: 'Maybe_just',
-			TheType: TheType,
 			value: loadTheType(slice)
 		};
 	};
@@ -191,30 +187,22 @@ export function storeTheJust(theJust: TheJust): (builder: Builder) => void {
 export type Either<X,Y> = Either_left<X,Y> | Either_right<X,Y>;
 export type Either_left<X,Y> = {
 	kind: 'Either_left';
-	X: number;
-	Y: number;
 	value: X;
 };
 export type Either_right<X,Y> = {
 	kind: 'Either_right';
-	X: number;
-	Y: number;
 	value: Y;
 };
-export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y, X: number, Y: number): Either<X,Y> {
+export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
 	if (slice.preloadUint(1) == 0b0) {
 		return {
 			kind: 'Either_left',
-			X: X,
-			Y: Y,
 			value: loadX(slice)
 		};
 	};
 	if (slice.preloadUint(1) == 0b1) {
 		return {
 			kind: 'Either_right',
-			X: X,
-			Y: Y,
 			value: loadY(slice)
 		};
 	};
@@ -237,16 +225,12 @@ export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder
 }
 export type Both<X,Y> = {
 	kind: 'Both';
-	X: number;
-	Y: number;
 	first: X;
 	second: Y;
 };
-export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y, X: number, Y: number): Both<X,Y> {
+export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Both<X,Y> {
 	return {
 		kind: 'Both',
-		X: X,
-		Y: Y,
 		first: loadX(slice),
 		second: loadY(slice)
 	};
@@ -270,26 +254,13 @@ export function storeUnit(unit: Unit): (builder: Builder) => void {
 
 	};
 }
-export type True = {
-	kind: 'True';
-};
-export function loadTrue(slice: Slice): True {
-	return {
-		kind: 'True'
-	};
-}
-export function storeTrue(true: True): (builder: Builder) => void {
-	return (builder: Builder) => {
-
-	};
-}
 export type Example = {
 	kind: 'Example';
 	x: number;
 	value: number;
 };
 export function loadExample(slice: Slice, x: number): Example {
-	let value;
+	let value: number;
 	value = slice.loadUint(x - 2);
 	return {
 		kind: 'Example',
@@ -399,24 +370,24 @@ export type A = {
 	c: number;
 };
 export function loadA(slice: Slice): A {
-	let t;
+	let t: number;
 	t = slice.loadUint(32);
 	let slice1 = slice.loadRef().beginParse();
-	let q;
+	let q: number;
 	q = slice1.loadUint(32);
 	let slice2 = slice.loadRef().beginParse();
-	let a;
+	let a: number;
 	a = slice2.loadUint(32);
 	let slice21 = slice2.loadRef().beginParse();
-	let e;
+	let e: number;
 	e = slice21.loadUint(32);
 	let slice22 = slice2.loadRef().beginParse();
-	let b;
+	let b: number;
 	b = slice22.loadUint(32);
-	let d;
+	let d: number;
 	d = slice22.loadUint(32);
 	let slice221 = slice22.loadRef().beginParse();
-	let c;
+	let c: number;
 	c = slice221.loadUint(32);
 	return {
 		kind: 'A',
@@ -464,37 +435,36 @@ export type IntEx<Arg> = {
 	j: number;
 	k: number;
 	tc: Slice;
-	Arg: number;
 	arg: Arg;
 	x: Slice;
 };
-export function loadIntEx<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg, Arg: number): IntEx<Arg> {
-	let a;
+export function loadIntEx<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntEx<Arg> {
+	let a: number;
 	a = slice.loadUint(257);
 	let slice1 = slice.loadRef().beginParse();
-	let b;
+	let b: BitString;
 	b = slice1.loadBits(1023);
-	let c;
+	let c: number;
 	c = slice.loadUint(256);
-	let d;
+	let d: number;
 	d = slice.loadInt(73);
-	let e;
+	let e: number;
 	e = slice.loadUint(89);
-	let g;
+	let g: BitString;
 	g = slice.loadBits(10);
-	let h;
+	let h: number;
 	h = slice.loadInt(e * e * 8);
-	let f;
+	let f: number;
 	f = slice.loadUint(7 * e);
-	let i;
+	let i: BitString;
 	i = slice.loadBits(5 + e);
-	let j;
+	let j: number;
 	j = slice.loadInt(5);
-	let k;
+	let k: number;
 	k = slice.loadUint(e);
-	let tc;
+	let tc: Slice;
 	tc = slice;
-	let x;
+	let x: Slice;
 	x = slice;
 	return {
 		kind: 'IntEx',
@@ -510,7 +480,6 @@ export function loadIntEx<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg, Arg
 		j: j,
 		k: k,
 		tc: tc,
-		Arg: Arg,
 		arg: loadArg(slice),
 		x: x
 	};
@@ -541,7 +510,7 @@ export type IntexArg = {
 	a: IntEx<number>;
 };
 export function loadIntexArg(slice: Slice): IntexArg {
-	let x;
+	let x: number;
 	x = slice.loadUint(32);
 	return {
 		kind: 'IntexArg',
@@ -567,9 +536,9 @@ export type LessThan = {
 	y: number;
 };
 export function loadLessThan(slice: Slice): LessThan {
-	let x;
+	let x: number;
 	x = slice.loadUint(2);
-	let y;
+	let y: number;
 	y = slice.loadUint(3);
 	return {
 		kind: 'LessThan',
@@ -586,17 +555,15 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
 export type Hashmap<X> = {
 	kind: 'Hashmap';
 	n: number;
-	X: number;
 	l: number;
 	m: number;
 	label: HmLabel<n>;
 	node: HashmapNode<m,X>;
 };
-export function loadHashmap<X>(slice: Slice, loadX: (slice: Slice) => X, n: number, X: number, l: number, m: number): Hashmap<X> {
+export function loadHashmap<X>(slice: Slice, loadX: (slice: Slice) => X, n: number, l: number, m: number): Hashmap<X> {
 	return {
 		kind: 'Hashmap',
 		n: n,
-		X: X,
 		label: loadHmLabel<n>(slice, loadn),
 		node: loadHashmapNode<m,X>(slice, loadm, loadX)
 	};
@@ -610,21 +577,18 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 export type HashmapNode_hmn_leaf<X> = {
 	kind: 'HashmapNode_hmn_leaf';
-	X: number;
 	value: X;
 };
 export type HashmapNode_hmn_fork<X> = {
 	kind: 'HashmapNode_hmn_fork';
 	n: number;
-	X: number;
 	left: Hashmap<n,X>;
 	right: Hashmap<n,X>;
 };
-export function loadHashmapNode<X>(slice: Slice, loadX: (slice: Slice) => X, X: number, n: number): HashmapNode<X> {
+export function loadHashmapNode<X>(slice: Slice, loadX: (slice: Slice) => X, n: number): HashmapNode<X> {
 	if (slice.preloadUint(1) == 0b_) {
 		return {
 			kind: 'HashmapNode_hmn_leaf',
-			X: X,
 			value: loadX(slice)
 		};
 	};
@@ -633,7 +597,6 @@ export function loadHashmapNode<X>(slice: Slice, loadX: (slice: Slice) => X, X: 
 	if (slice.preloadUint(1) == 0b_) {
 		return {
 			kind: 'HashmapNode_hmn_fork',
-			X: X,
 			left: loadHashmap<n,X>(slice1, loadn, loadX),
 			right: loadHashmap<n,X>(slice2, loadn, loadX)
 		};

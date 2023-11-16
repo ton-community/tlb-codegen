@@ -144,7 +144,8 @@ interface IfStatement extends ASTNode {
 interface DeclareVariable extends ASTNode {
   type: "DeclareVariable",
   name: Identifier,
-  init: Expression | undefined
+  init: Expression | undefined,
+  typeName: TypeExpression | undefined
 }
 
 interface BinaryExpression extends ASTNode {
@@ -247,8 +248,8 @@ function tArrowFunctionType(parameters: Array<TypedIdentifier>, returnType: Type
   return {type: "ArrowFunctionType", parameters: parameters, returnType: returnType};
 }
 
-function tDeclareVariable(name: Identifier, init?: Expression): DeclareVariable {
-  return {type: "DeclareVariable", name: name, init: init}
+function tDeclareVariable(name: Identifier, init?: Expression, typeName?: TypeExpression): DeclareVariable {
+  return {type: "DeclareVariable", name: name, init: init, typeName: typeName}
 }
 
 function toCodeArray(nodeArray: Array<Node>, delimeter: string, prefix: string, printContext: PrintContext, suffix: string) {
@@ -323,7 +324,7 @@ ${currentTabs}}`
   }
 
   if (node.type == "DeclareVariable") {
-    result += `let ${toCode(node.name, printContext)}${node.init ? ' = ' + toCode(node.init, printContext) : ''}`
+    result += `let ${toCode(node.name, printContext)}${node.typeName ? ': ' + toCode(node.typeName, printContext) : ''}${node.init ? ' = ' + toCode(node.init, printContext) : ''}`
   }
 
   if (node.type == "ObjectExpression") {
@@ -697,7 +698,7 @@ describe('parsing into intermediate representation using grammar', () => {
               slicePrefix.pop();
             }
 
-            if (field instanceof FieldBuiltinDef) {
+            if (field instanceof FieldBuiltinDef && field.type != 'Type') {
               structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number')));
               let derivedExpression = implicitFieldsDerived.get(field.name)
               if (derivedExpression) {
@@ -901,7 +902,7 @@ describe('parsing into intermediate representation using grammar', () => {
                 }
                 if (!variablesDeclared.has(field.name)) {
                   variablesDeclared.add(field.name);
-                  loadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name))))
+                  loadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), undefined, tIdentifier(fieldType))))
                 }
                 loadStatements.push(tExpressionStatement(tBinaryExpression(tIdentifier(field.name), '=', loadSt)))
                 structProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType))) 
@@ -955,7 +956,9 @@ describe('parsing into intermediate representation using grammar', () => {
         });
 
         implicitFields.forEach((value: string, key: string) => {
-          loadFunctionParameters.push(tTypedIdentifier(tIdentifier(key), tIdentifier('number')))
+          if (value != 'Type') {
+            loadFunctionParameters.push(tTypedIdentifier(tIdentifier(key), tIdentifier('number')))
+          }
         });
 
         let loadFunction = tFunctionDeclaration(tIdentifier('load' + combinatorName), typeParameters, tTypeWithParameters(tIdentifier(combinatorName), typeParameters), loadFunctionParameters, loadStatements);
