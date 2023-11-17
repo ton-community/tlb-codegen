@@ -49,13 +49,13 @@ export type Bool_bool_true = {
 	b: number;
 };
 export function loadBool(slice: Slice): Bool {
-	let a: number;
-	a = slice.loadUint(32);
-	let b: number;
-	b = slice.loadUint(7);
-	let c: number;
-	c = slice.loadUint(32);
 	if (slice.preloadUint(1) == 0b0) {
+		let a: number;
+		a = slice.loadUint(32);
+		let b: number;
+		b = slice.loadUint(7);
+		let c: number;
+		c = slice.loadUint(32);
 		return {
 			kind: 'Bool_bool_false',
 			a: a,
@@ -63,8 +63,8 @@ export function loadBool(slice: Slice): Bool {
 			c: c
 		};
 	};
-	b = slice.loadUint(32);
 	if (slice.preloadUint(1) == 0b1) {
+		b = slice.loadUint(32);
 		return {
 			kind: 'Bool_bool_true',
 			b: b
@@ -568,9 +568,9 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
 			value: loadX(slice)
 		};
 	};
-	let slice1 = slice.loadRef().beginParse();
-	let slice2 = slice.loadRef().beginParse();
 	if (true) {
+		let slice1 = slice.loadRef().beginParse();
+		let slice2 = slice.loadRef().beginParse();
 		return {
 			kind: 'HashmapNode_hmn_fork',
 			left: loadHashmap<X>(slice1, n, loadX),
@@ -627,9 +627,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 			m: m
 		};
 	};
-	let v: BitString;
-	v = slice.loadBits(1);
 	if (slice.preloadUint(2) == 0b11) {
+		let v: BitString;
+		v = slice.loadBits(1);
 		return {
 			kind: 'HmLabel_hml_same',
 			m: m,
@@ -709,19 +709,19 @@ export type Same_t<X> = {
 	z: number;
 };
 export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
-	let x: number;
-	x = slice.loadUint(32);
 	if (slice.preloadUint(1) == 0b0) {
+		let x: number;
+		x = slice.loadUint(32);
 		return {
 			kind: 'Same_g',
 			x: x
 		};
 	};
-	let y: number;
-	y = slice.loadUint(32);
-	let z: number;
-	z = slice.loadUint(32);
 	if (slice.preloadUint(1) == 0b1) {
+		let y: number;
+		y = slice.loadUint(32);
+		let z: number;
+		z = slice.loadUint(32);
 		return {
 			kind: 'Same_t',
 			y: y,
@@ -757,17 +757,17 @@ export type Const_b = {
 	y: number;
 };
 export function loadConst(slice: Slice, n: number): Const {
-	let x: number;
-	x = slice.loadUint(32);
 	if (slice.preloadUint(1) == 0b0) {
+		let x: number;
+		x = slice.loadUint(32);
 		return {
 			kind: 'Const_a',
 			x: x
 		};
 	};
-	let y: number;
-	y = slice.loadUint(2);
 	if (slice.preloadUint(1) == 0b1) {
+		let y: number;
+		y = slice.loadUint(2);
 		return {
 			kind: 'Const_b',
 			X: X,

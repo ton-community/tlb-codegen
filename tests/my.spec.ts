@@ -661,6 +661,7 @@ describe('parsing into intermediate representation using grammar', () => {
         let variablesDeclared = new Set<string>;          
 
         tlbType.constructors.forEach(constructor => {
+          let constructorLoadStatements: Statement[] = []
           let declaration = constructor.declaration;
           let subStructName: string;
           if (tlbType.constructors.length > 1) {
@@ -738,7 +739,7 @@ describe('parsing into intermediate representation using grammar', () => {
               slicePrefix[slicePrefix.length - 1]++;  
               slicePrefix.push(0)
    
-              loadStatements.push(
+              constructorLoadStatements.push(
                 tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')), 
                   tFunctionCall(tMemberExpression(
                     tFunctionCall(tMemberExpression(
@@ -804,7 +805,7 @@ describe('parsing into intermediate representation using grammar', () => {
                 slicePrefix[slicePrefix.length - 1]++;  
                 slicePrefix.push(0)
     
-                loadStatements.push(
+                constructorLoadStatements.push(
                   tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')), 
                     tFunctionCall(tMemberExpression(
                       tFunctionCall(tMemberExpression(
@@ -970,9 +971,9 @@ describe('parsing into intermediate representation using grammar', () => {
                 }
                 if (!variablesDeclared.has(field.name)) {
                   variablesDeclared.add(field.name);
-                  loadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), undefined, tIdentifier(fieldType))))
+                  constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), undefined, tIdentifier(fieldType))))
                 }
-                loadStatements.push(tExpressionStatement(tBinaryExpression(tIdentifier(field.name), '=', loadSt)))
+                constructorLoadStatements.push(tExpressionStatement(tBinaryExpression(tIdentifier(field.name), '=', loadSt)))
                 subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType))) 
                 subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
                 let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
@@ -990,8 +991,7 @@ describe('parsing into intermediate representation using grammar', () => {
           
           let structX = tStructDeclaration(tIdentifier(subStructName), subStructProperties, structTypeParametersExpr);
 
-          let loadStatement: Statement;
-          loadStatement = tReturnStatement(tObjectExpression(subStructLoadProperties));
+          constructorLoadStatements.push(tReturnStatement(tObjectExpression(subStructLoadProperties)));
           if (tlbType.constructors.length > 1) {
             let conditions: Array<BinaryExpression> = []
             if (tagBinary[tagBinary.length - 1] != '_') {
@@ -1003,9 +1003,10 @@ describe('parsing into intermediate representation using grammar', () => {
                 }
               });
             }
-            loadStatement = tIfStatement(getCondition(conditions), [loadStatement])
+            loadStatements.push(tIfStatement(getCondition(conditions), constructorLoadStatements))
+          } else {
+            loadStatements = loadStatements.concat(constructorLoadStatements);
           }
-          loadStatements.push(loadStatement)
 
           if (tlbType.constructors.length > 1 && tagBinary[tagBinary.length - 1] != '_') {
             let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(tagBinary), tNumericLiteral(tagBitLen)]))];
