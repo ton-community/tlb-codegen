@@ -2,6 +2,19 @@ import { Builder } from 'ton'
 import { Slice } from 'ton'
 import { beginCell } from 'ton'
 import { BitString } from 'ton'
+export type Bit = {
+	kind: 'Bit';
+};
+export function loadBit(slice: Slice): Bit {
+	return {
+		kind: 'Bit'
+	};
+}
+export function storeBit(bit: Bit): (builder: Builder) => void {
+	return (builder: Builder) => {
+
+	};
+}
 export type X = {
 	kind: 'X';
 	a: number;
@@ -257,20 +270,16 @@ export function storeUnit(unit: Unit): (builder: Builder) => void {
 export type Example = {
 	kind: 'Example';
 	x: number;
-	value: number;
 };
 export function loadExample(slice: Slice, x: number): Example {
-	let value: number;
-	value = slice.loadUint(x - 2);
 	return {
 		kind: 'Example',
-		x: x - 2,
-		value: value
+		x: x - 2
 	};
 }
 export function storeExample(example: Example): (builder: Builder) => void {
 	return (builder: Builder) => {
-		builder.storeUint(example.value, example.x);
+
 	};
 }
 export type BitInteger = {
@@ -287,44 +296,6 @@ export function storeBitInteger(bitInteger: BitInteger): (builder: Builder) => v
 	return (builder: Builder) => {
 		storeExample(bitInteger.t)(builder);
 	};
-}
-export type Unary = Unary_unary_zero | Unary_unary_succ;
-export type Unary_unary_zero = {
-	kind: 'Unary_unary_zero';
-};
-export type Unary_unary_succ = {
-	kind: 'Unary_unary_succ';
-	n: number;
-	x: Unary;
-};
-export function loadUnary(slice: Slice): Unary {
-	if (slice.preloadUint(1) == 0b0) {
-		return {
-			kind: 'Unary_unary_zero'
-		};
-	};
-	if (slice.preloadUint(1) == 0b1) {
-		return {
-			kind: 'Unary_unary_succ',
-			n: n - 1,
-			x: loadUnary(slice, n - 1)
-		};
-	};
-	throw new Error('');
-}
-export function storeUnary(unary: Unary): (builder: Builder) => void {
-	if (unary.kind == 'Unary_unary_zero') {
-		return (builder: Builder) => {
-			builder.storeUint(0b0, 1);
-		};
-	};
-	if (unary.kind == 'Unary_unary_succ') {
-		return (builder: Builder) => {
-			builder.storeUint(0b1, 1);
-			storeUnary(unary.x)(builder);
-		};
-	};
-	throw new Error('');
 }
 export type NFG = {
 	kind: 'NFG';
@@ -421,39 +392,49 @@ export function storeA(a: A): (builder: Builder) => void {
 		builder.storeRef(cell2);
 	};
 }
-export type IntEx<Arg> = {
-	kind: 'IntEx';
-	a: number;
-	b: BitString;
-	c: number;
+export type IntEx2<Arg> = {
+	kind: 'IntEx2';
 	d: number;
-	e: number;
 	g: BitString;
+	arg: Arg;
+	x: Slice;
+};
+export function loadIntEx2<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntEx2<Arg> {
+	let d: number;
+	d = slice.loadInt(11);
+	let g: BitString;
+	g = slice.loadBits(2);
+	let x: Slice;
+	x = slice;
+	return {
+		kind: 'IntEx2',
+		d: d,
+		g: g,
+		arg: loadArg(slice),
+		x: x
+	};
+}
+export function storeIntEx2<Arg>(intEx2: IntEx2<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
+	return (builder: Builder) => {
+		builder.storeInt(intEx2.d, 11);
+		builder.storeBits(intEx2.g);
+		storeArg(intEx2.arg)(builder);
+		builder.storeSlice(intEx2.x);
+	};
+}
+export type IntEx = {
+	kind: 'IntEx';
+	e: number;
 	h: number;
 	f: number;
 	i: BitString;
 	j: number;
 	k: number;
 	tc: Slice;
-	arg: Arg;
-	x: Slice;
 };
-export function loadIntEx<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntEx<Arg> {
-	let a: number;
-	a = slice.loadUint(257);
-	let slice1 = slice.loadRef().beginParse();
-	let b: BitString;
-	b = slice1.loadBits(1023);
-	let c: number;
-	c = slice.loadUint(256);
-	let d: number;
-	d = slice.loadInt(73);
-	let e: number;
-	e = slice.loadUint(89);
-	let g: BitString;
-	g = slice.loadBits(10);
+export function loadIntEx(slice: Slice, e: number): IntEx {
 	let h: number;
-	h = slice.loadInt(e * e * 8);
+	h = slice.loadInt(e * 8);
 	let f: number;
 	f = slice.loadUint(7 * e);
 	let i: BitString;
@@ -464,70 +445,65 @@ export function loadIntEx<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): In
 	k = slice.loadUint(e);
 	let tc: Slice;
 	tc = slice;
-	let x: Slice;
-	x = slice;
 	return {
 		kind: 'IntEx',
-		a: a,
-		b: b,
-		c: c,
-		d: d,
 		e: e,
-		g: g,
 		h: h,
 		f: f,
 		i: i,
 		j: j,
 		k: k,
-		tc: tc,
-		arg: loadArg(slice),
-		x: x
+		tc: tc
 	};
 }
-export function storeIntEx<Arg>(intEx: IntEx<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
+export function storeIntEx(intEx: IntEx): (builder: Builder) => void {
 	return (builder: Builder) => {
-		builder.storeUint(intEx.a, 257);
-		let cell1 = beginCell();
-		cell1.storeBits(intEx.b);
-		builder.storeRef(cell1);
-		builder.storeUint(intEx.c, 256);
-		builder.storeInt(intEx.d, 73);
-		builder.storeUint(intEx.e, 89);
-		builder.storeBits(intEx.g);
-		builder.storeInt(intEx.h, intEx.e * intEx.e * 8);
+		builder.storeInt(intEx.h, intEx.e * 8);
 		builder.storeUint(intEx.f, 7 * intEx.e);
 		builder.storeBits(intEx.i);
 		builder.storeInt(intEx.j, 5);
 		builder.storeUint(intEx.k, intEx.e);
 		builder.storeSlice(intEx.tc);
-		storeArg(intEx.arg)(builder);
-		builder.storeSlice(intEx.x);
+	};
+}
+export type IntexArg2 = {
+	kind: 'IntexArg2';
+	x: number;
+	a: IntEx2<number>;
+};
+export function loadIntexArg2(slice: Slice, x: number): IntexArg2 {
+	return {
+		kind: 'IntexArg2',
+		x: x,
+		a: loadIntEx2<number>(slice, () => {
+			return slice.loadInt(1 + x);
+		})
+	};
+}
+export function storeIntexArg2(intexArg2: IntexArg2): (builder: Builder) => void {
+	return (builder: Builder) => {
+		storeIntEx2<number>(intexArg2.a, (arg: number) => {
+			return (builder: Builder) => {
+				builder.storeInt(arg, 1 + intexArg2.x);
+			};
+		})(builder);
 	};
 }
 export type IntexArg = {
 	kind: 'IntexArg';
 	x: number;
-	a: IntEx<number>;
+	a: IntEx;
 };
-export function loadIntexArg(slice: Slice): IntexArg {
-	let x: number;
-	x = slice.loadUint(32);
+export function loadIntexArg(slice: Slice, x: number): IntexArg {
 	return {
 		kind: 'IntexArg',
 		x: x,
-		a: loadIntEx<number>(slice, () => {
-			return slice.loadInt(5 * x);
-		})
+		a: loadIntEx(slice, 7)
 	};
 }
 export function storeIntexArg(intexArg: IntexArg): (builder: Builder) => void {
 	return (builder: Builder) => {
-		builder.storeUint(intexArg.x, 32);
-		storeIntEx<number>(intexArg.a, (arg: number) => {
-			return (builder: Builder) => {
-				builder.storeInt(arg, 5 * intexArg.x);
-			};
-		})(builder);
+		storeIntEx(intexArg.a)(builder);
 	};
 }
 export type LessThan = {
@@ -560,7 +536,7 @@ export type Hashmap<X> = {
 	label: HmLabel;
 	node: HashmapNode<X>;
 };
-export function loadHashmap<X>(slice: Slice, loadX: (slice: Slice) => X, n: number): Hashmap<X> {
+export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
 	return {
 		kind: 'Hashmap',
 		n: n,
@@ -585,8 +561,8 @@ export type HashmapNode_hmn_fork<X> = {
 	left: Hashmap<X>;
 	right: Hashmap<X>;
 };
-export function loadHashmapNode<X>(slice: Slice, loadX: (slice: Slice) => X): HashmapNode<X> {
-	if (slice.preloadUint(1) == 0b_) {
+export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapNode<X> {
+	if (n == 0) {
 		return {
 			kind: 'HashmapNode_hmn_leaf',
 			value: loadX(slice)
@@ -594,7 +570,7 @@ export function loadHashmapNode<X>(slice: Slice, loadX: (slice: Slice) => X): Ha
 	};
 	let slice1 = slice.loadRef().beginParse();
 	let slice2 = slice.loadRef().beginParse();
-	if (slice.preloadUint(1) == 0b_) {
+	if (true) {
 		return {
 			kind: 'HashmapNode_hmn_fork',
 			left: loadHashmap<X>(slice1, n, loadX),
@@ -606,13 +582,11 @@ export function loadHashmapNode<X>(slice: Slice, loadX: (slice: Slice) => X): Ha
 export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
 	if (hashmapNode.kind == 'HashmapNode_hmn_leaf') {
 		return (builder: Builder) => {
-			builder.storeUint(0b_, 1);
 			storeX(hashmapNode.value)(builder);
 		};
 	};
 	if (hashmapNode.kind == 'HashmapNode_hmn_fork') {
 		return (builder: Builder) => {
-			builder.storeUint(0b_, 1);
 			let cell1 = beginCell();
 			storeHashmap<X>(hashmapNode.left, storeX)(cell1);
 			builder.storeRef(cell1);
@@ -680,6 +654,139 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 		return (builder: Builder) => {
 			builder.storeUint(0b11, 2);
 			builder.storeBits(hmLabel.v);
+		};
+	};
+	throw new Error('');
+}
+export type Unary = Unary_unary_zero | Unary_unary_succ;
+export type Unary_unary_zero = {
+	kind: 'Unary_unary_zero';
+};
+export type Unary_unary_succ = {
+	kind: 'Unary_unary_succ';
+	n: number;
+	x: Unary;
+};
+export function loadUnary(slice: Slice): Unary {
+	if (slice.preloadUint(1) == 0b0) {
+		return {
+			kind: 'Unary_unary_zero'
+		};
+	};
+	if (slice.preloadUint(1) == 0b1) {
+		return {
+			kind: 'Unary_unary_succ',
+			n: n - 1,
+			x: loadUnary(slice)
+		};
+	};
+	throw new Error('');
+}
+export function storeUnary(unary: Unary): (builder: Builder) => void {
+	if (unary.kind == 'Unary_unary_zero') {
+		return (builder: Builder) => {
+			builder.storeUint(0b0, 1);
+		};
+	};
+	if (unary.kind == 'Unary_unary_succ') {
+		return (builder: Builder) => {
+			builder.storeUint(0b1, 1);
+			storeUnary(unary.x)(builder);
+		};
+	};
+	throw new Error('');
+}
+export type Same<X> = Same_g<X> | Same_t<X>;
+export type Same_g<X> = {
+	kind: 'Same_g';
+	Y: number;
+	x: number;
+};
+export type Same_t<X> = {
+	kind: 'Same_t';
+	Y: number;
+	y: number;
+	z: number;
+};
+export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
+	let x: number;
+	x = slice.loadUint(32);
+	if (slice.preloadUint(1) == 0b0) {
+		return {
+			kind: 'Same_g',
+			x: x
+		};
+	};
+	let y: number;
+	y = slice.loadUint(32);
+	let z: number;
+	z = slice.loadUint(32);
+	if (slice.preloadUint(1) == 0b1) {
+		return {
+			kind: 'Same_t',
+			y: y,
+			z: z
+		};
+	};
+	throw new Error('');
+}
+export function storeSame<X>(same: Same<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+	if (same.kind == 'Same_g') {
+		return (builder: Builder) => {
+			builder.storeUint(0b0, 1);
+			builder.storeUint(same.x, 32);
+		};
+	};
+	if (same.kind == 'Same_t') {
+		return (builder: Builder) => {
+			builder.storeUint(0b1, 1);
+			builder.storeUint(same.y, 32);
+			builder.storeUint(same.z, 32);
+		};
+	};
+	throw new Error('');
+}
+export type Const = Const_a | Const_b;
+export type Const_a = {
+	kind: 'Const_a';
+	x: number;
+};
+export type Const_b = {
+	kind: 'Const_b';
+	X: number;
+	y: number;
+};
+export function loadConst(slice: Slice, n: number): Const {
+	let x: number;
+	x = slice.loadUint(32);
+	if (slice.preloadUint(1) == 0b0) {
+		return {
+			kind: 'Const_a',
+			x: x
+		};
+	};
+	let y: number;
+	y = slice.loadUint(2);
+	if (slice.preloadUint(1) == 0b1) {
+		return {
+			kind: 'Const_b',
+			X: X,
+			y: y
+		};
+	};
+	throw new Error('');
+}
+export function storeConst(const: Const): (builder: Builder) => void {
+	if (const.kind == 'Const_a') {
+		return (builder: Builder) => {
+			builder.storeUint(0b0, 1);
+			builder.storeUint(const.x, 32);
+		};
+	};
+	if (const.kind == 'Const_b') {
+		return (builder: Builder) => {
+			builder.storeUint(0b1, 1);
+			builder.storeUint(const.y, 2);
 		};
 	};
 	throw new Error('');

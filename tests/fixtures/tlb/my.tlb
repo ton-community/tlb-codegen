@@ -1,3 +1,7 @@
+//c$_ b:^Bits a:Int c:Uint = Intex3;
+bit$_ (## 1) = Bit;
+
+
 tmpa$_ a:# b:# = X;
 
 bool_false$0 a:# b:(## 7) c:# = Bool;
@@ -33,15 +37,14 @@ a$_ a:^BitInteger = NFT;
 
 a$_ t:# ^[ q:# ] ^[ a:(## 32) ^[ e:# ] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = A;
 
-c$_ b:^Bits a:Int c:Uint = Intex3;
+
+
 b$_ d:int11 g:bits2 {Arg:Type} arg:Arg x:Any = IntEx2 Arg; 
 a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntEx e;
 a$_ {x:#} a:(IntEx2 (int (1 + x))) = IntexArg2 x;
 a$_ {x:#} a:(IntEx 7) = IntexArg x;
 
 a$_ x:(#< 4) y:(#<= 4) = LessThan;
-
-//bit$_ (## 1) = Bit;
 
 hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
           {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
@@ -57,4 +60,9 @@ hml_same$11 {m:#} v:Bit n:(#<= m) = HmLabel ~n m;
 unary_zero$0 = Unary ~0;
 unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
 
+g$0 {X:Type} {Y:#} x:# {~Y = x} = Same X ~Y;
+t$1 {X:Type} {Y:#} y:# z:# {~Y = y} = Same X ~(Y + 1);
 
+
+a$0 x:# = Const 1;
+b$1 {X:#} y:(## 2) = Const X;

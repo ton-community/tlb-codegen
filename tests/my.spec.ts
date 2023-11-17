@@ -4,7 +4,7 @@ import util from 'util'
 
 import { parse } from '../src'
 import { ast } from '../src'
-import { BuiltinZeroArgs, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef } from '../src/ast/nodes'
+import { BuiltinZeroArgs, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr } from '../src/ast/nodes'
 
 import { parse as parseBabel } from "@babel/parser";
 import generate from "@babel/generator";
@@ -138,7 +138,8 @@ interface ExpressionStatement extends ASTNode {
 interface IfStatement extends ASTNode {
   type: "IfStatement",
   condition: Expression,
-  body: Array<Statement>
+  body: Array<Statement>,
+  elseBody: Array<Statement> | undefined
 }
 
 interface DeclareVariable extends ASTNode {
@@ -235,8 +236,8 @@ function tExpressionStatement(expression: Expression): ExpressionStatement {
   return {type: "ExpressionStatement", expression: expression}
 }
 
-function tIfStatement(condition: Expression, body: Array<Statement>): IfStatement {
-  return {type: "IfStatement", condition: condition, body: body}
+function tIfStatement(condition: Expression, body: Array<Statement>, elseBody?: Array<Statement>): IfStatement {
+  return {type: "IfStatement", condition: condition, body: body, elseBody: elseBody}
 }
 
 function tBinaryExpression(left: Expression, binarySign: string, right: Expression): BinaryExpression {
@@ -533,6 +534,70 @@ function bitLen(n: number) {
   return n.toString(2).length;
 }
 
+// export type TLBVariable = {
+//   name: string,
+
+// }
+
+// export type TLBField = {
+//   name: string
+//   expression: 
+// }
+
+export type TLBVariableType = 'Type' | '#';
+
+export type TLBVariable = {
+  const: boolean
+  negated: boolean
+  type: TLBVariableType
+  name: string
+}
+
+export type TLBParameter = {
+  variable: TLBVariable,
+  expression: Expression
+}
+
+export type TLBConstructor = {
+  parameters: Array<TLBParameter>
+  parametersMap: Map<string, TLBParameter>
+  name: string
+  implicitFields: Map<string, string>
+  declaration: Declaration
+}
+
+export type TLBType = {
+  name: string
+  constructors: Array<TLBConstructor>
+}
+
+export type TLBCode = {
+  types: Map<string, TLBType>
+}
+
+function getTypeParametersExpression(parameters: Array<TLBParameter>) {
+  let structTypeParameters: Array<Identifier> = []
+  parameters.forEach(element => {
+    if (element.variable.type == 'Type') {
+      structTypeParameters.push(tIdentifier(element.variable.name))
+    }
+  });
+  let structTypeParametersExpr = tTypeParametersExpression(structTypeParameters);
+  return structTypeParametersExpr;
+}
+
+function getCondition(conditions: Array<BinaryExpression>): Expression {
+  let cnd = conditions[0];
+  if (cnd) {
+    if (conditions.length > 1) {
+      return tBinaryExpression(cnd, '&&', getCondition(conditions.slice(1))); 
+    } else {
+      return cnd
+    }
+  } else {
+    return tIdentifier('true');
+  }
+}
 
 describe('parsing into intermediate representation using grammar', () => {
   test('block.tlb can be parsed', () => { 
@@ -562,7 +627,6 @@ describe('parsing into intermediate representation using grammar', () => {
 
     const tree = ast(input)
 
-
     let jsCodeDeclarations = []
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Builder'), tStringLiteral('ton'))) // importDeclaration([importSpecifier(identifier('Builder'), identifier('Builder'))], stringLiteral('../boc/Builder')))
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Slice'), tStringLiteral('ton')))  // importDeclaration([importSpecifier(identifier('Slice'), identifier('Slice'))], stringLiteral('../boc/Slice')))
@@ -570,22 +634,18 @@ describe('parsing into intermediate representation using grammar', () => {
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('BitString'), tStringLiteral('ton')))
 
 
-    let declarationsMap = new Map<string, Declaration[]>();
+    let tlbCode: TLBCode = {types: new Map<string, TLBType>()}
+    
     tree.declarations.forEach(declaration => {
-      let currentDeclarations = declarationsMap.get(declaration.combinator.name);
-      if (currentDeclarations == undefined) {
-        currentDeclarations = []
+      let tlbType: TLBType | undefined = tlbCode.types.get(declaration.combinator.name);
+      if (tlbType == undefined) {
+        tlbType = {name: declaration.combinator.name, constructors: []}
       }
-      currentDeclarations.push(declaration);
-      declarationsMap.set(declaration.combinator.name, currentDeclarations)
+      tlbType.constructors.push({declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), implicitFields: new Map<string, string>(), name: declaration.constructorDef.name});
+      tlbCode.types.set(tlbType.name, tlbType);
     })
 
-    declarationsMap.forEach((value: Declaration[], key: string) => {
-        let firstDeclaration = value.at(0);
-        if (firstDeclaration == undefined) {
-          return;
-        }
-        let combinatorName = firstDeclaration.combinator.name;
+    tlbCode.types.forEach((tlbType: TLBType, combinatorName: string) => {
         let variableCombinatorName = combinatorName.charAt(0).toLowerCase() + combinatorName.slice(1)
         if (combinatorName == undefined) {
           return;
@@ -597,19 +657,16 @@ describe('parsing into intermediate representation using grammar', () => {
         let storeStatements: Statement[] = []
 
         let structTypeParametersExpr: TypeParametersExpression = tTypeParametersExpression([]);
-        let structNumberParameters = new Set<string>();
-        let negatedVariables = new Set<string>;
-        let implicitFields = new Map<string, string>();
 
-        let implicitFieldsDerivedExpressions = new Map<string, Expression>();
         let variablesDeclared = new Set<string>;          
 
-        value.forEach(declaration => {
+        tlbType.constructors.forEach(constructor => {
+          let declaration = constructor.declaration;
           let subStructName: string;
-          if (value.length > 1) {
-            subStructName = declaration.combinator.name + '_' + declaration.constructorDef.name;
+          if (tlbType.constructors.length > 1) {
+            subStructName = tlbType.name + '_' + declaration.constructorDef.name;
           } else {
-            subStructName = declaration.combinator.name;
+            subStructName = tlbType.name;
           }
           let variableSubStructName = firstLower(subStructName)
     
@@ -629,38 +686,46 @@ describe('parsing into intermediate representation using grammar', () => {
 
           declaration?.fields.forEach(field => {
             if (field instanceof FieldBuiltinDef) {
-              implicitFields.set(field.name, field.type);
+              constructor.implicitFields.set(field.name, field.type);
             }
           })
 
           if (structTypeParametersExpr.typeParameters.length == 0) {
-            let structTypeParameters: Array<Identifier> = []
-
             declaration.combinator.args.forEach(element => {
+              console.log(element)
+              let parameter: TLBParameter | undefined = undefined;
               if (element instanceof NameExpr) {
-                  if (implicitFields.has(element.name)) {
-                    if (implicitFields.get(element.name) == 'Type') {
-                      structTypeParameters.push(tIdentifier(element.name))
-                    }
-                    else {
-                      structNumberParameters.add(element.name);
-                    }
-                  implicitFieldsDerivedExpressions.set(element.name, tIdentifier(element.name));
+                if (constructor.implicitFields.has(element.name)) {
+                  let variable: TLBVariable;
+                  if (constructor.implicitFields.get(element.name) == 'Type') {
+                    variable = {negated: false, const: false, type: 'Type', name: element.name}
+                  }
+                  else {
+                    variable = {negated: false, const: false, type: '#', name: element.name}
+                  }
+                  parameter = {variable: variable, expression: tIdentifier(element.name)};
+                } 
+                else {
+                  throw new Error('Field not known before using (should be tagged as implicit): ' + element)
                 }
-              }
-              if (element instanceof MathExpr) {
+              } else if (element instanceof MathExpr) {
                 let derivedExpr = deriveMathExpression(element);
-                structNumberParameters.add(derivedExpr.name);
-                implicitFieldsDerivedExpressions.set(derivedExpr.name, derivedExpr.derived);
-              }
-              if (element instanceof NegateExpr && element.expr instanceof MathExpr) {
+                parameter = {variable: {negated: false, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
+              } else if (element instanceof NegateExpr && element.expr instanceof MathExpr) {
                 let derivedExpr = deriveMathExpression(element.expr);
-                structNumberParameters.add(derivedExpr.name);
-                implicitFieldsDerivedExpressions.set(derivedExpr.name, derivedExpr.derived);
+                parameter = {variable: {negated: true, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
+              } else if (element instanceof NumberExpr) {
+                parameter = {variable: {negated: false, const: true, type: '#', name: 'n'}, expression: tNumericLiteral(element.num)}
+                // throw new Error('Cannot identify combinator arg: ' + element)
               }
+              if (parameter) {
+                constructor.parameters.push(parameter);
+                constructor.parametersMap.set(parameter.variable.name, parameter);
+              }
+              
             });
 
-            structTypeParametersExpr = tTypeParametersExpression(structTypeParameters);
+            structTypeParametersExpr = getTypeParametersExpression(constructor.parameters);
           }
 
           let slicePrefix: number[] = [0];
@@ -695,9 +760,9 @@ describe('parsing into intermediate representation using grammar', () => {
 
             if (field instanceof FieldBuiltinDef && field.type != 'Type') {
               subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number')));
-              let derivedExpression = implicitFieldsDerivedExpressions.get(field.name)
-              if (derivedExpression) {
-                subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), derivedExpression)) 
+              let parameter = constructor.parametersMap.get(field.name)
+              if (parameter) {
+                subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), parameter.expression)) 
               }
             }
 
@@ -717,9 +782,9 @@ describe('parsing into intermediate representation using grammar', () => {
                   }
                   if (field.expr.arg instanceof NameExpr) {
                     argStoreExpr = tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.expr.arg.name));
-                    let derivedExpression = implicitFieldsDerivedExpressions.get(field.expr.arg.name)
-                    if (derivedExpression) {
-                      argLoadExpr = derivedExpression;
+                    let parameter = constructor.parametersMap.get(field.name)
+                    if (parameter) {
+                      argLoadExpr = parameter.expression;
                     }
                   }
                 }
@@ -790,7 +855,7 @@ describe('parsing into intermediate representation using grammar', () => {
                 if (argLoadExpr == undefined) {
                   field.expr.args.forEach(element => {
                     if (element instanceof NameExpr) {
-                      if (implicitFields.get(element.name)?.startsWith('#')) {
+                      if (constructor.implicitFields.get(element.name)?.startsWith('#')) {
                         loadFunctionsArray.push(tIdentifier(element.name))
                       } else {
                         typeParameterArray.push(tIdentifier(element.name))
@@ -802,10 +867,9 @@ describe('parsing into intermediate representation using grammar', () => {
                       loadFunctionsArray.push(tNumericLiteral(element.num))
                     }
                     if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
-                      negatedVariables.add(element.expr.name);
-                      let derivedExpression = implicitFieldsDerivedExpressions.get(element.expr.name)
-                      if (derivedExpression) {
-                        loadFunctionsArray.push(derivedExpression)
+                      let parameter = constructor.parametersMap.get(field.name)
+                      if (parameter) {
+                        loadFunctionsArray.push(parameter.expression)
                       }
                     }
                     if (element instanceof CombinatorExpr) {
@@ -835,6 +899,7 @@ describe('parsing into intermediate representation using grammar', () => {
                         }
                         typeParameterArray.push(tIdentifier(theFieldType))
                       }
+                      // here
                       loadFunctionsArray.push(tArrowFunctionExpression([], [tReturnStatement(tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + theFieldLoadStoreName)), [theBitsLoad]))]))
                       //(arg: number) => {return (builder: Builder) => {builder.storeUint(arg, 22);}}
                       storeFunctionsArray.push(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), tIdentifier(theFieldType))], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('store' + theFieldLoadStoreName)), [tIdentifier('arg'), theBitsStore]))]))]))
@@ -927,17 +992,27 @@ describe('parsing into intermediate representation using grammar', () => {
 
           let loadStatement: Statement;
           loadStatement = tReturnStatement(tObjectExpression(subStructLoadProperties));
-          if (value.length > 1) {
-            loadStatement = tIfStatement(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(tagBitLen)]), '==', tIdentifier(tagBinary)), [loadStatement])
+          if (tlbType.constructors.length > 1) {
+            let conditions: Array<BinaryExpression> = []
+            if (tagBinary[tagBinary.length - 1] != '_') {
+              conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(tagBitLen)]), '==', tIdentifier(tagBinary)))
+            } else {
+              constructor.parameters.forEach(element => {
+                if (element.variable.const) {
+                  conditions.push(tBinaryExpression(tIdentifier(element.variable.name), '==', element.expression))
+                }
+              });
+            }
+            loadStatement = tIfStatement(getCondition(conditions), [loadStatement])
           }
           loadStatements.push(loadStatement)
 
-          if (value.length > 1) {
+          if (tlbType.constructors.length > 1 && tagBinary[tagBinary.length - 1] != '_') {
             let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(tagBinary), tNumericLiteral(tagBitLen)]))];
             subStructStoreStatements = preStoreStatement.concat(subStructStoreStatements)
           }
           let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], subStructStoreStatements));
-          if (value.length > 1) {
+          if (tlbType.constructors.length > 1) {
             storeStatement = tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier('kind')), '==', tStringLiteral(subStructName)), [storeStatement])
           }
           storeStatements.push(storeStatement);
@@ -948,36 +1023,38 @@ describe('parsing into intermediate representation using grammar', () => {
 
         // loadTheType: (slice: Slice) => TheType
 
-        if (value.length > 1) {
+        if (tlbType.constructors.length > 1) {
           loadStatements.push(tExpressionStatement(tIdentifier("throw new Error('')")))
           storeStatements.push(tExpressionStatement(tIdentifier("throw new Error('')")))
         }
 
         let loadFunctionParameters = [tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))]
-        structTypeParametersExpr.typeParameters.forEach(element => {
-          loadFunctionParameters.push(tTypedIdentifier(tIdentifier('load' + element.name), tArrowFunctionType([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], element)))
-        });
+        let storeFunctionParameters = [tTypedIdentifier(tIdentifier(variableCombinatorName), tTypeWithParameters(tIdentifier(combinatorName), structTypeParametersExpr))]
 
-        structNumberParameters.forEach(element => {
-          if (!negatedVariables.has(element)) {
-             loadFunctionParameters.push(tTypedIdentifier(tIdentifier(element), tIdentifier('number')))
-          }
-        });
+        let anyConstructor = tlbType.constructors[0];
+        if (anyConstructor) {
+          anyConstructor.parameters.forEach(element => {
+            if (element.variable.type == 'Type') {
+              loadFunctionParameters.push(tTypedIdentifier(tIdentifier('load' + element.variable.name), tArrowFunctionType([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], tIdentifier(element.variable.name))))
+
+              storeFunctionParameters.push(
+                tTypedIdentifier(tIdentifier('store' + element.variable.name), 
+                tArrowFunctionType(
+                  [tTypedIdentifier(tIdentifier(firstLower(element.variable.name)), tIdentifier(element.variable.name))], 
+                  tArrowFunctionType([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], tIdentifier('void')))))
+            }
+            if (element.variable.type == '#' && !element.variable.negated) {
+              loadFunctionParameters.push(tTypedIdentifier(tIdentifier(element.variable.name), tIdentifier('number')))
+            }
+          });
+        }
 
         let loadFunction = tFunctionDeclaration(tIdentifier('load' + combinatorName), structTypeParametersExpr, tTypeWithParameters(tIdentifier(combinatorName), structTypeParametersExpr), loadFunctionParameters, loadStatements);
 
-        let storeFunctionParameters = [tTypedIdentifier(tIdentifier(variableCombinatorName), tTypeWithParameters(tIdentifier(combinatorName), structTypeParametersExpr))]
-        structTypeParametersExpr.typeParameters.forEach(element => {
-          storeFunctionParameters.push(
-            tTypedIdentifier(tIdentifier('store' + element.name), 
-            tArrowFunctionType(
-              [tTypedIdentifier(tIdentifier(firstLower(element.name)), tIdentifier(element.name))], 
-              tArrowFunctionType([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], tIdentifier('void')))))
-        });
         let storeFunction = tFunctionDeclaration(tIdentifier('store' + combinatorName), structTypeParametersExpr, tIdentifier('(builder: Builder) => void'), storeFunctionParameters, storeStatements) 
 
-        if (value.length > 1) {
-          let unionTypeDecl = tUnionTypeDeclaration(tTypeWithParameters(tIdentifier(key), structTypeParametersExpr), subStructsUnion)
+        if (tlbType.constructors.length > 1) {
+          let unionTypeDecl = tUnionTypeDeclaration(tTypeWithParameters(tIdentifier(combinatorName), structTypeParametersExpr), subStructsUnion)
           jsCodeDeclarations.push(unionTypeDecl)
         }
         subStructDeclarations.forEach(element => {
