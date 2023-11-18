@@ -66,3 +66,9 @@ t$1 {X:Type} {Y:#} y:# z:# {~Y = y} = Same X ~(Y + 1);
 
 a$0 x:# = Const 1;
 b$1 {X:#} y:(## 2) = Const X;
+
+
+с$_ = ParamConst 1 1;
+a$01 = ParamConst 2 1;
+b$01 = ParamConst 3 3;
+d$_ test:# = ParamConst 4 2;

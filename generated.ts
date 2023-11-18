@@ -760,7 +760,7 @@ export type Const_b = {
 	y: number;
 };
 export function loadConst(slice: Slice, X: number): Const {
-	if (slice.preloadUint(1) == 0b0) {
+	if (slice.preloadUint(1) == 0b0 && X == 1) {
 		let x: number;
 		x = slice.loadUint(32);
 		return {
@@ -790,6 +790,69 @@ export function storeConst(const: Const): (builder: Builder) => void {
 		return (builder: Builder) => {
 			builder.storeUint(0b1, 1);
 			builder.storeUint(const.y, 2);
+		};
+	};
+	throw new Error('');
+}
+export type ParamConst = ParamConst_с | ParamConst_a | ParamConst_b | ParamConst_d;
+export type ParamConst_с = {
+	kind: 'ParamConst_с';
+};
+export type ParamConst_a = {
+	kind: 'ParamConst_a';
+};
+export type ParamConst_b = {
+	kind: 'ParamConst_b';
+};
+export type ParamConst_d = {
+	kind: 'ParamConst_d';
+	test: number;
+};
+export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
+	if (arg0 == 1 && arg1 == 1) {
+		return {
+			kind: 'ParamConst_с'
+		};
+	};
+	if (slice.preloadUint(2) == 0b01 && arg0 == 2 && arg1 == 1) {
+		return {
+			kind: 'ParamConst_a'
+		};
+	};
+	if (slice.preloadUint(2) == 0b01 && arg0 == 3 && arg1 == 3) {
+		return {
+			kind: 'ParamConst_b'
+		};
+	};
+	if (arg0 == 4 && arg1 == 2) {
+		let test: number;
+		test = slice.loadUint(32);
+		return {
+			kind: 'ParamConst_d',
+			test: test
+		};
+	};
+	throw new Error('');
+}
+export function storeParamConst(paramConst: ParamConst): (builder: Builder) => void {
+	if (paramConst.kind == 'ParamConst_с') {
+		return (builder: Builder) => {
+
+		};
+	};
+	if (paramConst.kind == 'ParamConst_a') {
+		return (builder: Builder) => {
+			builder.storeUint(0b01, 2);
+		};
+	};
+	if (paramConst.kind == 'ParamConst_b') {
+		return (builder: Builder) => {
+			builder.storeUint(0b01, 2);
+		};
+	};
+	if (paramConst.kind == 'ParamConst_d') {
+		return (builder: Builder) => {
+			builder.storeUint(paramConst.test, 32);
 		};
 	};
 	throw new Error('');

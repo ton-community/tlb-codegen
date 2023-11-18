@@ -618,6 +618,11 @@ function fillParameterNames(tlbType: TLBType) {
       }
     }
   });
+  for (let i = 0; i < parameterNames.length; i++) {
+    if (parameterNames[i] == '') {
+      parameterNames[i] = 'arg' + i;
+    }
+  }
   tlbType.constructors.forEach(constructor => {
     for (let i = 0; i < constructor.parameters.length; i++) {
       let parameterName = parameterNames[i]
@@ -1035,13 +1040,12 @@ describe('parsing into intermediate representation using grammar', () => {
             let conditions: Array<BinaryExpression> = []
             if (tagBinary[tagBinary.length - 1] != '_') {
               conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(tagBitLen)]), '==', tIdentifier(tagBinary)))
-            } else {
-              constructor.parameters.forEach(element => {
-                if (element.variable.const) {
-                  conditions.push(tBinaryExpression(tIdentifier(element.variable.name), '==', element.expression))
-                }
-              });
             }
+            constructor.parameters.forEach(element => {
+              if (element.variable.const) {
+                conditions.push(tBinaryExpression(tIdentifier(element.variable.name), '==', element.expression))
+              }
+            });
             loadStatements.push(tIfStatement(getCondition(conditions), constructorLoadStatements))
           } else {
             loadStatements = loadStatements.concat(constructorLoadStatements);
