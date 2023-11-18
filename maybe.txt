@@ -267,15 +267,9 @@ export function loadUnary(slice: Slice): Unary {
 	};
 	if (slice.preloadUint(1) == 0b1) {
 		let x = loadUnary(slice);
-		let n: number;
-		if (x.kind == 'Unary_unary_succ') {
-			n = x.n + 1;
-		} else if (x.kind == 'Unary_unary_zero') {
-			n = 1;
-		} else { throw new Error('1') }
 		return {
 			kind: 'Unary_unary_succ',
-			n: n,
+			n: x.n + 1,
 			x: x
 		};
 	};

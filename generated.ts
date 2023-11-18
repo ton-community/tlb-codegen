@@ -275,7 +275,7 @@ export type Example = {
 export function loadExample(slice: Slice, x: number): Example {
 	return {
 		kind: 'Example',
-		x: x - 2
+		x: 2 + x
 	};
 }
 export function storeExample(example: Example): (builder: Builder) => void {
@@ -538,10 +538,11 @@ export type Hashmap<X> = {
 	node: HashmapNode<X>;
 };
 export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
+	let label: HmLabel = loadHmLabel(slice, n);
 	return {
 		kind: 'Hashmap',
 		n: n,
-		label: loadHmLabel(slice, n),
+		label: label,
 		node: loadHashmapNode<X>(slice, m, loadX)
 	};
 }
@@ -555,6 +556,7 @@ export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 export type HashmapNode_hmn_leaf<X> = {
 	kind: 'HashmapNode_hmn_leaf';
 	value: X;
+	n: number;
 };
 export type HashmapNode_hmn_fork<X> = {
 	kind: 'HashmapNode_hmn_fork';
@@ -566,7 +568,8 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
 	if (n == 0) {
 		return {
 			kind: 'HashmapNode_hmn_leaf',
-			value: loadX(slice)
+			value: loadX(slice),
+			n: 0
 		};
 	};
 	if (true) {
@@ -574,7 +577,7 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
 		let slice2 = slice.loadRef().beginParse();
 		return {
 			kind: 'HashmapNode_hmn_fork',
-			n: n - 1,
+			n: n + 1,
 			left: loadHashmap<X>(slice1, n, loadX),
 			right: loadHashmap<X>(slice2, n, loadX)
 		};
@@ -609,24 +612,29 @@ export type HmLabel_hml_short = {
 export type HmLabel_hml_long = {
 	kind: 'HmLabel_hml_long';
 	m: number;
+	n: number;
 };
 export type HmLabel_hml_same = {
 	kind: 'HmLabel_hml_same';
 	m: number;
 	v: BitString;
+	n: number;
 };
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
 	if (slice.preloadUint(1) == 0b0) {
+		let len: Unary = loadUnary(slice);
 		return {
 			kind: 'HmLabel_hml_short',
 			m: m,
-			len: loadUnary(slice)
+			n: n,
+			len: len
 		};
 	};
 	if (slice.preloadUint(2) == 0b10) {
 		return {
 			kind: 'HmLabel_hml_long',
-			m: m
+			m: m,
+			n: n
 		};
 	};
 	if (slice.preloadUint(2) == 0b11) {
@@ -635,7 +643,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 		return {
 			kind: 'HmLabel_hml_same',
 			m: m,
-			v: v
+			v: v,
+			n: n
 		};
 	};
 	throw new Error('');
@@ -663,6 +672,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 export type Unary = Unary_unary_zero | Unary_unary_succ;
 export type Unary_unary_zero = {
 	kind: 'Unary_unary_zero';
+	n: number;
 };
 export type Unary_unary_succ = {
 	kind: 'Unary_unary_succ';
@@ -672,14 +682,16 @@ export type Unary_unary_succ = {
 export function loadUnary(slice: Slice): Unary {
 	if (slice.preloadUint(1) == 0b0) {
 		return {
-			kind: 'Unary_unary_zero'
+			kind: 'Unary_unary_zero',
+			n: 0
 		};
 	};
 	if (slice.preloadUint(1) == 0b1) {
+		let x: Unary = loadUnary(slice);
 		return {
 			kind: 'Unary_unary_succ',
-			n: n - 1,
-			x: loadUnary(slice)
+			n: n + 1,
+			x: x
 		};
 	};
 	throw new Error('');
@@ -716,6 +728,7 @@ export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
 		x = slice.loadUint(32);
 		return {
 			kind: 'Same_g',
+			Y: Y,
 			x: x
 		};
 	};
@@ -726,7 +739,7 @@ export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
 		z = slice.loadUint(32);
 		return {
 			kind: 'Same_t',
-			Y: Y - 1,
+			Y: Y + 1,
 			y: y,
 			z: z
 		};
@@ -753,6 +766,7 @@ export type Const = Const_a | Const_b;
 export type Const_a = {
 	kind: 'Const_a';
 	x: number;
+	X: number;
 };
 export type Const_b = {
 	kind: 'Const_b';
@@ -765,7 +779,8 @@ export function loadConst(slice: Slice, X: number): Const {
 		x = slice.loadUint(32);
 		return {
 			kind: 'Const_a',
-			x: x
+			x: x,
+			X: 1
 		};
 	};
 	if (slice.preloadUint(1) == 0b1) {
@@ -797,31 +812,45 @@ export function storeConst(const: Const): (builder: Builder) => void {
 export type ParamConst = ParamConst_с | ParamConst_a | ParamConst_b | ParamConst_d;
 export type ParamConst_с = {
 	kind: 'ParamConst_с';
+	arg0: number;
+	arg1: number;
 };
 export type ParamConst_a = {
 	kind: 'ParamConst_a';
+	arg0: number;
+	arg1: number;
 };
 export type ParamConst_b = {
 	kind: 'ParamConst_b';
+	arg0: number;
+	arg1: number;
 };
 export type ParamConst_d = {
 	kind: 'ParamConst_d';
 	test: number;
+	arg0: number;
+	arg1: number;
 };
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
 	if (arg0 == 1 && arg1 == 1) {
 		return {
-			kind: 'ParamConst_с'
+			kind: 'ParamConst_с',
+			arg0: 1,
+			arg1: 1
 		};
 	};
 	if (slice.preloadUint(2) == 0b01 && arg0 == 2 && arg1 == 1) {
 		return {
-			kind: 'ParamConst_a'
+			kind: 'ParamConst_a',
+			arg0: 2,
+			arg1: 1
 		};
 	};
 	if (slice.preloadUint(2) == 0b01 && arg0 == 3 && arg1 == 3) {
 		return {
-			kind: 'ParamConst_b'
+			kind: 'ParamConst_b',
+			arg0: 3,
+			arg1: 3
 		};
 	};
 	if (arg0 == 4 && arg1 == 2) {
@@ -829,7 +858,9 @@ export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamC
 		test = slice.loadUint(32);
 		return {
 			kind: 'ParamConst_d',
-			test: test
+			test: test,
+			arg0: 4,
+			arg1: 2
 		};
 	};
 	throw new Error('');

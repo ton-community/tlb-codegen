@@ -489,9 +489,9 @@ function getXname(myMathExpr: MyMathExpr): string {
   return '';
 }
 
-function deriveMathExpression(mathExpr: MathExpr) {
+function deriveMathExpression(mathExpr: MathExpr | NameExpr | NumberExpr) {
   let myMathExpr = convertToMathExpr(mathExpr);
-  myMathExpr = reorganizeExpression(myMathExpr);
+  // myMathExpr = reorganizeExpression(myMathExpr);
   let derived = convertToAST(myMathExpr)
   return {
     name: getXname(myMathExpr),
@@ -671,7 +671,7 @@ function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
         } else if (element instanceof MathExpr) {
           let derivedExpr = deriveMathExpression(element);
           parameter = {variable: {negated: false, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
-        } else if (element instanceof NegateExpr && element.expr instanceof MathExpr) {
+        } else if (element instanceof NegateExpr && (element.expr instanceof MathExpr || element.expr instanceof NumberExpr || element.expr instanceof NameExpr)) {
           let derivedExpr = deriveMathExpression(element.expr);
           parameter = {variable: {negated: true, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
         } else if (element instanceof NumberExpr) {
@@ -875,6 +875,7 @@ describe('parsing into intermediate representation using grammar', () => {
                 let typeParameterArray: Array<Identifier> = []
                 let loadFunctionsArray: Array<Expression> = []
                 let storeFunctionsArray: Array<Expression> = []
+                let wasNegated = false;
 
                 if (field.expr.args.length > 0 && (field.expr.args[0] instanceof MathExpr || field.expr.args[0] instanceof NumberExpr ||  field.expr.args[0] instanceof NameExpr)) {
                   if (field.expr.name == 'int') {
@@ -897,6 +898,8 @@ describe('parsing into intermediate representation using grammar', () => {
                   }
                 }
 
+                let tmpTypeName = field.expr.name;
+
                 if (argLoadExpr == undefined) {
                   field.expr.args.forEach(element => {
                     if (element instanceof NameExpr) {
@@ -912,10 +915,11 @@ describe('parsing into intermediate representation using grammar', () => {
                       loadFunctionsArray.push(tNumericLiteral(element.num))
                     }
                     if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
-                      let parameter = constructor.parametersMap.get(field.name)
-                      if (parameter) {
-                        loadFunctionsArray.push(parameter.expression)
-                      }
+                      wasNegated = true;
+                      // let parameter = constructor.parametersMap.get(element.expr.name)
+                      // if (parameter) {
+                      //   loadFunctionsArray.push(parameter.expression)
+                      // }
                     }
                     if (element instanceof CombinatorExpr) {
                       let theFieldType = 'number'
@@ -957,9 +961,14 @@ describe('parsing into intermediate representation using grammar', () => {
                   let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
   
                   subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
-                  subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters))) 
+                  let tmpExp = tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
+                  if (!wasNegated) {
+                    subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tmpExp)) 
+                  } else {
+                    constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), tmpExp, tIdentifier(tmpTypeName))))
+                    subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
+                  }
                   subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))   
-  
                 }
               }
               if (field.expr instanceof NameExpr) {
@@ -1032,6 +1041,19 @@ describe('parsing into intermediate representation using grammar', () => {
           declaration?.fields.forEach(element => { handleField(element); })
 
           subStructsUnion.push(tTypeWithParameters(tIdentifier(subStructName), structTypeParametersExpr));
+
+          constructor.parameters.forEach(parameter => {
+            let was = false;
+            subStructProperties.forEach(property => {
+              if (property.name.name == parameter.variable.name) {
+                was = true;
+              }
+            })
+            if (!was && parameter.variable.type == '#') {
+              subStructProperties.push(tTypedIdentifier(tIdentifier(parameter.variable.name), tIdentifier('number')))
+              subStructLoadProperties.push(tObjectProperty(tIdentifier(parameter.variable.name), parameter.expression))
+            }
+          })
           
           let structX = tStructDeclaration(tIdentifier(subStructName), subStructProperties, structTypeParametersExpr);
 
