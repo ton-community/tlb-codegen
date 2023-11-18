@@ -599,6 +599,35 @@ function getCondition(conditions: Array<BinaryExpression>): Expression {
   }
 }
 
+function checkConstructors(tlbType: TLBType) {
+  // TODO
+}
+
+function fillParameterNames(tlbType: TLBType) {
+  let parameterNames: string[] = []
+  tlbType.constructors[0]?.parameters.forEach(element => {
+    parameterNames.push(element.variable.name);
+  });
+  tlbType.constructors.forEach(constructor => {
+    for (let i = 0; i < constructor.parameters.length; i++) {
+      if (parameterNames[i] == '') {
+        let parameterName = constructor.parameters[i]?.variable.name;
+        if (parameterName != undefined) {
+          parameterNames[i] = parameterName;
+        }
+      }
+    }
+  });
+  tlbType.constructors.forEach(constructor => {
+    for (let i = 0; i < constructor.parameters.length; i++) {
+      let parameterName = parameterNames[i]
+      if (parameterName != undefined) {
+        constructor.parameters[i]!.variable.name = parameterName;
+      }
+    }
+  })
+}
+
 function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
   declarations.forEach(declaration => {
     let tlbType: TLBType | undefined = tlbCode.types.get(declaration.combinator.name);
@@ -641,7 +670,7 @@ function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
           let derivedExpr = deriveMathExpression(element.expr);
           parameter = {variable: {negated: true, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
         } else if (element instanceof NumberExpr) {
-          parameter = {variable: {negated: false, const: true, type: '#', name: 'n'}, expression: tNumericLiteral(element.num)}
+          parameter = {variable: {negated: false, const: true, type: '#', name: ''}, expression: tNumericLiteral(element.num)}
         } else {
           // throw new Error('Cannot identify combinator arg: ' + element)
         }
@@ -651,6 +680,8 @@ function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
         }
       });
     });
+    checkConstructors(tlbType);
+    fillParameterNames(tlbType);
   });
 }
 

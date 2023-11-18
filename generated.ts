@@ -759,7 +759,7 @@ export type Const_b = {
 	X: number;
 	y: number;
 };
-export function loadConst(slice: Slice, n: number): Const {
+export function loadConst(slice: Slice, X: number): Const {
 	if (slice.preloadUint(1) == 0b0) {
 		let x: number;
 		x = slice.loadUint(32);
