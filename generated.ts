@@ -573,6 +573,7 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
 		let slice2 = slice.loadRef().beginParse();
 		return {
 			kind: 'HashmapNode_hmn_fork',
+			n: n - 1,
 			left: loadHashmap<X>(slice1, n, loadX),
 			right: loadHashmap<X>(slice2, n, loadX)
 		};
@@ -724,6 +725,7 @@ export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
 		z = slice.loadUint(32);
 		return {
 			kind: 'Same_t',
+			Y: Y - 1,
 			y: y,
 			z: z
 		};
