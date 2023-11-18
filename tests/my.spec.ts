@@ -599,6 +599,41 @@ function getCondition(conditions: Array<BinaryExpression>): Expression {
   }
 }
 
+function fillConstructor(declaration: Declaration, constructor: TLBConstructor) {
+  declaration.combinator.args.forEach(element => {
+    let parameter: TLBParameter | undefined = undefined;
+    if (element instanceof NameExpr) {
+      if (constructor.implicitFields.has(element.name)) {
+        let variable: TLBVariable;
+        if (constructor.implicitFields.get(element.name) == 'Type') {
+          variable = {negated: false, const: false, type: 'Type', name: element.name}
+        }
+        else {
+          variable = {negated: false, const: false, type: '#', name: element.name}
+        }
+        parameter = {variable: variable, expression: tIdentifier(element.name)};
+      } 
+      else {
+        throw new Error('Field not known before using (should be tagged as implicit): ' + element)
+      }
+    } else if (element instanceof MathExpr) {
+      let derivedExpr = deriveMathExpression(element);
+      parameter = {variable: {negated: false, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
+    } else if (element instanceof NegateExpr && element.expr instanceof MathExpr) {
+      let derivedExpr = deriveMathExpression(element.expr);
+      parameter = {variable: {negated: true, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
+    } else if (element instanceof NumberExpr) {
+      parameter = {variable: {negated: false, const: true, type: '#', name: 'n'}, expression: tNumericLiteral(element.num)}
+    } else {
+      // throw new Error('Cannot identify combinator arg: ' + element)
+    }
+    if (parameter) {
+      constructor.parameters.push(parameter);
+      constructor.parametersMap.set(parameter.variable.name, parameter);
+    }
+  });
+}
+
 describe('parsing into intermediate representation using grammar', () => {
   test('block.tlb can be parsed', () => { 
 
@@ -692,40 +727,7 @@ describe('parsing into intermediate representation using grammar', () => {
           })
 
           if (structTypeParametersExpr.typeParameters.length == 0) {
-            declaration.combinator.args.forEach(element => {
-              console.log(element)
-              let parameter: TLBParameter | undefined = undefined;
-              if (element instanceof NameExpr) {
-                if (constructor.implicitFields.has(element.name)) {
-                  let variable: TLBVariable;
-                  if (constructor.implicitFields.get(element.name) == 'Type') {
-                    variable = {negated: false, const: false, type: 'Type', name: element.name}
-                  }
-                  else {
-                    variable = {negated: false, const: false, type: '#', name: element.name}
-                  }
-                  parameter = {variable: variable, expression: tIdentifier(element.name)};
-                } 
-                else {
-                  throw new Error('Field not known before using (should be tagged as implicit): ' + element)
-                }
-              } else if (element instanceof MathExpr) {
-                let derivedExpr = deriveMathExpression(element);
-                parameter = {variable: {negated: false, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
-              } else if (element instanceof NegateExpr && element.expr instanceof MathExpr) {
-                let derivedExpr = deriveMathExpression(element.expr);
-                parameter = {variable: {negated: true, const: false, type: '#', name: derivedExpr.name}, expression: derivedExpr.derived};
-              } else if (element instanceof NumberExpr) {
-                parameter = {variable: {negated: false, const: true, type: '#', name: 'n'}, expression: tNumericLiteral(element.num)}
-                // throw new Error('Cannot identify combinator arg: ' + element)
-              }
-              if (parameter) {
-                constructor.parameters.push(parameter);
-                constructor.parametersMap.set(parameter.variable.name, parameter);
-              }
-              
-            });
-
+            fillConstructor(declaration, constructor)
             structTypeParametersExpr = getTypeParametersExpression(constructor.parameters);
           }
 
