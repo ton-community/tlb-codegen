@@ -627,6 +627,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 			kind: 'HmLabel_hml_short',
 			m: m,
 			n: n,
+			n: len.n,
 			len: len
 		};
 	};
@@ -691,6 +692,7 @@ export function loadUnary(slice: Slice): Unary {
 		return {
 			kind: 'Unary_unary_succ',
 			n: n + 1,
+			n: x.n,
 			x: x
 		};
 	};

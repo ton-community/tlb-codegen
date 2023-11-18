@@ -916,10 +916,10 @@ describe('parsing into intermediate representation using grammar', () => {
                     }
                     if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
                       wasNegated = true;
-                      // let parameter = constructor.parametersMap.get(element.expr.name)
-                      // if (parameter) {
-                      //   loadFunctionsArray.push(parameter.expression)
-                      // }
+                      let parameter = constructor.parametersMap.get(element.expr.name)
+                      if (parameter) {
+                        subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tMemberExpression(tIdentifier(field.name), tIdentifier(element.expr.name))))
+                      }
                     }
                     if (element instanceof CombinatorExpr) {
                       let theFieldType = 'number'
