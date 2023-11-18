@@ -706,9 +706,9 @@ describe('parsing into intermediate representation using grammar', () => {
 
         let structTypeParametersExpr: TypeParametersExpression = tTypeParametersExpression([]);
 
-        let variablesDeclared = new Set<string>;          
-
         tlbType.constructors.forEach(constructor => {
+          let variablesDeclared = new Set<string>;          
+
           let constructorLoadStatements: Statement[] = []
           let declaration = constructor.declaration;
           let subStructName: string;

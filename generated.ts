@@ -64,6 +64,7 @@ export function loadBool(slice: Slice): Bool {
 		};
 	};
 	if (slice.preloadUint(1) == 0b1) {
+		let b: number;
 		b = slice.loadUint(32);
 		return {
 			kind: 'Bool_bool_true',
