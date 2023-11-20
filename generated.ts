@@ -602,10 +602,11 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
   }
 export function hmLabel_hml_short_get_n(len: Unary): number {
   	if (len.kind == 'Unary_unary_zero') {
-  
+  		return 0;
   	};
 	if (len.kind == 'Unary_unary_succ') {
-  
+  		let n = len.n;
+		return n + 1;
   	};
 	throw new Error('');
   }
@@ -674,10 +675,11 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   }
 export function unary_unary_succ_get_n(x: Unary): number {
   	if (x.kind == 'Unary_unary_zero') {
-  
+  		return 0;
   	};
 	if (x.kind == 'Unary_unary_succ') {
-  
+  		let n = x.n;
+		return n + 1;
   	};
 	throw new Error('');
   }
@@ -880,25 +882,29 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
   }
 export function paramDifNames_b_get_n(x: ParamDifNames): number {
   	if (x.kind == 'ParamDifNames_a') {
-		return 0;
+  		return 0;
   	};
 	if (x.kind == 'ParamDifNames_b') {
-  
+  		let n = x.n;
+		return n + 1;
   	};
 	if (x.kind == 'ParamDifNames_c') {
-  
+  		let m = x.m;
+		return m * 2;
   	};
 	throw new Error('');
   }
 export function paramDifNames_c_get_m(x: ParamDifNames): number {
   	if (x.kind == 'ParamDifNames_a') {
-  
+  		return 0;
   	};
 	if (x.kind == 'ParamDifNames_b') {
-  
+  		let n = x.n;
+		return n + 1;
   	};
 	if (x.kind == 'ParamDifNames_c') {
-  
+  		let m = x.m;
+		return m * 2;
   	};
 	throw new Error('');
   }

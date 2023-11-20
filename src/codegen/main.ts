@@ -3,6 +3,7 @@ import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpre
 import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue } from './util'
+import { constructorNodes } from '../parsing'
 
 function getSubStructName(tlbType: TLBType, constructor: TLBConstructor): string {
   if (tlbType.constructors.length > 1) {
@@ -17,13 +18,18 @@ function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, p
   let tlbType: TLBType | undefined = tlbCode.types.get(typeName);
   tlbType?.constructors.forEach(constructor => {
     if (tlbType != undefined) {
-      let getExpression: Expression;
-      if (constructor.parameters[parameterIndex]?.variable.const) {
-        getExpression = tNumericLiteral(constructor.parameters.)
-      } else {
-
+      let parameter = constructor.parameters[parameterIndex];
+      if (parameter) {
+        console.log(parameter)
+        let getExpression: Expression;
+        getExpression = parameter.expression;
+        let statements = [];
+        if (!parameter.variable.const) {
+          statements.push(tExpressionStatement(tDeclareVariable(tIdentifier(parameter.variable.name), tMemberExpression(tIdentifier(parameterName), tIdentifier(parameter.variable.name))))); 
+        }
+        statements.push(tReturnStatement(getExpression));
+        result.push(tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(parameterName), tIdentifier('kind')), '==', tStringLiteral(getSubStructName(tlbType, constructor))), statements))
       }
-      result.push(tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(parameterName), tIdentifier('kind')), '==', tStringLiteral(getSubStructName(tlbType, constructor))), []))
     }
   });
   result.push(tExpressionStatement(tIdentifier("throw new Error('')")))
@@ -365,7 +371,7 @@ export function generate(tree: Program) {
               conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(tagBitLen)]), '==', tIdentifier(tagBinary)))
             }
             constructor.parameters.forEach(element => {
-              if (element.variable.const) {
+              if (element.variable.const && !element.variable.negated) {
                 conditions.push(tBinaryExpression(tIdentifier(element.variable.name), '==', element.expression))
               }
             });

@@ -231,7 +231,11 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                     parameter = { variable: { negated: false, const: false, type: '#', name: derivedExpr.name }, expression: derivedExpr.derived };
                 } else if (element instanceof NegateExpr && (element.expr instanceof MathExpr || element.expr instanceof NumberExpr || element.expr instanceof NameExpr)) {
                     let derivedExpr = deriveMathExpression(element.expr);
-                    parameter = { variable: { negated: true, const: false, type: '#', name: derivedExpr.name }, expression: derivedExpr.derived };
+                    let toBeConst = false;
+                    if (element.expr instanceof NumberExpr) {
+                        toBeConst = true;
+                    }
+                    parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name }, expression: derivedExpr.derived };
                 } else if (element instanceof NumberExpr) {
                     parameter = { variable: { negated: false, const: true, type: '#', name: '' }, expression: tNumericLiteral(element.num) }
                 } else {
