@@ -723,22 +723,22 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type Const = Const_a | Const_b;
-export type Const_a = {
-  	kind: 'Const_a';
+export type ConstT = ConstT_a | ConstT_b;
+export type ConstT_a = {
+  	kind: 'ConstT_a';
 	x: number;
   };
-export type Const_b = {
-  	kind: 'Const_b';
+export type ConstT_b = {
+  	kind: 'ConstT_b';
 	X: number;
 	y: number;
   };
-export function loadConst(slice: Slice, X: number): Const {
+export function loadConstT(slice: Slice, X: number): ConstT {
   	if (((slice.preloadUint(1) == 0b0) && (X == 1))) {
   		let x: number;
 		(x = slice.loadUint(32));
 		return {
-  			kind: 'Const_a',
+  			kind: 'ConstT_a',
 			x: x
   		};
   	};
@@ -746,24 +746,24 @@ export function loadConst(slice: Slice, X: number): Const {
   		let y: number;
 		(y = slice.loadUint(2));
 		return {
-  			kind: 'Const_b',
+  			kind: 'ConstT_b',
 			X: X,
 			y: y
   		};
   	};
 	throw new Error('');
   }
-export function storeConst(const: Const): (builder: Builder) => void {
-  	if ((const.kind == 'Const_a')) {
+export function storeConstT(constT: ConstT): (builder: Builder) => void {
+  	if ((constT.kind == 'ConstT_a')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
-			builder.storeUint(const.x, 32);
+			builder.storeUint(constT.x, 32);
   		};
   	};
-	if ((const.kind == 'Const_b')) {
+	if ((constT.kind == 'ConstT_b')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
-			builder.storeUint(const.y, 2);
+			builder.storeUint(constT.y, 2);
   		};
   	};
 	throw new Error('');
