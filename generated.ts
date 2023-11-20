@@ -722,56 +722,6 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type Same<X> = Same_g<X> | Same_t<X>;
-export type Same_g<X> = {
-  	kind: 'Same_g';
-	Y: number;
-	x: number;
-  };
-export type Same_t<X> = {
-  	kind: 'Same_t';
-	Y: number;
-	y: number;
-	z: number;
-  };
-export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
-  	if (slice.preloadUint(1) == 0b0) {
-  		let x: number;
-		x = slice.loadUint(32);
-		return {
-  			kind: 'Same_g',
-			x: x
-  		};
-  	};
-	if (slice.preloadUint(1) == 0b1) {
-  		let y: number;
-		y = slice.loadUint(32);
-		let z: number;
-		z = slice.loadUint(32);
-		return {
-  			kind: 'Same_t',
-			y: y,
-			z: z
-  		};
-  	};
-	throw new Error('');
-  }
-export function storeSame<X>(same: Same<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	if (same.kind == 'Same_g') {
-  		return (builder: Builder) => {
-  			builder.storeUint(0b0, 1);
-			builder.storeUint(same.x, 32);
-  		};
-  	};
-	if (same.kind == 'Same_t') {
-  		return (builder: Builder) => {
-  			builder.storeUint(0b1, 1);
-			builder.storeUint(same.y, 32);
-			builder.storeUint(same.z, 32);
-  		};
-  	};
-	throw new Error('');
-  }
 export type Const = Const_a | Const_b;
 export type Const_a = {
   	kind: 'Const_a';
@@ -962,6 +912,56 @@ export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Buil
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeParamDifNames(paramDifNames.x)(builder);
+  		};
+  	};
+	throw new Error('');
+  }
+export type Same<X> = Same_g<X> | Same_t<X>;
+export type Same_g<X> = {
+  	kind: 'Same_g';
+	Y: number;
+	x: number;
+  };
+export type Same_t<X> = {
+  	kind: 'Same_t';
+	Y: number;
+	y: number;
+	z: number;
+  };
+export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
+  	if (slice.preloadUint(1) == 0b0) {
+  		let x: number;
+		x = slice.loadUint(32);
+		return {
+  			kind: 'Same_g',
+			x: x
+  		};
+  	};
+	if (slice.preloadUint(1) == 0b1) {
+  		let y: number;
+		y = slice.loadUint(32);
+		let z: number;
+		z = slice.loadUint(32);
+		return {
+  			kind: 'Same_t',
+			y: y,
+			z: z
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeSame<X>(same: Same<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+  	if (same.kind == 'Same_g') {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+			builder.storeUint(same.x, 32);
+  		};
+  	};
+	if (same.kind == 'Same_t') {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+			builder.storeUint(same.y, 32);
+			builder.storeUint(same.z, 32);
   		};
   	};
 	throw new Error('');

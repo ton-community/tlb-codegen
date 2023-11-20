@@ -61,10 +61,6 @@ unary_zero$0 = Unary ~0;
 unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
 
 
-g$0 {X:Type} {Y:#} x:# {~Y = x} = Same X ~Y;
-t$1 {X:Type} {Y:#} y:# z:# {~Y = y} = Same X ~(Y + 1);
-
-
 a$0 x:# = Const 1;
 b$1 {X:#} y:(## 2) = Const X;
 
@@ -77,3 +73,6 @@ d$_ test:# = ParamConst 4 2;
 a$0 = ParamDifNames 1 ~0;
 b$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
 c$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
+
+g$0 {X:Type} {Y:#} x:# {~Y = x} = Same X ~Y;
+t$1 {X:Type} {Y:#} y:# z:# {~Y = y} = Same X ~(Y + 1);
