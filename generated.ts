@@ -22,9 +22,9 @@ export type X = {
   };
 export function loadX(slice: Slice): X {
   	let a: number;
-	a = slice.loadUint(32);
+	(a = slice.loadUint(32));
 	let b: number;
-	b = slice.loadUint(32);
+	(b = slice.loadUint(32));
 	return {
   		kind: 'X',
 		a: a,
@@ -49,13 +49,13 @@ export type Bool_bool_true = {
 	b: number;
   };
 export function loadBool(slice: Slice): Bool {
-  	if (slice.preloadUint(1) == 0b0) {
+  	if ((slice.preloadUint(1) == 0b0)) {
   		let a: number;
-		a = slice.loadUint(32);
+		(a = slice.loadUint(32));
 		let b: number;
-		b = slice.loadUint(7);
+		(b = slice.loadUint(7));
 		let c: number;
-		c = slice.loadUint(32);
+		(c = slice.loadUint(32));
 		return {
   			kind: 'Bool_bool_false',
 			a: a,
@@ -63,9 +63,9 @@ export function loadBool(slice: Slice): Bool {
 			c: c
   		};
   	};
-	if (slice.preloadUint(1) == 0b1) {
+	if ((slice.preloadUint(1) == 0b1)) {
   		let b: number;
-		b = slice.loadUint(32);
+		(b = slice.loadUint(32));
 		return {
   			kind: 'Bool_bool_true',
 			b: b
@@ -74,7 +74,7 @@ export function loadBool(slice: Slice): Bool {
 	throw new Error('');
   }
 export function storeBool(bool: Bool): (builder: Builder) => void {
-  	if (bool.kind == 'Bool_bool_false') {
+  	if ((bool.kind == 'Bool_bool_false')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			builder.storeUint(bool.a, 32);
@@ -82,7 +82,7 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
 			builder.storeUint(bool.c, 32);
   		};
   	};
-	if (bool.kind == 'Bool_bool_true') {
+	if ((bool.kind == 'Bool_bool_true')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			builder.storeUint(bool.b, 32);
@@ -96,7 +96,7 @@ export type Y = {
   };
 export function loadY(slice: Slice): Y {
   	let y: number;
-	y = slice.loadUint(5);
+	(y = slice.loadUint(5));
 	return {
   		kind: 'Y',
 		y: y
@@ -114,7 +114,7 @@ export type C = {
   };
 export function loadC(slice: Slice): C {
   	let c: number;
-	c = slice.loadUint(32);
+	(c = slice.loadUint(32));
 	return {
   		kind: 'C',
 		y: loadY(slice),
@@ -134,7 +134,7 @@ export type D = {
   };
 export function loadD(slice: Slice): D {
   	let c: number;
-	c = slice.loadUint(32);
+	(c = slice.loadUint(32));
 	return {
   		kind: 'D',
 		y: loadY(slice),
@@ -156,12 +156,12 @@ export type Maybe_just<TheType> = {
 	value: TheType;
   };
 export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
-  	if (slice.preloadUint(1) == 0b0) {
+  	if ((slice.preloadUint(1) == 0b0)) {
   		return {
   			kind: 'Maybe_nothing'
   		};
   	};
-	if (slice.preloadUint(1) == 0b1) {
+	if ((slice.preloadUint(1) == 0b1)) {
   		return {
   			kind: 'Maybe_just',
 			value: loadTheType(slice)
@@ -170,12 +170,12 @@ export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => 
 	throw new Error('');
   }
 export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theType: TheType) => (builder: Builder) => void): (builder: Builder) => void {
-  	if (maybe.kind == 'Maybe_nothing') {
+  	if ((maybe.kind == 'Maybe_nothing')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
   		};
   	};
-	if (maybe.kind == 'Maybe_just') {
+	if ((maybe.kind == 'Maybe_just')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeTheType(maybe.value)(builder);
@@ -208,13 +208,13 @@ export type Either_right<X,Y> = {
 	value: Y;
   };
 export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
-  	if (slice.preloadUint(1) == 0b0) {
+  	if ((slice.preloadUint(1) == 0b0)) {
   		return {
   			kind: 'Either_left',
 			value: loadX(slice)
   		};
   	};
-	if (slice.preloadUint(1) == 0b1) {
+	if ((slice.preloadUint(1) == 0b1)) {
   		return {
   			kind: 'Either_right',
 			value: loadY(slice)
@@ -223,13 +223,13 @@ export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY:
 	throw new Error('');
   }
 export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
-  	if (either.kind == 'Either_left') {
+  	if ((either.kind == 'Either_left')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeX(either.value)(builder);
   		};
   	};
-	if (either.kind == 'Either_right') {
+	if ((either.kind == 'Either_right')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeY(either.value)(builder);
@@ -275,7 +275,7 @@ export type Example = {
 export function loadExample(slice: Slice, x: number): Example {
   	return {
   		kind: 'Example',
-		x: 2 + x
+		x: (2 + x)
   	};
   }
 export function storeExample(example: Example): (builder: Builder) => void {
@@ -343,24 +343,24 @@ export type A = {
   };
 export function loadA(slice: Slice): A {
   	let t: number;
-	t = slice.loadUint(32);
+	(t = slice.loadUint(32));
 	let slice1 = slice.loadRef().beginParse();
 	let q: number;
-	q = slice1.loadUint(32);
+	(q = slice1.loadUint(32));
 	let slice2 = slice.loadRef().beginParse();
 	let a: number;
-	a = slice2.loadUint(32);
+	(a = slice2.loadUint(32));
 	let slice21 = slice2.loadRef().beginParse();
 	let e: number;
-	e = slice21.loadUint(32);
+	(e = slice21.loadUint(32));
 	let slice22 = slice2.loadRef().beginParse();
 	let b: number;
-	b = slice22.loadUint(32);
+	(b = slice22.loadUint(32));
 	let d: number;
-	d = slice22.loadUint(32);
+	(d = slice22.loadUint(32));
 	let slice221 = slice22.loadRef().beginParse();
 	let c: number;
-	c = slice221.loadUint(32);
+	(c = slice221.loadUint(32));
 	return {
   		kind: 'A',
 		t: t,
@@ -402,11 +402,11 @@ export type IntEx2<Arg> = {
   };
 export function loadIntEx2<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntEx2<Arg> {
   	let d: number;
-	d = slice.loadInt(11);
+	(d = slice.loadInt(11));
 	let g: BitString;
-	g = slice.loadBits(2);
+	(g = slice.loadBits(2));
 	let x: Slice;
-	x = slice;
+	(x = slice);
 	return {
   		kind: 'IntEx2',
 		d: d,
@@ -435,17 +435,17 @@ export type IntEx = {
   };
 export function loadIntEx(slice: Slice, e: number): IntEx {
   	let h: number;
-	h = slice.loadInt(e * 8);
+	(h = slice.loadInt((e * 8)));
 	let f: number;
-	f = slice.loadUint(7 * e);
+	(f = slice.loadUint((7 * e)));
 	let i: BitString;
-	i = slice.loadBits(5 + e);
+	(i = slice.loadBits((5 + e)));
 	let j: number;
-	j = slice.loadInt(5);
+	(j = slice.loadInt(5));
 	let k: number;
-	k = slice.loadUint(e);
+	(k = slice.loadUint(e));
 	let tc: Slice;
-	tc = slice;
+	(tc = slice);
 	return {
   		kind: 'IntEx',
 		e: e,
@@ -459,8 +459,8 @@ export function loadIntEx(slice: Slice, e: number): IntEx {
   }
 export function storeIntEx(intEx: IntEx): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeInt(intEx.h, intEx.e * 8);
-		builder.storeUint(intEx.f, 7 * intEx.e);
+  		builder.storeInt(intEx.h, (intEx.e * 8));
+		builder.storeUint(intEx.f, (7 * intEx.e));
 		builder.storeBits(intEx.i);
 		builder.storeInt(intEx.j, 5);
 		builder.storeUint(intEx.k, intEx.e);
@@ -477,7 +477,7 @@ export function loadIntexArg2(slice: Slice, x: number): IntexArg2 {
   		kind: 'IntexArg2',
 		x: x,
 		a: loadIntEx2<number>(slice, () => {
-  			return slice.loadInt(1 + x);
+  			return slice.loadInt((1 + x));
   		})
   	};
   }
@@ -485,7 +485,7 @@ export function storeIntexArg2(intexArg2: IntexArg2): (builder: Builder) => void
   	return (builder: Builder) => {
   		storeIntEx2<number>(intexArg2.a, (arg: number) => {
   			return (builder: Builder) => {
-  				builder.storeInt(arg, 1 + intexArg2.x);
+  				builder.storeInt(arg, (1 + intexArg2.x));
   			};
   		})(builder);
   	};
@@ -514,9 +514,9 @@ export type LessThan = {
   };
 export function loadLessThan(slice: Slice): LessThan {
   	let x: number;
-	x = slice.loadUint(2);
+	(x = slice.loadUint(2));
 	let y: number;
-	y = slice.loadUint(3);
+	(y = slice.loadUint(3));
 	return {
   		kind: 'LessThan',
 		x: x,
@@ -541,6 +541,7 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
   	let label: HmLabel = loadHmLabel(slice, n);
 	return {
   		kind: 'Hashmap',
+		m: (n - l),
 		n: n,
 		label: label,
 		node: loadHashmapNode<X>(slice, m, loadX)
@@ -564,7 +565,7 @@ export type HashmapNode_hmn_fork<X> = {
 	right: Hashmap<X>;
   };
 export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapNode<X> {
-  	if (n == 0) {
+  	if ((n == 0)) {
   		return {
   			kind: 'HashmapNode_hmn_leaf',
 			value: loadX(slice)
@@ -575,7 +576,7 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'HashmapNode_hmn_fork',
-			n: n + 1,
+			n: (n + 1),
 			left: loadHashmap<X>(slice1, n, loadX),
 			right: loadHashmap<X>(slice2, n, loadX)
   		};
@@ -583,12 +584,12 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
 	throw new Error('');
   }
 export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	if (hashmapNode.kind == 'HashmapNode_hmn_leaf') {
+  	if ((hashmapNode.kind == 'HashmapNode_hmn_leaf')) {
   		return (builder: Builder) => {
   			storeX(hashmapNode.value)(builder);
   		};
   	};
-	if (hashmapNode.kind == 'HashmapNode_hmn_fork') {
+	if ((hashmapNode.kind == 'HashmapNode_hmn_fork')) {
   		return (builder: Builder) => {
   			let cell1 = beginCell();
 			storeHashmap<X>(hashmapNode.left, storeX)(cell1);
@@ -601,12 +602,12 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
 	throw new Error('');
   }
 export function hmLabel_hml_short_get_n(len: Unary): number {
-  	if (len.kind == 'Unary_unary_zero') {
+  	if ((len.kind == 'Unary_unary_zero')) {
   		return 0;
   	};
-	if (len.kind == 'Unary_unary_succ') {
+	if ((len.kind == 'Unary_unary_succ')) {
   		let n = len.n;
-		return n + 1;
+		return (n + 1);
   	};
 	throw new Error('');
   }
@@ -627,7 +628,7 @@ export type HmLabel_hml_same = {
 	v: BitString;
   };
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
-  	if (slice.preloadUint(1) == 0b0) {
+  	if ((slice.preloadUint(1) == 0b0)) {
   		let len: Unary = loadUnary(slice);
 		return {
   			kind: 'HmLabel_hml_short',
@@ -636,15 +637,15 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 			len: len
   		};
   	};
-	if (slice.preloadUint(2) == 0b10) {
+	if ((slice.preloadUint(2) == 0b10)) {
   		return {
   			kind: 'HmLabel_hml_long',
 			m: m
   		};
   	};
-	if (slice.preloadUint(2) == 0b11) {
+	if ((slice.preloadUint(2) == 0b11)) {
   		let v: BitString;
-		v = slice.loadBits(1);
+		(v = slice.loadBits(1));
 		return {
   			kind: 'HmLabel_hml_same',
 			m: m,
@@ -654,18 +655,18 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 	throw new Error('');
   }
 export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
-  	if (hmLabel.kind == 'HmLabel_hml_short') {
+  	if ((hmLabel.kind == 'HmLabel_hml_short')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeUnary(hmLabel.len)(builder);
   		};
   	};
-	if (hmLabel.kind == 'HmLabel_hml_long') {
+	if ((hmLabel.kind == 'HmLabel_hml_long')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b10, 2);
   		};
   	};
-	if (hmLabel.kind == 'HmLabel_hml_same') {
+	if ((hmLabel.kind == 'HmLabel_hml_same')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeBits(hmLabel.v);
@@ -674,12 +675,12 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 	throw new Error('');
   }
 export function unary_unary_succ_get_n(x: Unary): number {
-  	if (x.kind == 'Unary_unary_zero') {
+  	if ((x.kind == 'Unary_unary_zero')) {
   		return 0;
   	};
-	if (x.kind == 'Unary_unary_succ') {
+	if ((x.kind == 'Unary_unary_succ')) {
   		let n = x.n;
-		return n + 1;
+		return (n + 1);
   	};
 	throw new Error('');
   }
@@ -693,12 +694,12 @@ export type Unary_unary_succ = {
 	x: Unary;
   };
 export function loadUnary(slice: Slice): Unary {
-  	if (slice.preloadUint(1) == 0b0) {
+  	if ((slice.preloadUint(1) == 0b0)) {
   		return {
   			kind: 'Unary_unary_zero'
   		};
   	};
-	if (slice.preloadUint(1) == 0b1) {
+	if ((slice.preloadUint(1) == 0b1)) {
   		let x: Unary = loadUnary(slice);
 		return {
   			kind: 'Unary_unary_succ',
@@ -709,12 +710,12 @@ export function loadUnary(slice: Slice): Unary {
 	throw new Error('');
   }
 export function storeUnary(unary: Unary): (builder: Builder) => void {
-  	if (unary.kind == 'Unary_unary_zero') {
+  	if ((unary.kind == 'Unary_unary_zero')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
   		};
   	};
-	if (unary.kind == 'Unary_unary_succ') {
+	if ((unary.kind == 'Unary_unary_succ')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeUnary(unary.x)(builder);
@@ -733,17 +734,17 @@ export type Const_b = {
 	y: number;
   };
 export function loadConst(slice: Slice, X: number): Const {
-  	if (slice.preloadUint(1) == 0b0 && X == 1) {
+  	if (((slice.preloadUint(1) == 0b0) && (X == 1))) {
   		let x: number;
-		x = slice.loadUint(32);
+		(x = slice.loadUint(32));
 		return {
   			kind: 'Const_a',
 			x: x
   		};
   	};
-	if (slice.preloadUint(1) == 0b1) {
+	if ((slice.preloadUint(1) == 0b1)) {
   		let y: number;
-		y = slice.loadUint(2);
+		(y = slice.loadUint(2));
 		return {
   			kind: 'Const_b',
 			X: X,
@@ -753,13 +754,13 @@ export function loadConst(slice: Slice, X: number): Const {
 	throw new Error('');
   }
 export function storeConst(const: Const): (builder: Builder) => void {
-  	if (const.kind == 'Const_a') {
+  	if ((const.kind == 'Const_a')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			builder.storeUint(const.x, 32);
   		};
   	};
-	if (const.kind == 'Const_b') {
+	if ((const.kind == 'Const_b')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			builder.storeUint(const.y, 2);
@@ -782,24 +783,24 @@ export type ParamConst_d = {
 	test: number;
   };
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
-  	if (arg0 == 1 && arg1 == 1) {
+  	if (((arg0 == 1) && (arg1 == 1))) {
   		return {
   			kind: 'ParamConst_с'
   		};
   	};
-	if (slice.preloadUint(2) == 0b01 && arg0 == 2 && arg1 == 1) {
+	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1)))) {
   		return {
   			kind: 'ParamConst_a'
   		};
   	};
-	if (slice.preloadUint(2) == 0b01 && arg0 == 3 && arg1 == 3) {
+	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 3) && (arg1 == 3)))) {
   		return {
   			kind: 'ParamConst_b'
   		};
   	};
-	if (arg0 == 4 && arg1 == 2) {
+	if (((arg0 == 4) && (arg1 == 2))) {
   		let test: number;
-		test = slice.loadUint(32);
+		(test = slice.loadUint(32));
 		return {
   			kind: 'ParamConst_d',
 			test: test
@@ -808,22 +809,22 @@ export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamC
 	throw new Error('');
   }
 export function storeParamConst(paramConst: ParamConst): (builder: Builder) => void {
-  	if (paramConst.kind == 'ParamConst_с') {
+  	if ((paramConst.kind == 'ParamConst_с')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if (paramConst.kind == 'ParamConst_a') {
+	if ((paramConst.kind == 'ParamConst_a')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b01, 2);
   		};
   	};
-	if (paramConst.kind == 'ParamConst_b') {
+	if ((paramConst.kind == 'ParamConst_b')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b01, 2);
   		};
   	};
-	if (paramConst.kind == 'ParamConst_d') {
+	if ((paramConst.kind == 'ParamConst_d')) {
   		return (builder: Builder) => {
   			builder.storeUint(paramConst.test, 32);
   		};
@@ -831,30 +832,30 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
 	throw new Error('');
   }
 export function paramDifNames_b_get_n(x: ParamDifNames): number {
-  	if (x.kind == 'ParamDifNames_a') {
+  	if ((x.kind == 'ParamDifNames_a')) {
   		return 0;
   	};
-	if (x.kind == 'ParamDifNames_b') {
+	if ((x.kind == 'ParamDifNames_b')) {
   		let n = x.n;
-		return n + 1;
+		return (n + 1);
   	};
-	if (x.kind == 'ParamDifNames_c') {
+	if ((x.kind == 'ParamDifNames_c')) {
   		let m = x.m;
-		return m * 2;
+		return (m * 2);
   	};
 	throw new Error('');
   }
 export function paramDifNames_c_get_m(x: ParamDifNames): number {
-  	if (x.kind == 'ParamDifNames_a') {
+  	if ((x.kind == 'ParamDifNames_a')) {
   		return 0;
   	};
-	if (x.kind == 'ParamDifNames_b') {
+	if ((x.kind == 'ParamDifNames_b')) {
   		let n = x.n;
-		return n + 1;
+		return (n + 1);
   	};
-	if (x.kind == 'ParamDifNames_c') {
+	if ((x.kind == 'ParamDifNames_c')) {
   		let m = x.m;
-		return m * 2;
+		return (m * 2);
   	};
 	throw new Error('');
   }
@@ -873,12 +874,12 @@ export type ParamDifNames_c = {
 	x: ParamDifNames;
   };
 export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
-  	if (slice.preloadUint(1) == 0b0 && arg0 == 1) {
+  	if (((slice.preloadUint(1) == 0b0) && (arg0 == 1))) {
   		return {
   			kind: 'ParamDifNames_a'
   		};
   	};
-	if (slice.preloadUint(1) == 0b1 && arg0 == 2) {
+	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
   		let x: ParamDifNames = loadParamDifNames(slice, 2);
 		return {
   			kind: 'ParamDifNames_b',
@@ -886,7 +887,7 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 			x: x
   		};
   	};
-	if (slice.preloadUint(1) == 0b0 && arg0 == 3) {
+	if (((slice.preloadUint(1) == 0b0) && (arg0 == 3))) {
   		let x: ParamDifNames = loadParamDifNames(slice, 3);
 		return {
   			kind: 'ParamDifNames_c',
@@ -897,18 +898,18 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 	throw new Error('');
   }
 export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Builder) => void {
-  	if (paramDifNames.kind == 'ParamDifNames_a') {
+  	if ((paramDifNames.kind == 'ParamDifNames_a')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
   		};
   	};
-	if (paramDifNames.kind == 'ParamDifNames_b') {
+	if ((paramDifNames.kind == 'ParamDifNames_b')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeParamDifNames(paramDifNames.x)(builder);
   		};
   	};
-	if (paramDifNames.kind == 'ParamDifNames_c') {
+	if ((paramDifNames.kind == 'ParamDifNames_c')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeParamDifNames(paramDifNames.x)(builder);
@@ -925,42 +926,44 @@ export type Same_g<X> = {
 export type Same_t<X> = {
   	kind: 'Same_t';
 	Y: number;
-	y: number;
+	t: number;
 	z: number;
   };
 export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
-  	if (slice.preloadUint(1) == 0b0) {
+  	if ((slice.preloadUint(1) == 0b0)) {
   		let x: number;
-		x = slice.loadUint(32);
+		(x = slice.loadUint(32));
 		return {
   			kind: 'Same_g',
+			Y: x,
 			x: x
   		};
   	};
-	if (slice.preloadUint(1) == 0b1) {
-  		let y: number;
-		y = slice.loadUint(32);
+	if ((slice.preloadUint(1) == 0b1)) {
+  		let t: number;
+		(t = slice.loadUint(32));
 		let z: number;
-		z = slice.loadUint(32);
+		(z = slice.loadUint(32));
 		return {
   			kind: 'Same_t',
-			y: y,
+			Y: (t / 2),
+			t: t,
 			z: z
   		};
   	};
 	throw new Error('');
   }
 export function storeSame<X>(same: Same<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	if (same.kind == 'Same_g') {
+  	if ((same.kind == 'Same_g')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			builder.storeUint(same.x, 32);
   		};
   	};
-	if (same.kind == 'Same_t') {
+	if ((same.kind == 'Same_t')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
-			builder.storeUint(same.y, 32);
+			builder.storeUint(same.t, 32);
 			builder.storeUint(same.z, 32);
   		};
   	};

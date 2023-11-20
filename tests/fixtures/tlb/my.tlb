@@ -75,4 +75,4 @@ b$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
 c$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
 
 g$0 {X:Type} {Y:#} x:# {~Y = x} = Same X ~Y;
-t$1 {X:Type} {Y:#} y:# z:# {~Y = y} = Same X ~(Y + 1);
+t$1 {X:Type} {Y:#} t:# z:# { t = (~Y) * 2} = Same X ~(Y + 1);

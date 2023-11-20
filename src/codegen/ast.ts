@@ -6,14 +6,17 @@ export class MyBinaryOp {
         readonly left: MyMathExpr,
         readonly right: MyMathExpr,
         readonly operation: string,
-        readonly hasX: boolean) {
+        readonly variables: Set<string>,
+        readonly hasNeg: boolean
+        ) {
     }
 }
 
 export class MyNumberExpr {
     constructor(
         readonly n: number,
-        readonly hasX: false
+        readonly variables: Set<string>,
+        readonly hasNeg: boolean
     ) {
 
     }
@@ -22,14 +25,14 @@ export class MyNumberExpr {
 export class MyVarExpr {
     constructor(
         readonly x: string,
-        readonly hasX: true
+        readonly variables: Set<string>,
+        readonly hasNeg: boolean
     ) {
 
     }
 }
 
 export type MyMathExpr = MyBinaryOp | MyNumberExpr | MyVarExpr;
-
 
 export type TLBVariableType = 'Type' | '#';
 
@@ -51,6 +54,7 @@ export type TLBConstructor = {
     name: string
     implicitFields: Map<string, string>
     declaration: Declaration
+    negatedVariables: Map<string, Expression>
 }
 
 export type TLBType = {

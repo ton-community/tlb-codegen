@@ -362,7 +362,7 @@ export function toCode(node: TheNode, printContext: PrintContext): string {
     }
 
     if (node.type == "BinaryExpression") {
-        result += `${toCode(node.left, printContext)} ${node.binarySign} ${toCode(node.right, printContext)}`
+        result += `(${toCode(node.left, printContext)} ${node.binarySign} ${toCode(node.right, printContext)})`
     }
 
     return result;
