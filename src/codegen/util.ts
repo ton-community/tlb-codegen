@@ -184,7 +184,7 @@ export function fillParameterNames(tlbType: TLBType) {
     tlbType.constructors.forEach(constructor => {
         for (let i = 0; i < constructor.parameters.length; i++) {
             let parameterName = parameterNames[i]
-            if (parameterName != undefined) {
+            if (parameterName != undefined && constructor.parameters[i]?.variable.name == '') {
                 constructor.parameters[i]!.variable.name = parameterName;
             }
         }

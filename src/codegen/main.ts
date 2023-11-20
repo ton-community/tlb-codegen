@@ -4,6 +4,32 @@ import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBC
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue } from './util'
 
+function getSubStructName(tlbType: TLBType, constructor: TLBConstructor): string {
+  if (tlbType.constructors.length > 1) {
+    return tlbType.name + '_' + constructor.declaration.constructorDef.name;
+  } else {
+    return tlbType.name;
+  }
+}
+
+function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, parameterIndex: number, parameterName: string): Statement[] {
+  let result: Statement[] = [];
+  let tlbType: TLBType | undefined = tlbCode.types.get(typeName);
+  tlbType?.constructors.forEach(constructor => {
+    if (tlbType != undefined) {
+      let getExpression: Expression;
+      if (constructor.parameters[parameterIndex]?.variable.const) {
+        getExpression = tNumericLiteral(constructor.parameters.)
+      } else {
+
+      }
+      result.push(tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(parameterName), tIdentifier('kind')), '==', tStringLiteral(getSubStructName(tlbType, constructor))), []))
+    }
+  });
+  result.push(tExpressionStatement(tIdentifier("throw new Error('')")))
+
+  return result;
+}
 
 export function generate(tree: Program) {
     let jsCodeDeclarations = []
@@ -35,12 +61,8 @@ export function generate(tree: Program) {
 
           let constructorLoadStatements: Statement[] = []
           let declaration = constructor.declaration;
-          let subStructName: string;
-          if (tlbType.constructors.length > 1) {
-            subStructName = tlbType.name + '_' + declaration.constructorDef.name;
-          } else {
-            subStructName = tlbType.name;
-          }
+          let subStructName: string = getSubStructName(tlbType, constructor);
+          
           let variableSubStructName = firstLower(subStructName)
     
           let subStructProperties: TypedIdentifier[] = [tTypedIdentifier(tIdentifier('kind'), tStringLiteral(subStructName))]
@@ -94,7 +116,7 @@ export function generate(tree: Program) {
             if (field instanceof FieldBuiltinDef && field.type != 'Type') {
               subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number')));
               let parameter = constructor.parametersMap.get(field.name)
-              if (parameter) {
+              if (parameter && !parameter.variable.const && !parameter.variable.negated) {
                 subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), parameter.expression)) 
               }
             }
@@ -189,7 +211,9 @@ export function generate(tree: Program) {
                 let tmpTypeName = field.expr.name;
 
                 if (argLoadExpr == undefined) {
+                  let argIndex = -1;
                   field.expr.args.forEach(element => {
+                    argIndex++;
                     if (element instanceof NameExpr) {
                       if (constructor.implicitFields.get(element.name)?.startsWith('#')) {
                         loadFunctionsArray.push(tIdentifier(element.name))
@@ -206,7 +230,9 @@ export function generate(tree: Program) {
                       wasNegated = true;
                       let parameter = constructor.parametersMap.get(element.expr.name)
                       if (parameter) {
-                        subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tMemberExpression(tIdentifier(field.name), tIdentifier(element.expr.name))))
+                        let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + element.expr.name)
+                        jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
+                        subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(field.name)])))
                       }
                     }
                     if (element instanceof CombinatorExpr) {
@@ -329,19 +355,6 @@ export function generate(tree: Program) {
           declaration?.fields.forEach(element => { handleField(element); })
 
           subStructsUnion.push(tTypeWithParameters(tIdentifier(subStructName), structTypeParametersExpr));
-
-          constructor.parameters.forEach(parameter => {
-            let was = false;
-            subStructProperties.forEach(property => {
-              if (property.name.name == parameter.variable.name) {
-                was = true;
-              }
-            })
-            if (!was && parameter.variable.type == '#') {
-              subStructProperties.push(tTypedIdentifier(tIdentifier(parameter.variable.name), tIdentifier('number')))
-              subStructLoadProperties.push(tObjectProperty(tIdentifier(parameter.variable.name), parameter.expression))
-            }
-          })
           
           let structX = tStructDeclaration(tIdentifier(subStructName), subStructProperties, structTypeParametersExpr);
 

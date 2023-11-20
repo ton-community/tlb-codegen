@@ -556,7 +556,6 @@ export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 export type HashmapNode_hmn_leaf<X> = {
   	kind: 'HashmapNode_hmn_leaf';
 	value: X;
-	n: number;
   };
 export type HashmapNode_hmn_fork<X> = {
   	kind: 'HashmapNode_hmn_fork';
@@ -568,8 +567,7 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
   	if (n == 0) {
   		return {
   			kind: 'HashmapNode_hmn_leaf',
-			value: loadX(slice),
-			n: 0
+			value: loadX(slice)
   		};
   	};
 	if (true) {
@@ -602,6 +600,15 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
   	};
 	throw new Error('');
   }
+export function hmLabel_hml_short_get_n(len: Unary): number {
+  	if (len.kind == 'Unary_unary_zero') {
+  
+  	};
+	if (len.kind == 'Unary_unary_succ') {
+  
+  	};
+	throw new Error('');
+  }
 export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
 export type HmLabel_hml_short = {
   	kind: 'HmLabel_hml_short';
@@ -612,13 +619,11 @@ export type HmLabel_hml_short = {
 export type HmLabel_hml_long = {
   	kind: 'HmLabel_hml_long';
 	m: number;
-	n: number;
   };
 export type HmLabel_hml_same = {
   	kind: 'HmLabel_hml_same';
 	m: number;
 	v: BitString;
-	n: number;
   };
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	if (slice.preloadUint(1) == 0b0) {
@@ -626,16 +631,14 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
-			n: n,
-			n: len.n,
+			n: hmLabel_hml_short_get_n(len),
 			len: len
   		};
   	};
 	if (slice.preloadUint(2) == 0b10) {
   		return {
   			kind: 'HmLabel_hml_long',
-			m: m,
-			n: n
+			m: m
   		};
   	};
 	if (slice.preloadUint(2) == 0b11) {
@@ -644,8 +647,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 		return {
   			kind: 'HmLabel_hml_same',
 			m: m,
-			v: v,
-			n: n
+			v: v
   		};
   	};
 	throw new Error('');
@@ -670,10 +672,18 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
+export function unary_unary_succ_get_n(x: Unary): number {
+  	if (x.kind == 'Unary_unary_zero') {
+  
+  	};
+	if (x.kind == 'Unary_unary_succ') {
+  
+  	};
+	throw new Error('');
+  }
 export type Unary = Unary_unary_zero | Unary_unary_succ;
 export type Unary_unary_zero = {
   	kind: 'Unary_unary_zero';
-	n: number;
   };
 export type Unary_unary_succ = {
   	kind: 'Unary_unary_succ';
@@ -683,16 +693,14 @@ export type Unary_unary_succ = {
 export function loadUnary(slice: Slice): Unary {
   	if (slice.preloadUint(1) == 0b0) {
   		return {
-  			kind: 'Unary_unary_zero',
-			n: 0
+  			kind: 'Unary_unary_zero'
   		};
   	};
 	if (slice.preloadUint(1) == 0b1) {
   		let x: Unary = loadUnary(slice);
 		return {
   			kind: 'Unary_unary_succ',
-			n: n + 1,
-			n: x.n,
+			n: unary_unary_succ_get_n(x),
 			x: x
   		};
   	};
@@ -730,7 +738,6 @@ export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
 		x = slice.loadUint(32);
 		return {
   			kind: 'Same_g',
-			Y: Y,
 			x: x
   		};
   	};
@@ -741,7 +748,6 @@ export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
 		z = slice.loadUint(32);
 		return {
   			kind: 'Same_t',
-			Y: Y + 1,
 			y: y,
 			z: z
   		};
@@ -768,7 +774,6 @@ export type Const = Const_a | Const_b;
 export type Const_a = {
   	kind: 'Const_a';
 	x: number;
-	X: number;
   };
 export type Const_b = {
   	kind: 'Const_b';
@@ -781,8 +786,7 @@ export function loadConst(slice: Slice, X: number): Const {
 		x = slice.loadUint(32);
 		return {
   			kind: 'Const_a',
-			x: x,
-			X: 1
+			x: x
   		};
   	};
 	if (slice.preloadUint(1) == 0b1) {
@@ -814,45 +818,31 @@ export function storeConst(const: Const): (builder: Builder) => void {
 export type ParamConst = ParamConst_с | ParamConst_a | ParamConst_b | ParamConst_d;
 export type ParamConst_с = {
   	kind: 'ParamConst_с';
-	arg0: number;
-	arg1: number;
   };
 export type ParamConst_a = {
   	kind: 'ParamConst_a';
-	arg0: number;
-	arg1: number;
   };
 export type ParamConst_b = {
   	kind: 'ParamConst_b';
-	arg0: number;
-	arg1: number;
   };
 export type ParamConst_d = {
   	kind: 'ParamConst_d';
 	test: number;
-	arg0: number;
-	arg1: number;
   };
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
   	if (arg0 == 1 && arg1 == 1) {
   		return {
-  			kind: 'ParamConst_с',
-			arg0: 1,
-			arg1: 1
+  			kind: 'ParamConst_с'
   		};
   	};
 	if (slice.preloadUint(2) == 0b01 && arg0 == 2 && arg1 == 1) {
   		return {
-  			kind: 'ParamConst_a',
-			arg0: 2,
-			arg1: 1
+  			kind: 'ParamConst_a'
   		};
   	};
 	if (slice.preloadUint(2) == 0b01 && arg0 == 3 && arg1 == 3) {
   		return {
-  			kind: 'ParamConst_b',
-			arg0: 3,
-			arg1: 3
+  			kind: 'ParamConst_b'
   		};
   	};
 	if (arg0 == 4 && arg1 == 2) {
@@ -860,9 +850,7 @@ export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamC
 		test = slice.loadUint(32);
 		return {
   			kind: 'ParamConst_d',
-			test: test,
-			arg0: 4,
-			arg1: 2
+			test: test
   		};
   	};
 	throw new Error('');
@@ -890,52 +878,64 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
   	};
 	throw new Error('');
   }
+export function paramDifNames_b_get_n(x: ParamDifNames): number {
+  	if (x.kind == 'ParamDifNames_a') {
+		return 0;
+  	};
+	if (x.kind == 'ParamDifNames_b') {
+  
+  	};
+	if (x.kind == 'ParamDifNames_c') {
+  
+  	};
+	throw new Error('');
+  }
+export function paramDifNames_c_get_m(x: ParamDifNames): number {
+  	if (x.kind == 'ParamDifNames_a') {
+  
+  	};
+	if (x.kind == 'ParamDifNames_b') {
+  
+  	};
+	if (x.kind == 'ParamDifNames_c') {
+  
+  	};
+	throw new Error('');
+  }
 export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c;
 export type ParamDifNames_a = {
   	kind: 'ParamDifNames_a';
-	arg0: number;
-	n: number;
   };
 export type ParamDifNames_b = {
   	kind: 'ParamDifNames_b';
 	n: number;
 	x: ParamDifNames;
-	arg0: number;
   };
 export type ParamDifNames_c = {
   	kind: 'ParamDifNames_c';
 	m: number;
 	x: ParamDifNames;
-	arg0: number;
-	n: number;
   };
 export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
   	if (slice.preloadUint(1) == 0b0 && arg0 == 1) {
   		return {
-  			kind: 'ParamDifNames_a',
-			arg0: 1,
-			n: 0
+  			kind: 'ParamDifNames_a'
   		};
   	};
 	if (slice.preloadUint(1) == 0b1 && arg0 == 2) {
   		let x: ParamDifNames = loadParamDifNames(slice, 2);
 		return {
   			kind: 'ParamDifNames_b',
-			n: n + 1,
-			n: x.n,
-			x: x,
-			arg0: 2
+			n: paramDifNames_b_get_n(x),
+			x: x
   		};
   	};
 	if (slice.preloadUint(1) == 0b0 && arg0 == 3) {
   		let x: ParamDifNames = loadParamDifNames(slice, 3);
 		return {
   			kind: 'ParamDifNames_c',
-			m: m * 2,
-			m: x.m,
-			x: x,
-			arg0: 3,
-			n: m * 2
+			m: paramDifNames_c_get_m(x),
+			x: x
   		};
   	};
 	throw new Error('');

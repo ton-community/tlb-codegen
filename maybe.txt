@@ -279,19 +279,16 @@ export function loadUnary(slice: Slice): Unary {
 export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c;
 export type ParamDifNames_a = {
   	kind: 'ParamDifNames_a';
-	arg0: number;
   };
 export type ParamDifNames_b = {
   	kind: 'ParamDifNames_b';
 	n: number;
 	x: ParamDifNames;
-	arg0: number;
   };
 export type ParamDifNames_c = {
   	kind: 'ParamDifNames_c';
 	m: number;
 	x: ParamDifNames;
-	arg0: number;
 };
 
 
@@ -325,7 +322,6 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
   	if (slice.preloadUint(1) == 0b0 && arg0 == 1) {
   		return {
   			kind: 'ParamDifNames_a',
-			arg0: 1,
   		};
   	};
 	if (slice.preloadUint(1) == 0b1 && arg0 == 2) {
@@ -334,7 +330,6 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
   			kind: 'ParamDifNames_b',
 			n: paramDifNames_b_get_n(x),
 			x: x,
-			arg0: 2
   		};
   	};
 	if (slice.preloadUint(1) == 0b0 && arg0 == 3) {
@@ -343,7 +338,6 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
   			kind: 'ParamDifNames_c',
 			m: paramDifNames_c_get_m(x),
 			x: x,
-			arg0: 3,
   		};
   	};
 	throw new Error('');
