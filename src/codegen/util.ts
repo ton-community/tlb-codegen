@@ -1,9 +1,9 @@
-import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr, Declaration } from "../ast/nodes";
+import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr, Declaration, CompareExpr } from "../ast/nodes";
 import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
 import { Identifier, Expression, BinaryExpression } from "./tsgen";
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
 
-export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr): MyMathExpr {
+export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr | CompareExpr): MyMathExpr {
     if (mathExpr instanceof NameExpr) {
         return new MyVarExpr(mathExpr.name, true);
     }
@@ -13,6 +13,11 @@ export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr):
     if (mathExpr instanceof MathExpr) {
         let left = convertToMathExpr(mathExpr.left)
         let right = convertToMathExpr(mathExpr.right)
+        return new MyBinaryOp(left, right, mathExpr.op, left.hasX || right.hasX)
+    }
+    if (mathExpr instanceof CompareExpr) {
+        let left = convertToMathExpr(mathExpr.left);
+        let right = convertToMathExpr(mathExpr.right);
         return new MyBinaryOp(left, right, mathExpr.op, left.hasX || right.hasX)
     }
     return { n: 0, hasX: false };

@@ -1,4 +1,4 @@
-import { BuiltinZeroArgs, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr } from '../../src/ast/nodes'
+import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr } from '../../src/ast/nodes'
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
 import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
@@ -13,6 +13,16 @@ function getSubStructName(tlbType: TLBType, constructor: TLBConstructor): string
   }
 }
 
+function sliceLoad(slicePrefix: number[], currentSlice: string) {
+  return tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')), 
+      tFunctionCall(tMemberExpression(
+        tFunctionCall(tMemberExpression(
+          tIdentifier(currentSlice), tIdentifier('loadRef')
+        ), []),
+        tIdentifier('beginParse')
+      ), []), ))
+}
+
 function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, parameterIndex: number, parameterName: string): Statement[] {
   let result: Statement[] = [];
   let tlbType: TLBType | undefined = tlbCode.types.get(typeName);
@@ -20,7 +30,6 @@ function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, p
     if (tlbType != undefined) {
       let parameter = constructor.parameters[parameterIndex];
       if (parameter) {
-        console.log(parameter)
         let getExpression: Expression;
         getExpression = parameter.expression;
         let statements = [];
@@ -92,6 +101,7 @@ export function generate(tree: Program) {
           let slicePrefix: number[] = [0];
 
           function handleField(field: FieldDefinition) {
+
             let currentSlice = getCurrentSlice(slicePrefix, 'slice');
             let currentCell = getCurrentSlice(slicePrefix, 'cell');
 
@@ -99,24 +109,18 @@ export function generate(tree: Program) {
               slicePrefix[slicePrefix.length - 1]++;  
               slicePrefix.push(0)
    
-              constructorLoadStatements.push(
-                tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')), 
-                  tFunctionCall(tMemberExpression(
-                    tFunctionCall(tMemberExpression(
-                      tIdentifier(currentSlice), tIdentifier('loadRef')
-                    ), []),
-                    tIdentifier('beginParse')
-                  ), []), )))
-
+              constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice))
               subStructStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
 
-              field.fields.forEach(element => {
-                handleField(element);
-              });
+              field.fields.forEach(handleField);
 
               subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
 
               slicePrefix.pop();
+            }
+
+            if (field instanceof FieldCurlyExprDef) {
+              console.log(field)
             }
 
             if (field instanceof FieldBuiltinDef && field.type != 'Type') {
@@ -165,14 +169,7 @@ export function generate(tree: Program) {
                 slicePrefix[slicePrefix.length - 1]++;  
                 slicePrefix.push(0)
     
-                constructorLoadStatements.push(
-                  tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')), 
-                    tFunctionCall(tMemberExpression(
-                      tFunctionCall(tMemberExpression(
-                        tIdentifier(currentSlice), tIdentifier('loadRef')
-                      ), []),
-                      tIdentifier('beginParse')
-                    ), []), )))
+                constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice))
 
                 subStructStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
 
