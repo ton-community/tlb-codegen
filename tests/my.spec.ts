@@ -14,8 +14,6 @@ describe('parsing into intermediate representation using grammar', () => {
   test('block.tlb can be parsed', () => { 
     // console.log(util.inspect(babelTestAst.program.body[2], false, null, true /* enable colors */))
 
-    
-  
     expect.hasAssertions()
 
     const input = fs.readFileSync(

@@ -275,3 +275,76 @@ export function loadUnary(slice: Slice): Unary {
 	};
 	throw new Error('');
 }
+
+export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c;
+export type ParamDifNames_a = {
+  	kind: 'ParamDifNames_a';
+	arg0: number;
+  };
+export type ParamDifNames_b = {
+  	kind: 'ParamDifNames_b';
+	n: number;
+	x: ParamDifNames;
+	arg0: number;
+  };
+export type ParamDifNames_c = {
+  	kind: 'ParamDifNames_c';
+	m: number;
+	x: ParamDifNames;
+	arg0: number;
+};
+
+
+function paramDifNames_b_get_n(paramDifNames: ParamDifNames): number {
+	if (paramDifNames.kind == 'ParamDifNames_a') {
+		return 0;
+	}
+	if (paramDifNames.kind == 'ParamDifNames_b') {
+		return paramDifNames.n + 1;
+	}
+	if (paramDifNames.kind == 'ParamDifNames_c') {
+		return paramDifNames.m * 2;
+	}
+	throw new Error('Cannot identify n for ParamDifNames:b')
+}
+
+function paramDifNames_c_get_m(paramDifNames: ParamDifNames): number {
+	if (paramDifNames.kind == 'ParamDifNames_a') {
+		return 0;
+	}
+	if (paramDifNames.kind == 'ParamDifNames_b') {
+		return paramDifNames.n + 1;
+	}
+	if (paramDifNames.kind == 'ParamDifNames_c') {
+		return paramDifNames.m * 2;
+	}
+	throw new Error('Cannot identify n for ParamDifNames:c')
+}
+
+export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
+  	if (slice.preloadUint(1) == 0b0 && arg0 == 1) {
+  		return {
+  			kind: 'ParamDifNames_a',
+			arg0: 1,
+  		};
+  	};
+	if (slice.preloadUint(1) == 0b1 && arg0 == 2) {
+  		let x: ParamDifNames = loadParamDifNames(slice, 2);
+		return {
+  			kind: 'ParamDifNames_b',
+			n: paramDifNames_b_get_n(x),
+			x: x,
+			arg0: 2
+  		};
+  	};
+	if (slice.preloadUint(1) == 0b0 && arg0 == 3) {
+  		let x: ParamDifNames = loadParamDifNames(slice, 3);
+		return {
+  			kind: 'ParamDifNames_c',
+			m: paramDifNames_c_get_m(x),
+			x: x,
+			arg0: 3,
+  		};
+  	};
+	throw new Error('');
+  }

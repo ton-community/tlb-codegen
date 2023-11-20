@@ -73,3 +73,7 @@ b$1 {X:#} y:(## 2) = Const X;
 a$01 = ParamConst 2 1;
 b$01 = ParamConst 3 3;
 d$_ test:# = ParamConst 4 2;
+
+a$0 = ParamDifNames 1 ~0;
+b$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
+c$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
