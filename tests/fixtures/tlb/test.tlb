@@ -4,5 +4,9 @@ bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
 bool_true$1 b:# = TwoConstructors; 
 
 tmpb$_ y:(## 5) = FixedIntParam;
-tmpc$_ y:FixedIntParam c:# = TypedParam;
+tmpc$_ y:FixedIntParam c:# = TypedField;
 tmpd#_ y:FixedIntParam c:# = SharpConstructor;
+
+nothing$0 {TheType:Type} = Maybe TheType;
+just$1 {TheType:Type} value:TheType = Maybe TheType;
+thejust$_ x:(Maybe SharpConstructor) = TypedParam;

@@ -186,10 +186,9 @@ export type TheJust = {
 	x: Maybe<D>;
   };
 export function loadTheJust(slice: Slice): TheJust {
-  	let x: Maybe = loadMaybe<D>(slice, loadD);
+  	let x: Maybe<D> = loadMaybe<D>(slice, loadD);
 	return {
   		kind: 'TheJust',
-		x: loadMaybe<D>(slice, loadD),
 		x: x
   	};
   }
@@ -312,7 +311,6 @@ export function loadBitInteger(slice: Slice): BitInteger {
   	let t: Example = loadExample(slice, 4);
 	return {
   		kind: 'BitInteger',
-		t: loadExample(slice, 4),
 		t: t
   	};
   }
@@ -483,15 +481,12 @@ export type IntexArg2 = {
 	a: IntEx2<number>;
   };
 export function loadIntexArg2(slice: Slice, x: number): IntexArg2 {
-  	let a: IntEx2 = loadIntEx2<number>(slice, () => {
+  	let a: IntEx2<number> = loadIntEx2<number>(slice, () => {
   		return slice.loadInt((1 + x));
   	});
 	return {
   		kind: 'IntexArg2',
 		x: x,
-		a: loadIntEx2<number>(slice, () => {
-  			return slice.loadInt((1 + x));
-  		}),
 		a: a
   	};
   }
@@ -514,7 +509,6 @@ export function loadIntexArg(slice: Slice, x: number): IntexArg {
 	return {
   		kind: 'IntexArg',
 		x: x,
-		a: loadIntEx(slice, 7),
 		a: a
   	};
   }
@@ -553,15 +547,12 @@ export type Hashmap<X> = {
   };
 export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
-	let label: HmLabel = loadHmLabel(slice, n);
-	let node: HashmapNode = loadHashmapNode<X>(slice, m, loadX);
+	let node: HashmapNode<X> = loadHashmapNode<X>(slice, m, loadX);
 	return {
   		kind: 'Hashmap',
 		m: (n - l),
 		n: n,
 		label: label,
-		label: label,
-		node: loadHashmapNode<X>(slice, m, loadX),
 		node: node
   	};
   }
@@ -592,15 +583,13 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
   	};
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
-		let left: Hashmap = loadHashmap<X>(slice1, n, loadX);
+		let left: Hashmap<X> = loadHashmap<X>(slice1, n, loadX);
 		let slice2 = slice.loadRef().beginParse();
-		let right: Hashmap = loadHashmap<X>(slice2, n, loadX);
+		let right: Hashmap<X> = loadHashmap<X>(slice2, n, loadX);
 		return {
   			kind: 'HashmapNode_hmn_fork',
 			n: (n + 1),
-			left: loadHashmap<X>(slice1, n, loadX),
 			left: left,
-			right: loadHashmap<X>(slice2, n, loadX),
 			right: right
   		};
   	};
@@ -654,12 +643,10 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
-		let len: Unary = loadUnary(slice);
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
 			n: hmLabel_hml_short_get_n(len),
-			len: len,
 			len: len
   		};
   	};
@@ -730,11 +717,9 @@ export function loadUnary(slice: Slice): Unary {
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let x: Unary = loadUnary(slice);
-		let x: Unary = loadUnary(slice);
 		return {
   			kind: 'Unary_unary_succ',
 			n: unary_unary_succ_get_n(x),
-			x: x,
 			x: x
   		};
   	};
@@ -915,22 +900,18 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 2);
-		let x: ParamDifNames = loadParamDifNames(slice, 2);
 		return {
   			kind: 'ParamDifNames_b',
 			n: paramDifNames_b_get_n(x),
-			x: x,
 			x: x
   		};
   	};
 	if (((slice.preloadUint(1) == 0b0) && (arg0 == 3))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 3);
-		let x: ParamDifNames = loadParamDifNames(slice, 3);
 		return {
   			kind: 'ParamDifNames_c',
 			m: paramDifNames_c_get_m(x),
-			x: x,
 			x: x
   		};
   	};
@@ -1037,9 +1018,6 @@ export function loadManyComb(slice: Slice): ManyComb {
   	});
 	return {
   		kind: 'ManyComb',
-		y: loadOneComb(slice, () => {
-  			return slice.loadUint();
-  		}),
 		y: y
   	};
   }

@@ -7,7 +7,7 @@ import { ast } from '../src'
 import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -68,7 +68,11 @@ describe('Generating tlb code', () => {
         checkThrowOnStoreLoad(tcTooBigNumberB, loadTwoConstructors, storeTwoConstructors)
         let tcTrue: TwoConstructors = {'kind': 'TwoConstructors_bool_true', b: 1000}
         checkSameOnStoreLoad(tcTrue, loadTwoConstructors, storeTwoConstructors)
-        let typedConstructor: TypedParam = {'kind': 'TypedParam', c: 5, y: {'kind': 'FixedIntParam', y: 10}}
-        checkSameOnStoreLoad(typedConstructor, loadTypedParam, storeTypedParam);
+        let typedConstructor: TypedField = {'kind': 'TypedField', c: 5, y: {'kind': 'FixedIntParam', y: 10}}
+        checkSameOnStoreLoad(typedConstructor, loadTypedField, storeTypedField);
+        let typedParamValue: TypedParam = {'kind': 'TypedParam', x: {'kind': 'Maybe_just', value: {'kind': 'SharpConstructor', c: 5, y: {'kind': 'FixedIntParam', y: 6}}}}
+        checkSameOnStoreLoad(typedParamValue, loadTypedParam, storeTypedParam);
+        let typedParamNothing: TypedParam = {'kind': 'TypedParam', x:{'kind': 'Maybe_nothing'}}
+        checkSameOnStoreLoad(typedParamNothing, loadTypedParam, storeTypedParam);
     })
 })

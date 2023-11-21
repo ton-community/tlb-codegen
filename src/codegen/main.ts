@@ -64,9 +64,9 @@ export function getConstructorTag(tag: string | null): ConstructorTag | null {
   }
 }
 
-export function addLoadProperty(name: string, loadExpr: Expression, typeName: string, constructorLoadStatements: Statement[], subStructLoadProperties: ObjectProperty[]) {
+export function addLoadProperty(name: string, loadExpr: Expression, typeExpr: TypeExpression, constructorLoadStatements: Statement[], subStructLoadProperties: ObjectProperty[]) {
   let nameId = tIdentifier(name);
-  constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(nameId, loadExpr, tIdentifier(typeName))))
+  constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(nameId, loadExpr, typeExpr)))
   subStructLoadProperties.push(tObjectProperty(nameId, nameId)) 
 }
 
@@ -294,12 +294,8 @@ export function generate(tree: Program) {
   
                   subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
                   let tmpExp = tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
-                  if (!wasNegated) {
-                    subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tmpExp)) 
-                  } else {
-                    addLoadProperty(field.name, tmpExp, tmpTypeName, constructorLoadStatements, subStructLoadProperties);
-                  }
-                  addLoadProperty(field.name, tmpExp, tmpTypeName, constructorLoadStatements, subStructLoadProperties);
+
+                  addLoadProperty(field.name, tmpExp, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
 
                   subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))   
                 }
@@ -346,8 +342,7 @@ export function generate(tree: Program) {
                 }
                 if (argLoadExpr == undefined) {
                   subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
-                  addLoadProperty(field.name, tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]), field.expr.name, constructorLoadStatements, subStructLoadProperties)
-                  // subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), )) 
+                  addLoadProperty(field.name, tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]), tIdentifier(field.expr.name), constructorLoadStatements, subStructLoadProperties)
                   subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier(currentCell)])))   
                 }
               }
@@ -356,7 +351,7 @@ export function generate(tree: Program) {
                 if (fieldType == 'Slice') {
                   loadSt = tIdentifier(currentSlice)
                 }
-                addLoadProperty(field.name, loadSt, fieldType, constructorLoadStatements, subStructLoadProperties)
+                addLoadProperty(field.name, loadSt, tIdentifier(fieldType), constructorLoadStatements, subStructLoadProperties)
                 subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType))) 
                 let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
                 if (fieldType != 'BitString' && fieldType != 'Slice') {

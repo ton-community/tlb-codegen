@@ -89,24 +89,24 @@ export function storeFixedIntParam(fixedIntParam: FixedIntParam): (builder: Buil
   		builder.storeUint(fixedIntParam.y, 5);
   	};
   }
-export type TypedParam = {
-  	kind: 'TypedParam';
+export type TypedField = {
+  	kind: 'TypedField';
 	y: FixedIntParam;
 	c: number;
   };
-export function loadTypedParam(slice: Slice): TypedParam {
+export function loadTypedField(slice: Slice): TypedField {
   	let y: FixedIntParam = loadFixedIntParam(slice);
 	let c: number = slice.loadUint(32);
 	return {
-  		kind: 'TypedParam',
+  		kind: 'TypedField',
 		y: y,
 		c: c
   	};
   }
-export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => void {
+export function storeTypedField(typedField: TypedField): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeFixedIntParam(typedParam.y)(builder);
-		builder.storeUint(typedParam.c, 32);
+  		storeFixedIntParam(typedField.y)(builder);
+		builder.storeUint(typedField.c, 32);
   	};
   }
 export type SharpConstructor = {
@@ -127,5 +127,60 @@ export function storeSharpConstructor(sharpConstructor: SharpConstructor): (buil
   	return (builder: Builder) => {
   		storeFixedIntParam(sharpConstructor.y)(builder);
 		builder.storeUint(sharpConstructor.c, 32);
+  	};
+  }
+export type Maybe<TheType> = Maybe_nothing<TheType> | Maybe_just<TheType>;
+export type Maybe_nothing<TheType> = {
+  	kind: 'Maybe_nothing';
+  };
+export type Maybe_just<TheType> = {
+  	kind: 'Maybe_just';
+	value: TheType;
+  };
+export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'Maybe_nothing'
+  		};
+  	};
+	if ((slice.preloadUint(1) == 0b1)) {
+  		slice.loadUint(1);
+		let value: TheType = loadTheType(slice);
+		return {
+  			kind: 'Maybe_just',
+			value: value
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theType: TheType) => (builder: Builder) => void): (builder: Builder) => void {
+  	if ((maybe.kind == 'Maybe_nothing')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+  		};
+  	};
+	if ((maybe.kind == 'Maybe_just')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+			storeTheType(maybe.value)(builder);
+  		};
+  	};
+	throw new Error('');
+  }
+export type TypedParam = {
+  	kind: 'TypedParam';
+	x: Maybe<SharpConstructor>;
+  };
+export function loadTypedParam(slice: Slice): TypedParam {
+  	let x: Maybe<SharpConstructor> = loadMaybe<SharpConstructor>(slice, loadSharpConstructor);
+	return {
+  		kind: 'TypedParam',
+		x: x
+  	};
+  }
+export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeMaybe<SharpConstructor>(typedParam.x, storeSharpConstructor)(builder);
   	};
   }
