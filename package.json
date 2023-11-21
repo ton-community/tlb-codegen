@@ -29,7 +29,7 @@
   "homepage": "https://github.com/ton-community/tlb-parser#readme",
   "dependencies": {
     "@babel/generator": "^7.23.0",
-    "@babel/parser": "^7.23.0",
+    "@babel/parser": "^7.23.4",
     "@babel/types": "^7.23.0",
     "ohm-js": "^16.6.0",
     "ton": "^13.6.1"
