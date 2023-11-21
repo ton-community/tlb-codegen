@@ -6,14 +6,21 @@ import { parse } from '../src'
 import { ast } from '../src'
 import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
-import { Slice } from 'ton'
+import { BitString, Slice } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
 
 function deepEqual(object1: any, object2: any) {
+    if (object1 instanceof BitString && object2 instanceof BitString) {
+        return object1.equals(object2);
+    }
+    if (object1 instanceof Slice && object2 instanceof Slice) {
+        return object1.toString() == object2.toString();
+    }
+
     const keys1 = Object.keys(object1);
     const keys2 = Object.keys(object2);
 
@@ -132,5 +139,47 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
             slice.preloadRef().beginParse();
         });
+
+        let intBitsOutside: IntBitsOutside = {
+            'kind': 'IntBitsOutside', 
+            x: {
+                'kind': 'IntBitsInside', 
+                a: {
+                    'kind': 'IntBits', arg: 3, d: 5, 
+                    g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2), 
+                    x: beginCell().storeUint(76, 10).endCell().beginParse()
+                },
+                x: 6
+            }
+        }
+        checkSameOnStoreLoad(intBitsOutside, loadIntBitsOutside, storeIntBitsOutside);
+
+        let intBitsParametrizedOutside: IntBitsParametrizedOutside = {
+            kind: 'IntBitsParametrizedOutside', 
+            x: {
+                kind: 'IntBitsParametrizedInside', 
+                a: {
+                    kind: 'IntBitsParametrized', e: 5, f: 3, h: 7, j: 9, k: 10,
+                    i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10), 
+                    tc: beginCell().storeUint(76, 10).endCell().beginParse()
+                },
+                x: 5
+            }
+        }
+        checkSameOnStoreLoad(intBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside);
+
+        let intBitsParametrizedOutsideIncorrect: IntBitsParametrizedOutside = {
+            kind: 'IntBitsParametrizedOutside', 
+            x: {
+                kind: 'IntBitsParametrizedInside', 
+                a: {
+                    kind: 'IntBitsParametrized', e: 6, f: 3, h: 7, j: 9, k: 10,
+                    i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10), 
+                    tc: beginCell().storeUint(76, 10).endCell().beginParse()
+                },
+                x: 5
+            }
+        }
+        checkDifferOnStoreLoad(intBitsParametrizedOutsideIncorrect, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside);
     })
 })

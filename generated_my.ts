@@ -486,13 +486,13 @@ export type IntexArg2 = {
 	x: number;
 	a: IntEx2<number>;
   };
-export function loadIntexArg2(slice: Slice, x: number): IntexArg2 {
+export function loadIntexArg2(slice: Slice, arg0: number): IntexArg2 {
   	let a: IntEx2<number> = loadIntEx2<number>(slice, () => {
   		return slice.loadInt((1 + x));
   	});
 	return {
   		kind: 'IntexArg2',
-		x: x,
+		x: (arg0 / 2),
 		a: a
   	};
   }

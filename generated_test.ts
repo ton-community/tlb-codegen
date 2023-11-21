@@ -454,7 +454,7 @@ export type IntBitsParametrizedInside = {
 	a: IntBitsParametrized;
   };
 export function loadIntBitsParametrizedInside(slice: Slice, x: number): IntBitsParametrizedInside {
-  	let a: IntBitsParametrized = loadIntBitsParametrized(slice, 7);
+  	let a: IntBitsParametrized = loadIntBitsParametrized(slice, x);
 	return {
   		kind: 'IntBitsParametrizedInside',
 		x: x,
