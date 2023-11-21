@@ -6,8 +6,9 @@ import { parse } from '../src'
 import { ast } from '../src'
 import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
+import { Slice } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -39,10 +40,14 @@ function isObject(object: any) {
     return object != null && typeof object === 'object';
 }
 
-function checkSameOnStoreLoad(expected: any, load: any, store: any) {
+function checkSameOnStoreLoad(expected: any, load: any, store: any, expectCell?: any) {
     let cell = beginCell();
     store(expected)(cell);
-    let actual = load(cell.endCell().beginParse())
+    let slice = cell.endCell().beginParse();
+    if (expectCell) {
+        expectCell(slice)
+    }
+    let actual = load(slice)
     expect(deepEqual(expected, actual)).toBeTruthy()
 }
 
@@ -53,11 +58,15 @@ function checkDifferOnStoreLoad(expected: any, load: any, store: any) {
     expect(deepEqual(expected, actual)).toBeFalsy()
 }
 
-function checkThrowOnStoreLoad(expected: any, load: any, store: any) {
+function checkThrowOnStoreLoad(expected: any, load: any, store: any, expectCell?: any) {
     const t = () => {
         let cell = beginCell();
         store(expected)(cell);
-        let actual = load(cell.endCell().beginParse())
+        let slice = cell.endCell().beginParse();
+        if (expectCell) {
+            expectCell(slice)
+        }
+        let actual = load(slice)
         return actual;
     }
     expect(t).toThrow(Error);
@@ -93,5 +102,12 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(complexTypedField, loadComplexTypedField, storeComplexTypedField);
         let cellTypedField: CellTypedField = {'kind': 'CellTypedField', a:{'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: 10}}}
         checkSameOnStoreLoad(cellTypedField, loadCellTypedField, storeCellTypedField);
+        let cellsSimple: CellsSimple = {'kind': 'CellsSimple', a: 5, b: 3, c: 4, d: 100, e: 4, q: 1, t: 3}
+        checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice.preloadRef();
+        });
+        checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice.preloadRef().beginParse().preloadRef();
+        });
     })
 })

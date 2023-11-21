@@ -287,3 +287,218 @@ export function storeCellTypedField(cellTypedField: CellTypedField): (builder: B
 		builder.storeRef(cell1);
   	};
   }
+export type CellsSimple = {
+  	kind: 'CellsSimple';
+	t: number;
+	q: number;
+	a: number;
+	e: number;
+	b: number;
+	d: number;
+	c: number;
+  };
+export function loadCellsSimple(slice: Slice): CellsSimple {
+  	let t: number = slice.loadUint(32);
+	let slice1 = slice.loadRef().beginParse();
+	let q: number = slice1.loadUint(32);
+	let slice2 = slice.loadRef().beginParse();
+	let a: number = slice2.loadUint(32);
+	let slice21 = slice2.loadRef().beginParse();
+	let e: number = slice21.loadUint(32);
+	let slice22 = slice2.loadRef().beginParse();
+	let b: number = slice22.loadUint(32);
+	let d: number = slice22.loadUint(32);
+	let slice221 = slice22.loadRef().beginParse();
+	let c: number = slice221.loadUint(32);
+	return {
+  		kind: 'CellsSimple',
+		t: t,
+		q: q,
+		a: a,
+		e: e,
+		b: b,
+		d: d,
+		c: c
+  	};
+  }
+export function storeCellsSimple(cellsSimple: CellsSimple): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(cellsSimple.t, 32);
+		let cell1 = beginCell();
+		cell1.storeUint(cellsSimple.q, 32);
+		builder.storeRef(cell1);
+		let cell2 = beginCell();
+		cell2.storeUint(cellsSimple.a, 32);
+		let cell21 = beginCell();
+		cell21.storeUint(cellsSimple.e, 32);
+		cell2.storeRef(cell21);
+		let cell22 = beginCell();
+		cell22.storeUint(cellsSimple.b, 32);
+		cell22.storeUint(cellsSimple.d, 32);
+		let cell221 = beginCell();
+		cell221.storeUint(cellsSimple.c, 32);
+		cell22.storeRef(cell221);
+		cell2.storeRef(cell22);
+		builder.storeRef(cell2);
+  	};
+  }
+export type IntBits<Arg> = {
+  	kind: 'IntBits';
+	d: number;
+	g: BitString;
+	arg: Arg;
+	x: Slice;
+  };
+export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntBits<Arg> {
+  	let d: number = slice.loadInt(11);
+	let g: BitString = slice.loadBits(2);
+	let arg: Arg = loadArg(slice);
+	let x: Slice = slice;
+	return {
+  		kind: 'IntBits',
+		d: d,
+		g: g,
+		arg: arg,
+		x: x
+  	};
+  }
+export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeInt(intBits.d, 11);
+		builder.storeBits(intBits.g);
+		storeArg(intBits.arg)(builder);
+		builder.storeSlice(intBits.x);
+  	};
+  }
+export type IntBitsInside = {
+  	kind: 'IntBitsInside';
+	x: number;
+	a: IntBits<number>;
+  };
+export function loadIntBitsInside(slice: Slice, x: number): IntBitsInside {
+  	let a: IntBits<number> = loadIntBits<number>(slice, () => {
+  		return slice.loadInt((1 + x));
+  	});
+	return {
+  		kind: 'IntBitsInside',
+		x: x,
+		a: a
+  	};
+  }
+export function storeIntBitsInside(intBitsInside: IntBitsInside): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeIntBits<number>(intBitsInside.a, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeInt(arg, (1 + intBitsInside.x));
+  			};
+  		})(builder);
+  	};
+  }
+export type IntBitsOutside = {
+  	kind: 'IntBitsOutside';
+	x: IntBitsInside;
+  };
+export function loadIntBitsOutside(slice: Slice): IntBitsOutside {
+  	let x: IntBitsInside = loadIntBitsInside(slice, 6);
+	return {
+  		kind: 'IntBitsOutside',
+		x: x
+  	};
+  }
+export function storeIntBitsOutside(intBitsOutside: IntBitsOutside): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeIntBitsInside(intBitsOutside.x)(builder);
+  	};
+  }
+export type IntBitsParametrized = {
+  	kind: 'IntBitsParametrized';
+	e: number;
+	h: number;
+	f: number;
+	i: BitString;
+	j: number;
+	k: number;
+	tc: Slice;
+  };
+export function loadIntBitsParametrized(slice: Slice, e: number): IntBitsParametrized {
+  	let h: number = slice.loadInt((e * 8));
+	let f: number = slice.loadUint((7 * e));
+	let i: BitString = slice.loadBits((5 + e));
+	let j: number = slice.loadInt(5);
+	let k: number = slice.loadUint(e);
+	let tc: Slice = slice;
+	return {
+  		kind: 'IntBitsParametrized',
+		e: e,
+		h: h,
+		f: f,
+		i: i,
+		j: j,
+		k: k,
+		tc: tc
+  	};
+  }
+export function storeIntBitsParametrized(intBitsParametrized: IntBitsParametrized): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeInt(intBitsParametrized.h, (intBitsParametrized.e * 8));
+		builder.storeUint(intBitsParametrized.f, (7 * intBitsParametrized.e));
+		builder.storeBits(intBitsParametrized.i);
+		builder.storeInt(intBitsParametrized.j, 5);
+		builder.storeUint(intBitsParametrized.k, intBitsParametrized.e);
+		builder.storeSlice(intBitsParametrized.tc);
+  	};
+  }
+export type IntBitsParametrizedInside = {
+  	kind: 'IntBitsParametrizedInside';
+	x: number;
+	a: IntBitsParametrized;
+  };
+export function loadIntBitsParametrizedInside(slice: Slice, x: number): IntBitsParametrizedInside {
+  	let a: IntBitsParametrized = loadIntBitsParametrized(slice, 7);
+	return {
+  		kind: 'IntBitsParametrizedInside',
+		x: x,
+		a: a
+  	};
+  }
+export function storeIntBitsParametrizedInside(intBitsParametrizedInside: IntBitsParametrizedInside): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeIntBitsParametrized(intBitsParametrizedInside.a)(builder);
+  	};
+  }
+export type IntBitsParametrizedOutside = {
+  	kind: 'IntBitsParametrizedOutside';
+	x: IntBitsParametrizedInside;
+  };
+export function loadIntBitsParametrizedOutside(slice: Slice): IntBitsParametrizedOutside {
+  	let x: IntBitsParametrizedInside = loadIntBitsParametrizedInside(slice, 5);
+	return {
+  		kind: 'IntBitsParametrizedOutside',
+		x: x
+  	};
+  }
+export function storeIntBitsParametrizedOutside(intBitsParametrizedOutside: IntBitsParametrizedOutside): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeIntBitsParametrizedInside(intBitsParametrizedOutside.x)(builder);
+  	};
+  }
+export type LessThan = {
+  	kind: 'LessThan';
+	x: number;
+	y: number;
+  };
+export function loadLessThan(slice: Slice): LessThan {
+  	let x: number = slice.loadUint(2);
+	let y: number = slice.loadUint(3);
+	return {
+  		kind: 'LessThan',
+		x: x,
+		y: y
+  	};
+  }
+export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(lessThan.x, 2);
+		builder.storeUint(lessThan.y, 3);
+  	};
+  }
