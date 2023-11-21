@@ -69,6 +69,6 @@ describe('Generating tlb code', () => {
         let tcTrue: TwoConstructors = {'kind': 'TwoConstructors_bool_true', b: 1000}
         checkSameOnStoreLoad(tcTrue, loadTwoConstructors, storeTwoConstructors)
         let typedConstructor: TypedParam = {'kind': 'TypedParam', c: 5, y: {'kind': 'FixedIntParam', y: 10}}
-        // checkSameOnStoreLoad(typedConstructor, loadTypedParam, storeTypedParam);
+        checkSameOnStoreLoad(typedConstructor, loadTypedParam, storeTypedParam);
     })
 })
