@@ -102,12 +102,35 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(complexTypedField, loadComplexTypedField, storeComplexTypedField);
         let cellTypedField: CellTypedField = {'kind': 'CellTypedField', a:{'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: 10}}}
         checkSameOnStoreLoad(cellTypedField, loadCellTypedField, storeCellTypedField);
+    })
+
+    test('Slices', () => {
         let cellsSimple: CellsSimple = {'kind': 'CellsSimple', a: 5, b: 3, c: 4, d: 100, e: 4, q: 1, t: 3}
         checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
-            slice.preloadRef();
+            slice = slice.clone()
+            slice.loadRef();
+            let slice2 = slice.loadRef().beginParse();
+            slice2.loadRef();
+            let slice22 = slice2.loadRef().beginParse();
+            let slice221 = slice22.loadRef();
+        });
+        checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice = slice.clone()
+            slice.loadRef();
+            let slice2 = slice.loadRef().beginParse();
+            slice2.loadRef();
+            let slice22 = slice2.loadRef().beginParse();
+            let slice221 = slice22.loadRef();
+            let slice2211 = slice221.beginParse().loadRef();
+        });
+        checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice.loadRef();
         });
         checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
             slice.preloadRef().beginParse().preloadRef();
+        });
+        checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice.preloadRef().beginParse();
         });
     })
 })
