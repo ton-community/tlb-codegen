@@ -190,7 +190,6 @@ export type BitLenArg = {
 	value: number;
   };
 export function loadBitLenArg(slice: Slice, x: number): BitLenArg {
-	console.log(slice)
   	let value: number = slice.loadUint(x);
 	return {
   		kind: 'BitLenArg',
@@ -242,7 +241,7 @@ export type ExprArgUser = {
 	t: ExprArg;
   };
 export function loadExprArgUser(slice: Slice): ExprArgUser {
-  	let t: ExprArg = loadExprArg(slice, 4);
+  	let t: ExprArg = loadExprArg(slice, 6);
 	return {
   		kind: 'ExprArgUser',
 		t: t

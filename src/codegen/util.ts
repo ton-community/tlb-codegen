@@ -88,7 +88,6 @@ export function reorganizeExpression(mathExpr: MyMathExpr, variable: string): My
             } else if (rightSide.operation == '+') {
                 op = '-'
             } else {
-                console.log(toCode(convertToAST(mathExpr), {tabs: 0}))
                 throw new Error('invalid operation')
             }
             let withVariable = undefined;
@@ -337,12 +336,12 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                 } else if (element instanceof NumberExpr) {
                     parameter = { variable: { negated: false, const: true, type: '#', name: '' }, expression: tNumericLiteral(element.num) }
                 } else {
-                    // throw new Error('Cannot identify combinator arg: ' + element)
+                    throw new Error('Cannot identify combinator arg: ' + element)
                 }
-                if (parameter) {
+                // if (parameter) {
                     constructor.parameters.push(parameter);
                     constructor.parametersMap.set(parameter.variable.name, parameter);
-                }
+                // }
             });
             fillNegationExpressions(constructor);
         });

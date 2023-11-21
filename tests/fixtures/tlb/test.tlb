@@ -15,4 +15,4 @@ a$_ {x:#} value:(## x) = BitLenArg x;
 a$_ t:(BitLenArg 4) = BitLenArgUser;
 
 a$_ {x:#} value:(## x) = ExprArg (2 + x);
-a$_ t:(ExprArg 4) = ExprArgUser;
+a$_ t:(ExprArg 6) = ExprArgUser;

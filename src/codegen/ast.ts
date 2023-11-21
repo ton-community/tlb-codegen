@@ -45,7 +45,7 @@ export type TLBVariable = {
 
 export type TLBParameter = {
     variable: TLBVariable,
-    expression: Expression
+    expression: Expression,
 }
 
 export type TLBConstructor = {
