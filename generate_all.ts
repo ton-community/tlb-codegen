@@ -24,4 +24,4 @@ function generateCode(filename: string) {
 
 generateCode('test')
 generateCode('my')
-generateCode('block')
+// generateCode('block')

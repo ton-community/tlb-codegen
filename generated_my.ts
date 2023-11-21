@@ -21,10 +21,8 @@ export type Simple = {
 	b: number;
   };
 export function loadSimple(slice: Slice): Simple {
-  	let a: number;
-	(a = slice.loadUint(32));
-	let b: number;
-	(b = slice.loadUint(32));
+  	let a: number = slice.loadUint(32);
+	let b: number = slice.loadUint(32);
 	return {
   		kind: 'Simple',
 		a: a,
@@ -51,12 +49,9 @@ export type TwoConstructors_bool_true = {
 export function loadTwoConstructors(slice: Slice): TwoConstructors {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
-		let a: number;
-		(a = slice.loadUint(32));
-		let b: number;
-		(b = slice.loadUint(7));
-		let c: number;
-		(c = slice.loadUint(32));
+		let a: number = slice.loadUint(32);
+		let b: number = slice.loadUint(7);
+		let c: number = slice.loadUint(32);
 		return {
   			kind: 'TwoConstructors_bool_false',
 			a: a,
@@ -66,8 +61,7 @@ export function loadTwoConstructors(slice: Slice): TwoConstructors {
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
-		let b: number;
-		(b = slice.loadUint(32));
+		let b: number = slice.loadUint(32);
 		return {
   			kind: 'TwoConstructors_bool_true',
 			b: b
@@ -97,8 +91,7 @@ export type Y = {
 	y: number;
   };
 export function loadY(slice: Slice): Y {
-  	let y: number;
-	(y = slice.loadUint(5));
+  	let y: number = slice.loadUint(5);
 	return {
   		kind: 'Y',
 		y: y
@@ -115,8 +108,7 @@ export type C = {
 	c: number;
   };
 export function loadC(slice: Slice): C {
-  	let c: number;
-	(c = slice.loadUint(32));
+  	let c: number = slice.loadUint(32);
 	return {
   		kind: 'C',
 		y: loadY(slice),
@@ -135,8 +127,7 @@ export type D = {
 	c: number;
   };
 export function loadD(slice: Slice): D {
-  	let c: number;
-	(c = slice.loadUint(32));
+  	let c: number = slice.loadUint(32);
 	return {
   		kind: 'D',
 		y: loadY(slice),
@@ -363,25 +354,18 @@ export type A = {
 	c: number;
   };
 export function loadA(slice: Slice): A {
-  	let t: number;
-	(t = slice.loadUint(32));
+  	let t: number = slice.loadUint(32);
 	let slice1 = slice.loadRef().beginParse();
-	let q: number;
-	(q = slice1.loadUint(32));
+	let q: number = slice1.loadUint(32);
 	let slice2 = slice.loadRef().beginParse();
-	let a: number;
-	(a = slice2.loadUint(32));
+	let a: number = slice2.loadUint(32);
 	let slice21 = slice2.loadRef().beginParse();
-	let e: number;
-	(e = slice21.loadUint(32));
+	let e: number = slice21.loadUint(32);
 	let slice22 = slice2.loadRef().beginParse();
-	let b: number;
-	(b = slice22.loadUint(32));
-	let d: number;
-	(d = slice22.loadUint(32));
+	let b: number = slice22.loadUint(32);
+	let d: number = slice22.loadUint(32);
 	let slice221 = slice22.loadRef().beginParse();
-	let c: number;
-	(c = slice221.loadUint(32));
+	let c: number = slice221.loadUint(32);
 	return {
   		kind: 'A',
 		t: t,
@@ -422,12 +406,9 @@ export type IntEx2<Arg> = {
 	x: Slice;
   };
 export function loadIntEx2<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntEx2<Arg> {
-  	let d: number;
-	(d = slice.loadInt(11));
-	let g: BitString;
-	(g = slice.loadBits(2));
-	let x: Slice;
-	(x = slice);
+  	let d: number = slice.loadInt(11);
+	let g: BitString = slice.loadBits(2);
+	let x: Slice = slice;
 	return {
   		kind: 'IntEx2',
 		d: d,
@@ -455,18 +436,12 @@ export type IntEx = {
 	tc: Slice;
   };
 export function loadIntEx(slice: Slice, e: number): IntEx {
-  	let h: number;
-	(h = slice.loadInt((e * 8)));
-	let f: number;
-	(f = slice.loadUint((7 * e)));
-	let i: BitString;
-	(i = slice.loadBits((5 + e)));
-	let j: number;
-	(j = slice.loadInt(5));
-	let k: number;
-	(k = slice.loadUint(e));
-	let tc: Slice;
-	(tc = slice);
+  	let h: number = slice.loadInt((e * 8));
+	let f: number = slice.loadUint((7 * e));
+	let i: BitString = slice.loadBits((5 + e));
+	let j: number = slice.loadInt(5);
+	let k: number = slice.loadUint(e);
+	let tc: Slice = slice;
 	return {
   		kind: 'IntEx',
 		e: e,
@@ -534,10 +509,8 @@ export type LessThan = {
 	y: number;
   };
 export function loadLessThan(slice: Slice): LessThan {
-  	let x: number;
-	(x = slice.loadUint(2));
-	let y: number;
-	(y = slice.loadUint(3));
+  	let x: number = slice.loadUint(2);
+	let y: number = slice.loadUint(3);
 	return {
   		kind: 'LessThan',
 		x: x,
@@ -668,8 +641,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
-		let v: BitString;
-		(v = slice.loadBits(1));
+		let v: BitString = slice.loadBits(1);
 		return {
   			kind: 'HmLabel_hml_same',
 			m: m,
@@ -762,8 +734,7 @@ export type ConstT_b = {
 export function loadConstT(slice: Slice, X: number): ConstT {
   	if (((slice.preloadUint(1) == 0b0) && (X == 1))) {
   		slice.loadUint(1);
-		let x: number;
-		(x = slice.loadUint(32));
+		let x: number = slice.loadUint(32);
 		return {
   			kind: 'ConstT_a',
 			x: x
@@ -771,8 +742,7 @@ export function loadConstT(slice: Slice, X: number): ConstT {
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
-		let y: number;
-		(y = slice.loadUint(2));
+		let y: number = slice.loadUint(2);
 		return {
   			kind: 'ConstT_b',
 			X: X,
@@ -829,8 +799,7 @@ export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamC
   		};
   	};
 	if (((arg0 == 4) && (arg1 == 2))) {
-  		let test: number;
-		(test = slice.loadUint(32));
+  		let test: number = slice.loadUint(32);
 		return {
   			kind: 'ParamConst_d',
 			test: test
@@ -965,8 +934,7 @@ export type Same_t<X> = {
 export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
-		let x: number;
-		(x = slice.loadUint(32));
+		let x: number = slice.loadUint(32);
 		return {
   			kind: 'Same_g',
 			Y: x,
@@ -975,10 +943,8 @@ export function loadSame<X>(slice: Slice, loadX: (slice: Slice) => X): Same<X> {
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
-		let t: number;
-		(t = slice.loadUint(32));
-		let z: number;
-		(z = slice.loadUint(32));
+		let t: number = slice.loadUint(32);
+		let z: number = slice.loadUint(32);
 		return {
   			kind: 'Same_t',
 			Y: (t / 2),
@@ -1010,8 +976,7 @@ export type OneComb<A> = {
 	x: A;
   };
 export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
-  	let t: number;
-	(t = slice.loadUint(32));
+  	let t: number = slice.loadUint(32);
 	return {
   		kind: 'OneComb',
 		t: t,

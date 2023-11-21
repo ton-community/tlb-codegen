@@ -8,10 +8,8 @@ export type Simple = {
 	b: number;
   };
 export function loadSimple(slice: Slice): Simple {
-  	let a: number;
-	(a = slice.loadUint(32));
-	let b: number;
-	(b = slice.loadUint(32));
+  	let a: number = slice.loadUint(32);
+	let b: number = slice.loadUint(32);
 	return {
   		kind: 'Simple',
 		a: a,
@@ -38,12 +36,9 @@ export type TwoConstructors_bool_true = {
 export function loadTwoConstructors(slice: Slice): TwoConstructors {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
-		let a: number;
-		(a = slice.loadUint(32));
-		let b: number;
-		(b = slice.loadUint(7));
-		let c: number;
-		(c = slice.loadUint(32));
+		let a: number = slice.loadUint(32);
+		let b: number = slice.loadUint(7);
+		let c: number = slice.loadUint(32);
 		return {
   			kind: 'TwoConstructors_bool_false',
 			a: a,
@@ -53,8 +48,7 @@ export function loadTwoConstructors(slice: Slice): TwoConstructors {
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
-		let b: number;
-		(b = slice.loadUint(32));
+		let b: number = slice.loadUint(32);
 		return {
   			kind: 'TwoConstructors_bool_true',
 			b: b
@@ -84,8 +78,7 @@ export type FixedIntParam = {
 	y: number;
   };
 export function loadFixedIntParam(slice: Slice): FixedIntParam {
-  	let y: number;
-	(y = slice.loadUint(5));
+  	let y: number = slice.loadUint(5);
 	return {
   		kind: 'FixedIntParam',
 		y: y
@@ -102,8 +95,7 @@ export type TypedParam = {
 	c: number;
   };
 export function loadTypedParam(slice: Slice): TypedParam {
-  	let c: number;
-	(c = slice.loadUint(32));
+  	let c: number = slice.loadUint(32);
 	return {
   		kind: 'TypedParam',
 		y: loadFixedIntParam(slice),
@@ -122,8 +114,7 @@ export type SharpConstructor = {
 	c: number;
   };
 export function loadSharpConstructor(slice: Slice): SharpConstructor {
-  	let c: number;
-	(c = slice.loadUint(32));
+  	let c: number = slice.loadUint(32);
 	return {
   		kind: 'SharpConstructor',
 		y: loadFixedIntParam(slice),

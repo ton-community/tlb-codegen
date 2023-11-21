@@ -348,8 +348,7 @@ export function generate(tree: Program) {
                 if (fieldType == 'Slice') {
                   loadSt = tIdentifier(currentSlice)
                 }
-                constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), undefined, tIdentifier(fieldType))))
-                constructorLoadStatements.push(tExpressionStatement(tBinaryExpression(tIdentifier(field.name), '=', loadSt)))
+                constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), loadSt, tIdentifier(fieldType))))
                 subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType))) 
                 subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
                 let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
