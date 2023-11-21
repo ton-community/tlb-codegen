@@ -278,11 +278,11 @@ export type Example1 = {
 	x: number;
 	value: number;
   };
-export function loadExample1(slice: Slice, x: number): Example1 {
-  	let value: number = slice.loadUint(x);
+export function loadExample1(slice: Slice, arg0: number): Example1 {
+  	let value: number = slice.loadUint(arg0);
 	return {
   		kind: 'Example1',
-		x: x,
+		x: arg0,
 		value: value
   	};
   }
@@ -296,11 +296,11 @@ export type Example = {
 	x: number;
 	value: number;
   };
-export function loadExample(slice: Slice, x: number): Example {
-  	let value: number = slice.loadUint((2 + x));
+export function loadExample(slice: Slice, arg0: number): Example {
+  	let value: number = slice.loadUint((arg0 - 2));
 	return {
   		kind: 'Example',
-		x: (2 + x),
+		x: (arg0 - 2),
 		value: value
   	};
   }
@@ -453,7 +453,7 @@ export type IntEx = {
 	k: number;
 	tc: Slice;
   };
-export function loadIntEx(slice: Slice, e: number): IntEx {
+export function loadIntEx(slice: Slice, arg0: number): IntEx {
   	let h: number = slice.loadInt((e * 8));
 	let f: number = slice.loadUint((7 * e));
 	let i: BitString = slice.loadBits((5 + e));
@@ -462,7 +462,7 @@ export function loadIntEx(slice: Slice, e: number): IntEx {
 	let tc: Slice = slice;
 	return {
   		kind: 'IntEx',
-		e: e,
+		e: arg0,
 		h: h,
 		f: f,
 		i: i,
@@ -486,13 +486,13 @@ export type IntexArg2 = {
 	x: number;
 	a: IntEx2<number>;
   };
-export function loadIntexArg2(slice: Slice, x: number): IntexArg2 {
+export function loadIntexArg2(slice: Slice, arg0: number): IntexArg2 {
   	let a: IntEx2<number> = loadIntEx2<number>(slice, () => {
   		return slice.loadInt((1 + x));
   	});
 	return {
   		kind: 'IntexArg2',
-		x: x,
+		x: arg0,
 		a: a
   	};
   }
@@ -510,11 +510,11 @@ export type IntexArg = {
 	x: number;
 	a: IntEx;
   };
-export function loadIntexArg(slice: Slice, x: number): IntexArg {
+export function loadIntexArg(slice: Slice, arg0: number): IntexArg {
   	let a: IntEx = loadIntEx(slice, 7);
 	return {
   		kind: 'IntexArg',
-		x: x,
+		x: arg0,
 		a: a
   	};
   }
@@ -551,13 +551,13 @@ export type Hashmap<X> = {
 	label: HmLabel;
 	node: HashmapNode<X>;
   };
-export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
+export function loadHashmap<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): Hashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
 	let node: HashmapNode<X> = loadHashmapNode<X>(slice, m, loadX);
 	return {
   		kind: 'Hashmap',
 		m: (n - l),
-		n: n,
+		n: arg0,
 		label: label,
 		node: node
   	};
@@ -579,8 +579,8 @@ export type HashmapNode_hmn_fork<X> = {
 	left: Hashmap<X>;
 	right: Hashmap<X>;
   };
-export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapNode<X> {
-  	if ((n == 0)) {
+export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): HashmapNode<X> {
+  	if ((n == arg0)) {
   		let value: X = loadX(slice);
 		return {
   			kind: 'HashmapNode_hmn_leaf',
@@ -594,7 +594,7 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
 		let right: Hashmap<X> = loadHashmap<X>(slice2, n, loadX);
 		return {
   			kind: 'HashmapNode_hmn_fork',
-			n: (n + 1),
+			n: (arg0 - 1),
 			left: left,
 			right: right
   		};
@@ -645,13 +645,13 @@ export type HmLabel_hml_same = {
 	m: number;
 	v: BitString;
   };
-export function loadHmLabel(slice: Slice, m: number): HmLabel {
+export function loadHmLabel(slice: Slice, arg1: number): HmLabel {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
 		return {
   			kind: 'HmLabel_hml_short',
-			m: m,
+			m: arg1,
 			n: hmLabel_hml_short_get_n(len),
 			len: len
   		};
@@ -660,7 +660,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   		slice.loadUint(2);
 		return {
   			kind: 'HmLabel_hml_long',
-			m: m
+			m: arg1
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
@@ -668,7 +668,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 		let v: BitString = slice.loadBits(1);
 		return {
   			kind: 'HmLabel_hml_same',
-			m: m,
+			m: arg1,
 			v: v
   		};
   	};
@@ -755,8 +755,8 @@ export type ConstT_b = {
 	X: number;
 	y: number;
   };
-export function loadConstT(slice: Slice, X: number): ConstT {
-  	if (((slice.preloadUint(1) == 0b0) && (X == 1))) {
+export function loadConstT(slice: Slice, arg0: number): ConstT {
+  	if (((slice.preloadUint(1) == 0b0) && (X == arg0))) {
   		slice.loadUint(1);
 		let x: number = slice.loadUint(32);
 		return {
@@ -769,7 +769,7 @@ export function loadConstT(slice: Slice, X: number): ConstT {
 		let y: number = slice.loadUint(2);
 		return {
   			kind: 'ConstT_b',
-			X: X,
+			X: arg0,
 			y: y
   		};
   	};
@@ -805,24 +805,24 @@ export type ParamConst_d = {
 	test: number;
   };
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
-  	if (((arg0 == 1) && (arg1 == 1))) {
+  	if (((arg0 == arg0) && (arg1 == arg1))) {
   		return {
   			kind: 'ParamConst_с'
   		};
   	};
-	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1)))) {
+	if (((slice.preloadUint(2) == 0b01) && ((arg0 == arg0) && (arg1 == arg1)))) {
   		slice.loadUint(2);
 		return {
   			kind: 'ParamConst_a'
   		};
   	};
-	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 3) && (arg1 == 3)))) {
+	if (((slice.preloadUint(2) == 0b01) && ((arg0 == arg0) && (arg1 == arg1)))) {
   		slice.loadUint(2);
 		return {
   			kind: 'ParamConst_b'
   		};
   	};
-	if (((arg0 == 4) && (arg1 == 2))) {
+	if (((arg0 == arg0) && (arg1 == arg1))) {
   		let test: number = slice.loadUint(32);
 		return {
   			kind: 'ParamConst_d',
@@ -897,13 +897,13 @@ export type ParamDifNames_c = {
 	x: ParamDifNames;
   };
 export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
-  	if (((slice.preloadUint(1) == 0b0) && (arg0 == 1))) {
+  	if (((slice.preloadUint(1) == 0b0) && (arg0 == arg0))) {
   		slice.loadUint(1);
 		return {
   			kind: 'ParamDifNames_a'
   		};
   	};
-	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
+	if (((slice.preloadUint(1) == 0b1) && (arg0 == arg0))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 2);
 		return {
@@ -912,7 +912,7 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 			x: x
   		};
   	};
-	if (((slice.preloadUint(1) == 0b0) && (arg0 == 3))) {
+	if (((slice.preloadUint(1) == 0b0) && (arg0 == arg0))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 3);
 		return {

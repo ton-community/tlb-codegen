@@ -28,7 +28,6 @@ export class MyVarExpr {
         readonly variables: Set<string>,
         readonly hasNeg: boolean
     ) {
-
     }
 }
 
@@ -46,6 +45,7 @@ export type TLBVariable = {
 export type TLBParameter = {
     variable: TLBVariable,
     expression: Expression,
+    argName?: string,
 }
 
 export type TLBConstructor = {

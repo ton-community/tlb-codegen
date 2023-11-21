@@ -189,11 +189,11 @@ export type BitLenArg = {
 	x: number;
 	value: number;
   };
-export function loadBitLenArg(slice: Slice, x: number): BitLenArg {
-  	let value: number = slice.loadUint(x);
+export function loadBitLenArg(slice: Slice, arg0: number): BitLenArg {
+  	let value: number = slice.loadUint(arg0);
 	return {
   		kind: 'BitLenArg',
-		x: x,
+		x: arg0,
 		value: value
   	};
   }
@@ -223,11 +223,11 @@ export type ExprArg = {
 	x: number;
 	value: number;
   };
-export function loadExprArg(slice: Slice, x: number): ExprArg {
-  	let value: number = slice.loadUint((2 + x));
+export function loadExprArg(slice: Slice, arg0: number): ExprArg {
+  	let value: number = slice.loadUint((arg0 - 2));
 	return {
   		kind: 'ExprArg',
-		x: (2 + x),
+		x: (arg0 - 2),
 		value: value
   	};
   }

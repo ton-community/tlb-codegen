@@ -288,6 +288,16 @@ export function fillNegationExpressions(constructor: TLBConstructor) {
     })
 }
 
+export function reorganizeWithArg(myMathExpr: MyMathExpr, argName: string, varName: string): MyMathExpr {
+    let tmpset = new Set<string>();
+    tmpset.add(argName);
+    let reorganized = reorganizeExpression(new MyBinaryOp(new MyVarExpr(argName, tmpset, false), myMathExpr, '=', new Set<string>(), false), varName)
+    if (reorganized instanceof MyBinaryOp) {
+        return reorganized.right;
+    }
+    throw new Error('')
+}
+
 export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
     declarations.forEach(declaration => {
         let tlbType: TLBType | undefined = tlbCode.types.get(declaration.combinator.name);
@@ -306,8 +316,9 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                     constructor.implicitFields.set(field.name, field.type);
                 }
             })
-
+            let argumentIndex = -1;
             constructor.declaration.combinator.args.forEach(element => {
+                argumentIndex++;
                 let parameter: TLBParameter | undefined = undefined;
                 if (element instanceof NameExpr) {
                     if (constructor.implicitFields.has(element.name)) {
@@ -338,10 +349,12 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                 } else {
                     throw new Error('Cannot identify combinator arg: ' + element)
                 }
-                // if (parameter) {
-                    constructor.parameters.push(parameter);
-                    constructor.parametersMap.set(parameter.variable.name, parameter);
-                // }
+                if (parameter.variable.type == '#' && !parameter.variable.negated) {
+                    parameter.argName = 'arg' + argumentIndex;
+                    parameter.expression = convertToAST(reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name));
+                }
+                constructor.parameters.push(parameter);
+                constructor.parametersMap.set(parameter.variable.name, parameter);
             });
             fillNegationExpressions(constructor);
         });
