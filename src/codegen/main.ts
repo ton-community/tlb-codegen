@@ -46,6 +46,24 @@ function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, p
   return result;
 }
 
+export type ConstructorTag = {
+  bitLen: number,
+  binary: string
+}
+
+export function getConstructorTag(tag: string | null): ConstructorTag | null {
+  if (tag == undefined) {
+    return null;
+  }
+  if (tag[0] == '$') {
+
+  }
+  return {
+    bitLen: tag?.length - 1,
+    binary: '0b' + tag.slice(1)
+  }
+}
+
 export function generate(tree: Program) {
     let jsCodeDeclarations = []
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Builder'), tStringLiteral('ton'))) // importDeclaration([importSpecifier(identifier('Builder'), identifier('Builder'))], stringLiteral('../boc/Builder')))
@@ -84,15 +102,10 @@ export function generate(tree: Program) {
           let subStructLoadProperties: ObjectProperty[] = [tObjectProperty(tIdentifier('kind'), tStringLiteral(subStructName))]
           let subStructStoreStatements: Statement[] = []    
           
-          let tag = declaration?.constructorDef.tag;
+          let tag = getConstructorTag(declaration?.constructorDef.tag);
           if (tag == undefined) {
             return;
           }
-          if (tag[0] == '$') {
-
-          }
-          let tagBitLen = tag?.length - 1;
-          let tagBinary = '0b' + tag.slice(1);
 
           if (structTypeParametersExpr.typeParameters.length == 0) {
             structTypeParametersExpr = getTypeParametersExpression(constructor.parameters);
@@ -364,8 +377,10 @@ export function generate(tree: Program) {
           constructorLoadStatements.push(tReturnStatement(tObjectExpression(subStructLoadProperties)));
           if (tlbType.constructors.length > 1) {
             let conditions: Array<BinaryExpression> = []
-            if (tagBinary[tagBinary.length - 1] != '_') {
-              conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(tagBitLen)]), '==', tIdentifier(tagBinary)))
+            if (tag.binary[tag.binary.length - 1] != '_') {
+              conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(tag.bitLen)]), '==', tIdentifier(tag.binary)))
+              let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(tag.bitLen)]))]
+              constructorLoadStatements = loadBitsStatement.concat(constructorLoadStatements);
             }
             constructor.parameters.forEach(element => {
               if (element.variable.const && !element.variable.negated) {
@@ -377,8 +392,8 @@ export function generate(tree: Program) {
             loadStatements = loadStatements.concat(constructorLoadStatements);
           }
 
-          if (tlbType.constructors.length > 1 && tagBinary[tagBinary.length - 1] != '_') {
-            let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(tagBinary), tNumericLiteral(tagBitLen)]))];
+          if (tlbType.constructors.length > 1 && tag.binary[tag.binary.length - 1] != '_') {
+            let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(tag.binary), tNumericLiteral(tag.bitLen)]))];
             subStructStoreStatements = preStoreStatement.concat(subStructStoreStatements)
           }
           let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], subStructStoreStatements));

@@ -37,12 +37,14 @@ export type Bool_bool_true = {
   };
 export function loadBool(slice: Slice): Bool {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Bool_bool_false'
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Bool_bool_true'
   		};
   	};
@@ -97,12 +99,14 @@ export type Maybe_just<X> = {
   };
 export function loadMaybe<X>(slice: Slice, loadX: (slice: Slice) => X): Maybe<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Maybe_nothing'
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Maybe_just',
 			value: loadX(slice)
   		};
@@ -134,13 +138,15 @@ export type Either_right<X,Y> = {
   };
 export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Either_left',
 			value: loadX(slice)
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Either_right',
 			value: loadY(slice)
   		};
@@ -293,7 +299,8 @@ export type HmLabel_hml_same = {
   };
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		let len: Unary = loadUnary(slice);
+  		slice.loadUint(1);
+		let len: Unary = loadUnary(slice);
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
@@ -302,13 +309,15 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'HmLabel_hml_long',
 			m: m
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
-  		let v: BitString;
+  		slice.loadUint(2);
+		let v: BitString;
 		(v = slice.loadBits(1));
 		return {
   			kind: 'HmLabel_hml_same',
@@ -359,12 +368,14 @@ export type Unary_unary_succ = {
   };
 export function loadUnary(slice: Slice): Unary {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Unary_unary_zero'
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let x: Unary = loadUnary(slice);
+  		slice.loadUint(1);
+		let x: Unary = loadUnary(slice);
 		return {
   			kind: 'Unary_unary_succ',
 			n: unary_unary_succ_get_n(x),
@@ -399,13 +410,15 @@ export type HashmapE_hme_root<X> = {
   };
 export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapE<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'HashmapE_hme_empty',
 			n: n
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'HashmapE_hme_root',
 			n: n,
@@ -528,14 +541,16 @@ export type HashmapAugE_ahme_root<X,Y> = {
   };
 export function loadHashmapAugE<X,Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugE<X,Y> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'HashmapAugE_ahme_empty',
 			n: n,
 			extra: loadY(slice)
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'HashmapAugE_ahme_root',
 			n: n,
@@ -609,14 +624,16 @@ export type VarHashmapNode_vhmn_cont<X> = {
   };
 export function loadVarHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): VarHashmapNode<X> {
   	if ((slice.preloadUint(2) == 0b00)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'VarHashmapNode_vhmn_leaf',
 			n: n,
 			value: loadX(slice)
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(2);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'VarHashmapNode_vhmn_fork',
@@ -627,7 +644,8 @@ export function loadVarHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Sl
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let branch: BitString;
+  		slice.loadUint(1);
+		let branch: BitString;
 		(branch = slice.loadBits(1));
 		let slice1 = slice.loadRef().beginParse();
 		return {
@@ -683,13 +701,15 @@ export type VarHashmapE_vhme_root<X> = {
   };
 export function loadVarHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): VarHashmapE<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'VarHashmapE_vhme_empty',
 			n: n
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'VarHashmapE_vhme_root',
 			n: n,
@@ -752,14 +772,16 @@ export type PfxHashmapNode_phmn_fork<X> = {
   };
 export function loadPfxHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): PfxHashmapNode<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'PfxHashmapNode_phmn_leaf',
 			n: n,
 			value: loadX(slice)
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'PfxHashmapNode_phmn_fork',
@@ -802,13 +824,15 @@ export type PfxHashmapE_phme_root<X> = {
   };
 export function loadPfxHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): PfxHashmapE<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'PfxHashmapE_phme_empty',
 			n: n
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'PfxHashmapE_phme_root',
 			n: n,
@@ -844,12 +868,14 @@ export type MsgAddressExt_addr_extern = {
   };
 export function loadMsgAddressExt(slice: Slice): MsgAddressExt {
   	if ((slice.preloadUint(2) == 0b00)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'MsgAddressExt_addr_none'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
-  		let len: number;
+  		slice.loadUint(2);
+		let len: number;
 		(len = slice.loadUint(9));
 		let external_address: BitString;
 		(external_address = slice.loadBits(len));
@@ -914,7 +940,8 @@ export type MsgAddressInt_addr_var = {
   };
 export function loadMsgAddressInt(slice: Slice): MsgAddressInt {
   	if ((slice.preloadUint(2) == 0b10)) {
-  		let workchain_id: number;
+  		slice.loadUint(2);
+		let workchain_id: number;
 		(workchain_id = slice.loadInt(8));
 		let address: BitString;
 		(address = slice.loadBits(256));
@@ -926,7 +953,8 @@ export function loadMsgAddressInt(slice: Slice): MsgAddressInt {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
-  		let addr_len: number;
+  		slice.loadUint(2);
+		let addr_len: number;
 		(addr_len = slice.loadUint(9));
 		let workchain_id: number;
 		(workchain_id = slice.loadInt(32));
@@ -1090,7 +1118,8 @@ export type CommonMsgInfo_ext_out_msg_info = {
   };
 export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		let created_lt: number;
+  		slice.loadUint(1);
+		let created_lt: number;
 		(created_lt = slice.loadUint(64));
 		let created_at: number;
 		(created_at = slice.loadUint(32));
@@ -1109,7 +1138,8 @@ export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'CommonMsgInfo_ext_in_msg_info',
 			src: loadMsgAddressExt(slice),
 			dest: loadMsgAddressInt(slice),
@@ -1117,7 +1147,8 @@ export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
-  		let created_lt: number;
+  		slice.loadUint(2);
+		let created_lt: number;
 		(created_lt = slice.loadUint(64));
 		let created_at: number;
 		(created_at = slice.loadUint(32));
@@ -1189,7 +1220,8 @@ export type CommonMsgInfoRelaxed_ext_out_msg_info = {
   };
 export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		let created_lt: number;
+  		slice.loadUint(1);
+		let created_lt: number;
 		(created_lt = slice.loadUint(64));
 		let created_at: number;
 		(created_at = slice.loadUint(32));
@@ -1208,7 +1240,8 @@ export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
-  		let created_lt: number;
+  		slice.loadUint(2);
+		let created_lt: number;
 		(created_lt = slice.loadUint(64));
 		let created_at: number;
 		(created_at = slice.loadUint(32));
@@ -1373,7 +1406,8 @@ export type IntermediateAddress_interm_addr_ext = {
   };
 export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		let use_dest_bits: number;
+  		slice.loadUint(1);
+		let use_dest_bits: number;
 		(use_dest_bits = slice.loadUint(7));
 		return {
   			kind: 'IntermediateAddress_interm_addr_regular',
@@ -1381,7 +1415,8 @@ export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
-  		let workchain_id: number;
+  		slice.loadUint(2);
+		let workchain_id: number;
 		(workchain_id = slice.loadInt(8));
 		let addr_pfx: number;
 		(addr_pfx = slice.loadUint(64));
@@ -1392,7 +1427,8 @@ export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
-  		let workchain_id: number;
+  		slice.loadUint(2);
+		let workchain_id: number;
 		(workchain_id = slice.loadInt(32));
 		let addr_pfx: number;
 		(addr_pfx = slice.loadUint(64));
@@ -1500,7 +1536,8 @@ export type InMsg_msg_discard_tr = {
   };
 export function loadInMsg(slice: Slice): InMsg {
   	if ((slice.preloadUint(3) == 0b000)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'InMsg_msg_import_ext',
@@ -1509,7 +1546,8 @@ export function loadInMsg(slice: Slice): InMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b010)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		let slice3 = slice.loadRef().beginParse();
 		let proof_created: Slice;
@@ -1523,7 +1561,8 @@ export function loadInMsg(slice: Slice): InMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b011)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'InMsg_msg_import_imm',
@@ -1533,7 +1572,8 @@ export function loadInMsg(slice: Slice): InMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b100)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'InMsg_msg_import_fin',
@@ -1543,7 +1583,8 @@ export function loadInMsg(slice: Slice): InMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b101)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'InMsg_msg_import_tr',
@@ -1553,7 +1594,8 @@ export function loadInMsg(slice: Slice): InMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b110)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let transaction_id: number;
 		(transaction_id = slice.loadUint(64));
 		return {
@@ -1564,7 +1606,8 @@ export function loadInMsg(slice: Slice): InMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b111)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let transaction_id: number;
 		(transaction_id = slice.loadUint(64));
 		let slice2 = slice.loadRef().beginParse();
@@ -1738,7 +1781,8 @@ export type OutMsg_msg_export_deq_imm = {
   };
 export function loadOutMsg(slice: Slice): OutMsg {
   	if ((slice.preloadUint(3) == 0b000)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'OutMsg_msg_export_ext',
@@ -1747,7 +1791,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b010)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		let slice3 = slice.loadRef().beginParse();
 		return {
@@ -1758,7 +1803,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b001)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'OutMsg_msg_export_new',
@@ -1767,7 +1813,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b011)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'OutMsg_msg_export_tr',
@@ -1776,7 +1823,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1100)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(4);
+		let slice1 = slice.loadRef().beginParse();
 		let import_block_lt: number;
 		(import_block_lt = slice.loadUint(63));
 		return {
@@ -1786,7 +1834,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1101)) {
-  		let msg_env_hash: BitString;
+  		slice.loadUint(4);
+		let msg_env_hash: BitString;
 		(msg_env_hash = slice.loadBits(256));
 		let next_workchain: number;
 		(next_workchain = slice.loadInt(32));
@@ -1803,7 +1852,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b111)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'OutMsg_msg_export_tr_req',
@@ -1812,7 +1862,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b100)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(3);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'OutMsg_msg_export_deq_imm',
@@ -2061,12 +2112,14 @@ export type Account_account = {
   };
 export function loadAccount(slice: Slice): Account {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Account_account_none'
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'Account_account',
 			addr: loadMsgAddressInt(slice),
 			storage_stat: loadStorageInfo(slice),
@@ -2128,18 +2181,21 @@ export type AccountState_account_frozen = {
   };
 export function loadAccountState(slice: Slice): AccountState {
   	if ((slice.preloadUint(2) == 0b00)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'AccountState_account_uninit'
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'AccountState_account_active',
 			_: loadStateInit(slice)
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
-  		let state_hash: BitString;
+  		slice.loadUint(2);
+		let state_hash: BitString;
 		(state_hash = slice.loadBits(256));
 		return {
   			kind: 'AccountState_account_frozen',
@@ -2183,22 +2239,26 @@ export type AccountStatus_acc_state_nonexist = {
   };
 export function loadAccountStatus(slice: Slice): AccountStatus {
   	if ((slice.preloadUint(2) == 0b00)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'AccountStatus_acc_state_uninit'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'AccountStatus_acc_state_frozen'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'AccountStatus_acc_state_active'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'AccountStatus_acc_state_nonexist'
   		};
   	};
@@ -2502,17 +2562,20 @@ export type AccStatusChange_acst_deleted = {
   };
 export function loadAccStatusChange(slice: Slice): AccStatusChange {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'AccStatusChange_acst_unchanged'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'AccStatusChange_acst_frozen'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'AccStatusChange_acst_deleted'
   		};
   	};
@@ -2577,13 +2640,15 @@ export type TrComputePhase_tr_phase_compute_vm = {
   };
 export function loadTrComputePhase(slice: Slice): TrComputePhase {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'TrComputePhase_tr_phase_compute_skipped',
 			reason: loadComputeSkipReason(slice)
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		let mode: number;
 		(mode = slice1.loadInt(8));
 		let exit_code: number;
@@ -2660,17 +2725,20 @@ export type ComputeSkipReason_cskip_no_gas = {
   };
 export function loadComputeSkipReason(slice: Slice): ComputeSkipReason {
   	if ((slice.preloadUint(2) == 0b00)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'ComputeSkipReason_cskip_no_state'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'ComputeSkipReason_cskip_bad_state'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'ComputeSkipReason_cskip_no_gas'
   		};
   	};
@@ -2777,19 +2845,22 @@ export type TrBouncePhase_tr_phase_bounce_ok = {
   };
 export function loadTrBouncePhase(slice: Slice): TrBouncePhase {
   	if ((slice.preloadUint(2) == 0b00)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'TrBouncePhase_tr_phase_bounce_negfunds'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'TrBouncePhase_tr_phase_bounce_nofunds',
 			msg_size: loadStorageUsedShort(slice),
 			req_fwd_fees: loadGrams(slice)
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'TrBouncePhase_tr_phase_bounce_ok',
 			msg_size: loadStorageUsedShort(slice),
 			msg_fees: loadGrams(slice),
@@ -2880,7 +2951,8 @@ export type TransactionDescr_trans_merge_install = {
   };
 export function loadTransactionDescr(slice: Slice): TransactionDescr {
   	if ((slice.preloadUint(4) == 0b0000)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'TransactionDescr_trans_ord',
 			credit_first: loadBool(slice),
 			storage_ph: loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase),
@@ -2893,13 +2965,15 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0001)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'TransactionDescr_trans_storage',
 			storage_ph: loadTrStoragePhase(slice)
   		};
   	};
 	if ((slice.preloadUint(3) == 0b001)) {
-  		return {
+  		slice.loadUint(3);
+		return {
   			kind: 'TransactionDescr_trans_tick_tock',
 			is_tock: loadBool(slice),
 			storage_ph: loadTrStoragePhase(slice),
@@ -2910,7 +2984,8 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0100)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'TransactionDescr_trans_split_prepare',
 			split_info: loadSplitMergeInfo(slice),
 			storage_ph: loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase),
@@ -2921,7 +2996,8 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0101)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(4);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'TransactionDescr_trans_split_install',
 			split_info: loadSplitMergeInfo(slice),
@@ -2930,7 +3006,8 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0110)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'TransactionDescr_trans_merge_prepare',
 			split_info: loadSplitMergeInfo(slice),
 			storage_ph: loadTrStoragePhase(slice),
@@ -2938,7 +3015,8 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0111)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(4);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'TransactionDescr_trans_merge_install',
 			split_info: loadSplitMergeInfo(slice),
@@ -3175,7 +3253,8 @@ export type OutAction_action_change_library = {
   };
 export function loadOutAction(slice: Slice): OutAction {
   	if ((slice.preloadUint(8) == 0b0ec3c86d)) {
-  		let mode: number;
+  		slice.loadUint(8);
+		let mode: number;
 		(mode = slice.loadUint(8));
 		let slice1 = slice.loadRef().beginParse();
 		return {
@@ -3185,7 +3264,8 @@ export function loadOutAction(slice: Slice): OutAction {
   		};
   	};
 	if ((slice.preloadUint(8) == 0bad4de08e)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(8);
+		let slice1 = slice.loadRef().beginParse();
 		let new_code: Slice;
 		(new_code = slice1);
 		return {
@@ -3194,7 +3274,8 @@ export function loadOutAction(slice: Slice): OutAction {
   		};
   	};
 	if ((slice.preloadUint(8) == 0b36e6b809)) {
-  		let mode: number;
+  		slice.loadUint(8);
+		let mode: number;
 		(mode = slice.loadUint(8));
 		return {
   			kind: 'OutAction_action_reserve_currency',
@@ -3203,7 +3284,8 @@ export function loadOutAction(slice: Slice): OutAction {
   		};
   	};
 	if ((slice.preloadUint(8) == 0b26fa1dd4)) {
-  		let mode: number;
+  		slice.loadUint(8);
+		let mode: number;
 		(mode = slice.loadUint(7));
 		return {
   			kind: 'OutAction_action_change_library',
@@ -3258,7 +3340,8 @@ export type LibRef_libref_ref = {
   };
 export function loadLibRef(slice: Slice): LibRef {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		let lib_hash: BitString;
+  		slice.loadUint(1);
+		let lib_hash: BitString;
 		(lib_hash = slice.loadBits(256));
 		return {
   			kind: 'LibRef_libref_hash',
@@ -3266,7 +3349,8 @@ export function loadLibRef(slice: Slice): LibRef {
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		let library: Slice;
 		(library = slice1);
 		return {
@@ -3518,7 +3602,8 @@ export type ShardState_split_state = {
   };
 export function loadShardState(slice: Slice): ShardState {
   	if ((slice.preloadUint(8) == 0b5f327da5)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(8);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'ShardState_split_state',
@@ -3787,13 +3872,15 @@ export type BinTree_bt_fork<X> = {
   };
 export function loadBinTree<X>(slice: Slice, loadX: (slice: Slice) => X): BinTree<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'BinTree_bt_leaf',
 			leaf: loadX(slice)
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'BinTree_bt_fork',
@@ -3839,12 +3926,14 @@ export type FutureSplitMerge_fsm_merge = {
   };
 export function loadFutureSplitMerge(slice: Slice): FutureSplitMerge {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'FutureSplitMerge_fsm_none'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
-  		let split_utime: number;
+  		slice.loadUint(2);
+		let split_utime: number;
 		(split_utime = slice.loadUint(32));
 		let interval: number;
 		(interval = slice.loadUint(32));
@@ -3855,7 +3944,8 @@ export function loadFutureSplitMerge(slice: Slice): FutureSplitMerge {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
-  		let merge_utime: number;
+  		slice.loadUint(2);
+		let merge_utime: number;
 		(merge_utime = slice.loadUint(32));
 		let interval: number;
 		(interval = slice.loadUint(32));
@@ -3936,7 +4026,8 @@ export type ShardDescr_shard_descr_new = {
   };
 export function loadShardDescr(slice: Slice): ShardDescr {
   	if ((slice.preloadUint(1) == 0bb)) {
-  		let seq_no: number;
+  		slice.loadUint(1);
+		let seq_no: number;
 		(seq_no = slice.loadUint(32));
 		let reg_mc_seqno: number;
 		(reg_mc_seqno = slice.loadUint(32));
@@ -3982,7 +4073,8 @@ export function loadShardDescr(slice: Slice): ShardDescr {
   		};
   	};
 	if ((slice.preloadUint(1) == 0ba)) {
-  		let seq_no: number;
+  		slice.loadUint(1);
+		let seq_no: number;
 		(seq_no = slice.loadUint(32));
 		let reg_mc_seqno: number;
 		(reg_mc_seqno = slice.loadUint(32));
@@ -4103,14 +4195,16 @@ export type BinTreeAug_bta_fork<X,Y> = {
   };
 export function loadBinTreeAug<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): BinTreeAug<X,Y> {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'BinTreeAug_bta_leaf',
 			extra: loadY(slice),
 			leaf: loadX(slice)
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'BinTreeAug_bta_fork',
@@ -4287,13 +4381,15 @@ export type BlockCreateStats_block_create_stats_ext = {
   };
 export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
   	if ((slice.preloadUint(2) == 0b17)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'BlockCreateStats_block_create_stats',
 			counters: loadHashmapE<CreatorStats>(slice, 256, loadCreatorStats)
   		};
   	};
 	if ((slice.preloadUint(2) == 0b34)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'BlockCreateStats_block_create_stats_ext',
 			counters: loadHashmapAugE<CreatorStats,uint32>(slice, 256, loadCreatorStats, loaduint32)
   		};
@@ -4403,7 +4499,8 @@ export type CryptoSignature_chained_signature = {
   };
 export function loadCryptoSignature(slice: Slice): CryptoSignature {
   	if ((slice.preloadUint(1) == 0bf)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'CryptoSignature_chained_signature',
 			signed_cert: loadSignedCertificate(slice1),
@@ -4551,7 +4648,8 @@ export type ValidatorDescr_validator_addr = {
   };
 export function loadValidatorDescr(slice: Slice): ValidatorDescr {
   	if ((slice.preloadUint(2) == 0b53)) {
-  		let weight: number;
+  		slice.loadUint(2);
+		let weight: number;
 		(weight = slice.loadUint(64));
 		return {
   			kind: 'ValidatorDescr_validator',
@@ -4560,7 +4658,8 @@ export function loadValidatorDescr(slice: Slice): ValidatorDescr {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b73)) {
-  		let weight: number;
+  		slice.loadUint(2);
+		let weight: number;
 		(weight = slice.loadUint(64));
 		let adnl_addr: BitString;
 		(adnl_addr = slice.loadBits(256));
@@ -4610,7 +4709,8 @@ export type ValidatorSet_validators_ext = {
   };
 export function loadValidatorSet(slice: Slice): ValidatorSet {
   	if ((slice.preloadUint(2) == 0b11)) {
-  		let utime_since: number;
+  		slice.loadUint(2);
+		let utime_since: number;
 		(utime_since = slice.loadUint(32));
 		let utime_until: number;
 		(utime_until = slice.loadUint(32));
@@ -4625,7 +4725,8 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b12)) {
-  		let utime_since: number;
+  		slice.loadUint(2);
+		let utime_since: number;
 		(utime_since = slice.loadUint(32));
 		let utime_until: number;
 		(utime_until = slice.loadUint(32));
@@ -4945,7 +5046,8 @@ export type WorkchainFormat_wfmt_ext = {
   };
 export function loadWorkchainFormat(slice: Slice, arg0: number): WorkchainFormat {
   	if (((slice.preloadUint(1) == 0b1) && (arg0 == 1))) {
-  		let vm_version: number;
+  		slice.loadUint(1);
+		let vm_version: number;
 		(vm_version = slice.loadInt(32));
 		let vm_mode: number;
 		(vm_mode = slice.loadUint(64));
@@ -4956,7 +5058,8 @@ export function loadWorkchainFormat(slice: Slice, arg0: number): WorkchainFormat
   		};
   	};
 	if (((slice.preloadUint(1) == 0b0) && (arg0 == 0))) {
-  		let min_addr_len: number;
+  		slice.loadUint(1);
+		let min_addr_len: number;
 		(min_addr_len = slice.loadUint(12));
 		let max_addr_len: number;
 		(max_addr_len = slice.loadUint(12));
@@ -5163,7 +5266,8 @@ export type GasLimitsPrices_gas_flat_pfx = {
   };
 export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
   	if ((slice.preloadUint(2) == 0bdd)) {
-  		let gas_price: number;
+  		slice.loadUint(2);
+		let gas_price: number;
 		(gas_price = slice.loadUint(64));
 		let gas_limit: number;
 		(gas_limit = slice.loadUint(64));
@@ -5186,7 +5290,8 @@ export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
   		};
   	};
 	if ((slice.preloadUint(2) == 0bde)) {
-  		let gas_price: number;
+  		slice.loadUint(2);
+		let gas_price: number;
 		(gas_price = slice.loadUint(64));
 		let gas_limit: number;
 		(gas_limit = slice.loadUint(64));
@@ -5212,7 +5317,8 @@ export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
   		};
   	};
 	if ((slice.preloadUint(2) == 0bd1)) {
-  		let flat_gas_limit: number;
+  		slice.loadUint(2);
+		let flat_gas_limit: number;
 		(flat_gas_limit = slice.loadUint(64));
 		let flat_gas_price: number;
 		(flat_gas_price = slice.loadUint(64));
@@ -5368,7 +5474,8 @@ export type CatchainConfig_catchain_config_new = {
   };
 export function loadCatchainConfig(slice: Slice): CatchainConfig {
   	if ((slice.preloadUint(2) == 0bc1)) {
-  		let mc_catchain_lifetime: number;
+  		slice.loadUint(2);
+		let mc_catchain_lifetime: number;
 		(mc_catchain_lifetime = slice.loadUint(32));
 		let shard_catchain_lifetime: number;
 		(shard_catchain_lifetime = slice.loadUint(32));
@@ -5385,7 +5492,8 @@ export function loadCatchainConfig(slice: Slice): CatchainConfig {
   		};
   	};
 	if ((slice.preloadUint(2) == 0bc2)) {
-  		let flags: number;
+  		slice.loadUint(2);
+		let flags: number;
 		(flags = slice.loadUint(7));
 		let mc_catchain_lifetime: number;
 		(mc_catchain_lifetime = slice.loadUint(32));
@@ -5486,7 +5594,8 @@ export type ConsensusConfig_consensus_config_v4 = {
   };
 export function loadConsensusConfig(slice: Slice): ConsensusConfig {
   	if ((slice.preloadUint(2) == 0bd6)) {
-  		let round_candidates: number;
+  		slice.loadUint(2);
+		let round_candidates: number;
 		(round_candidates = slice.loadUint(32));
 		let next_candidate_delay_ms: number;
 		(next_candidate_delay_ms = slice.loadUint(32));
@@ -5515,7 +5624,8 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
   		};
   	};
 	if ((slice.preloadUint(2) == 0bd7)) {
-  		let flags: number;
+  		slice.loadUint(2);
+		let flags: number;
 		(flags = slice.loadUint(7));
 		let round_candidates: number;
 		(round_candidates = slice.loadUint(8));
@@ -5548,7 +5658,8 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
   		};
   	};
 	if ((slice.preloadUint(2) == 0bd8)) {
-  		let flags: number;
+  		slice.loadUint(2);
+		let flags: number;
 		(flags = slice.loadUint(7));
 		let round_candidates: number;
 		(round_candidates = slice.loadUint(8));
@@ -5584,7 +5695,8 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
   		};
   	};
 	if ((slice.preloadUint(2) == 0bd9)) {
-  		let flags: number;
+  		slice.loadUint(2);
+		let flags: number;
 		(flags = slice.loadUint(7));
 		let round_candidates: number;
 		(round_candidates = slice.loadUint(8));
@@ -6143,12 +6255,14 @@ export type VmStackValue_vm_stk_tuple = {
   };
 export function loadVmStackValue(slice: Slice): VmStackValue {
   	if ((slice.preloadUint(2) == 0b00)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'VmStackValue_vm_stk_null'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
-  		let value: number;
+  		slice.loadUint(2);
+		let value: number;
 		(value = slice.loadInt(64));
 		return {
   			kind: 'VmStackValue_vm_stk_tinyint',
@@ -6156,7 +6270,8 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0201)) {
-  		let value: number;
+  		slice.loadUint(4);
+		let value: number;
 		(value = slice.loadInt(257));
 		return {
   			kind: 'VmStackValue_vm_stk_int',
@@ -6164,12 +6279,14 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b02ff)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'VmStackValue_vm_stk_nan'
   		};
   	};
 	if ((slice.preloadUint(2) == 0b03)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(2);
+		let slice1 = slice.loadRef().beginParse();
 		let cell: Slice;
 		(cell = slice1);
 		return {
@@ -6178,13 +6295,15 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b04)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'VmStackValue_vm_stk_slice',
 			_: loadVmCellSlice(slice)
   		};
   	};
 	if ((slice.preloadUint(2) == 0b05)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(2);
+		let slice1 = slice.loadRef().beginParse();
 		let cell: Slice;
 		(cell = slice1);
 		return {
@@ -6193,13 +6312,15 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
   		};
   	};
 	if ((slice.preloadUint(2) == 0b06)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'VmStackValue_vm_stk_cont',
 			cont: loadVmCont(slice)
   		};
   	};
 	if ((slice.preloadUint(2) == 0b07)) {
-  		let len: number;
+  		slice.loadUint(2);
+		let len: number;
 		(len = slice.loadUint(16));
 		return {
   			kind: 'VmStackValue_vm_stk_tuple',
@@ -6562,14 +6683,16 @@ export type VmCont_vmc_pushint = {
   };
 export function loadVmCont(slice: Slice): VmCont {
   	if ((slice.preloadUint(2) == 0b00)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'VmCont_vmc_std',
 			cdata: loadVmControlData(slice),
 			code: loadVmCellSlice(slice)
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(2);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'VmCont_vmc_envelope',
 			cdata: loadVmControlData(slice),
@@ -6577,7 +6700,8 @@ export function loadVmCont(slice: Slice): VmCont {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1000)) {
-  		let exit_code: number;
+  		slice.loadUint(4);
+		let exit_code: number;
 		(exit_code = slice.loadInt(32));
 		return {
   			kind: 'VmCont_vmc_quit',
@@ -6585,12 +6709,14 @@ export function loadVmCont(slice: Slice): VmCont {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1001)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'VmCont_vmc_quit_exc'
   		};
   	};
 	if ((slice.preloadUint(5) == 0b10100)) {
-  		let count: number;
+  		slice.loadUint(5);
+		let count: number;
 		(count = slice.loadUint(63));
 		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
@@ -6602,7 +6728,8 @@ export function loadVmCont(slice: Slice): VmCont {
   		};
   	};
 	if ((slice.preloadUint(6) == 0b110000)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(6);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		return {
   			kind: 'VmCont_vmc_until',
@@ -6611,14 +6738,16 @@ export function loadVmCont(slice: Slice): VmCont {
   		};
   	};
 	if ((slice.preloadUint(6) == 0b110001)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(6);
+		let slice1 = slice.loadRef().beginParse();
 		return {
   			kind: 'VmCont_vmc_again',
 			body: loadVmCont(slice1)
   		};
   	};
 	if ((slice.preloadUint(6) == 0b110010)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(6);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		let slice3 = slice.loadRef().beginParse();
 		return {
@@ -6629,7 +6758,8 @@ export function loadVmCont(slice: Slice): VmCont {
   		};
   	};
 	if ((slice.preloadUint(6) == 0b110011)) {
-  		let slice1 = slice.loadRef().beginParse();
+  		slice.loadUint(6);
+		let slice1 = slice.loadRef().beginParse();
 		let slice2 = slice.loadRef().beginParse();
 		let slice3 = slice.loadRef().beginParse();
 		return {
@@ -6640,7 +6770,8 @@ export function loadVmCont(slice: Slice): VmCont {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1111)) {
-  		let value: number;
+  		slice.loadUint(4);
+		let value: number;
 		(value = slice.loadInt(32));
 		let slice1 = slice.loadRef().beginParse();
 		return {
@@ -6883,19 +7014,22 @@ export type DNSRecord_dns_smc_address = {
   };
 export function loadDNSRecord(slice: Slice): DNSRecord {
   	if ((slice.preloadUint(4) == 0b1eda)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'DNSRecord_dns_text',
 			_: loadText(slice)
   		};
   	};
 	if ((slice.preloadUint(4) == 0bba93)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'DNSRecord_dns_next_resolver',
 			resolver: loadMsgAddressInt(slice)
   		};
   	};
 	if ((slice.preloadUint(4) == 0bad01)) {
-  		let adnl_addr: BitString;
+  		slice.loadUint(4);
+		let adnl_addr: BitString;
 		(adnl_addr = slice.loadBits(256));
 		let flags: number;
 		(flags = slice.loadUint(8));
@@ -6906,7 +7040,8 @@ export function loadDNSRecord(slice: Slice): DNSRecord {
   		};
   	};
 	if ((slice.preloadUint(4) == 0b9fd3)) {
-  		let flags: number;
+  		slice.loadUint(4);
+		let flags: number;
 		(flags = slice.loadUint(8));
 		return {
   			kind: 'DNSRecord_dns_smc_address',
@@ -6956,12 +7091,14 @@ export type ProtoList_proto_list_next = {
   };
 export function loadProtoList(slice: Slice): ProtoList {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'ProtoList_proto_list_nil'
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'ProtoList_proto_list_next',
 			head: loadProtocol(slice),
 			tail: loadProtoList(slice)
@@ -7008,12 +7145,14 @@ export type SmcCapList_cap_list_next = {
   };
 export function loadSmcCapList(slice: Slice): SmcCapList {
   	if ((slice.preloadUint(1) == 0b0)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'SmcCapList_cap_list_nil'
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
-  		return {
+  		slice.loadUint(1);
+		return {
   			kind: 'SmcCapList_cap_list_next',
 			head: loadSmcCapability(slice),
 			tail: loadSmcCapList(slice)
@@ -7052,22 +7191,26 @@ export type SmcCapability_cap_name = {
   };
 export function loadSmcCapability(slice: Slice): SmcCapability {
   	if ((slice.preloadUint(4) == 0b5371)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'SmcCapability_cap_method_seqno'
   		};
   	};
 	if ((slice.preloadUint(4) == 0b71f4)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'SmcCapability_cap_method_pubkey'
   		};
   	};
 	if ((slice.preloadUint(4) == 0b2177)) {
-  		return {
+  		slice.loadUint(4);
+		return {
   			kind: 'SmcCapability_cap_is_wallet'
   		};
   	};
 	if ((slice.preloadUint(2) == 0bff)) {
-  		return {
+  		slice.loadUint(2);
+		return {
   			kind: 'SmcCapability_cap_name',
 			name: loadText(slice)
   		};
@@ -7178,7 +7321,8 @@ export type ChanState_chan_state_payout = {
   };
 export function loadChanState(slice: Slice): ChanState {
   	if ((slice.preloadUint(3) == 0b000)) {
-  		let expire_at: number;
+  		slice.loadUint(3);
+		let expire_at: number;
 		(expire_at = slice.loadUint(32));
 		return {
   			kind: 'ChanState_chan_state_init',
@@ -7192,7 +7336,8 @@ export function loadChanState(slice: Slice): ChanState {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b001)) {
-  		let expire_at: number;
+  		slice.loadUint(3);
+		let expire_at: number;
 		(expire_at = slice.loadUint(32));
 		return {
   			kind: 'ChanState_chan_state_close',
@@ -7206,7 +7351,8 @@ export function loadChanState(slice: Slice): ChanState {
   		};
   	};
 	if ((slice.preloadUint(3) == 0b010)) {
-  		return {
+  		slice.loadUint(3);
+		return {
   			kind: 'ChanState_chan_state_payout',
 			A: loadGrams(slice),
 			B: loadGrams(slice)
@@ -7312,7 +7458,8 @@ export type ChanMsg_chan_msg_payout = {
   };
 export function loadChanMsg(slice: Slice): ChanMsg {
   	if ((slice.preloadUint(8) == 0b27317822)) {
-  		let channel_id: number;
+  		slice.loadUint(8);
+		let channel_id: number;
 		(channel_id = slice.loadUint(64));
 		return {
   			kind: 'ChanMsg_chan_msg_init',
@@ -7324,7 +7471,8 @@ export function loadChanMsg(slice: Slice): ChanMsg {
   		};
   	};
 	if ((slice.preloadUint(8) == 0bf28ae183)) {
-  		return {
+  		slice.loadUint(8);
+		return {
   			kind: 'ChanMsg_chan_msg_close',
 			extra_A: loadGrams(slice),
 			extra_B: loadGrams(slice),
@@ -7332,12 +7480,14 @@ export function loadChanMsg(slice: Slice): ChanMsg {
   		};
   	};
 	if ((slice.preloadUint(8) == 0b43278a28)) {
-  		return {
+  		slice.loadUint(8);
+		return {
   			kind: 'ChanMsg_chan_msg_timeout'
   		};
   	};
 	if ((slice.preloadUint(8) == 0b37fe7810)) {
-  		return {
+  		slice.loadUint(8);
+		return {
   			kind: 'ChanMsg_chan_msg_payout'
   		};
   	};

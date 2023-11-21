@@ -2,15 +2,13 @@
 bit$_ (## 1) = Bit;
 
 
-tmpa$_ a:# b:# = X;
+tmpa$_ a:# b:# = Simple;
 
-bool_false$0 a:# b:(## 7) c:# = Bool;
-bool_true$1 b:# = Bool; 
+bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
+bool_true$1 b:# = TwoConstructors; 
 
 tmpb$_ y:(## 5) = Y;
-
 tmpc$_ y:Y c:# = C;
-
 tmpd#_ y:Y c:# = D;
 
 nothing$0 {TheType:Type} = Maybe TheType;
