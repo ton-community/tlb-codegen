@@ -64,6 +64,12 @@ export function getConstructorTag(tag: string | null): ConstructorTag | null {
   }
 }
 
+export function addLoadProperty(name: string, loadExpr: Expression, typeName: string, constructorLoadStatements: Statement[], subStructLoadProperties: ObjectProperty[]) {
+  let nameId = tIdentifier(name);
+  constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(nameId, loadExpr, tIdentifier(typeName))))
+  subStructLoadProperties.push(tObjectProperty(nameId, nameId)) 
+}
+
 export function generate(tree: Program) {
     let jsCodeDeclarations = []
     jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Builder'), tStringLiteral('ton'))) // importDeclaration([importSpecifier(identifier('Builder'), identifier('Builder'))], stringLiteral('../boc/Builder')))
@@ -348,9 +354,8 @@ export function generate(tree: Program) {
                 if (fieldType == 'Slice') {
                   loadSt = tIdentifier(currentSlice)
                 }
-                constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), loadSt, tIdentifier(fieldType))))
+                addLoadProperty(field.name, loadSt, fieldType, constructorLoadStatements, subStructLoadProperties)
                 subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType))) 
-                subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
                 let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
                 if (fieldType != 'BitString' && fieldType != 'Slice') {
                   storeParams.push(argStoreExpr);
