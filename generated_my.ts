@@ -108,10 +108,11 @@ export type C = {
 	c: number;
   };
 export function loadC(slice: Slice): C {
-  	let c: number = slice.loadUint(32);
+  	let y: Y = loadY(slice);
+	let c: number = slice.loadUint(32);
 	return {
   		kind: 'C',
-		y: loadY(slice),
+		y: y,
 		c: c
   	};
   }
@@ -127,10 +128,11 @@ export type D = {
 	c: number;
   };
 export function loadD(slice: Slice): D {
-  	let c: number = slice.loadUint(32);
+  	let y: Y = loadY(slice);
+	let c: number = slice.loadUint(32);
 	return {
   		kind: 'D',
-		y: loadY(slice),
+		y: y,
 		c: c
   	};
   }
@@ -157,9 +159,10 @@ export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => 
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let value: TheType = loadTheType(slice);
 		return {
   			kind: 'Maybe_just',
-			value: loadTheType(slice)
+			value: value
   		};
   	};
 	throw new Error('');
@@ -183,9 +186,11 @@ export type TheJust = {
 	x: Maybe<D>;
   };
 export function loadTheJust(slice: Slice): TheJust {
-  	return {
+  	let x: Maybe = loadMaybe<D>(slice, loadD);
+	return {
   		kind: 'TheJust',
-		x: loadMaybe<D>(slice, loadD)
+		x: loadMaybe<D>(slice, loadD),
+		x: x
   	};
   }
 export function storeTheJust(theJust: TheJust): (builder: Builder) => void {
@@ -205,16 +210,18 @@ export type Either_right<X,Y> = {
 export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
+		let value: X = loadX(slice);
 		return {
   			kind: 'Either_left',
-			value: loadX(slice)
+			value: value
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let value: Y = loadY(slice);
 		return {
   			kind: 'Either_right',
-			value: loadY(slice)
+			value: value
   		};
   	};
 	throw new Error('');
@@ -240,10 +247,12 @@ export type Both<X,Y> = {
 	second: Y;
   };
 export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Both<X,Y> {
-  	return {
+  	let first: X = loadX(slice);
+	let second: Y = loadY(slice);
+	return {
   		kind: 'Both',
-		first: loadX(slice),
-		second: loadY(slice)
+		first: first,
+		second: second
   	};
   }
 export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
@@ -300,9 +309,11 @@ export type BitInteger = {
 	t: Example;
   };
 export function loadBitInteger(slice: Slice): BitInteger {
-  	return {
+  	let t: Example = loadExample(slice, 4);
+	return {
   		kind: 'BitInteger',
-		t: loadExample(slice, 4)
+		t: loadExample(slice, 4),
+		t: t
   	};
   }
 export function storeBitInteger(bitInteger: BitInteger): (builder: Builder) => void {
@@ -315,9 +326,10 @@ export type NFG = {
 	a: BitInteger;
   };
 export function loadNFG(slice: Slice): NFG {
-  	return {
+  	let a: BitInteger = loadBitInteger(slice);
+	return {
   		kind: 'NFG',
-		a: loadBitInteger(slice)
+		a: a
   	};
   }
 export function storeNFG(nFG: NFG): (builder: Builder) => void {
@@ -331,9 +343,10 @@ export type NFT = {
   };
 export function loadNFT(slice: Slice): NFT {
   	let slice1 = slice.loadRef().beginParse();
+	let a: BitInteger = loadBitInteger(slice1);
 	return {
   		kind: 'NFT',
-		a: loadBitInteger(slice1)
+		a: a
   	};
   }
 export function storeNFT(nFT: NFT): (builder: Builder) => void {
@@ -408,12 +421,13 @@ export type IntEx2<Arg> = {
 export function loadIntEx2<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntEx2<Arg> {
   	let d: number = slice.loadInt(11);
 	let g: BitString = slice.loadBits(2);
+	let arg: Arg = loadArg(slice);
 	let x: Slice = slice;
 	return {
   		kind: 'IntEx2',
 		d: d,
 		g: g,
-		arg: loadArg(slice),
+		arg: arg,
 		x: x
   	};
   }
@@ -469,12 +483,16 @@ export type IntexArg2 = {
 	a: IntEx2<number>;
   };
 export function loadIntexArg2(slice: Slice, x: number): IntexArg2 {
-  	return {
+  	let a: IntEx2 = loadIntEx2<number>(slice, () => {
+  		return slice.loadInt((1 + x));
+  	});
+	return {
   		kind: 'IntexArg2',
 		x: x,
 		a: loadIntEx2<number>(slice, () => {
   			return slice.loadInt((1 + x));
-  		})
+  		}),
+		a: a
   	};
   }
 export function storeIntexArg2(intexArg2: IntexArg2): (builder: Builder) => void {
@@ -492,10 +510,12 @@ export type IntexArg = {
 	a: IntEx;
   };
 export function loadIntexArg(slice: Slice, x: number): IntexArg {
-  	return {
+  	let a: IntEx = loadIntEx(slice, 7);
+	return {
   		kind: 'IntexArg',
 		x: x,
-		a: loadIntEx(slice, 7)
+		a: loadIntEx(slice, 7),
+		a: a
   	};
   }
 export function storeIntexArg(intexArg: IntexArg): (builder: Builder) => void {
@@ -533,12 +553,16 @@ export type Hashmap<X> = {
   };
 export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
+	let label: HmLabel = loadHmLabel(slice, n);
+	let node: HashmapNode = loadHashmapNode<X>(slice, m, loadX);
 	return {
   		kind: 'Hashmap',
 		m: (n - l),
 		n: n,
 		label: label,
-		node: loadHashmapNode<X>(slice, m, loadX)
+		label: label,
+		node: loadHashmapNode<X>(slice, m, loadX),
+		node: node
   	};
   }
 export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
@@ -560,19 +584,24 @@ export type HashmapNode_hmn_fork<X> = {
   };
 export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapNode<X> {
   	if ((n == 0)) {
-  		return {
+  		let value: X = loadX(slice);
+		return {
   			kind: 'HashmapNode_hmn_leaf',
-			value: loadX(slice)
+			value: value
   		};
   	};
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
+		let left: Hashmap = loadHashmap<X>(slice1, n, loadX);
 		let slice2 = slice.loadRef().beginParse();
+		let right: Hashmap = loadHashmap<X>(slice2, n, loadX);
 		return {
   			kind: 'HashmapNode_hmn_fork',
 			n: (n + 1),
 			left: loadHashmap<X>(slice1, n, loadX),
-			right: loadHashmap<X>(slice2, n, loadX)
+			left: left,
+			right: loadHashmap<X>(slice2, n, loadX),
+			right: right
   		};
   	};
 	throw new Error('');
@@ -625,10 +654,12 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
+		let len: Unary = loadUnary(slice);
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
 			n: hmLabel_hml_short_get_n(len),
+			len: len,
 			len: len
   		};
   	};
@@ -699,9 +730,11 @@ export function loadUnary(slice: Slice): Unary {
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let x: Unary = loadUnary(slice);
+		let x: Unary = loadUnary(slice);
 		return {
   			kind: 'Unary_unary_succ',
 			n: unary_unary_succ_get_n(x),
+			x: x,
 			x: x
   		};
   	};
@@ -882,18 +915,22 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 2);
+		let x: ParamDifNames = loadParamDifNames(slice, 2);
 		return {
   			kind: 'ParamDifNames_b',
 			n: paramDifNames_b_get_n(x),
+			x: x,
 			x: x
   		};
   	};
 	if (((slice.preloadUint(1) == 0b0) && (arg0 == 3))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 3);
+		let x: ParamDifNames = loadParamDifNames(slice, 3);
 		return {
   			kind: 'ParamDifNames_c',
 			m: paramDifNames_c_get_m(x),
+			x: x,
 			x: x
   		};
   	};
@@ -977,10 +1014,11 @@ export type OneComb<A> = {
   };
 export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
   	let t: number = slice.loadUint(32);
+	let x: A = loadA(slice);
 	return {
   		kind: 'OneComb',
 		t: t,
-		x: loadA(slice)
+		x: x
   	};
   }
 export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
@@ -994,11 +1032,15 @@ export type ManyComb = {
 	y: OneComb;
   };
 export function loadManyComb(slice: Slice): ManyComb {
-  	return {
+  	let y: OneComb = loadOneComb(slice, () => {
+  		return slice.loadUint();
+  	});
+	return {
   		kind: 'ManyComb',
 		y: loadOneComb(slice, () => {
   			return slice.loadUint();
-  		})
+  		}),
+		y: y
   	};
   }
 export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {

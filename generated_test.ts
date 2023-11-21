@@ -95,10 +95,11 @@ export type TypedParam = {
 	c: number;
   };
 export function loadTypedParam(slice: Slice): TypedParam {
-  	let c: number = slice.loadUint(32);
+  	let y: FixedIntParam = loadFixedIntParam(slice);
+	let c: number = slice.loadUint(32);
 	return {
   		kind: 'TypedParam',
-		y: loadFixedIntParam(slice),
+		y: y,
 		c: c
   	};
   }
@@ -114,10 +115,11 @@ export type SharpConstructor = {
 	c: number;
   };
 export function loadSharpConstructor(slice: Slice): SharpConstructor {
-  	let c: number = slice.loadUint(32);
+  	let y: FixedIntParam = loadFixedIntParam(slice);
+	let c: number = slice.loadUint(32);
 	return {
   		kind: 'SharpConstructor',
-		y: loadFixedIntParam(slice),
+		y: y,
 		c: c
   	};
   }

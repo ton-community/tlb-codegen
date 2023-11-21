@@ -299,6 +299,8 @@ export function generate(tree: Program) {
                   } else {
                     addLoadProperty(field.name, tmpExp, tmpTypeName, constructorLoadStatements, subStructLoadProperties);
                   }
+                  addLoadProperty(field.name, tmpExp, tmpTypeName, constructorLoadStatements, subStructLoadProperties);
+
                   subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))   
                 }
               }
@@ -344,7 +346,8 @@ export function generate(tree: Program) {
                 }
                 if (argLoadExpr == undefined) {
                   subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
-                  subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]))) 
+                  addLoadProperty(field.name, tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]), field.expr.name, constructorLoadStatements, subStructLoadProperties)
+                  // subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), )) 
                   subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier(currentCell)])))   
                 }
               }
