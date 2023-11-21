@@ -297,8 +297,7 @@ export function generate(tree: Program) {
                   if (!wasNegated) {
                     subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tmpExp)) 
                   } else {
-                    constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), tmpExp, tIdentifier(tmpTypeName))))
-                    subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
+                    addLoadProperty(field.name, tmpExp, tmpTypeName, constructorLoadStatements, subStructLoadProperties);
                   }
                   subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))   
                 }
