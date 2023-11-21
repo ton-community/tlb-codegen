@@ -90,8 +90,6 @@ export function generate(tree: Program) {
         let structTypeParametersExpr: TypeParametersExpression = tTypeParametersExpression([]);
 
         tlbType.constructors.forEach(constructor => {
-          let variablesDeclared = new Set<string>;          
-
           let constructorLoadStatements: Statement[] = []
           let declaration = constructor.declaration;
           let subStructName: string = getSubStructName(tlbType, constructor);
@@ -107,9 +105,7 @@ export function generate(tree: Program) {
             return;
           }
 
-          if (structTypeParametersExpr.typeParameters.length == 0) {
-            structTypeParametersExpr = getTypeParametersExpression(constructor.parameters);
-          }
+          structTypeParametersExpr = getTypeParametersExpression(constructor.parameters);
 
           let slicePrefix: number[] = [0];
 
@@ -352,10 +348,7 @@ export function generate(tree: Program) {
                 if (fieldType == 'Slice') {
                   loadSt = tIdentifier(currentSlice)
                 }
-                if (!variablesDeclared.has(field.name)) {
-                  variablesDeclared.add(field.name);
-                  constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), undefined, tIdentifier(fieldType))))
-                }
+                constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(field.name), undefined, tIdentifier(fieldType))))
                 constructorLoadStatements.push(tExpressionStatement(tBinaryExpression(tIdentifier(field.name), '=', loadSt)))
                 subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType))) 
                 subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), tIdentifier(field.name))) 
