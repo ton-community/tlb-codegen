@@ -422,8 +422,12 @@ export function generate(tree: Program) {
                   [tTypedIdentifier(tIdentifier(firstLower(element.variable.name)), tIdentifier(element.variable.name))], 
                   tArrowFunctionType([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], tIdentifier('void')))))
             }
-            if (element.variable.type == '#' && !element.variable.negated && element.argName) {
-              loadFunctionParameters.push(tTypedIdentifier(tIdentifier(element.argName), tIdentifier('number')))
+            if (element.variable.type == '#' && !element.variable.negated) {
+              if (element.argName) {
+                loadFunctionParameters.push(tTypedIdentifier(tIdentifier(element.argName), tIdentifier('number')))
+              } else {
+                loadFunctionParameters.push(tTypedIdentifier(tIdentifier(element.variable.name), tIdentifier('number')))
+              }
             }
           });
         }

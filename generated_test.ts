@@ -189,11 +189,11 @@ export type BitLenArg = {
 	x: number;
 	value: number;
   };
-export function loadBitLenArg(slice: Slice, arg0: number): BitLenArg {
-  	let value: number = slice.loadUint(arg0);
+export function loadBitLenArg(slice: Slice, x: number): BitLenArg {
+  	let value: number = slice.loadUint(x);
 	return {
   		kind: 'BitLenArg',
-		x: arg0,
+		x: x,
 		value: value
   	};
   }

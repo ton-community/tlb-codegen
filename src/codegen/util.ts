@@ -337,6 +337,10 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                 } else if (element instanceof MathExpr) {
                     let derivedExpr = deriveMathExpression(element);
                     parameter = { variable: { negated: false, const: false, type: '#', name: derivedExpr.name }, expression: derivedExpr.derived };
+
+                    parameter.argName = 'arg' + argumentIndex;
+                    parameter.expression = convertToAST(reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name));
+
                 } else if (element instanceof NegateExpr && (element.expr instanceof MathExpr || element.expr instanceof NumberExpr || element.expr instanceof NameExpr)) {
                     let derivedExpr = deriveMathExpression(element.expr);
                     let toBeConst = false;
@@ -348,10 +352,6 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                     parameter = { variable: { negated: false, const: true, type: '#', name: '' }, expression: tNumericLiteral(element.num) }
                 } else {
                     throw new Error('Cannot identify combinator arg: ' + element)
-                }
-                if (parameter.variable.type == '#' && !parameter.variable.negated) {
-                    parameter.argName = 'arg' + argumentIndex;
-                    parameter.expression = convertToAST(reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name));
                 }
                 constructor.parameters.push(parameter);
                 constructor.parametersMap.set(parameter.variable.name, parameter);
