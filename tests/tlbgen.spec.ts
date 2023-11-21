@@ -46,6 +46,13 @@ function checkSameOnStoreLoad(expected: any, load: any, store: any) {
     expect(deepEqual(expected, actual)).toBeTruthy()
 }
 
+function checkDifferOnStoreLoad(expected: any, load: any, store: any) {
+    let cell = beginCell();
+    store(expected)(cell);
+    let actual = load(cell.endCell().beginParse())
+    expect(deepEqual(expected, actual)).toBeFalsy()
+}
+
 function checkThrowOnStoreLoad(expected: any, load: any, store: any) {
     const t = () => {
         let cell = beginCell();
@@ -76,9 +83,11 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(typedParamNothing, loadTypedParam, storeTypedParam);
         let bitlenArgUser: BitLenArgUser = {'kind': 'BitLenArgUser', t: {'kind': 'BitLenArg', x: 4, value: 10}}
         checkSameOnStoreLoad(bitlenArgUser, loadBitLenArgUser, storeBitLenArgUser);
-        let incorrectX: BitLenArgUser = {'kind': 'BitLenArgUser', t: {'kind': 'BitLenArg', x: 3, value: 10}}
-        checkThrowOnStoreLoad(incorrectX, loadBitLenArgUser, storeBitLenArgUser);
+        let bitlenArgUserIncorrect: BitLenArgUser = {'kind': 'BitLenArgUser', t: {'kind': 'BitLenArg', x: 3, value: 10}}
+        checkThrowOnStoreLoad(bitlenArgUserIncorrect, loadBitLenArgUser, storeBitLenArgUser);
         let exprArgUser: ExprArgUser = {'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: 10}}
         checkSameOnStoreLoad(exprArgUser, loadExprArgUser, storeExprArgUser);
+        let exprArgUserIncorrect: ExprArgUser = {'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 5, value: 10}}
+        checkDifferOnStoreLoad(exprArgUserIncorrect, loadExprArgUser, storeExprArgUser);
     })
 })
