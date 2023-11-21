@@ -16,3 +16,8 @@ a$_ t:(BitLenArg 4) = BitLenArgUser;
 
 a$_ {x:#} value:(## x) = ExprArg (2 + x);
 a$_ t:(ExprArg 6) = ExprArgUser;
+
+a$_ a:ExprArgUser = ComplexTypedField;
+a$_ a:^ExprArgUser = CellTypedField;
+
+

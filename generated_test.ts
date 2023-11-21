@@ -252,3 +252,38 @@ export function storeExprArgUser(exprArgUser: ExprArgUser): (builder: Builder) =
   		storeExprArg(exprArgUser.t)(builder);
   	};
   }
+export type ComplexTypedField = {
+  	kind: 'ComplexTypedField';
+	a: ExprArgUser;
+  };
+export function loadComplexTypedField(slice: Slice): ComplexTypedField {
+  	let a: ExprArgUser = loadExprArgUser(slice);
+	return {
+  		kind: 'ComplexTypedField',
+		a: a
+  	};
+  }
+export function storeComplexTypedField(complexTypedField: ComplexTypedField): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeExprArgUser(complexTypedField.a)(builder);
+  	};
+  }
+export type CellTypedField = {
+  	kind: 'CellTypedField';
+	a: ExprArgUser;
+  };
+export function loadCellTypedField(slice: Slice): CellTypedField {
+  	let slice1 = slice.loadRef().beginParse();
+	let a: ExprArgUser = loadExprArgUser(slice1);
+	return {
+  		kind: 'CellTypedField',
+		a: a
+  	};
+  }
+export function storeCellTypedField(cellTypedField: CellTypedField): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		let cell1 = beginCell();
+		storeExprArgUser(cellTypedField.a)(cell1);
+		builder.storeRef(cell1);
+  	};
+  }

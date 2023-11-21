@@ -7,7 +7,7 @@ import { ast } from '../src'
 import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -89,5 +89,9 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(exprArgUser, loadExprArgUser, storeExprArgUser);
         let exprArgUserIncorrect: ExprArgUser = {'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 5, value: 10}}
         checkDifferOnStoreLoad(exprArgUserIncorrect, loadExprArgUser, storeExprArgUser);
+        let complexTypedField: ComplexTypedField = {'kind': 'ComplexTypedField', a:{'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: 10}}}
+        checkSameOnStoreLoad(complexTypedField, loadComplexTypedField, storeComplexTypedField);
+        let cellTypedField: CellTypedField = {'kind': 'CellTypedField', a:{'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: 10}}}
+        checkSameOnStoreLoad(cellTypedField, loadCellTypedField, storeCellTypedField);
     })
 })
