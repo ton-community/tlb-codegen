@@ -24,7 +24,7 @@ pair$_ {X:Type} {Y:Type} first:X second:Y = Both X Y;
 unit$_ = Unit;
 //true$_ = True;
 
-//a$_ {x:#} value:(## x) = Example x;
+a$_ {x:#} value:(## x) = Example1 x;
 
 a$_ {x:#} value:(## x) = Example (2 + x);
 
@@ -78,3 +78,7 @@ c$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
 
 g$0 {X:Type} {Y:#} x:# {~Y = x} = Same X ~Y;
 t$1 {X:Type} {Y:#} t:# z:# { t = (~Y) * 2} = Same X ~(Y + 1);
+
+
+a$_ {A:Type} t:# x:A = OneComb A;
+a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;

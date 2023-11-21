@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "test": "jest"
+    "test": "jest",
+    "gentlb": "node generate_all.ts"
   },
   "repository": {
     "type": "git",

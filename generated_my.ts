@@ -268,6 +268,21 @@ export function storeUnit(unit: Unit): (builder: Builder) => void {
   
   	};
   }
+export type Example1 = {
+  	kind: 'Example1';
+	x: number;
+  };
+export function loadExample1(slice: Slice, x: number): Example1 {
+  	return {
+  		kind: 'Example1',
+		x: x
+  	};
+  }
+export function storeExample1(example1: Example1): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  
+  	};
+  }
 export type Example = {
   	kind: 'Example';
 	x: number;
@@ -968,4 +983,45 @@ export function storeSame<X>(same: Same<X>, storeX: (x: X) => (builder: Builder)
   		};
   	};
 	throw new Error('');
+  }
+export type OneComb<A> = {
+  	kind: 'OneComb';
+	t: number;
+	x: A;
+  };
+export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
+  	let t: number;
+	(t = slice.loadUint(32));
+	return {
+  		kind: 'OneComb',
+		t: t,
+		x: loadA(slice)
+  	};
+  }
+export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(oneComb.t, 32);
+		storeA(oneComb.x)(builder);
+  	};
+  }
+export type ManyComb = {
+  	kind: 'ManyComb';
+	y: OneComb;
+  };
+export function loadManyComb(slice: Slice): ManyComb {
+  	return {
+  		kind: 'ManyComb',
+		y: loadOneComb(slice, () => {
+  			return slice.loadUint();
+  		})
+  	};
+  }
+export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeOneComb(manyComb.y, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeUint(arg, );
+  			};
+  		})(builder);
+  	};
   }
