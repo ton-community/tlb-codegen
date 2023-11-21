@@ -184,3 +184,72 @@ export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => v
   		storeMaybe<SharpConstructor>(typedParam.x, storeSharpConstructor)(builder);
   	};
   }
+export type BitLenArg = {
+  	kind: 'BitLenArg';
+	x: number;
+	value: number;
+  };
+export function loadBitLenArg(slice: Slice, x: number): BitLenArg {
+	console.log(slice)
+  	let value: number = slice.loadUint(x);
+	return {
+  		kind: 'BitLenArg',
+		x: x,
+		value: value
+  	};
+  }
+export function storeBitLenArg(bitLenArg: BitLenArg): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(bitLenArg.value, bitLenArg.x);
+  	};
+  }
+export type BitLenArgUser = {
+  	kind: 'BitLenArgUser';
+	t: BitLenArg;
+  };
+export function loadBitLenArgUser(slice: Slice): BitLenArgUser {
+  	let t: BitLenArg = loadBitLenArg(slice, 4);
+	return {
+  		kind: 'BitLenArgUser',
+		t: t
+  	};
+  }
+export function storeBitLenArgUser(bitLenArgUser: BitLenArgUser): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeBitLenArg(bitLenArgUser.t)(builder);
+  	};
+  }
+export type ExprArg = {
+  	kind: 'ExprArg';
+	x: number;
+	value: number;
+  };
+export function loadExprArg(slice: Slice, x: number): ExprArg {
+  	let value: number = slice.loadUint((2 + x));
+	return {
+  		kind: 'ExprArg',
+		x: (2 + x),
+		value: value
+  	};
+  }
+export function storeExprArg(exprArg: ExprArg): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(exprArg.value, exprArg.x);
+  	};
+  }
+export type ExprArgUser = {
+  	kind: 'ExprArgUser';
+	t: ExprArg;
+  };
+export function loadExprArgUser(slice: Slice): ExprArgUser {
+  	let t: ExprArg = loadExprArg(slice, 4);
+	return {
+  		kind: 'ExprArgUser',
+		t: t
+  	};
+  }
+export function storeExprArgUser(exprArgUser: ExprArgUser): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeExprArg(exprArgUser.t)(builder);
+  	};
+  }

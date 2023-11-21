@@ -7,7 +7,7 @@ import { ast } from '../src'
 import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -42,7 +42,9 @@ function isObject(object: any) {
 function checkSameOnStoreLoad(expected: any, load: any, store: any) {
     let cell = beginCell();
     store(expected)(cell);
+    console.log(cell)
     let actual = load(cell.endCell().beginParse())
+    console.log(actual)
     expect(deepEqual(expected, actual)).toBeTruthy()
 }
 
@@ -74,5 +76,7 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(typedParamValue, loadTypedParam, storeTypedParam);
         let typedParamNothing: TypedParam = {'kind': 'TypedParam', x:{'kind': 'Maybe_nothing'}}
         checkSameOnStoreLoad(typedParamNothing, loadTypedParam, storeTypedParam);
+        let bitlenArgUser: BitLenArgUser = {'kind': 'BitLenArgUser', t: {'kind': 'BitLenArg', x: 4, value: 10}}
+        checkSameOnStoreLoad(bitlenArgUser, loadBitLenArgUser, storeBitLenArgUser);
     })
 })

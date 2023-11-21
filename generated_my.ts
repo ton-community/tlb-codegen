@@ -276,31 +276,37 @@ export function storeUnit(unit: Unit): (builder: Builder) => void {
 export type Example1 = {
   	kind: 'Example1';
 	x: number;
+	value: number;
   };
 export function loadExample1(slice: Slice, x: number): Example1 {
-  	return {
+  	let value: number = slice.loadUint(x);
+	return {
   		kind: 'Example1',
-		x: x
+		x: x,
+		value: value
   	};
   }
 export function storeExample1(example1: Example1): (builder: Builder) => void {
   	return (builder: Builder) => {
-  
+  		builder.storeUint(example1.value, example1.x);
   	};
   }
 export type Example = {
   	kind: 'Example';
 	x: number;
+	value: number;
   };
 export function loadExample(slice: Slice, x: number): Example {
-  	return {
+  	let value: number = slice.loadUint((2 + x));
+	return {
   		kind: 'Example',
-		x: (2 + x)
+		x: (2 + x),
+		value: value
   	};
   }
 export function storeExample(example: Example): (builder: Builder) => void {
   	return (builder: Builder) => {
-  
+  		builder.storeUint(example.value, example.x);
   	};
   }
 export type BitInteger = {

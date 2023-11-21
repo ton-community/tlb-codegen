@@ -10,3 +10,9 @@ tmpd#_ y:FixedIntParam c:# = SharpConstructor;
 nothing$0 {TheType:Type} = Maybe TheType;
 just$1 {TheType:Type} value:TheType = Maybe TheType;
 thejust$_ x:(Maybe SharpConstructor) = TypedParam;
+
+a$_ {x:#} value:(## x) = BitLenArg x;
+a$_ t:(BitLenArg 4) = BitLenArgUser;
+
+a$_ {x:#} value:(## x) = ExprArg (2 + x);
+a$_ t:(ExprArg 4) = ExprArgUser;

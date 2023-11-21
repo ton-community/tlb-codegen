@@ -162,7 +162,7 @@ export function generate(tree: Program) {
                   }
                   if (field.expr.arg instanceof NameExpr) {
                     argStoreExpr = tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.expr.arg.name));
-                    let parameter = constructor.parametersMap.get(field.name)
+                    let parameter = constructor.parametersMap.get(field.expr.arg.name)
                     if (parameter) {
                       argLoadExpr = parameter.expression;
                     }
