@@ -451,18 +451,24 @@ export function generate(tree: Program) {
                 }
               });
 
-              let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
-
+              // let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
+              let currentTypeParameters = tTypeParametersExpression([]);
+              if (fieldInfo.typeParamExpr && fieldInfo.typeParamExpr.type == 'TypeWithParameters') {
+                currentTypeParameters = fieldInfo.typeParamExpr.typeParameters;
+              } else {
+                throw new Error('program bug1')
+              }
               let insideLoadParameters: Array<Expression> = [tIdentifier(currentSlice)];
               let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
 
               subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
 
               // let tmpExp = tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
+              
               if (fieldInfo.loadExpr) {
                 addLoadProperty(field.name, fieldInfo.loadExpr, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
               } else {
-                throw new Error('program bug')
+                throw new Error('program bug2')
               }
 
 

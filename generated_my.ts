@@ -1016,10 +1016,10 @@ export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder:
   }
 export type ManyComb = {
   	kind: 'ManyComb';
-	y: OneComb;
+	y: OneComb<OneComb<OneComb<number>>>;
   };
 export function loadManyComb(slice: Slice): ManyComb {
-  	let y: OneComb = loadOneComb<OneComb<OneComb<number>>>(slice, (slice: Slice) => {
+  	let y: OneComb<OneComb<OneComb<number>>> = loadOneComb<OneComb<OneComb<number>>>(slice, (slice: Slice) => {
   		return loadOneComb<OneComb<number>>(slice, (slice: Slice) => {
   			return loadOneComb<number>(slice, (slice: Slice) => {
   				return slice.loadInt(3);
@@ -1033,7 +1033,7 @@ export function loadManyComb(slice: Slice): ManyComb {
   }
 export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeOneComb(manyComb.y, (arg: number) => {
+  		storeOneComb<OneComb<OneComb<number>>>(manyComb.y, (arg: number) => {
   			return (builder: Builder) => {
   				builder.storeUint(arg, );
   			};
