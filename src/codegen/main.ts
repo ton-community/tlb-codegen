@@ -96,6 +96,7 @@ export function generate(tree: Program) {
     let structTypeParametersExpr: TypeParametersExpression = tTypeParametersExpression([]);
 
     tlbType.constructors.forEach(constructor => {
+
       let constructorLoadStatements: Statement[] = []
       let declaration = constructor.declaration;
       let subStructName: string = getSubStructName(tlbType, constructor);
@@ -147,6 +148,7 @@ export function generate(tree: Program) {
         }
 
         if (field instanceof FieldNamedDef) {
+
           let argLoadExpr: Expression | undefined;
           let argStoreExpr: Expression | undefined;
 
@@ -200,12 +202,16 @@ export function generate(tree: Program) {
           let fieldLoadStoreSuffix = 'Uint';
 
           type FieldInfoType = {
-            typeParamExpr: TypeExpression | null
-            loadExpr: ArrowFunctionExpression | null
+            typeParamExpr: TypeExpression | undefined
+            loadExpr: Expression | undefined
           }
 
-          function handleCombinator(expr: ParserExpression): FieldInfoType {
-            let result: FieldInfoType = {typeParamExpr: null, loadExpr: null};
+          function handleCombinator(expr: ParserExpression, fieldName: string, isField: boolean): FieldInfoType {
+            let theSlice = 'slice';
+            if (isField) {
+              theSlice = currentSlice;
+            }
+            let result: FieldInfoType = {typeParamExpr: undefined, loadExpr: undefined};
             let argLoadExpr: Expression | undefined;
             let argStoreExpr: Expression | undefined;
 
@@ -233,13 +239,35 @@ export function generate(tree: Program) {
               } 
               if (argLoadExpr == undefined) {
                 let typeExpression: TypeParametersExpression = tTypeParametersExpression([]);
+                let loadFunctionsArray: Array<Expression> = []
                 expr.args.forEach((arg) => {
-                  let argTypeExpr = handleCombinator(arg).typeParamExpr;
-                  if (argTypeExpr) {
-                    typeExpression.typeParameters.push(argTypeExpr);
+                  let subExprInfo = handleCombinator(arg, fieldName, false);
+                  if (subExprInfo.typeParamExpr) {
+                    typeExpression.typeParameters.push(subExprInfo.typeParamExpr);
+                  }
+                  if (subExprInfo.loadExpr) {
+                    if (subExprInfo.loadExpr.type == 'FunctionCall') {
+                      subExprInfo.loadExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [tExpressionStatement(subExprInfo.loadExpr)])
+                    }
+                    loadFunctionsArray.push(subExprInfo.loadExpr);
                   }
                 });
                 result.typeParamExpr = tTypeWithParameters(tIdentifier(expr.name), typeExpression);
+
+                let currentTypeParameters = typeExpression;
+
+                let insideLoadParameters: Array<Expression> = [tIdentifier(theSlice)];
+                // let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
+
+                // subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
+                // let tmpExp = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
+                let tmpExp = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
+                result.loadExpr = tmpExp;
+
+                // addLoadProperty(field.name, tmpExp, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
+
+                // subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))
+
               } else {
                 result.typeParamExpr = tIdentifier(fieldType);
               }
@@ -264,8 +292,8 @@ export function generate(tree: Program) {
               if (expName == 'Any' || expName == 'Cell') {
                 fieldType = 'Slice'
                 fieldLoadStoreSuffix = 'Slice'
-                argLoadExpr = tIdentifier(currentSlice);
-                argStoreExpr = tIdentifier(currentSlice);
+                argLoadExpr = tIdentifier(theSlice);
+                argStoreExpr = tIdentifier(theSlice);
               }
               let theNum = splitForTypeValue(expName, 'int')
               if (theNum != undefined) {
@@ -286,9 +314,16 @@ export function generate(tree: Program) {
               
               if (argLoadExpr == undefined) {
                 if (constructor.implicitFields.get(expr.name)?.startsWith('#')) {
+                  result.loadExpr = tIdentifier(expr.name)
                   // loadFunctionsArray.push(tIdentifier(element.name))
                 } else {
                   result.typeParamExpr = tIdentifier(expr.name);
+                  if (isField) {
+                    result.loadExpr = tFunctionCall(tIdentifier('load' + expr.name), [tIdentifier(theSlice)])
+                  } else {
+                    result.loadExpr = tIdentifier('load' + expr.name)
+                  }
+
                   // typeParameterArray.push(tIdentifier(element.name))
                   // loadFunctionsArray.push(tIdentifier('load' + element.name))
                   // storeFunctionsArray.push(tIdentifier('store' + element.name))
@@ -301,25 +336,33 @@ export function generate(tree: Program) {
                 result.typeParamExpr = tIdentifier(fieldType)
               }
             } else if (expr instanceof NumberExpr) {
+              result.loadExpr = tNumericLiteral(expr.num)
               // loadFunctionsArray.push(tNumericLiteral(element.num))
             } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) {
               // wasNegated = true;
               // let parameter = constructor.parametersMap.get(element.expr.name)
               // if (parameter) {
-              //   let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + element.expr.name)
-              //   jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
-              //   subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(field.name)])))
+                let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
+                // jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
+                // subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
+                // result.loadExpr = tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)]);
               // }
             }  else {
               result.typeParamExpr = tIdentifier('error');
+            }
+            if (argLoadExpr) {
+              result.loadExpr = tFunctionCall(tMemberExpression(tIdentifier(theSlice), tIdentifier('load' + fieldLoadStoreSuffix)), [argLoadExpr])
             }
             return result;
           }
 
           if (field.expr instanceof CombinatorExpr) {
-            let template = handleCombinator(field.expr).typeParamExpr;
-            if (template) {
-              console.log(toCode(template, { tabs: 0 }))
+            let fieldInfo = handleCombinator(field.expr, field.name, true);
+            if (fieldInfo.typeParamExpr) {
+              console.log('param', toCode(fieldInfo.typeParamExpr, { tabs: 0 }))
+            }
+            if (fieldInfo.loadExpr) {
+              console.log('load', toCode(fieldInfo.loadExpr, {tabs: 0}))
             }
             let typeParameterArray: Array<Identifier> = []
             let loadFunctionsArray: Array<Expression> = []
