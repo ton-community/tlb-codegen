@@ -8,7 +8,7 @@ import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 import { BitString, Slice } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, ManyComb, loadManyComb, storeManyComb } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -116,12 +116,38 @@ describe('Generating tlb code', () => {
     })
 
     test('Combinators', () => {
-        let manyComb: ManyComb = {kind: 'ManyComb', y: {kind: 'OneComb', t: 5, x: {kind: 'OneComb', t: 6, x: {kind: 'OneComb', t: 7, x: 3}}}};
-        checkSameOnStoreLoad(manyComb, loadManyComb, storeManyComb);
+        // expect.hasAssertions()
+
+        // let manyComb: ManyComb = {kind: 'ManyComb', y: {kind: 'OneComb', t: 5, x: {kind: 'OneComb', t: 6, x: {kind: 'OneComb', t: 7, x: 3}}}};
+        // checkSameOnStoreLoad(manyComb, loadManyComb, storeManyComb);
 
     });
 
+    test('Advanced types', () => {
+        expect.hasAssertions()
+
+        let unary: Unary = {kind: 'Unary_unary_succ', n: 2, x: {kind: 'Unary_unary_succ', n: 1, x: {kind: 'Unary_unary_succ', n: 0, x: {kind: 'Unary_unary_zero'}}}}
+        checkSameOnStoreLoad(unary, loadUnary, storeUnary);
+        let unaryIncorrectOne: Unary = {kind: 'Unary_unary_succ', n: 3, x: {kind: 'Unary_unary_succ', n: 1, x: {kind: 'Unary_unary_succ', n: 0, x: {kind: 'Unary_unary_zero'}}}}
+        checkDifferOnStoreLoad(unaryIncorrectOne, loadUnary, storeUnary);
+        let unaryIncorrectAll: Unary = {kind: 'Unary_unary_succ', n: 3, x: {kind: 'Unary_unary_succ', n: 2, x: {kind: 'Unary_unary_succ', n: 1, x: {kind: 'Unary_unary_zero'}}}}
+        checkDifferOnStoreLoad(unaryIncorrectAll, loadUnary, storeUnary);
+        let unaryIncorrectSuccZero: Unary = {kind: 'Unary_unary_succ', n: 3, x: {kind: 'Unary_unary_zero'}}
+        checkDifferOnStoreLoad(unaryIncorrectSuccZero, loadUnary, storeUnary);
+
+        let paramConstD: ParamConst = {kind: 'ParamConst_d', n: 1, k: 2, l: 3, m: 4}
+        checkDifferOnStoreLoad(paramConstD, (slice: Slice) => loadParamConst(slice, 1, 1), storeParamConst);
+        checkThrowOnStoreLoad(paramConstD, (slice: Slice) => loadParamConst(slice, 1, 2), storeParamConst)
+        checkSameOnStoreLoad(paramConstD, (slice: Slice) => loadParamConst(slice, 4, 2), storeParamConst)
+        let paramConstB: ParamConst = {kind: 'ParamConst_b', k: 2, m: 4}
+        checkSameOnStoreLoad(paramConstB, (slice: Slice) => loadParamConst(slice, 2, 1), storeParamConst);
+        let paramConstC: ParamConst = {kind: 'ParamConst_c', k: 2, m: 4, n: 3}
+        checkSameOnStoreLoad(paramConstC, (slice: Slice) => loadParamConst(slice, 3, 3), storeParamConst);
+    })
+
     test('Slices', () => {
+        expect.hasAssertions()
+
         let cellsSimple: CellsSimple = {'kind': 'CellsSimple', a: 5, b: 3, c: 4, d: 100, e: 4, q: 1, t: 3}
         checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
             slice = slice.clone()

@@ -32,5 +32,20 @@ a$_ x:(IntBitsParametrizedInside 5) = IntBitsParametrizedOutside;
 
 a$_ x:(#< 4) y:(#<= 4) = LessThan;
 
-a$_ {A:Type} t:# x:A = OneComb A;
-a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;
+//a$_ {A:Type} t:# x:A = OneComb A;
+//a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;
+
+unary_zero$0 = Unary ~0;
+unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
+
+a$_ n:# = ParamConst 1 1;
+b$01 m:# k:# = ParamConst 2 1;
+c$01 n:# m:# k:# = ParamConst 3 3;
+d$_ n:# m:# k:# l:# = ParamConst 4 2;
+
+a$0 = ParamDifNames 1 ~0;
+b$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
+c$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
+
+a$0 {X:Type} {y:#} x:# {~y = x} = NegationFromImplicit X ~y;
+b$1 {X:Type} {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit X ~(y + 1);

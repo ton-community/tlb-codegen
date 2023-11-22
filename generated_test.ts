@@ -502,45 +502,293 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
 		builder.storeUint(lessThan.y, 3);
   	};
   }
-export type OneComb<A> = {
-  	kind: 'OneComb';
+export function unary_unary_succ_get_n(x: Unary): number {
+  	if ((x.kind == 'Unary_unary_zero')) {
+  		return 0;
+  	};
+	if ((x.kind == 'Unary_unary_succ')) {
+  		let n = x.n;
+		return (n + 1);
+  	};
+	throw new Error('');
+  }
+export type Unary = Unary_unary_zero | Unary_unary_succ;
+export type Unary_unary_zero = {
+  	kind: 'Unary_unary_zero';
+  };
+export type Unary_unary_succ = {
+  	kind: 'Unary_unary_succ';
+	n: number;
+	x: Unary;
+  };
+export function loadUnary(slice: Slice): Unary {
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'Unary_unary_zero'
+  		};
+  	};
+	if ((slice.preloadUint(1) == 0b1)) {
+  		slice.loadUint(1);
+		let x: Unary = loadUnary(slice);
+		return {
+  			kind: 'Unary_unary_succ',
+			n: unary_unary_succ_get_n(x),
+			x: x
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeUnary(unary: Unary): (builder: Builder) => void {
+  	if ((unary.kind == 'Unary_unary_zero')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+  		};
+  	};
+	if ((unary.kind == 'Unary_unary_succ')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+			storeUnary(unary.x)(builder);
+  		};
+  	};
+	throw new Error('');
+  }
+export type ParamConst = ParamConst_a | ParamConst_b | ParamConst_c | ParamConst_d;
+export type ParamConst_a = {
+  	kind: 'ParamConst_a';
+	n: number;
+  };
+export type ParamConst_b = {
+  	kind: 'ParamConst_b';
+	m: number;
+	k: number;
+  };
+export type ParamConst_c = {
+  	kind: 'ParamConst_c';
+	n: number;
+	m: number;
+	k: number;
+  };
+export type ParamConst_d = {
+  	kind: 'ParamConst_d';
+	n: number;
+	m: number;
+	k: number;
+	l: number;
+  };
+export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
+  	if (((arg0 == 1) && (arg1 == 1))) {
+  		let n: number = slice.loadUint(32);
+		return {
+  			kind: 'ParamConst_a',
+			n: n
+  		};
+  	};
+	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1)))) {
+  		slice.loadUint(2);
+		let m: number = slice.loadUint(32);
+		let k: number = slice.loadUint(32);
+		return {
+  			kind: 'ParamConst_b',
+			m: m,
+			k: k
+  		};
+  	};
+	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 3) && (arg1 == 3)))) {
+  		slice.loadUint(2);
+		let n: number = slice.loadUint(32);
+		let m: number = slice.loadUint(32);
+		let k: number = slice.loadUint(32);
+		return {
+  			kind: 'ParamConst_c',
+			n: n,
+			m: m,
+			k: k
+  		};
+  	};
+	if (((arg0 == 4) && (arg1 == 2))) {
+  		let n: number = slice.loadUint(32);
+		let m: number = slice.loadUint(32);
+		let k: number = slice.loadUint(32);
+		let l: number = slice.loadUint(32);
+		return {
+  			kind: 'ParamConst_d',
+			n: n,
+			m: m,
+			k: k,
+			l: l
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeParamConst(paramConst: ParamConst): (builder: Builder) => void {
+  	if ((paramConst.kind == 'ParamConst_a')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(paramConst.n, 32);
+  		};
+  	};
+	if ((paramConst.kind == 'ParamConst_b')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b01, 2);
+			builder.storeUint(paramConst.m, 32);
+			builder.storeUint(paramConst.k, 32);
+  		};
+  	};
+	if ((paramConst.kind == 'ParamConst_c')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b01, 2);
+			builder.storeUint(paramConst.n, 32);
+			builder.storeUint(paramConst.m, 32);
+			builder.storeUint(paramConst.k, 32);
+  		};
+  	};
+	if ((paramConst.kind == 'ParamConst_d')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(paramConst.n, 32);
+			builder.storeUint(paramConst.m, 32);
+			builder.storeUint(paramConst.k, 32);
+			builder.storeUint(paramConst.l, 32);
+  		};
+  	};
+	throw new Error('');
+  }
+export function paramDifNames_b_get_n(x: ParamDifNames): number {
+  	if ((x.kind == 'ParamDifNames_a')) {
+  		return 0;
+  	};
+	if ((x.kind == 'ParamDifNames_b')) {
+  		let n = x.n;
+		return (n + 1);
+  	};
+	if ((x.kind == 'ParamDifNames_c')) {
+  		let m = x.m;
+		return (m * 2);
+  	};
+	throw new Error('');
+  }
+export function paramDifNames_c_get_m(x: ParamDifNames): number {
+  	if ((x.kind == 'ParamDifNames_a')) {
+  		return 0;
+  	};
+	if ((x.kind == 'ParamDifNames_b')) {
+  		let n = x.n;
+		return (n + 1);
+  	};
+	if ((x.kind == 'ParamDifNames_c')) {
+  		let m = x.m;
+		return (m * 2);
+  	};
+	throw new Error('');
+  }
+export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c;
+export type ParamDifNames_a = {
+  	kind: 'ParamDifNames_a';
+  };
+export type ParamDifNames_b = {
+  	kind: 'ParamDifNames_b';
+	n: number;
+	x: ParamDifNames;
+  };
+export type ParamDifNames_c = {
+  	kind: 'ParamDifNames_c';
+	m: number;
+	x: ParamDifNames;
+  };
+export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
+  	if (((slice.preloadUint(1) == 0b0) && (arg0 == 1))) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'ParamDifNames_a'
+  		};
+  	};
+	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
+  		slice.loadUint(1);
+		let x: ParamDifNames = loadParamDifNames(slice, 2);
+		return {
+  			kind: 'ParamDifNames_b',
+			n: paramDifNames_b_get_n(x),
+			x: x
+  		};
+  	};
+	if (((slice.preloadUint(1) == 0b0) && (arg0 == 3))) {
+  		slice.loadUint(1);
+		let x: ParamDifNames = loadParamDifNames(slice, 3);
+		return {
+  			kind: 'ParamDifNames_c',
+			m: paramDifNames_c_get_m(x),
+			x: x
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Builder) => void {
+  	if ((paramDifNames.kind == 'ParamDifNames_a')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+  		};
+  	};
+	if ((paramDifNames.kind == 'ParamDifNames_b')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+			storeParamDifNames(paramDifNames.x)(builder);
+  		};
+  	};
+	if ((paramDifNames.kind == 'ParamDifNames_c')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+			storeParamDifNames(paramDifNames.x)(builder);
+  		};
+  	};
+	throw new Error('');
+  }
+export type NegationFromImplicit<X> = NegationFromImplicit_a<X> | NegationFromImplicit_b<X>;
+export type NegationFromImplicit_a<X> = {
+  	kind: 'NegationFromImplicit_a';
+	y: number;
+	x: number;
+  };
+export type NegationFromImplicit_b<X> = {
+  	kind: 'NegationFromImplicit_b';
+	y: number;
 	t: number;
-	x: A;
+	z: number;
   };
-export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
-  	let t: number = slice.loadUint(32);
-	let x: A = loadA(slice);
-	return {
-  		kind: 'OneComb',
-		t: t,
-		x: x
+export function loadNegationFromImplicit<X>(slice: Slice, loadX: (slice: Slice) => X): NegationFromImplicit<X> {
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		let x: number = slice.loadUint(32);
+		return {
+  			kind: 'NegationFromImplicit_a',
+			y: x,
+			x: x
+  		};
   	};
+	if ((slice.preloadUint(1) == 0b1)) {
+  		slice.loadUint(1);
+		let t: number = slice.loadUint(32);
+		let z: number = slice.loadUint(32);
+		return {
+  			kind: 'NegationFromImplicit_b',
+			y: (t / 2),
+			t: t,
+			z: z
+  		};
+  	};
+	throw new Error('');
   }
-export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
-  		builder.storeUint(oneComb.t, 32);
-		storeA(oneComb.x)(builder);
+export function storeNegationFromImplicit<X>(negationFromImplicit: NegationFromImplicit<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+  	if ((negationFromImplicit.kind == 'NegationFromImplicit_a')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+			builder.storeUint(negationFromImplicit.x, 32);
+  		};
   	};
-  }
-export type ManyComb = {
-  	kind: 'ManyComb';
-	y: OneComb;
-  };
-export function loadManyComb(slice: Slice): ManyComb {
-  	let y: OneComb = loadOneComb(slice, () => {
-  		return slice.loadUint();
-  	});
-	return {
-  		kind: 'ManyComb',
-		y: y
+	if ((negationFromImplicit.kind == 'NegationFromImplicit_b')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+			builder.storeUint(negationFromImplicit.t, 32);
+			builder.storeUint(negationFromImplicit.z, 32);
+  		};
   	};
-  }
-export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
-  	return (builder: Builder) => {
-  		storeOneComb(manyComb.y, (arg: number) => {
-  			return (builder: Builder) => {
-  				builder.storeUint(arg, );
-  			};
-  		})(builder);
-  	};
+	throw new Error('');
   }
