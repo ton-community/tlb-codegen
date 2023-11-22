@@ -24,7 +24,7 @@ function loadTheNumber(slice: Slice): number {
 }
 
 function storeTheNumber(n: number): ((builder: Builder) => void) {
-	return (builder: Builder) =>  {
+	return (builder: Builder) => {
 		builder.storeUint(n, 32);
 	}
 }
@@ -163,31 +163,31 @@ export function loadA(slice: Slice): A {
 
 
 
-<ref *1> FieldAnonymousDef {
+<ref * 1 > FieldAnonymousDef {
 	name: null,
-	isRef: true,
-	fields: [
-		FieldNamedDef {
-			name: 'a',
-			expr: [BuiltinOneArgExpr],
-			locations: [Object],
-			parent: [Circular *1]
-		},
-		FieldAnonymousDef {
-			name: null,
-			isRef: true,
-			fields: [Array],
-			locations: [Object],
-			parent: [Circular *1]
-		},
-		FieldAnonymousDef {
-			name: null,
-			isRef: true,
-			fields: [Array],
-			locations: [Object],
-			parent: [Circular *1]
-		}
-	]
+		isRef: true,
+			fields: [
+				FieldNamedDef {
+					name: 'a',
+					expr: [BuiltinOneArgExpr],
+					locations: [Object],
+					parent: [Circular * 1]
+				},
+				FieldAnonymousDef {
+					name: null,
+					isRef: true,
+					fields: [Array],
+					locations: [Object],
+					parent: [Circular * 1]
+				},
+				FieldAnonymousDef {
+					name: null,
+					isRef: true,
+					fields: [Array],
+					locations: [Object],
+					parent: [Circular * 1]
+				}
+			]
 }
 
 
@@ -244,14 +244,14 @@ export type IntexArg = {
 };
 export function loadIntexArg(slice: Slice): IntexArg {
 	return {
-		a: loadIntEx(slice, (slice: Slice) => {return slice.loadUint(22);})
+		a: loadIntEx(slice, (slice: Slice) => { return slice.loadUint(22); })
 	};
 }
 
 
 export function storeIntexArg(intexArg: IntexArg): (builder: Builder) => void {
 	return (builder: Builder) => {
-		storeIntEx(intexArg.a, (arg: number) => {return (builder: Builder) => {builder.storeUint(arg, 22);}})(builder);
+		storeIntEx(intexArg.a, (arg: number) => { return (builder: Builder) => { builder.storeUint(arg, 22); } })(builder);
 	};
 }
 
@@ -278,15 +278,15 @@ export function loadUnary(slice: Slice): Unary {
 
 export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c;
 export type ParamDifNames_a = {
-  	kind: 'ParamDifNames_a';
-  };
+	kind: 'ParamDifNames_a';
+};
 export type ParamDifNames_b = {
-  	kind: 'ParamDifNames_b';
+	kind: 'ParamDifNames_b';
 	n: number;
 	x: ParamDifNames;
-  };
+};
 export type ParamDifNames_c = {
-  	kind: 'ParamDifNames_c';
+	kind: 'ParamDifNames_c';
 	m: number;
 	x: ParamDifNames;
 };
@@ -319,49 +319,49 @@ function paramDifNames_c_get_m(paramDifNames: ParamDifNames): number {
 }
 
 export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
-  	if (slice.preloadUint(1) == 0b0 && arg0 == 1) {
-  		return {
-  			kind: 'ParamDifNames_a',
-  		};
-  	};
-	if (slice.preloadUint(1) == 0b1 && arg0 == 2) {
-  		let x: ParamDifNames = loadParamDifNames(slice, 2);
+	if (slice.preloadUint(1) == 0b0 && arg0 == 1) {
 		return {
-  			kind: 'ParamDifNames_b',
+			kind: 'ParamDifNames_a',
+		};
+	};
+	if (slice.preloadUint(1) == 0b1 && arg0 == 2) {
+		let x: ParamDifNames = loadParamDifNames(slice, 2);
+		return {
+			kind: 'ParamDifNames_b',
 			n: paramDifNames_b_get_n(x),
 			x: x,
-  		};
-  	};
+		};
+	};
 	if (slice.preloadUint(1) == 0b0 && arg0 == 3) {
-  		let x: ParamDifNames = loadParamDifNames(slice, 3);
+		let x: ParamDifNames = loadParamDifNames(slice, 3);
 		return {
-  			kind: 'ParamDifNames_c',
+			kind: 'ParamDifNames_c',
 			m: paramDifNames_c_get_m(x),
 			x: x,
-  		};
-  	};
+		};
+	};
 	throw new Error('');
-  }
+}
 
 
-  export type OneComb<A> = {
+export type OneComb<A> = {
 	kind: 'OneComb';
-  t: number;
-  x: A;
+	t: number;
+	x: A;
 };
 export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
 	let t: number = slice.loadUint(32);
-  let x: A = loadA(slice);
-  return {
+	let x: A = loadA(slice);
+	return {
 		kind: 'OneComb',
-	  t: t,
-	  x: x
+		t: t,
+		x: x
 	};
 }
 export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
 	return (builder: Builder) => {
 		builder.storeUint(oneComb.t, 32);
-	  storeA(oneComb.x)(builder);
+		storeA(oneComb.x)(builder);
 	};
 }
 
@@ -376,28 +376,21 @@ export function loadManyComb(slice: Slice): ManyComb {
 		y: y
 	};
 }
+
 export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
 	return (builder: Builder) => {
-		let storeUint3 = (arg: number) => {
+		storeOneComb<OneComb<OneComb<number>>>(manyComb.y, () => {
 			return (builder: Builder) => {
-				builder.storeUint(arg, 3);
+				storeOneComb<OneComb<number>>(manyComb.y.x, () => {
+					return (builder: Builder) => {
+						storeOneComb<number>(manyComb.y.x.x, (arg: number) => {
+							return (builder: Builder) => {
+								builder.storeUint(arg, 3);
+							};
+						})(builder);
+					};
+				})(builder);
 			};
-		}
-		let storeOneCombUint3 = () => {
-			return (builder: Builder) => {
-				storeOneComb<number>(manyComb.y.x.x, storeUint3)(builder);
-			};
-		}
-		let storeOneCombOneCombUint3 = () => {
-			return (builder: Builder) => {
-				storeOneComb<OneComb<number>>(manyComb.y.x, storeOneCombUint3)(builder);
-			};
-		}
-		let storeOneCombOneCombOneCombUint3 = () => {
-			return (builder: Builder) => {
-				storeOneComb<OneComb<OneComb<number>>>(manyComb.y, storeOneCombOneCombUint3)(builder);
-			};
-		}
-		storeOneCombOneCombOneCombUint3()(builder);
+		})(builder);
 	};
-}
+};

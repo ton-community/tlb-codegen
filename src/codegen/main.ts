@@ -204,6 +204,7 @@ export function generate(tree: Program) {
           type FieldInfoType = {
             typeParamExpr: TypeExpression | undefined
             loadExpr: Expression | undefined
+            storeExpr: Expression | undefined
           }
 
           function handleCombinator(expr: ParserExpression, fieldName: string, isField: boolean): FieldInfoType {
@@ -211,7 +212,7 @@ export function generate(tree: Program) {
             if (isField) {
               theSlice = currentSlice;
             }
-            let result: FieldInfoType = {typeParamExpr: undefined, loadExpr: undefined};
+            let result: FieldInfoType = {typeParamExpr: undefined, loadExpr: undefined, storeExpr: undefined};
             let argLoadExpr: Expression | undefined;
             let argStoreExpr: Expression | undefined;
 
@@ -260,9 +261,7 @@ export function generate(tree: Program) {
                 // let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
 
                 // subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
-                // let tmpExp = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
-                let tmpExp = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
-                result.loadExpr = tmpExp;
+                result.loadExpr = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);;
 
                 // addLoadProperty(field.name, tmpExp, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
 
@@ -315,7 +314,6 @@ export function generate(tree: Program) {
               if (argLoadExpr == undefined) {
                 if (constructor.implicitFields.get(expr.name)?.startsWith('#')) {
                   result.loadExpr = tIdentifier(expr.name)
-                  // loadFunctionsArray.push(tIdentifier(element.name))
                 } else {
                   result.typeParamExpr = tIdentifier(expr.name);
                   if (isField) {
@@ -323,9 +321,6 @@ export function generate(tree: Program) {
                   } else {
                     result.loadExpr = tIdentifier('load' + expr.name)
                   }
-
-                  // typeParameterArray.push(tIdentifier(element.name))
-                  // loadFunctionsArray.push(tIdentifier('load' + element.name))
                   // storeFunctionsArray.push(tIdentifier('store' + element.name))
                 }
 
@@ -337,7 +332,6 @@ export function generate(tree: Program) {
               }
             } else if (expr instanceof NumberExpr) {
               result.loadExpr = tNumericLiteral(expr.num)
-              // loadFunctionsArray.push(tNumericLiteral(element.num))
             } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) {
               // wasNegated = true;
               // let parameter = constructor.parametersMap.get(element.expr.name)
@@ -361,11 +355,9 @@ export function generate(tree: Program) {
             if (fieldInfo.typeParamExpr) {
               console.log('param', toCode(fieldInfo.typeParamExpr, { tabs: 0 }))
             }
-            if (fieldInfo.loadExpr) {
-              console.log('load', toCode(fieldInfo.loadExpr, {tabs: 0}))
-            }
-            let typeParameterArray: Array<Identifier> = []
-            // let loadFunctionsArray: Array<Expression> = []
+            // if (fieldInfo.loadExpr) {
+            //   console.log('load', toCode(fieldInfo.loadExpr, {tabs: 0}))
+            // }
             let storeFunctionsArray: Array<Expression> = []
             let wasNegated = false;
 
@@ -398,15 +390,11 @@ export function generate(tree: Program) {
                 argIndex++;
                 if (element instanceof NameExpr) {
                   if (constructor.implicitFields.get(element.name)?.startsWith('#')) {
-                    // loadFunctionsArray.push(tIdentifier(element.name))
                   } else {
-                    typeParameterArray.push(tIdentifier(element.name))
-                    // loadFunctionsArray.push(tIdentifier('load' + element.name))
                     storeFunctionsArray.push(tIdentifier('store' + element.name))
                   }
                 }
                 if (element instanceof NumberExpr) {
-                  // loadFunctionsArray.push(tNumericLiteral(element.num))
                 }
                 if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
                   wasNegated = true;
@@ -442,36 +430,28 @@ export function generate(tree: Program) {
                       theBitsLoad = convertToAST(myMathExpr);
                       theBitsStore = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
                     }
-                    typeParameterArray.push(tIdentifier(theFieldType))
                   }
                   // here
-                  // loadFunctionsArray.push(tArrowFunctionExpression([], [tReturnStatement(tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + theFieldLoadStoreName)), [theBitsLoad]))]))
                   //(arg: number) => {return (builder: Builder) => {builder.storeUint(arg, 22);}}
                   storeFunctionsArray.push(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), tIdentifier(theFieldType))], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('store' + theFieldLoadStoreName)), [tIdentifier('arg'), theBitsStore]))]))]))
                 }
               });
 
-              // let currentTypeParameters = tTypeParametersExpression(typeParameterArray);
               let currentTypeParameters = tTypeParametersExpression([]);
               if (fieldInfo.typeParamExpr && fieldInfo.typeParamExpr.type == 'TypeWithParameters') {
                 currentTypeParameters = fieldInfo.typeParamExpr.typeParameters;
               } else {
                 throw new Error('program bug1')
               }
-              let insideLoadParameters: Array<Expression> = [tIdentifier(currentSlice)];
               let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
 
               subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
-
-              // let tmpExp = tFunctionCall(tIdentifier('load' + field.expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
               
               if (fieldInfo.loadExpr) {
                 addLoadProperty(field.name, fieldInfo.loadExpr, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
               } else {
                 throw new Error('program bug2')
               }
-
-
               subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))
             }
           }
