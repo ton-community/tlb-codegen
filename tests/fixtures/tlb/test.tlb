@@ -31,3 +31,6 @@ a$_ {x:#} a:(IntBitsParametrized x) = IntBitsParametrizedInside x;
 a$_ x:(IntBitsParametrizedInside 5) = IntBitsParametrizedOutside;
 
 a$_ x:(#< 4) y:(#<= 4) = LessThan;
+
+a$_ {A:Type} t:# x:A = OneComb A;
+a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;

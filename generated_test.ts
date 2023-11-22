@@ -502,3 +502,68 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
 		builder.storeUint(lessThan.y, 3);
   	};
   }
+export type OneComb<A> = {
+  	kind: 'OneComb';
+	t: number;
+	x: A;
+  };
+export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
+  	let t: number = slice.loadUint(32);
+	let x: A = loadA(slice);
+	return {
+  		kind: 'OneComb',
+		t: t,
+		x: x
+  	};
+  }
+export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(oneComb.t, 32);
+		storeA(oneComb.x)(builder);
+  	};
+  }
+
+  export type ManyComb = {
+		kind: 'ManyComb';
+	  y: OneComb<OneComb<OneComb<number>>>;
+	};
+  export function loadManyComb(slice: Slice): ManyComb {
+	console.log(slice)
+	  let afterLastArg = () => {return slice.loadUint(3);};
+	  console.log(afterLastArg)
+	  let lastArg = () => loadOneComb(slice, afterLastArg)
+	  console.log(lastArg)
+	  let prelastArg = () => loadOneComb(slice, lastArg);
+	  let preprelastArg = loadOneComb(slice, prelastArg);
+	  let y = preprelastArg;
+	  return {
+			kind: 'ManyComb',
+		  	y: y
+		};
+	}
+  export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
+		return (builder: Builder) => {
+		  let storeTheInt = (arg: number) => {
+			  return (builder: Builder) => {
+				  builder.storeUint(arg, 3);
+			  };
+		  }
+		  let storeTheLast = () => {
+			  return (builder: Builder) => {
+				  storeOneComb<number>(manyComb.y.x.x, storeTheInt)(builder);
+			  };
+		  }
+		  let storePreLast = () => {
+			  return (builder: Builder) => {
+				  storeOneComb<OneComb<number>>(manyComb.y.x, storeTheLast)(builder);
+			  };
+		  }
+		  let storePrePreLast = () => {
+			  return (builder: Builder) => {
+				  storeOneComb<OneComb<OneComb<number>>>(manyComb.y, storePreLast)(builder);
+			  };
+		  }
+		  storePrePreLast()(builder);
+		};
+	}
+  
