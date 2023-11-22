@@ -52,7 +52,7 @@ export interface TypedIdentifier extends ASTNode {
 
 export interface TypeParametersExpression extends ASTNode {
     type: "TypeParametersExpression",
-    typeParameters: Array<Identifier>
+    typeParameters: Array<TypeExpression>
 }
 
 export interface StructDeclaration extends ASTNode {
@@ -201,7 +201,7 @@ export function tBinaryNumericLiteral(value: number): BinaryNumericLiteral {
     return { type: "BinaryNumericLiteral", value: value }
 }
 
-export function tTypeParametersExpression(typeParameters: Array<Identifier>): TypeParametersExpression {
+export function tTypeParametersExpression(typeParameters: Array<TypeExpression>): TypeParametersExpression {
     return { type: "TypeParametersExpression", typeParameters: typeParameters }
 }
 

@@ -522,48 +522,25 @@ export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder:
 		storeA(oneComb.x)(builder);
   	};
   }
-
-  export type ManyComb = {
-		kind: 'ManyComb';
-	  y: OneComb<OneComb<OneComb<number>>>;
-	};
-  export function loadManyComb(slice: Slice): ManyComb {
-	console.log(slice)
-	  let afterLastArg = () => {return slice.loadUint(3);};
-	  console.log(afterLastArg)
-	  let lastArg = () => loadOneComb(slice, afterLastArg)
-	  console.log(lastArg)
-	  let prelastArg = () => loadOneComb(slice, lastArg);
-	  let preprelastArg = loadOneComb(slice, prelastArg);
-	  let y = preprelastArg;
-	  return {
-			kind: 'ManyComb',
-		  	y: y
-		};
-	}
-  export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
-		return (builder: Builder) => {
-		  let storeTheInt = (arg: number) => {
-			  return (builder: Builder) => {
-				  builder.storeUint(arg, 3);
-			  };
-		  }
-		  let storeTheLast = () => {
-			  return (builder: Builder) => {
-				  storeOneComb<number>(manyComb.y.x.x, storeTheInt)(builder);
-			  };
-		  }
-		  let storePreLast = () => {
-			  return (builder: Builder) => {
-				  storeOneComb<OneComb<number>>(manyComb.y.x, storeTheLast)(builder);
-			  };
-		  }
-		  let storePrePreLast = () => {
-			  return (builder: Builder) => {
-				  storeOneComb<OneComb<OneComb<number>>>(manyComb.y, storePreLast)(builder);
-			  };
-		  }
-		  storePrePreLast()(builder);
-		};
-	}
-  
+export type ManyComb = {
+  	kind: 'ManyComb';
+	y: OneComb;
+  };
+export function loadManyComb(slice: Slice): ManyComb {
+  	let y: OneComb = loadOneComb(slice, () => {
+  		return slice.loadUint();
+  	});
+	return {
+  		kind: 'ManyComb',
+		y: y
+  	};
+  }
+export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeOneComb(manyComb.y, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeUint(arg, );
+  			};
+  		})(builder);
+  	};
+  }

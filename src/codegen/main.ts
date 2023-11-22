@@ -1,5 +1,5 @@
-import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr, CompareExpr } from '../../src/ast/nodes'
-import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
+import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr, CompareExpr, Expression as ParserExpression } from '../../src/ast/nodes'
+import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray, TypeWithParameters } from './tsgen'
 import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
@@ -199,7 +199,45 @@ export function generate(tree: Program) {
               let fieldType = 'number';
               let fieldLoadStoreSuffix = 'Uint';
 
+
+              function handleCombinator(expression: ParserExpression): TypeExpression  {
+                if (expression instanceof CombinatorExpr) {
+                //   if (expression.args.length > 0 && (expression.args[0] instanceof NameExpr)) {
+
+                //   if (expression.name == 'int') {
+                //     fieldLoadStoreSuffix = 'Int'
+                //     let myMathExpr = convertToMathExpr(expression.args[0])
+                //     argLoadExpr = convertToAST(myMathExpr);
+                //     argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+                //   }
+                //   if (expression.name == 'uint') {
+                //       let myMathExpr = convertToMathExpr(expression.args[0])
+                //       argLoadExpr = convertToAST(myMathExpr);
+                //       argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+                //   }
+                //   if (expression.name == 'bits') {
+                //     fieldType = 'BitString'
+                //     fieldLoadStoreSuffix = 'Bits'
+                //     let myMathExpr = convertToMathExpr(expression.args[0])
+                //     argLoadExpr = convertToAST(myMathExpr);
+                //     argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+                //   }
+                // }
+                  let typeExpression: TypeParametersExpression = tTypeParametersExpression([]);
+                  expression.args.forEach((arg) => {
+                    typeExpression.typeParameters.push(handleCombinator(arg));
+                  });
+                  return tTypeWithParameters(tIdentifier(expression.name), typeExpression);
+                } else if (expression instanceof NameExpr) {
+                  return tIdentifier(expression.name);
+                } else {
+                  return tIdentifier('number');
+                }
+                throw new Error('');
+              }
+
               if (field.expr instanceof CombinatorExpr) {
+                console.log(toCode(handleCombinator(field.expr), {tabs: 0}))
                 let typeParameterArray: Array<Identifier> = []
                 let loadFunctionsArray: Array<Expression> = []
                 let storeFunctionsArray: Array<Expression> = []
