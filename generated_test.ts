@@ -652,61 +652,76 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
   	};
 	throw new Error('');
   }
-export function paramDifNames_b_get_n(x: ParamDifNames): number {
+export function paramDifNames_c_get_n(x: ParamDifNames): number {
   	if ((x.kind == 'ParamDifNames_a')) {
-  		return 0;
+  		return 1;
   	};
 	if ((x.kind == 'ParamDifNames_b')) {
+  		return 1;
+  	};
+	if ((x.kind == 'ParamDifNames_c')) {
   		let n = x.n;
 		return (n + 1);
   	};
-	if ((x.kind == 'ParamDifNames_c')) {
+	if ((x.kind == 'ParamDifNames_d')) {
   		let m = x.m;
 		return (m * 2);
   	};
 	throw new Error('');
   }
-export function paramDifNames_c_get_m(x: ParamDifNames): number {
+export function paramDifNames_d_get_m(x: ParamDifNames): number {
   	if ((x.kind == 'ParamDifNames_a')) {
-  		return 0;
+  		return 1;
   	};
 	if ((x.kind == 'ParamDifNames_b')) {
+  		return 1;
+  	};
+	if ((x.kind == 'ParamDifNames_c')) {
   		let n = x.n;
 		return (n + 1);
   	};
-	if ((x.kind == 'ParamDifNames_c')) {
+	if ((x.kind == 'ParamDifNames_d')) {
   		let m = x.m;
 		return (m * 2);
   	};
 	throw new Error('');
   }
-export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c;
+export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c | ParamDifNames_d;
 export type ParamDifNames_a = {
   	kind: 'ParamDifNames_a';
   };
 export type ParamDifNames_b = {
   	kind: 'ParamDifNames_b';
-	n: number;
-	x: ParamDifNames;
   };
 export type ParamDifNames_c = {
   	kind: 'ParamDifNames_c';
+	n: number;
+	x: ParamDifNames;
+  };
+export type ParamDifNames_d = {
+  	kind: 'ParamDifNames_d';
 	m: number;
 	x: ParamDifNames;
   };
 export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
-  	if (((slice.preloadUint(1) == 0b0) && (arg0 == 1))) {
+  	if (((slice.preloadUint(1) == 0b0) && (arg0 == 2))) {
   		slice.loadUint(1);
 		return {
   			kind: 'ParamDifNames_a'
+  		};
+  	};
+	if (((slice.preloadUint(1) == 0b1) && (arg0 == 3))) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'ParamDifNames_b'
   		};
   	};
 	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 2);
 		return {
-  			kind: 'ParamDifNames_b',
-			n: paramDifNames_b_get_n(x),
+  			kind: 'ParamDifNames_c',
+			n: paramDifNames_c_get_n(x),
 			x: x
   		};
   	};
@@ -714,8 +729,8 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 3);
 		return {
-  			kind: 'ParamDifNames_c',
-			m: paramDifNames_c_get_m(x),
+  			kind: 'ParamDifNames_d',
+			m: paramDifNames_d_get_m(x),
 			x: x
   		};
   	};
@@ -730,10 +745,15 @@ export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Buil
 	if ((paramDifNames.kind == 'ParamDifNames_b')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b1, 1);
-			storeParamDifNames(paramDifNames.x)(builder);
   		};
   	};
 	if ((paramDifNames.kind == 'ParamDifNames_c')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+			storeParamDifNames(paramDifNames.x)(builder);
+  		};
+  	};
+	if ((paramDifNames.kind == 'ParamDifNames_d')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeParamDifNames(paramDifNames.x)(builder);

@@ -43,9 +43,10 @@ b$01 m:# k:# = ParamConst 2 1;
 c$01 n:# m:# k:# = ParamConst 3 3;
 d$_ n:# m:# k:# l:# = ParamConst 4 2;
 
-a$0 = ParamDifNames 1 ~0;
-b$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
-c$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
+a$0 = ParamDifNames 2 ~1;
+b$1 = ParamDifNames 3 ~1;
+c$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
+d$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
 
 a$0 {X:Type} {y:#} x:# {~y = x} = NegationFromImplicit X ~y;
 b$1 {X:Type} {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit X ~(y + 1);
