@@ -345,49 +345,6 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 
 
 
-export type ManyComb = {
-  	kind: 'ManyComb';
-	y: OneComb<OneComb<OneComb<number>>>;
-  };
-export function loadManyComb(slice: Slice): ManyComb {
-	let afterLastArg = () => {return slice.loadUint(3);};
-	let lastArg = () => loadOneComb(slice, afterLastArg)
-	let prelastArg = () => loadOneComb(slice, lastArg);
-	let preprelastArg = loadOneComb(slice, prelastArg);
-	let y = preprelastArg;
-	return {
-  		kind: 'ManyComb',
-		y: y
-  	};
-  }
-export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
-  	return (builder: Builder) => {
-		let storeTheInt = (arg: number) => {
-			return (builder: Builder) => {
-				builder.storeUint(arg, 3);
-			};
-		}
-		let storeTheLast = () => {
-			return (builder: Builder) => {
-				storeOneComb<number>(manyComb.y.x.x, storeTheInt);
-			};
-		}
-		let storePreLast = () => {
-			return (builder: Builder) => {
-				storeOneComb<OneComb<number>>(manyComb.y.x, storeTheLast);
-			};
-		}
-		let storePrePreLast = () => {
-			return (builder: Builder) => {
-				storeOneComb<OneComb<OneComb<number>>>(manyComb.y, storePreLast);
-			};
-		}
-		storePrePreLast()(builder);
-  	};
-  }
-
-
-
   export type ManyComb = {
 		kind: 'ManyComb';
 	  y: OneComb<OneComb<OneComb<number>>>;
