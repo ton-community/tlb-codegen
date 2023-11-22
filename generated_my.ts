@@ -487,7 +487,7 @@ export type IntexArg2 = {
 	a: IntEx2<number>;
   };
 export function loadIntexArg2(slice: Slice, arg0: number): IntexArg2 {
-  	let a: IntEx2<number> = loadIntEx2<number>(slice, () => {
+  	let a: IntEx2<number> = loadIntEx2<number>(slice, (slice: Slice) => {
   		return slice.loadInt((1 + x));
   	});
 	return {
@@ -1019,8 +1019,12 @@ export type ManyComb = {
 	y: OneComb;
   };
 export function loadManyComb(slice: Slice): ManyComb {
-  	let y: OneComb = loadOneComb(slice, () => {
-  		return slice.loadUint();
+  	let y: OneComb = loadOneComb<OneComb<OneComb<number>>>(slice, (slice: Slice) => {
+  		return loadOneComb<OneComb<number>>(slice, (slice: Slice) => {
+  			return loadOneComb<number>(slice, (slice: Slice) => {
+  				return slice.loadInt(3);
+  			});
+  		});
   	});
 	return {
   		kind: 'ManyComb',

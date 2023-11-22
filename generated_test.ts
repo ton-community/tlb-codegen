@@ -376,7 +376,7 @@ export type IntBitsInside = {
 	a: IntBits<number>;
   };
 export function loadIntBitsInside(slice: Slice, x: number): IntBitsInside {
-  	let a: IntBits<number> = loadIntBits<number>(slice, () => {
+  	let a: IntBits<number> = loadIntBits<number>(slice, (slice: Slice) => {
   		return slice.loadInt((1 + x));
   	});
 	return {
