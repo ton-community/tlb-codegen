@@ -1,4 +1,4 @@
-
+import { Slice, Builder } from "ton";
 export type Maybe<TheType> = {
 	value: TheType;
 };
@@ -344,17 +344,33 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
   }
 
 
+  export type OneComb<A> = {
+	kind: 'OneComb';
+  t: number;
+  x: A;
+};
+export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
+	let t: number = slice.loadUint(32);
+  let x: A = loadA(slice);
+  return {
+		kind: 'OneComb',
+	  t: t,
+	  x: x
+	};
+}
+export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
+	return (builder: Builder) => {
+		builder.storeUint(oneComb.t, 32);
+	  storeA(oneComb.x)(builder);
+	};
+}
 
 export type ManyComb = {
 	kind: 'ManyComb';
 	y: OneComb<OneComb<OneComb<number>>>;
 };
 export function loadManyComb(slice: Slice): ManyComb {
-	let uint3 = () => { return slice.loadUint(3); };
-	let oneCombUint3 = () => loadOneComb(slice, uint3)
-	let oneCombOneCombUint3 = () => loadOneComb(slice, oneCombUint3);
-	let oneCombOneCombOneCombUint3 = loadOneComb(slice, oneCombOneCombUint3);
-	let y = oneCombOneCombOneCombUint3;
+	let y = loadOneComb(slice, () => loadOneComb(slice, () => loadOneComb(slice, () => { return slice.loadUint(3); })));
 	return {
 		kind: 'ManyComb',
 		y: y

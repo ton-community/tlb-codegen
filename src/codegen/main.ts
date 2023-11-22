@@ -199,45 +199,127 @@ export function generate(tree: Program) {
           let fieldType = 'number';
           let fieldLoadStoreSuffix = 'Uint';
 
+          type FieldInfoType = {
+            typeParamExpr: TypeExpression | null
+          }
 
-          function handleCombinator(expression: ParserExpression): TypeExpression {
-            if (expression instanceof CombinatorExpr) {
-              //   if (expression.args.length > 0 && (expression.args[0] instanceof NameExpr)) {
+          function handleCombinator(expr: ParserExpression): FieldInfoType {
+            let result: FieldInfoType = {typeParamExpr: null};
+            let argLoadExpr: Expression | undefined;
+            let argStoreExpr: Expression | undefined;
 
-              //   if (expression.name == 'int') {
-              //     fieldLoadStoreSuffix = 'Int'
-              //     let myMathExpr = convertToMathExpr(expression.args[0])
-              //     argLoadExpr = convertToAST(myMathExpr);
-              //     argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-              //   }
-              //   if (expression.name == 'uint') {
-              //       let myMathExpr = convertToMathExpr(expression.args[0])
-              //       argLoadExpr = convertToAST(myMathExpr);
-              //       argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-              //   }
-              //   if (expression.name == 'bits') {
-              //     fieldType = 'BitString'
-              //     fieldLoadStoreSuffix = 'Bits'
-              //     let myMathExpr = convertToMathExpr(expression.args[0])
-              //     argLoadExpr = convertToAST(myMathExpr);
-              //     argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-              //   }
+            let fieldType = 'number';
+            let fieldLoadStoreSuffix = 'Uint';
+
+            if (expr instanceof CombinatorExpr) {
+              if (expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
+                if (expr.name == 'int') {
+                  fieldLoadStoreSuffix = 'Int'
+                  let myMathExpr = convertToMathExpr(expr.args[0])
+                  argLoadExpr = convertToAST(myMathExpr);
+                  argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+                } else if (expr.name == 'uint') {
+                  let myMathExpr = convertToMathExpr(expr.args[0])
+                  argLoadExpr = convertToAST(myMathExpr);
+                  argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+                } else if (expr.name == 'bits') {
+                  fieldType = 'BitString'
+                  fieldLoadStoreSuffix = 'Bits'
+                  let myMathExpr = convertToMathExpr(expr.args[0])
+                  argLoadExpr = convertToAST(myMathExpr);
+                  argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+                } 
+              } 
+              if (argLoadExpr == undefined) {
+                let typeExpression: TypeParametersExpression = tTypeParametersExpression([]);
+                expr.args.forEach((arg) => {
+                  let argTypeExpr = handleCombinator(arg).typeParamExpr;
+                  if (argTypeExpr) {
+                    typeExpression.typeParameters.push(argTypeExpr);
+                  }
+                });
+                result.typeParamExpr = tTypeWithParameters(tIdentifier(expr.name), typeExpression);
+              } else {
+                result.typeParamExpr = tIdentifier(fieldType);
+              }
+            } else if (expr instanceof NameExpr) {
+              let expName = expr.name;
+              if (expName == 'Int') {
+                argLoadExpr = argStoreExpr = tNumericLiteral(257);
+              }
+              if (expName == 'Bits') {
+                fieldType = 'BitString';
+                fieldLoadStoreSuffix = 'Bits';
+                argLoadExpr = argStoreExpr = tNumericLiteral(1023);
+              }
+              if (expName == 'Bit') {
+                fieldType = 'BitString';
+                fieldLoadStoreSuffix = 'Bits';
+                argLoadExpr = argStoreExpr = tNumericLiteral(1);
+              }
+              if (expName == 'Uint') {
+                argLoadExpr = argStoreExpr = tNumericLiteral(256);
+              }
+              if (expName == 'Any' || expName == 'Cell') {
+                fieldType = 'Slice'
+                fieldLoadStoreSuffix = 'Slice'
+                argLoadExpr = tIdentifier(currentSlice);
+                argStoreExpr = tIdentifier(currentSlice);
+              }
+              let theNum = splitForTypeValue(expName, 'int')
+              if (theNum != undefined) {
+                fieldLoadStoreSuffix = 'Int';
+                argLoadExpr = argStoreExpr = tNumericLiteral(theNum);
+              }
+              theNum = splitForTypeValue(expName, 'uint')
+              if (theNum != undefined) {
+                fieldLoadStoreSuffix = 'Uint';
+                argLoadExpr = argStoreExpr = tNumericLiteral(theNum);
+              }
+              theNum = splitForTypeValue(expName, 'bits')
+              if (theNum != undefined) {
+                fieldLoadStoreSuffix = 'Bits';
+                fieldType = 'BitString';
+                argLoadExpr = argStoreExpr = tNumericLiteral(theNum);
+              }
+              
+              if (argLoadExpr == undefined) {
+                if (constructor.implicitFields.get(expr.name)?.startsWith('#')) {
+                  // loadFunctionsArray.push(tIdentifier(element.name))
+                } else {
+                  result.typeParamExpr = tIdentifier(expr.name);
+                  // typeParameterArray.push(tIdentifier(element.name))
+                  // loadFunctionsArray.push(tIdentifier('load' + element.name))
+                  // storeFunctionsArray.push(tIdentifier('store' + element.name))
+                }
+
+              //   subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
+              //   addLoadProperty(field.name, tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]), tIdentifier(field.expr.name), constructorLoadStatements, subStructLoadProperties)
+              //   subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier(currentCell)])))
+              } else {
+                result.typeParamExpr = tIdentifier(fieldType)
+              }
+            } else if (expr instanceof NumberExpr) {
+              // loadFunctionsArray.push(tNumericLiteral(element.num))
+            } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) {
+              // wasNegated = true;
+              // let parameter = constructor.parametersMap.get(element.expr.name)
+              // if (parameter) {
+              //   let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + element.expr.name)
+              //   jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
+              //   subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(field.name)])))
               // }
-              let typeExpression: TypeParametersExpression = tTypeParametersExpression([]);
-              expression.args.forEach((arg) => {
-                typeExpression.typeParameters.push(handleCombinator(arg));
-              });
-              return tTypeWithParameters(tIdentifier(expression.name), typeExpression);
-            } else if (expression instanceof NameExpr) {
-              return tIdentifier(expression.name);
-            } else {
-              return tIdentifier('number');
+            }  else {
+              result.typeParamExpr = tIdentifier('error');
             }
-            throw new Error('');
+            return result;
           }
 
           if (field.expr instanceof CombinatorExpr) {
-            console.log(toCode(handleCombinator(field.expr), { tabs: 0 }))
+            let template = handleCombinator(field.expr).typeParamExpr;
+            if (template) {
+              console.log(toCode(template, { tabs: 0 }))
+            }
             let typeParameterArray: Array<Identifier> = []
             let loadFunctionsArray: Array<Expression> = []
             let storeFunctionsArray: Array<Expression> = []
