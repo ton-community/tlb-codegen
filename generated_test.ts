@@ -761,54 +761,25 @@ export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Buil
   	};
 	throw new Error('');
   }
-export type NegationFromImplicit<X> = NegationFromImplicit_a<X> | NegationFromImplicit_b<X>;
-export type NegationFromImplicit_a<X> = {
-  	kind: 'NegationFromImplicit_a';
-	y: number;
-	x: number;
-  };
-export type NegationFromImplicit_b<X> = {
-  	kind: 'NegationFromImplicit_b';
+export type NegationFromImplicit = {
+  	kind: 'NegationFromImplicit';
 	y: number;
 	t: number;
 	z: number;
   };
-export function loadNegationFromImplicit<X>(slice: Slice, loadX: (slice: Slice) => X): NegationFromImplicit<X> {
-  	if ((slice.preloadUint(1) == 0b0)) {
-  		slice.loadUint(1);
-		let x: number = slice.loadUint(32);
-		return {
-  			kind: 'NegationFromImplicit_a',
-			y: x,
-			x: x
-  		};
+export function loadNegationFromImplicit(slice: Slice): NegationFromImplicit {
+  	let t: number = slice.loadUint(32);
+	let z: number = slice.loadUint(32);
+	return {
+  		kind: 'NegationFromImplicit',
+		y: (t / 2),
+		t: t,
+		z: z
   	};
-	if ((slice.preloadUint(1) == 0b1)) {
-  		slice.loadUint(1);
-		let t: number = slice.loadUint(32);
-		let z: number = slice.loadUint(32);
-		return {
-  			kind: 'NegationFromImplicit_b',
-			y: (t / 2),
-			t: t,
-			z: z
-  		};
-  	};
-	throw new Error('');
   }
-export function storeNegationFromImplicit<X>(negationFromImplicit: NegationFromImplicit<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	if ((negationFromImplicit.kind == 'NegationFromImplicit_a')) {
-  		return (builder: Builder) => {
-  			builder.storeUint(0b0, 1);
-			builder.storeUint(negationFromImplicit.x, 32);
-  		};
+export function storeNegationFromImplicit(negationFromImplicit: NegationFromImplicit): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(negationFromImplicit.t, 32);
+		builder.storeUint(negationFromImplicit.z, 32);
   	};
-	if ((negationFromImplicit.kind == 'NegationFromImplicit_b')) {
-  		return (builder: Builder) => {
-  			builder.storeUint(0b1, 1);
-			builder.storeUint(negationFromImplicit.t, 32);
-			builder.storeUint(negationFromImplicit.z, 32);
-  		};
-  	};
-	throw new Error('');
   }

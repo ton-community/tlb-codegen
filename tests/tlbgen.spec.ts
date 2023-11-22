@@ -8,7 +8,7 @@ import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 import { BitString, Slice } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -148,79 +148,84 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(paramDifNamesC, (slice: Slice) => loadParamDifNames(slice, 2), storeParamDifNames);
         let paramDifNamesD: ParamDifNames = {kind: 'ParamDifNames_d', m: 4, x: {kind: 'ParamDifNames_d', m: 2, x: {kind: 'ParamDifNames_d', m: 1, x: {kind: 'ParamDifNames_b'}}}}
         checkSameOnStoreLoad(paramDifNamesD, (slice: Slice) => loadParamDifNames(slice, 3), storeParamDifNames);
+
+        let negationFromImplicit: NegationFromImplicit = {kind: 'NegationFromImplicit', t: 4, y: 2, z: 7}
+        checkSameOnStoreLoad(negationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit)
+        let negationFromImplicitIncorrect: NegationFromImplicit = {kind: 'NegationFromImplicit', t: 4, y: 3, z: 7}
+        checkDifferOnStoreLoad(negationFromImplicitIncorrect, loadNegationFromImplicit, storeNegationFromImplicit)
     })
 
-    // test('Slices', () => {
-    //     expect.hasAssertions()
+    test('Slices', () => {
+        expect.hasAssertions()
 
-    //     let cellsSimple: CellsSimple = {'kind': 'CellsSimple', a: 5, b: 3, c: 4, d: 100, e: 4, q: 1, t: 3}
-    //     checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
-    //         slice = slice.clone()
-    //         slice.loadRef();
-    //         let slice2 = slice.loadRef().beginParse();
-    //         slice2.loadRef();
-    //         let slice22 = slice2.loadRef().beginParse();
-    //         let slice221 = slice22.loadRef();
-    //     });
-    //     checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
-    //         slice = slice.clone()
-    //         slice.loadRef();
-    //         let slice2 = slice.loadRef().beginParse();
-    //         slice2.loadRef();
-    //         let slice22 = slice2.loadRef().beginParse();
-    //         let slice221 = slice22.loadRef();
-    //         let slice2211 = slice221.beginParse().loadRef();
-    //     });
-    //     checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
-    //         slice.loadRef();
-    //     });
-    //     checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
-    //         slice.preloadRef().beginParse().preloadRef();
-    //     });
-    //     checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
-    //         slice.preloadRef().beginParse();
-    //     });
+        let cellsSimple: CellsSimple = {'kind': 'CellsSimple', a: 5, b: 3, c: 4, d: 100, e: 4, q: 1, t: 3}
+        checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice = slice.clone()
+            slice.loadRef();
+            let slice2 = slice.loadRef().beginParse();
+            slice2.loadRef();
+            let slice22 = slice2.loadRef().beginParse();
+            let slice221 = slice22.loadRef();
+        });
+        checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice = slice.clone()
+            slice.loadRef();
+            let slice2 = slice.loadRef().beginParse();
+            slice2.loadRef();
+            let slice22 = slice2.loadRef().beginParse();
+            let slice221 = slice22.loadRef();
+            let slice2211 = slice221.beginParse().loadRef();
+        });
+        checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice.loadRef();
+        });
+        checkThrowOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice.preloadRef().beginParse().preloadRef();
+        });
+        checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
+            slice.preloadRef().beginParse();
+        });
 
-    //     let intBitsOutside: IntBitsOutside = {
-    //         'kind': 'IntBitsOutside', 
-    //         x: {
-    //             'kind': 'IntBitsInside', 
-    //             a: {
-    //                 'kind': 'IntBits', arg: 3, d: 5, 
-    //                 g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2), 
-    //                 x: beginCell().storeUint(76, 10).endCell().beginParse()
-    //             },
-    //             x: 6
-    //         }
-    //     }
-    //     checkSameOnStoreLoad(intBitsOutside, loadIntBitsOutside, storeIntBitsOutside);
+        let intBitsOutside: IntBitsOutside = {
+            'kind': 'IntBitsOutside', 
+            x: {
+                'kind': 'IntBitsInside', 
+                a: {
+                    'kind': 'IntBits', arg: 3, d: 5, 
+                    g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2), 
+                    x: beginCell().storeUint(76, 10).endCell().beginParse()
+                },
+                x: 6
+            }
+        }
+        checkSameOnStoreLoad(intBitsOutside, loadIntBitsOutside, storeIntBitsOutside);
 
-    //     let intBitsParametrizedOutside: IntBitsParametrizedOutside = {
-    //         kind: 'IntBitsParametrizedOutside', 
-    //         x: {
-    //             kind: 'IntBitsParametrizedInside', 
-    //             a: {
-    //                 kind: 'IntBitsParametrized', e: 5, f: 3, h: 7, j: 9, k: 10,
-    //                 i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10), 
-    //                 tc: beginCell().storeUint(76, 10).endCell().beginParse()
-    //             },
-    //             x: 5
-    //         }
-    //     }
-    //     checkSameOnStoreLoad(intBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside);
+        let intBitsParametrizedOutside: IntBitsParametrizedOutside = {
+            kind: 'IntBitsParametrizedOutside', 
+            x: {
+                kind: 'IntBitsParametrizedInside', 
+                a: {
+                    kind: 'IntBitsParametrized', e: 5, f: 3, h: 7, j: 9, k: 10,
+                    i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10), 
+                    tc: beginCell().storeUint(76, 10).endCell().beginParse()
+                },
+                x: 5
+            }
+        }
+        checkSameOnStoreLoad(intBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside);
 
-    //     let intBitsParametrizedOutsideIncorrect: IntBitsParametrizedOutside = {
-    //         kind: 'IntBitsParametrizedOutside', 
-    //         x: {
-    //             kind: 'IntBitsParametrizedInside', 
-    //             a: {
-    //                 kind: 'IntBitsParametrized', e: 6, f: 3, h: 7, j: 9, k: 10,
-    //                 i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10), 
-    //                 tc: beginCell().storeUint(76, 10).endCell().beginParse()
-    //             },
-    //             x: 5
-    //         }
-    //     }
-    //     checkDifferOnStoreLoad(intBitsParametrizedOutsideIncorrect, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside);
-    // })
+        let intBitsParametrizedOutsideIncorrect: IntBitsParametrizedOutside = {
+            kind: 'IntBitsParametrizedOutside', 
+            x: {
+                kind: 'IntBitsParametrizedInside', 
+                a: {
+                    kind: 'IntBitsParametrized', e: 6, f: 3, h: 7, j: 9, k: 10,
+                    i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10), 
+                    tc: beginCell().storeUint(76, 10).endCell().beginParse()
+                },
+                x: 5
+            }
+        }
+        checkDifferOnStoreLoad(intBitsParametrizedOutsideIncorrect, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside);
+    })
 })
