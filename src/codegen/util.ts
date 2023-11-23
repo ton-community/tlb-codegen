@@ -271,9 +271,9 @@ export function fillNegationExpressions(constructor: TLBConstructor) {
                 if (variable) {
                     variable.negated = true;
                     variable.deriveExpr = myMathExpr;
+                } else {
+                    throw new Error(`Variable ${negatedVariable} not defined`)
                 }
-                
-                constructor.negatedVariables.set(negatedVariable, convertToAST(myMathExpr));
             }
         }
     })
@@ -295,7 +295,7 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
         if (tlbType == undefined) {
             tlbType = { name: declaration.combinator.name, constructors: [] }
         }
-        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, negatedVariables: new Map<string, Expression>(), variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>() });
+        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>() });
         tlbCode.types.set(tlbType.name, tlbType);
     })
 

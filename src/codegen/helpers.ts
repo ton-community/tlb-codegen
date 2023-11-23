@@ -37,9 +37,9 @@ export function getVarExprByName(name: string, constructor: TLBConstructor): Exp
   if (variable) {
     return getParamVarExpr(variable);
   } 
-  let negateExpr = constructor.negatedVariables.get(name)
-  if (negateExpr) {
-    return negateExpr
+  let variable2 = constructor.variablesMap.get(name)
+  if (variable2?.deriveExpr) {
+    return convertToAST(variable2.deriveExpr);
   }
   return tIdentifier(name)
 }

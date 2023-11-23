@@ -59,7 +59,6 @@ export type TLBConstructor = {
     parametersMap: Map<string, TLBParameter>
     name: string
     declaration: Declaration
-    negatedVariables: Map<string, Expression>
 }
 
 export type TLBType = {
