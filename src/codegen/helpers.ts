@@ -24,6 +24,14 @@ export function getSubStructName(tlbType: TLBType, constructor: TLBConstructor):
   }
 }
 
+export function getParamVarExpr(param: TLBParameter): Expression {
+  if (param.variable.deriveExpr) {
+    return convertToAST(param.variable.deriveExpr);
+  } else {
+    return tIdentifier('')
+  }
+}
+
 export function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, parameterIndex: number, parameterName: string): Statement[] {
   let result: Statement[] = [];
   let tlbType: TLBType | undefined = tlbCode.types.get(typeName);
@@ -32,7 +40,7 @@ export function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: st
       let parameter = constructor.parameters[parameterIndex];
       if (parameter) {
         let getExpression: Expression;
-        getExpression = parameter.expression;
+        getExpression = getParamVarExpr(parameter);
         let statements = [];
         if (!parameter.variable.const) {
           statements.push(tExpressionStatement(tDeclareVariable(tIdentifier(parameter.variable.name), tMemberExpression(tIdentifier(parameterName), tIdentifier(parameter.variable.name)))));

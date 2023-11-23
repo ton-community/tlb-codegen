@@ -135,10 +135,10 @@ export function getXname(myMathExpr: MyMathExpr): string {
 
 export function deriveMathExpression(mathExpr: MathExpr | NameExpr | NumberExpr | CompareExpr) {
     let myMathExpr = convertToMathExpr(mathExpr);
-    let derived = convertToAST(myMathExpr)
+    // let derived = convertToAST(myMathExpr)
     return {
         name: getXname(myMathExpr),
-        derived: derived,
+        derived: myMathExpr,
     }
 }
 
@@ -311,28 +311,28 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                             variable = { negated: false, const: false, type: 'Type', name: element.name }
                         }
                         else {
-                            variable = { negated: false, const: false, type: '#', name: element.name }
+                            variable = { negated: false, const: false, type: '#', name: element.name, deriveExpr: new MyVarExpr(element.name) }
                         }
-                        parameter = { variable: variable, expression: tIdentifier(element.name) };
+                        parameter = { variable: variable, paramExpr: new MyVarExpr(element.name) };
                     }
                     else {
                         throw new Error('Field not known before using (should be tagged as implicit): ' + element)
                     }
                 } else if (element instanceof MathExpr) {
                     let derivedExpr = deriveMathExpression(element);
-                    parameter = { variable: { negated: false, const: false, type: '#', name: derivedExpr.name }, expression: derivedExpr.derived };
+                    parameter = { variable: { negated: false, const: false, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived }, paramExpr: derivedExpr.derived };
 
                     parameter.argName = 'arg' + argumentIndex;
-                    parameter.expression = convertToAST(reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name));
+                    parameter.variable.deriveExpr = reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name);
                 } else if (element instanceof NegateExpr && (element.expr instanceof MathExpr || element.expr instanceof NumberExpr || element.expr instanceof NameExpr)) {
                     let derivedExpr = deriveMathExpression(element.expr);
                     let toBeConst = false;
                     if (element.expr instanceof NumberExpr) {
                         toBeConst = true;
                     }
-                    parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name }, expression: derivedExpr.derived };
+                    parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived }, paramExpr: derivedExpr.derived };
                 } else if (element instanceof NumberExpr) {
-                    parameter = { variable: { negated: false, const: true, type: '#', name: '' }, expression: tNumericLiteral(element.num) }
+                    parameter = { variable: { negated: false, const: true, type: '#', name: '', deriveExpr: new MyNumberExpr(element.num) }, paramExpr: new MyNumberExpr(element.num) }
                 } else {
                     throw new Error('Cannot identify combinator arg: ' + element)
                 }

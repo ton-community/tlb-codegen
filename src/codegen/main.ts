@@ -7,7 +7,7 @@ import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
 import { FunctionDeclaration } from '@babel/types'
 import { handleField } from './field'
-import { getSubStructName } from './helpers'
+import { getParamVarExpr, getSubStructName } from './helpers'
 
 export type ConstructorTag = {
   bitLen: number,
@@ -91,9 +91,9 @@ export function generate(tree: Program) {
           let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(tag.bitLen)]))]
           constructorLoadStatements = loadBitsStatement.concat(constructorLoadStatements);
         }
-        constructor.parameters.forEach(element => {
-          if (element.variable.const && !element.variable.negated) {
-            conditions.push(tBinaryExpression(tIdentifier(element.variable.name), '==', element.expression))
+        constructor.parameters.forEach(param => {
+          if (param.variable.const && !param.variable.negated) {
+            conditions.push(tBinaryExpression(tIdentifier(param.variable.name), '==', getParamVarExpr(param)))
           }
         });
         loadStatements.push(tIfStatement(getCondition(conditions), constructorLoadStatements))

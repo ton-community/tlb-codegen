@@ -5,7 +5,7 @@ import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpre
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
 import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
-import { addLoadProperty, getNegationDerivationFunctionBody, sliceLoad } from './helpers'
+import { addLoadProperty, getNegationDerivationFunctionBody, getParamVarExpr, sliceLoad } from './helpers'
 
 export function handleField(field: FieldDefinition, slicePrefix: Array<number>, tlbCode: TLBCode, constructor: TLBConstructor, constructorLoadStatements: Statement[], subStructStoreStatements: Statement[], subStructProperties: TypedIdentifier[], subStructLoadProperties: ObjectProperty[], variableCombinatorName: string, variableSubStructName: string, jsCodeDeclarations: GenDeclaration[]) {
   let currentSlice = getCurrentSlice(slicePrefix, 'slice');
@@ -31,7 +31,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
     subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number')));
     let parameter = constructor.parametersMap.get(field.name)
     if (parameter && !parameter.variable.const && !parameter.variable.negated) {
-      subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), parameter.expression))
+      subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), getParamVarExpr(parameter)))
     }
   }
 
