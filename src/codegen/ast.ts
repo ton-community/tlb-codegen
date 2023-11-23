@@ -1,4 +1,4 @@
-import { Declaration  } from "../../src/ast/nodes";
+import { Declaration } from "../../src/ast/nodes";
 import { Expression } from "../../src/codegen/tsgen";
 
 export class MyBinaryOp {
@@ -8,7 +8,7 @@ export class MyBinaryOp {
         readonly operation: string,
         readonly variables: Set<string>,
         readonly hasNeg: boolean
-        ) {
+    ) {
     }
 }
 

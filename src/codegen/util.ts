@@ -30,7 +30,7 @@ export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr |
             }
             if (expression instanceof MyVarExpr) {
                 return new MyVarExpr(expression.x, expression.variables, true);
-            } 
+            }
             if (expression instanceof MyNumberExpr) {
                 return new MyNumberExpr(expression.n, expression.variables, true);
             }
@@ -107,12 +107,12 @@ export function reorganizeExpression(mathExpr: MyMathExpr, variable: string): My
                 mathExpr.right.hasNeg || other.hasNeg
             )
             mathExpr = new MyBinaryOp(
-                leftSide, 
+                leftSide,
                 withVariable,
                 '=',
                 new Set(...leftSide.variables, withVariable.variables),
                 leftSide.hasNeg || rightSide.hasNeg
-                )
+            )
             return reorganizeExpression(mathExpr, variable);
         }
     }
@@ -284,7 +284,7 @@ export function fillNegationExpressions(constructor: TLBConstructor) {
                 }
                 constructor.negatedVariables.set(negatedVariable, convertToAST(myMathExpr));
             }
-          }
+        }
     })
 }
 
