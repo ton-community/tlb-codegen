@@ -37,6 +37,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
   if (expr instanceof BuiltinZeroArgs) {
     if (expr.name == '#') {
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(32);
+    } else {
+      throw new Error('Expression not supported' + expr)
     }
   } else if (expr instanceof BuiltinOneArgExpr) {
     if (expr.name == '##') {
@@ -63,25 +65,22 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       } // TODO: handle other cases
     }
   } else if (expr instanceof CombinatorExpr) {
-    if (expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
-      if (expr.name == 'int') {
-        result.fieldLoadStoreSuffix = 'Int'
-        let myMathExpr = convertToMathExpr(expr.args[0])
-        result.argLoadExpr = convertToAST(myMathExpr);
-        result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-      } else if (expr.name == 'uint') {
-        let myMathExpr = convertToMathExpr(expr.args[0])
-        result.argLoadExpr = convertToAST(myMathExpr);
-        result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-      } else if (expr.name == 'bits') {
-        result.paramType = 'BitString'
-        result.fieldLoadStoreSuffix = 'Bits'
-        let myMathExpr = convertToMathExpr(expr.args[0])
-        result.argLoadExpr = convertToAST(myMathExpr);
-        result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-      }
-    }
-    if (result.argLoadExpr == undefined) {
+    if (expr.name == 'int' && expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
+      result.fieldLoadStoreSuffix = 'Int'
+      let myMathExpr = convertToMathExpr(expr.args[0])
+      result.argLoadExpr = convertToAST(myMathExpr);
+      result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+    } else if (expr.name == 'uint' && expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
+      let myMathExpr = convertToMathExpr(expr.args[0])
+      result.argLoadExpr = convertToAST(myMathExpr);
+      result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+    } else if (expr.name == 'bits' && expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
+      result.paramType = 'BitString'
+      result.fieldLoadStoreSuffix = 'Bits'
+      let myMathExpr = convertToMathExpr(expr.args[0])
+      result.argLoadExpr = convertToAST(myMathExpr);
+      result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+    } else {
       let typeExpression: TypeParametersExpression = tTypeParametersExpression([]);
       let loadFunctionsArray: Array<Expression> = []
       let storeFunctionsArray: Array<Expression> = []
@@ -113,7 +112,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
 
       result.loadExpr = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
       result.storeExpr = tFunctionCall(tFunctionCall(tIdentifier('store' + expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(theCell)])
-    } else {
+    } 
+    if (result.argLoadExpr) {
       result.typeParamExpr = tIdentifier(result.paramType);
     }
   } else if (expr instanceof NameExpr) {
