@@ -326,10 +326,14 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                     }
                 } else if (element instanceof MathExpr) {
                     let derivedExpr = deriveMathExpression(element);
-                    parameter = { variable: { negated: false, const: false, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived }, paramExpr: derivedExpr.derived };
-
-                    parameter.argName = 'arg' + argumentIndex;
-                    parameter.variable.deriveExpr = reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name);
+                    let variable = constructor.variablesMap.get(derivedExpr.name)
+                    if (variable) {
+                        parameter = { variable: variable, paramExpr: derivedExpr.derived };
+                        parameter.argName = 'arg' + argumentIndex;
+                        parameter.variable.deriveExpr = reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name);
+                    } else {
+                        throw new Error('')
+                    }
                 } else if (element instanceof NegateExpr && (element.expr instanceof MathExpr || element.expr instanceof NumberExpr || element.expr instanceof NameExpr)) {
                     let derivedExpr = deriveMathExpression(element.expr);
                     let toBeConst = false;
