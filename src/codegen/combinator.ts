@@ -83,10 +83,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
 
         let insideLoadParameters: Array<Expression> = [tIdentifier(theSlice)];
 
-        // subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
         result.loadExpr = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
-
-        // addLoadProperty(field.name, tmpExp, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
         result.storeExpr = tFunctionCall(tFunctionCall(tIdentifier('store' + expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(theCell)])
       } else {
         result.typeParamExpr = tIdentifier(result.paramType);
@@ -144,10 +141,6 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
           }
           result.storeExpr = tIdentifier('store' + expr.name)
         }
-
-      //   subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
-      //   addLoadProperty(field.name, tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]), tIdentifier(field.expr.name), constructorLoadStatements, subStructLoadProperties)
-      //   subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier(currentCell)])))
       } else {
         result.typeParamExpr = tIdentifier(result.paramType)
       }
@@ -160,14 +153,6 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
             jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
             subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
         }
-      // wasNegated = true;
-      // let parameter = constructor.parametersMap.get(element.expr.name)
-      // if (parameter) {
-        let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
-        // jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
-        // subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
-        // result.loadExpr = tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)]);
-      // }
     }  else {
       result.typeParamExpr = tIdentifier('error');
     }
