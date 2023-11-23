@@ -116,33 +116,6 @@ export function reorganizeExpression(mathExpr: MyMathExpr, variable: string): My
             return reorganizeExpression(mathExpr, variable);
         }
     }
-    if (mathExpr instanceof MyVarExpr || mathExpr instanceof MyNumberExpr) {
-        return mathExpr
-    }
-    if (mathExpr instanceof MyBinaryOp) {
-        let op = '';
-        if (mathExpr.operation == '*') {
-            op = '/';
-        } else if (mathExpr.operation == '+') {
-            op = '-'
-        }
-        let left = undefined;
-        let right = undefined;
-        if (mathExpr.left.variables.has(variable)) {
-            left = mathExpr.left;
-            right = mathExpr.right
-        } else {
-            right = mathExpr.left
-            left = mathExpr.right
-        }
-        return new MyBinaryOp(
-            reorganizeExpression(left, variable),
-            reorganizeExpression(right, variable),
-            op,
-            mathExpr.variables,
-            mathExpr.hasNeg
-        )
-    }
     return { n: 0, variables: new Set<string>(), hasNeg: false }
 }
 
