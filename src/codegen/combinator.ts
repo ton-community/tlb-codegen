@@ -144,7 +144,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       result.paramType = 'BitString';
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(theNum);
     } else {
-      if (constructor.implicitFields.get(expr.name)?.startsWith('#')) {
+      if (constructor.variablesMap.get(expr.name)?.type == '#') {
         result.loadExpr = result.storeExpr = getVarExprByName(expr.name, constructor)
       } else {
         result.typeParamExpr = tIdentifier(expr.name);

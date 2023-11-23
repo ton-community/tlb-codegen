@@ -54,9 +54,10 @@ export type TLBParameter = {
 
 export type TLBConstructor = {
     parameters: Array<TLBParameter>
+    variables: Array<TLBVariable>
+    variablesMap: Map<string, TLBVariable>
     parametersMap: Map<string, TLBParameter>
     name: string
-    implicitFields: Map<string, string>
     declaration: Declaration
     negatedVariables: Map<string, Expression>
 }

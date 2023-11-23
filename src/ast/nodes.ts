@@ -73,7 +73,7 @@ export type FieldDefinition =
 
 export abstract class Field extends ASTBase {}
 
-export const FieldBuiltinType = ['+', 'Type'] as const
+export const FieldBuiltinType = ['#', 'Type'] as const
 
 export class FieldBuiltinDef extends Field {
   constructor(

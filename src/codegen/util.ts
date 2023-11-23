@@ -289,30 +289,29 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
         if (tlbType == undefined) {
             tlbType = { name: declaration.combinator.name, constructors: [] }
         }
-        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), implicitFields: new Map<string, string>(), name: declaration.constructorDef.name, negatedVariables: new Map<string, Expression>() });
+        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, negatedVariables: new Map<string, Expression>(), variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>() });
         tlbCode.types.set(tlbType.name, tlbType);
     })
 
     tlbCode.types.forEach((tlbType: TLBType, combinatorName: string) => {
         tlbType.constructors.forEach(constructor => {
-
             constructor.declaration?.fields.forEach(field => {
                 if (field instanceof FieldBuiltinDef) {
-                    constructor.implicitFields.set(field.name, field.type);
+                    constructor.variables.push({name: field.name, const: false, negated: false, type: field.type})
                 }
+            })
+            constructor.variables.forEach(variable => {
+                constructor.variablesMap.set(variable.name, variable);
             })
             let argumentIndex = -1;
             constructor.declaration.combinator.args.forEach(element => {
                 argumentIndex++;
                 let parameter: TLBParameter | undefined = undefined;
                 if (element instanceof NameExpr) {
-                    if (constructor.implicitFields.has(element.name)) {
-                        let variable: TLBVariable;
-                        if (constructor.implicitFields.get(element.name) == 'Type') {
-                            variable = { negated: false, const: false, type: 'Type', name: element.name }
-                        }
-                        else {
-                            variable = { negated: false, const: false, type: '#', name: element.name, deriveExpr: new TLBVarExpr(element.name) }
+                    let variable = constructor.variablesMap.get(element.name)
+                    if (variable) {
+                        if (variable.type == '#') {
+                            variable.deriveExpr = new TLBVarExpr(element.name);
                         }
                         parameter = { variable: variable, paramExpr: new TLBVarExpr(element.name) };
                     }
