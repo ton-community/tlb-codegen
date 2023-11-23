@@ -33,13 +33,9 @@ export function getParamVarExpr(param: TLBParameter): Expression {
 }
 
 export function getVarExprByName(name: string, constructor: TLBConstructor): Expression {
-  let variable = constructor.parametersMap.get(name);
-  if (variable) {
-    return getParamVarExpr(variable);
-  } 
-  let variable2 = constructor.variablesMap.get(name)
-  if (variable2?.deriveExpr) {
-    return convertToAST(variable2.deriveExpr);
+  let variable = constructor.variablesMap.get(name)
+  if (variable?.deriveExpr) {
+    return convertToAST(variable.deriveExpr);
   }
   return tIdentifier(name)
 }
