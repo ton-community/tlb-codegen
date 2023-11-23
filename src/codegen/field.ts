@@ -127,19 +127,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
 
 
         if (argLoadExpr == undefined) {
-          let argIndex = -1;
-          field.expr.args.forEach(element => {
-            argIndex++;
-            if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
-              // let parameter = constructor.parametersMap.get(element.expr.name)
-              // if (parameter) {
-              //   let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + element.expr.name)
-              //   jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
-              //   subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(field.name)])))
-              // }
-            }
-          });
-
           let currentTypeParameters = tTypeParametersExpression([]);
           if (fieldInfo.typeParamExpr && fieldInfo.typeParamExpr.type == 'TypeWithParameters') {
             currentTypeParameters = fieldInfo.typeParamExpr.typeParameters;
