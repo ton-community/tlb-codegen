@@ -3,6 +3,7 @@ import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpre
 import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
+import { getNegationDerivationFunctionBody } from './helpers'
 
 type FieldInfoType = {
     typeParamExpr: TypeExpression | undefined
@@ -10,7 +11,7 @@ type FieldInfoType = {
     storeExpr: Expression | undefined
   }
 
-export function handleCombinator(expr: ParserExpression, fieldName: string, isField: boolean, variableCombinatorName: string, variableSubStructName: string, currentSlice: string, currentCell: string, constructor: TLBConstructor): FieldInfoType {
+export function handleCombinator(expr: ParserExpression, fieldName: string, isField: boolean, variableCombinatorName: string, variableSubStructName: string, currentSlice: string, currentCell: string, constructor: TLBConstructor, jsCodeDeclarations: ASTNode[], fieldTypeName: string, argIndex: number, tlbCode: TLBCode, subStructLoadProperties: ObjectProperty[]): FieldInfoType {
     let theSlice = 'slice';
     let theCell = 'builder';
     if (isField) {
@@ -57,8 +58,10 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         let typeExpression: TypeParametersExpression = tTypeParametersExpression([]);
         let loadFunctionsArray: Array<Expression> = []
         let storeFunctionsArray: Array<Expression> = []
+        let argIndex = -1;
         expr.args.forEach((arg) => {
-          let subExprInfo = handleCombinator(arg, fieldName, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor);
+          argIndex++;
+          let subExprInfo = handleCombinator(arg, fieldName, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
           if (subExprInfo.typeParamExpr) {
             typeExpression.typeParameters.push(subExprInfo.typeParamExpr);
           }
@@ -154,6 +157,12 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     } else if (expr instanceof NumberExpr) {
       result.loadExpr = tNumericLiteral(expr.num)
     } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) {
+        let parameter = constructor.parametersMap.get(expr.expr.name)
+        if (parameter) {
+            let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
+            jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
+            subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
+        }
       // wasNegated = true;
       // let parameter = constructor.parametersMap.get(element.expr.name)
       // if (parameter) {

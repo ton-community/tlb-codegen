@@ -91,7 +91,9 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
 
       
       if (field.expr instanceof CombinatorExpr) {
-        let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor);
+        let tmpTypeName = field.expr.name;
+
+        let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
         if (fieldInfo.typeParamExpr) {
           console.log('param', toCode(fieldInfo.typeParamExpr, { tabs: 0 }))
         }
@@ -101,7 +103,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
         if (fieldInfo.storeExpr) {
           console.log('store', toCode(fieldInfo.storeExpr, {tabs: 0}))
         }
-        let wasNegated = false;
 
         if (field.expr.args.length > 0 && (field.expr.args[0] instanceof MathExpr || field.expr.args[0] instanceof NumberExpr || field.expr.args[0] instanceof NameExpr)) {
           if (field.expr.name == 'int') {
@@ -124,27 +125,18 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
           }
         }
 
-        let tmpTypeName = field.expr.name;
 
         if (argLoadExpr == undefined) {
           let argIndex = -1;
           field.expr.args.forEach(element => {
             argIndex++;
-            if (element instanceof NameExpr) {
-              if (constructor.implicitFields.get(element.name)?.startsWith('#')) {
-              } else {
-              }
-            }
-            if (element instanceof NumberExpr) {
-            }
             if (element instanceof NegateExpr && element.expr instanceof NameExpr) {
-              wasNegated = true;
-              let parameter = constructor.parametersMap.get(element.expr.name)
-              if (parameter) {
-                let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + element.expr.name)
-                jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
-                subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(field.name)])))
-              }
+              // let parameter = constructor.parametersMap.get(element.expr.name)
+              // if (parameter) {
+              //   let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + element.expr.name)
+              //   jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
+              //   subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(field.name)])))
+              // }
             }
           });
 
