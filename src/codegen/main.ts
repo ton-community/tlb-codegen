@@ -241,6 +241,7 @@ export function generate(tree: Program) {
               if (argLoadExpr == undefined) {
                 let typeExpression: TypeParametersExpression = tTypeParametersExpression([]);
                 let loadFunctionsArray: Array<Expression> = []
+                let storeFunctionsArray: Array<Expression> = []
                 expr.args.forEach((arg) => {
                   let subExprInfo = handleCombinator(arg, fieldName, false);
                   if (subExprInfo.typeParamExpr) {
@@ -252,21 +253,27 @@ export function generate(tree: Program) {
                     }
                     loadFunctionsArray.push(subExprInfo.loadExpr);
                   }
+                  if (subExprInfo.storeExpr) {
+                    if (subExprInfo.storeExpr.type == 'FunctionCall') {
+                      subExprInfo.storeExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), tIdentifier(fieldType))], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [tExpressionStatement(subExprInfo.storeExpr)]))])
+                    } else {
+                      console.log('here')
+                    }
+                    storeFunctionsArray.push(subExprInfo.storeExpr);
+                  }
                 });
                 result.typeParamExpr = tTypeWithParameters(tIdentifier(expr.name), typeExpression);
 
                 let currentTypeParameters = typeExpression;
 
                 let insideLoadParameters: Array<Expression> = [tIdentifier(theSlice)];
-                // let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
+                let insideStoreParameters: Array<Expression> = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(fieldName))];
 
                 // subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
                 result.loadExpr = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);;
 
                 // addLoadProperty(field.name, tmpExp, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
-
-                // subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])))
-
+                result.storeExpr = tFunctionCall(tFunctionCall(tIdentifier('store' + expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(currentCell)])
               } else {
                 result.typeParamExpr = tIdentifier(fieldType);
               }
@@ -321,7 +328,7 @@ export function generate(tree: Program) {
                   } else {
                     result.loadExpr = tIdentifier('load' + expr.name)
                   }
-                  // storeFunctionsArray.push(tIdentifier('store' + element.name))
+                  result.storeExpr = tIdentifier('store' + expr.name)
                 }
 
               //   subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
@@ -347,6 +354,13 @@ export function generate(tree: Program) {
             if (argLoadExpr) {
               result.loadExpr = tFunctionCall(tMemberExpression(tIdentifier(theSlice), tIdentifier('load' + fieldLoadStoreSuffix)), [argLoadExpr])
             }
+            if (argStoreExpr) {
+              let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(fieldName))];
+              if (fieldType != 'BitString' && fieldType != 'Slice') {
+                storeParams.push(argStoreExpr);
+              }
+              result.storeExpr = tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + fieldLoadStoreSuffix)), storeParams);
+            }
             return result;
           }
 
@@ -358,6 +372,9 @@ export function generate(tree: Program) {
             // if (fieldInfo.loadExpr) {
             //   console.log('load', toCode(fieldInfo.loadExpr, {tabs: 0}))
             // }
+            if (fieldInfo.storeExpr) {
+              console.log('store', toCode(fieldInfo.storeExpr, {tabs: 0}))
+            }
             let storeFunctionsArray: Array<Expression> = []
             let wasNegated = false;
 
