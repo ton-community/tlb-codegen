@@ -58,7 +58,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       if (expr.arg instanceof NumberExpr) {
         result.argLoadExpr = result.argStoreExpr = tNumericLiteral(bitLen(expr.arg.num));
       } else if (expr.arg instanceof NameExpr) {
-        result.argLoadExpr = result.argStoreExpr = tIdentifier(expr.arg.name)
+        result.argLoadExpr = tIdentifier(expr.arg.name)
+        result.argStoreExpr = tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(expr.arg.name));
       } // TODO: handle other cases
     }
   } else if (expr instanceof CombinatorExpr) {
@@ -175,12 +176,9 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
   } else if (expr instanceof NumberExpr) {
     result.loadExpr = tNumericLiteral(expr.num)
   } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) { // TODO: handle other case
-    let parameter = constructor.parametersMap.get(expr.expr.name)
-    if (parameter) {
-      let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
-      jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
-      subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
-    }
+    let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
+    jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
+    subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
   } else { // TODO: handle other cases
     result.typeParamExpr = tIdentifier('error');
   }

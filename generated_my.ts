@@ -543,6 +543,21 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
 		builder.storeUint(lessThan.y, 3);
   	};
   }
+export function hashmap_get_l(label: HmLabel): number {
+  	if ((label.kind == 'HmLabel_hml_short')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_long')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_same')) {
+  		let n = label.n;
+		return n;
+  	};
+	throw new Error('');
+  }
 export type Hashmap<X> = {
   	kind: 'Hashmap';
 	n: number;
@@ -558,6 +573,7 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
   		kind: 'Hashmap',
 		m: (n - l),
 		n: n,
+		l: hashmap_get_l(label),
 		label: label,
 		node: node
   	};
@@ -690,14 +706,14 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b10, 2);
-			builder.storeUint(hmLabel.n, m);
+			builder.storeUint(hmLabel.n, hmLabel.m);
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_same')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeBits(hmLabel.v);
-			builder.storeUint(hmLabel.n, m);
+			builder.storeUint(hmLabel.n, hmLabel.m);
   		};
   	};
 	throw new Error('');
