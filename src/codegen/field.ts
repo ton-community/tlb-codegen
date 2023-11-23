@@ -90,7 +90,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
       let fieldLoadStoreSuffix = 'Uint';
 
       
-      if (field.expr instanceof CombinatorExpr) {
+      if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr) {
         let tmpTypeName = field.expr.name;
 
         let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
@@ -117,52 +117,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
           }
         }
       }
-      if (field.expr instanceof NameExpr) {
-        let expName = field.expr.name;
-        if (expName == 'Int') {
-          argLoadExpr = argStoreExpr = tNumericLiteral(257);
-        }
-        if (expName == 'Bits') {
-          fieldType = 'BitString';
-          fieldLoadStoreSuffix = 'Bits';
-          argLoadExpr = argStoreExpr = tNumericLiteral(1023);
-        }
-        if (expName == 'Bit') {
-          fieldType = 'BitString';
-          fieldLoadStoreSuffix = 'Bits';
-          argLoadExpr = argStoreExpr = tNumericLiteral(1);
-        }
-        if (expName == 'Uint') {
-          argLoadExpr = argStoreExpr = tNumericLiteral(256);
-        }
-        if (expName == 'Any' || expName == 'Cell') {
-          fieldType = 'Slice'
-          fieldLoadStoreSuffix = 'Slice'
-          argLoadExpr = tIdentifier(currentSlice);
-          argStoreExpr = tIdentifier(currentSlice);
-        }
-        let theNum = splitForTypeValue(expName, 'int')
-        if (theNum != undefined) {
-          fieldLoadStoreSuffix = 'Int';
-          argLoadExpr = argStoreExpr = tNumericLiteral(theNum);
-        }
-        theNum = splitForTypeValue(expName, 'uint')
-        if (theNum != undefined) {
-          fieldLoadStoreSuffix = 'Uint';
-          argLoadExpr = argStoreExpr = tNumericLiteral(theNum);
-        }
-        theNum = splitForTypeValue(expName, 'bits')
-        if (theNum != undefined) {
-          fieldLoadStoreSuffix = 'Bits';
-          fieldType = 'BitString';
-          argLoadExpr = argStoreExpr = tNumericLiteral(theNum);
-        }
-        if (argLoadExpr == undefined) {
-          subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(field.expr.name)));
-          addLoadProperty(field.name, tFunctionCall(tIdentifier('load' + field.expr.name), [tIdentifier(currentSlice)]), tIdentifier(field.expr.name), constructorLoadStatements, subStructLoadProperties)
-          subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + field.expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))]), [tIdentifier(currentCell)])))
-        }
-      }
+      
       if (argLoadExpr != undefined && argStoreExpr != undefined) {
         let loadSt: Expression = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + fieldLoadStoreSuffix)), [argLoadExpr]);
         if (fieldType == 'Slice') {

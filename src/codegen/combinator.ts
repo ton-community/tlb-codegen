@@ -136,10 +136,11 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
           result.typeParamExpr = tIdentifier(expr.name);
           if (isField) {
             result.loadExpr = tFunctionCall(tIdentifier('load' + expr.name), [tIdentifier(theSlice)])
+            result.storeExpr = tFunctionCall(tFunctionCall(tIdentifier('store' + expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(fieldName))]), [tIdentifier(currentCell)])
           } else {
             result.loadExpr = tIdentifier('load' + expr.name)
+            result.storeExpr = tIdentifier('store' + expr.name)
           }
-          result.storeExpr = tIdentifier('store' + expr.name)
         }
       } else {
         result.typeParamExpr = tIdentifier(result.paramType)
