@@ -117,47 +117,35 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       result.typeParamExpr = tIdentifier(result.paramType);
     }
   } else if (expr instanceof NameExpr) {
-    let expName = expr.name;
-    if (expName == 'Int') {
+    let theNum;
+    if (expr.name == 'Int') {
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(257);
-    }
-    if (expName == 'Bits') {
+    } else if (expr.name == 'Bits') {
       result.paramType = 'BitString';
       result.fieldLoadStoreSuffix = 'Bits';
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(1023);
-    }
-    if (expName == 'Bit') {
+    } else if (expr.name == 'Bit') {
       result.paramType = 'BitString';
       result.fieldLoadStoreSuffix = 'Bits';
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(1);
-    }
-    if (expName == 'Uint') {
+    } else if (expr.name == 'Uint') {
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(256);
-    }
-    if (expName == 'Any' || expName == 'Cell') {
+    } else if (expr.name == 'Any' || expr.name == 'Cell') {
       result.paramType = 'Slice'
       result.fieldLoadStoreSuffix = 'Slice'
       result.argLoadExpr = tIdentifier(theSlice);
       result.argStoreExpr = tIdentifier(theSlice);
-    }
-    let theNum = splitForTypeValue(expName, 'int')
-    if (theNum != undefined) {
+    } else if ((theNum = splitForTypeValue(expr.name, 'int')) != undefined) {
       result.fieldLoadStoreSuffix = 'Int';
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(theNum);
-    }
-    theNum = splitForTypeValue(expName, 'uint')
-    if (theNum != undefined) {
+    } else if ((theNum = splitForTypeValue(expr.name, 'uint')) != undefined) {
       result.fieldLoadStoreSuffix = 'Uint';
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(theNum);
-    }
-    theNum = splitForTypeValue(expName, 'bits')
-    if (theNum != undefined) {
+    } else if ((theNum = splitForTypeValue(expr.name, 'bits')) != undefined) {
       result.fieldLoadStoreSuffix = 'Bits';
       result.paramType = 'BitString';
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(theNum);
-    }
-
-    if (result.argLoadExpr == undefined) {
+    } else {
       if (constructor.implicitFields.get(expr.name)?.startsWith('#')) {
         result.loadExpr = tIdentifier(expr.name)
       } else {
@@ -170,7 +158,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
           result.storeExpr = tIdentifier('store' + expr.name)
         }
       }
-    } else {
+    }
+    if (result.argLoadExpr) {
       result.typeParamExpr = tIdentifier(result.paramType)
     }
   } else if (expr instanceof NumberExpr) {
