@@ -1,64 +1,64 @@
 import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr, Declaration, CompareExpr, FieldCurlyExprDef } from "../ast/nodes";
-import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
+import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
 import { Identifier, Expression, BinaryExpression } from "./tsgen";
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
 import util from 'util'
 
-export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr | CompareExpr): MyMathExpr {
+export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr | CompareExpr): TLBMathExpr {
     if (mathExpr instanceof NameExpr) {
         let variables = new Set<string>();
         variables.add(mathExpr.name);
-        return new MyVarExpr(mathExpr.name, variables, false);
+        return new TLBVarExpr(mathExpr.name, variables, false);
     }
     if (mathExpr instanceof NumberExpr) {
-        return new MyNumberExpr(mathExpr.num, new Set<string>(), false);
+        return new TLBNumberExpr(mathExpr.num, new Set<string>(), false);
     }
     if (mathExpr instanceof MathExpr) {
         let left = convertToMathExpr(mathExpr.left)
         let right = convertToMathExpr(mathExpr.right)
-        return new MyBinaryOp(left, right, mathExpr.op, new Set(...left.variables, ...right.variables), left.hasNeg || right.hasNeg)
+        return new TLBBinaryOp(left, right, mathExpr.op, new Set(...left.variables, ...right.variables), left.hasNeg || right.hasNeg)
     }
     if (mathExpr instanceof CompareExpr) {
         let left = convertToMathExpr(mathExpr.left);
         let right = convertToMathExpr(mathExpr.right);
-        return new MyBinaryOp(left, right, mathExpr.op, new Set(...left.variables, ...right.variables), left.hasNeg || right.hasNeg)
+        return new TLBBinaryOp(left, right, mathExpr.op, new Set(...left.variables, ...right.variables), left.hasNeg || right.hasNeg)
     }
     if (mathExpr instanceof NegateExpr) {
         if (mathExpr.expr instanceof MathExpr || mathExpr.expr instanceof NameExpr || mathExpr.expr instanceof NumberExpr) {
             let expression = convertToMathExpr(mathExpr.expr);
-            if (expression instanceof MyBinaryOp) {
-                return new MyBinaryOp(expression.left, expression.right, expression.operation, expression.variables, true);
+            if (expression instanceof TLBBinaryOp) {
+                return new TLBBinaryOp(expression.left, expression.right, expression.operation, expression.variables, true);
             }
-            if (expression instanceof MyVarExpr) {
-                return new MyVarExpr(expression.x, expression.variables, true);
+            if (expression instanceof TLBVarExpr) {
+                return new TLBVarExpr(expression.x, expression.variables, true);
             }
-            if (expression instanceof MyNumberExpr) {
-                return new MyNumberExpr(expression.n, expression.variables, true);
+            if (expression instanceof TLBNumberExpr) {
+                return new TLBNumberExpr(expression.n, expression.variables, true);
             }
         }
     }
     return { n: 0, variables: new Set<string>(), hasNeg: false };
 }
 
-export function convertToAST(mathExpr: MyMathExpr, objectId?: Identifier): Expression {
-    if (mathExpr instanceof MyVarExpr) {
+export function convertToAST(mathExpr: TLBMathExpr, objectId?: Identifier): Expression {
+    if (mathExpr instanceof TLBVarExpr) {
         if (objectId != undefined) {
             return tMemberExpression(objectId, tIdentifier(mathExpr.x));
         }
         return tIdentifier(mathExpr.x);
     }
-    if (mathExpr instanceof MyNumberExpr) {
+    if (mathExpr instanceof TLBNumberExpr) {
         return tNumericLiteral(mathExpr.n)
     }
-    if (mathExpr instanceof MyBinaryOp) {
+    if (mathExpr instanceof TLBBinaryOp) {
         return tBinaryExpression(convertToAST(mathExpr.left, objectId), mathExpr.operation, convertToAST(mathExpr.right, objectId));
     }
     return tIdentifier('');
 }
 
-export function getNegatedVariable(mathExpr: MyMathExpr): string | undefined {
+export function getNegatedVariable(mathExpr: TLBMathExpr): string | undefined {
     if (mathExpr.hasNeg) {
-        if (mathExpr instanceof MyBinaryOp) {
+        if (mathExpr instanceof TLBBinaryOp) {
             if (mathExpr.left.hasNeg) {
                 return getNegatedVariable(mathExpr.left);
             }
@@ -66,23 +66,23 @@ export function getNegatedVariable(mathExpr: MyMathExpr): string | undefined {
                 return getNegatedVariable(mathExpr.right);
             }
         }
-        if (mathExpr instanceof MyVarExpr) {
+        if (mathExpr instanceof TLBVarExpr) {
             return mathExpr.x;
         }
     }
     return undefined
 }
 
-export function reorganizeExpression(mathExpr: MyMathExpr, variable: string): MyMathExpr {
-    if (mathExpr instanceof MyBinaryOp && mathExpr.operation == '=') {
+export function reorganizeExpression(mathExpr: TLBMathExpr, variable: string): TLBMathExpr {
+    if (mathExpr instanceof TLBBinaryOp && mathExpr.operation == '=') {
         if (mathExpr.left.variables.has(variable)) {
-            mathExpr = new MyBinaryOp(mathExpr.right, mathExpr.left, '=', mathExpr.variables, mathExpr.hasNeg);
+            mathExpr = new TLBBinaryOp(mathExpr.right, mathExpr.left, '=', mathExpr.variables, mathExpr.hasNeg);
         }
-        if (mathExpr.right instanceof MyVarExpr) {
-            return new MyBinaryOp(mathExpr.right, mathExpr.left, '=', mathExpr.variables, mathExpr.hasNeg);
+        if (mathExpr.right instanceof TLBVarExpr) {
+            return new TLBBinaryOp(mathExpr.right, mathExpr.left, '=', mathExpr.variables, mathExpr.hasNeg);
         }
         let rightSide = mathExpr.right
-        if (rightSide instanceof MyBinaryOp) {
+        if (rightSide instanceof TLBBinaryOp) {
             let op = '';
             if (rightSide.operation == '*') {
                 op = '/';
@@ -100,14 +100,14 @@ export function reorganizeExpression(mathExpr: MyMathExpr, variable: string): My
                 other = rightSide.left
                 withVariable = rightSide.right
             }
-            let leftSide = new MyBinaryOp(
+            let leftSide = new TLBBinaryOp(
                 mathExpr.left,
                 other,
                 op,
                 new Set(...mathExpr.left.variables, ...other.variables),
                 mathExpr.right.hasNeg || other.hasNeg
             )
-            mathExpr = new MyBinaryOp(
+            mathExpr = new TLBBinaryOp(
                 leftSide,
                 withVariable,
                 '=',
@@ -120,11 +120,11 @@ export function reorganizeExpression(mathExpr: MyMathExpr, variable: string): My
     return { n: 0, variables: new Set<string>(), hasNeg: false }
 }
 
-export function getXname(myMathExpr: MyMathExpr): string {
-    if (myMathExpr instanceof MyVarExpr) {
+export function getXname(myMathExpr: TLBMathExpr): string {
+    if (myMathExpr instanceof TLBVarExpr) {
         return myMathExpr.x;
     }
-    if (myMathExpr instanceof MyBinaryOp) {
+    if (myMathExpr instanceof TLBBinaryOp) {
         if (myMathExpr.left.variables.size) {
             return getXname(myMathExpr.left);
         } else {
@@ -264,7 +264,7 @@ export function fillNegationExpressions(constructor: TLBConstructor) {
             let negatedVariable = getNegatedVariable(myMathExpr);
             if (negatedVariable) {
                 myMathExpr = reorganizeExpression(myMathExpr, negatedVariable)
-                if (myMathExpr instanceof MyBinaryOp) {
+                if (myMathExpr instanceof TLBBinaryOp) {
                     myMathExpr = myMathExpr.right
                 }
                 constructor.negatedVariables.set(negatedVariable, convertToAST(myMathExpr));
@@ -273,11 +273,11 @@ export function fillNegationExpressions(constructor: TLBConstructor) {
     })
 }
 
-export function reorganizeWithArg(myMathExpr: MyMathExpr, argName: string, varName: string): MyMathExpr {
+export function reorganizeWithArg(myMathExpr: TLBMathExpr, argName: string, varName: string): TLBMathExpr {
     let tmpset = new Set<string>();
     tmpset.add(argName);
-    let reorganized = reorganizeExpression(new MyBinaryOp(new MyVarExpr(argName, tmpset, false), myMathExpr, '=', new Set<string>(), false), varName)
-    if (reorganized instanceof MyBinaryOp) {
+    let reorganized = reorganizeExpression(new TLBBinaryOp(new TLBVarExpr(argName, tmpset, false), myMathExpr, '=', new Set<string>(), false), varName)
+    if (reorganized instanceof TLBBinaryOp) {
         return reorganized.right;
     }
     throw new Error('')
@@ -312,9 +312,9 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                             variable = { negated: false, const: false, type: 'Type', name: element.name }
                         }
                         else {
-                            variable = { negated: false, const: false, type: '#', name: element.name, deriveExpr: new MyVarExpr(element.name) }
+                            variable = { negated: false, const: false, type: '#', name: element.name, deriveExpr: new TLBVarExpr(element.name) }
                         }
-                        parameter = { variable: variable, paramExpr: new MyVarExpr(element.name) };
+                        parameter = { variable: variable, paramExpr: new TLBVarExpr(element.name) };
                     }
                     else {
                         throw new Error('Field not known before using (should be tagged as implicit): ' + element)
@@ -333,7 +333,7 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                     }
                     parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived }, paramExpr: derivedExpr.derived };
                 } else if (element instanceof NumberExpr) {
-                    parameter = { variable: { negated: false, const: true, type: '#', name: '', deriveExpr: new MyNumberExpr(element.num) }, paramExpr: new MyNumberExpr(element.num) }
+                    parameter = { variable: { negated: false, const: true, type: '#', name: '', deriveExpr: new TLBNumberExpr(element.num) }, paramExpr: new TLBNumberExpr(element.num) }
                 } else {
                     throw new Error('Cannot identify combinator arg: ' + element)
                 }
