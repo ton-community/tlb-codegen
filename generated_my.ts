@@ -568,7 +568,7 @@ export type Hashmap<X> = {
   };
 export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
-	let node: HashmapNode<X> = loadHashmapNode<X>(slice, m, loadX);
+	let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
 	return {
   		kind: 'Hashmap',
 		m: (n - l),

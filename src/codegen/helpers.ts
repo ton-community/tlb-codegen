@@ -36,9 +36,12 @@ export function getVarExprByName(name: string, constructor: TLBConstructor): Exp
   let variable = constructor.parametersMap.get(name);
   if (variable) {
     return getParamVarExpr(variable);
-  } else {
-    return tIdentifier(name)
+  } 
+  let negateExpr = constructor.negatedVariables.get(name)
+  if (negateExpr) {
+    return negateExpr
   }
+  return tIdentifier(name)
 }
 
 export function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, parameterIndex: number, parameterName: string): Statement[] {
