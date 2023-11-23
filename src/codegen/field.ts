@@ -94,56 +94,26 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
         let tmpTypeName = field.expr.name;
 
         let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
-        if (fieldInfo.typeParamExpr) {
-          console.log('param', toCode(fieldInfo.typeParamExpr, { tabs: 0 }))
-        }
-        // if (fieldInfo.loadExpr) {
-        //   console.log('load', toCode(fieldInfo.loadExpr, {tabs: 0}))
-        // }
-        if (fieldInfo.storeExpr) {
-          console.log('store', toCode(fieldInfo.storeExpr, {tabs: 0}))
-        }
 
-        if (field.expr.args.length > 0 && (field.expr.args[0] instanceof MathExpr || field.expr.args[0] instanceof NumberExpr || field.expr.args[0] instanceof NameExpr)) {
-          if (field.expr.name == 'int') {
-            fieldLoadStoreSuffix = 'Int'
-            let myMathExpr = convertToMathExpr(field.expr.args[0])
-            argLoadExpr = convertToAST(myMathExpr);
-            argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-          }
-          if (field.expr.name == 'uint') {
-            let myMathExpr = convertToMathExpr(field.expr.args[0])
-            argLoadExpr = convertToAST(myMathExpr);
-            argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-          }
-          if (field.expr.name == 'bits') {
-            fieldType = 'BitString'
-            fieldLoadStoreSuffix = 'Bits'
-            let myMathExpr = convertToMathExpr(field.expr.args[0])
-            argLoadExpr = convertToAST(myMathExpr);
-            argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-          }
+        if (fieldInfo.argLoadExpr != undefined) {
+          argLoadExpr = fieldInfo.argLoadExpr;
+          argStoreExpr = fieldInfo.argStoreExpr;
+          fieldType = fieldInfo.paramType;
+          fieldLoadStoreSuffix = fieldInfo.fieldLoadStoreSuffix
         }
-
 
         if (argLoadExpr == undefined) {
           let currentTypeParameters = tTypeParametersExpression([]);
           if (fieldInfo.typeParamExpr && fieldInfo.typeParamExpr.type == 'TypeWithParameters') {
             currentTypeParameters = fieldInfo.typeParamExpr.typeParameters;
-          } else {
-            throw new Error('program bug1')
           }
           subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
           
           if (fieldInfo.loadExpr) {
             addLoadProperty(field.name, fieldInfo.loadExpr, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
-          } else {
-            throw new Error('program bug2')
           }
           if (fieldInfo.storeExpr) {
             subStructStoreStatements.push(tExpressionStatement(fieldInfo.storeExpr))
-          } else {
-            throw new Error('program bug3')
           }
         }
       }
