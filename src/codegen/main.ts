@@ -77,8 +77,6 @@ export function generate(tree: Program) {
         if (variable.negated) {
           if (variable.deriveExpr) {
             subStructLoadProperties.push(tObjectProperty(tIdentifier(variable.name), convertToAST(variable.deriveExpr)));
-          } else {
-            throw new Error('')
           }
         }
       })

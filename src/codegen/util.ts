@@ -343,7 +343,19 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                     if (element.expr instanceof NumberExpr) {
                         toBeConst = true;
                     }
-                    parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived }, paramExpr: derivedExpr.derived };
+                    let variable = constructor.variablesMap.get(derivedExpr.name)
+                    if (variable) {
+                        variable.negated = true;
+                        variable.const = toBeConst;
+                        // variable.deriveExpr = derivedExpr.derived
+                        parameter = { variable: variable, paramExpr: derivedExpr.derived}
+                    } else if (derivedExpr.name == '' && toBeConst) {
+                        parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived }, paramExpr: derivedExpr.derived };
+                    } else {
+                        console.log(constructor)
+                        console.log(derivedExpr.name)
+                        throw new Error('hueta')
+                    }
                 } else if (element instanceof NumberExpr) {
                     parameter = { variable: { negated: false, const: true, type: '#', name: '', deriveExpr: new TLBNumberExpr(element.num) }, paramExpr: new TLBNumberExpr(element.num) }
                 } else {

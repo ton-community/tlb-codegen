@@ -52,7 +52,7 @@ export function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: st
       let parameter = constructor.parameters[parameterIndex];
       if (parameter) {
         let getExpression: Expression;
-        getExpression = getParamVarExpr(parameter);
+        getExpression = convertToAST(parameter.paramExpr);
         let statements = [];
         if (!parameter.variable.const) {
           statements.push(tExpressionStatement(tDeclareVariable(tIdentifier(parameter.variable.name), tMemberExpression(tIdentifier(parameterName), tIdentifier(parameter.variable.name)))));
