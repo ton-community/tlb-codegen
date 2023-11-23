@@ -1,4 +1,4 @@
-import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr, Declaration, CompareExpr, FieldCurlyExprDef } from "../ast/nodes";
+import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr, Declaration, CompareExpr, FieldCurlyExprDef, FieldNamedDef } from "../ast/nodes";
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
 import { Identifier, Expression, BinaryExpression } from "./tsgen";
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
@@ -303,7 +303,10 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
         tlbType.constructors.forEach(constructor => {
             constructor.declaration?.fields.forEach(field => {
                 if (field instanceof FieldBuiltinDef) {
-                    constructor.variables.push({name: field.name, const: false, negated: false, type: field.type})
+                    constructor.variables.push({ name: field.name, const: false, negated: false, type: field.type })
+                }
+                if (field instanceof FieldNamedDef) {
+                    constructor.variables.push({ name: field.name, const: false, negated: false, type: '#' })
                 }
             })
             constructor.variables.forEach(variable => {
