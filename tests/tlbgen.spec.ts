@@ -117,12 +117,10 @@ describe('Generating tlb code', () => {
 
     test('Combinators', () => {
         expect.hasAssertions()
-
         let manyComb: ManyComb = {kind: 'ManyComb', y: {kind: 'OneComb', t: 5, x: {kind: 'OneComb', t: 6, x: {kind: 'OneComb', t: 7, x: 3}}}};
         checkSameOnStoreLoad(manyComb, loadManyComb, storeManyComb);
         let manyCombIncorrect: ManyComb = {kind: 'ManyComb', y: {kind: 'OneComb', t: 5, x: {kind: 'OneComb', t: 8, x: {kind: 'OneComb', t: 7, x: 8}}}};
         checkThrowOnStoreLoad(manyCombIncorrect, loadManyComb, storeManyComb);
-
     });
 
     test('Advanced types', () => {
