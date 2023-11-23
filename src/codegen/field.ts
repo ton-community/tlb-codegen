@@ -36,10 +36,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
     }
 
     if (field instanceof FieldNamedDef) {
-
-      let argLoadExpr: Expression | undefined;
-      let argStoreExpr: Expression | undefined;
-
       if (field.expr instanceof CellRefExpr) {
         slicePrefix[slicePrefix.length - 1]++;
         slicePrefix.push(0)
@@ -54,22 +50,12 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
 
         slicePrefix.pop();
       }
-
-
-      let fieldType = 'number';
-      let fieldLoadStoreSuffix = 'Uint';
       
       if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr) {
         let tmpTypeName = field.expr.name;
         let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
-        if (fieldInfo.argLoadExpr != undefined) {
-          argLoadExpr = fieldInfo.argLoadExpr;
-          argStoreExpr = fieldInfo.argStoreExpr;
-          fieldType = fieldInfo.paramType;
-          fieldLoadStoreSuffix = fieldInfo.fieldLoadStoreSuffix
-        }
 
-        if (argLoadExpr == undefined) {
+        if (fieldInfo.argLoadExpr == undefined) {
           let currentTypeParameters = tTypeParametersExpression([]);
           if (fieldInfo.typeParamExpr && fieldInfo.typeParamExpr.type == 'TypeWithParameters') {
             currentTypeParameters = fieldInfo.typeParamExpr.typeParameters;
@@ -82,21 +68,19 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
           if (fieldInfo.storeExpr) {
             subStructStoreStatements.push(tExpressionStatement(fieldInfo.storeExpr))
           }
+        } else if (fieldInfo.argLoadExpr != undefined && fieldInfo.argStoreExpr != undefined) {
+          let loadSt: Expression = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + fieldInfo.fieldLoadStoreSuffix)), [fieldInfo.argLoadExpr]);
+          if (fieldInfo.paramType == 'Slice') {
+            loadSt = tIdentifier(currentSlice)
+          }
+          addLoadProperty(field.name, loadSt, tIdentifier(fieldInfo.paramType), constructorLoadStatements, subStructLoadProperties)
+          subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldInfo.paramType)))
+          let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
+          if (fieldInfo.paramType != 'BitString' && fieldInfo.paramType != 'Slice') {
+            storeParams.push(fieldInfo.argStoreExpr);
+          }
+          subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + fieldInfo.fieldLoadStoreSuffix)), storeParams)))
         }
-      }
-
-      if (argLoadExpr != undefined && argStoreExpr != undefined) {
-        let loadSt: Expression = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + fieldLoadStoreSuffix)), [argLoadExpr]);
-        if (fieldType == 'Slice') {
-          loadSt = tIdentifier(currentSlice)
-        }
-        addLoadProperty(field.name, loadSt, tIdentifier(fieldType), constructorLoadStatements, subStructLoadProperties)
-        subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldType)))
-        let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
-        if (fieldType != 'BitString' && fieldType != 'Slice') {
-          storeParams.push(argStoreExpr);
-        }
-        subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + fieldLoadStoreSuffix)), storeParams)))
       }
     }
   }
