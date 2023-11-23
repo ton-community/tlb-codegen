@@ -14,7 +14,7 @@ type FieldInfoType = {
     paramType: string
     fieldLoadStoreSuffix: string
   }
-
+  
 export function handleCombinator(expr: ParserExpression, fieldName: string, isField: boolean, variableCombinatorName: string, variableSubStructName: string, currentSlice: string, currentCell: string, constructor: TLBConstructor, jsCodeDeclarations: ASTNode[], fieldTypeName: string, argIndex: number, tlbCode: TLBCode, subStructLoadProperties: ObjectProperty[]): FieldInfoType {
     let theSlice = 'slice';
     let theCell = 'builder';
@@ -49,17 +49,17 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
           if (parameter) {
             result.argLoadExpr = parameter.expression;
           }
-        }
+        } // TODO: handle other cases
       } else if (expr.name == '#<') {
         if (expr.arg instanceof NumberExpr) {
           result.argLoadExpr = result.argStoreExpr = tNumericLiteral(bitLen(expr.arg.num - 1));
-        }
+        } // TODO: handle other cases
       } else if (expr.name == '#<=') {
         if (expr.arg instanceof NumberExpr) {
           result.argLoadExpr = result.argStoreExpr = tNumericLiteral(bitLen(expr.arg.num));
         } else if (expr.arg instanceof NameExpr) {
           result.argLoadExpr = result.argStoreExpr = tIdentifier(expr.arg.name)
-        }
+        } // TODO: handle other cases
       }
     } else if (expr instanceof CombinatorExpr) {
       if (expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
@@ -174,14 +174,14 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       }
     } else if (expr instanceof NumberExpr) {
       result.loadExpr = tNumericLiteral(expr.num)
-    } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) {
+    } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) { // TODO: handle other case
         let parameter = constructor.parametersMap.get(expr.expr.name)
         if (parameter) {
             let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
             jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
             subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
         }
-    }  else {
+    }  else { // TODO: handle other cases
       result.typeParamExpr = tIdentifier('error');
     }
     if (result.argLoadExpr) {

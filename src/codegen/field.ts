@@ -62,11 +62,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
       if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr) {
         let tmpTypeName = field.expr.name;
         let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
-
-        if (constructor.name == 'hml_long') {
-          console.log(field)
-          console.log(fieldInfo)
-        }
         if (fieldInfo.argLoadExpr != undefined) {
           argLoadExpr = fieldInfo.argLoadExpr;
           argStoreExpr = fieldInfo.argStoreExpr;
