@@ -595,8 +595,8 @@ export type HashmapNode_hmn_fork<X> = {
 	left: Hashmap<X>;
 	right: Hashmap<X>;
   };
-export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapNode<X> {
-  	if ((n == 0)) {
+export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): HashmapNode<X> {
+  	if ((arg0 == 0)) {
   		let value: X = loadX(slice);
 		return {
   			kind: 'HashmapNode_hmn_leaf',
@@ -605,9 +605,9 @@ export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice
   	};
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
-		let left: Hashmap<X> = loadHashmap<X>(slice1, n, loadX);
+		let left: Hashmap<X> = loadHashmap<X>(slice1, arg0, loadX);
 		let slice2 = slice.loadRef().beginParse();
-		let right: Hashmap<X> = loadHashmap<X>(slice2, n, loadX);
+		let right: Hashmap<X> = loadHashmap<X>(slice2, arg0, loadX);
 		return {
   			kind: 'HashmapNode_hmn_fork',
 			n: (arg0 - 1),

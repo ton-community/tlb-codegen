@@ -244,8 +244,10 @@ export function checkConstructors(tlbType: TLBType) {
 
 export function fillParameterNames(tlbType: TLBType) {
     let parameterNames: string[] = []
+    let argNames: (string | undefined)[] = []
     tlbType.constructors[0]?.parameters.forEach(element => {
         parameterNames.push(element.variable.name);
+        argNames.push(undefined);
     });
     tlbType.constructors.forEach(constructor => {
         for (let i = 0; i < constructor.parameters.length; i++) {
@@ -253,6 +255,10 @@ export function fillParameterNames(tlbType: TLBType) {
                 let parameterName = constructor.parameters[i]?.variable.name;
                 if (parameterName != undefined) {
                     parameterNames[i] = parameterName;
+                }
+                let argName = constructor.parameters[i]?.argName
+                if (argName) {
+                    argNames[i] = argName
                 }
             }
         }
@@ -267,6 +273,11 @@ export function fillParameterNames(tlbType: TLBType) {
             let parameterName = parameterNames[i]
             if (parameterName != undefined && constructor.parameters[i]?.variable.name == '') {
                 constructor.parameters[i]!.variable.name = parameterName;
+            }
+            let argName = argNames[i];
+            let parameter = constructor.parameters[i]
+            if (argName != undefined && parameter != undefined) {
+                parameter.argName = argName;
             }
         }
     })
@@ -340,7 +351,6 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
 
                     parameter.argName = 'arg' + argumentIndex;
                     parameter.expression = convertToAST(reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name));
-
                 } else if (element instanceof NegateExpr && (element.expr instanceof MathExpr || element.expr instanceof NumberExpr || element.expr instanceof NameExpr)) {
                     let derivedExpr = deriveMathExpression(element.expr);
                     let toBeConst = false;
