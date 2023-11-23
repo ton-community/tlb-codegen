@@ -303,10 +303,10 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
         tlbType.constructors.forEach(constructor => {
             constructor.declaration?.fields.forEach(field => {
                 if (field instanceof FieldBuiltinDef) {
-                    constructor.variables.push({ name: field.name, const: false, negated: false, type: field.type })
+                    constructor.variables.push({ name: field.name, const: false, negated: false, type: field.type, calculated: false })
                 }
                 if (field instanceof FieldNamedDef) {
-                    constructor.variables.push({ name: field.name, const: false, negated: false, type: '#' })
+                    constructor.variables.push({ name: field.name, const: false, negated: false, type: '#', calculated: false })
                 }
             })
             constructor.variables.forEach(variable => {
@@ -350,14 +350,14 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                         // variable.deriveExpr = derivedExpr.derived
                         parameter = { variable: variable, paramExpr: derivedExpr.derived}
                     } else if (derivedExpr.name == '' && toBeConst) {
-                        parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived }, paramExpr: derivedExpr.derived };
+                        parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived, calculated: false }, paramExpr: derivedExpr.derived };
                     } else {
                         console.log(constructor)
                         console.log(derivedExpr.name)
                         throw new Error('hueta')
                     }
                 } else if (element instanceof NumberExpr) {
-                    parameter = { variable: { negated: false, const: true, type: '#', name: '', deriveExpr: new TLBNumberExpr(element.num) }, paramExpr: new TLBNumberExpr(element.num) }
+                    parameter = { variable: { negated: false, const: true, type: '#', name: '', deriveExpr: new TLBNumberExpr(element.num), calculated: false }, paramExpr: new TLBNumberExpr(element.num) }
                 } else {
                     throw new Error('Cannot identify combinator arg: ' + element)
                 }

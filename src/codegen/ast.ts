@@ -44,6 +44,8 @@ export type TLBVariable = {
     type: TLBVariableType
     name: string
     deriveExpr?: TLBMathExpr
+
+    calculated: boolean
 }
 
 export type TLBParameter = {
