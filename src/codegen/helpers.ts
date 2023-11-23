@@ -32,6 +32,15 @@ export function getParamVarExpr(param: TLBParameter): Expression {
   }
 }
 
+export function getVarExprByName(name: string, constructor: TLBConstructor): Expression {
+  let variable = constructor.parametersMap.get(name);
+  if (variable) {
+    return getParamVarExpr(variable);
+  } else {
+    return tIdentifier(name)
+  }
+}
+
 export function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, parameterIndex: number, parameterName: string): Statement[] {
   let result: Statement[] = [];
   let tlbType: TLBType | undefined = tlbCode.types.get(typeName);

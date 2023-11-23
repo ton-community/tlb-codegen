@@ -3,7 +3,7 @@ import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpre
 import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
-import { getNegationDerivationFunctionBody, getParamVarExpr } from './helpers'
+import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName } from './helpers'
 
 type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined
@@ -145,7 +145,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(theNum);
     } else {
       if (constructor.implicitFields.get(expr.name)?.startsWith('#')) {
-        result.loadExpr = tIdentifier(expr.name)
+        result.loadExpr = result.storeExpr = getVarExprByName(expr.name, constructor)
       } else {
         result.typeParamExpr = tIdentifier(expr.name);
         if (isField) {
