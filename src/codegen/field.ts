@@ -40,36 +40,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
       let argLoadExpr: Expression | undefined;
       let argStoreExpr: Expression | undefined;
 
-      if (field.expr instanceof BuiltinZeroArgs) {
-        if (field.expr.name == '#') {
-          argLoadExpr = argStoreExpr = tNumericLiteral(32);
-        }
-      }
-      if (field.expr instanceof BuiltinOneArgExpr) {
-        if (field.expr.name == '##') {
-          if (field.expr.arg instanceof NumberExpr) {
-            argLoadExpr = argStoreExpr = tNumericLiteral(field.expr.arg.num);
-          }
-          if (field.expr.arg instanceof NameExpr) {
-            argStoreExpr = tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.expr.arg.name));
-            let parameter = constructor.parametersMap.get(field.expr.arg.name)
-            if (parameter) {
-              argLoadExpr = parameter.expression;
-            }
-          }
-        }
-        if (field.expr.name == '#<') {
-          if (field.expr.arg instanceof NumberExpr) {
-            argLoadExpr = argStoreExpr = tNumericLiteral(bitLen(field.expr.arg.num - 1));
-          }
-        }
-        if (field.expr.name == '#<=') {
-          if (field.expr.arg instanceof NumberExpr) {
-            argLoadExpr = argStoreExpr = tNumericLiteral(bitLen(field.expr.arg.num));
-          }
-        }
-      }
-
       if (field.expr instanceof CellRefExpr) {
         slicePrefix[slicePrefix.length - 1]++;
         slicePrefix.push(0)
@@ -88,13 +58,15 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
 
       let fieldType = 'number';
       let fieldLoadStoreSuffix = 'Uint';
-
       
-      if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr) {
+      if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr) {
         let tmpTypeName = field.expr.name;
-
         let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
 
+        if (constructor.name == 'hml_long') {
+          console.log(field)
+          console.log(fieldInfo)
+        }
         if (fieldInfo.argLoadExpr != undefined) {
           argLoadExpr = fieldInfo.argLoadExpr;
           argStoreExpr = fieldInfo.argStoreExpr;
@@ -117,7 +89,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
           }
         }
       }
-      
+
       if (argLoadExpr != undefined && argStoreExpr != undefined) {
         let loadSt: Expression = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + fieldLoadStoreSuffix)), [argLoadExpr]);
         if (fieldType == 'Slice') {

@@ -34,7 +34,34 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       insideStoreParameters = [tIdentifier('arg')]
     }
 
-    if (expr instanceof CombinatorExpr) {
+    if (expr instanceof BuiltinZeroArgs) {
+      if (expr.name == '#') {
+        result.argLoadExpr = result.argStoreExpr = tNumericLiteral(32);
+      }
+    } else if (expr instanceof BuiltinOneArgExpr) {
+      if (expr.name == '##') {
+        if (expr.arg instanceof NumberExpr) {
+          result.argLoadExpr = result.argStoreExpr = tNumericLiteral(expr.arg.num);
+        }
+        if (expr.arg instanceof NameExpr) {
+          result.argStoreExpr = tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(expr.arg.name));
+          let parameter = constructor.parametersMap.get(expr.arg.name)
+          if (parameter) {
+            result.argLoadExpr = parameter.expression;
+          }
+        }
+      } else if (expr.name == '#<') {
+        if (expr.arg instanceof NumberExpr) {
+          result.argLoadExpr = result.argStoreExpr = tNumericLiteral(bitLen(expr.arg.num - 1));
+        }
+      } else if (expr.name == '#<=') {
+        if (expr.arg instanceof NumberExpr) {
+          result.argLoadExpr = result.argStoreExpr = tNumericLiteral(bitLen(expr.arg.num));
+        } else if (expr.arg instanceof NameExpr) {
+          result.argLoadExpr = result.argStoreExpr = tIdentifier(expr.arg.name)
+        }
+      }
+    } else if (expr instanceof CombinatorExpr) {
       if (expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
         if (expr.name == 'int') {
           result.fieldLoadStoreSuffix = 'Int'

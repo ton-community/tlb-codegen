@@ -639,11 +639,13 @@ export type HmLabel_hml_short = {
 export type HmLabel_hml_long = {
   	kind: 'HmLabel_hml_long';
 	m: number;
+	n: number;
   };
 export type HmLabel_hml_same = {
   	kind: 'HmLabel_hml_same';
 	m: number;
 	v: BitString;
+	n: number;
   };
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	if ((slice.preloadUint(1) == 0b0)) {
@@ -658,18 +660,22 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
+		let n: number = slice.loadUint(m);
 		return {
   			kind: 'HmLabel_hml_long',
-			m: m
+			m: m,
+			n: n
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
 		let v: BitString = slice.loadBits(1);
+		let n: number = slice.loadUint(m);
 		return {
   			kind: 'HmLabel_hml_same',
 			m: m,
-			v: v
+			v: v,
+			n: n
   		};
   	};
 	throw new Error('');
@@ -684,12 +690,14 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b10, 2);
+			builder.storeUint(hmLabel.n, m);
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_same')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeBits(hmLabel.v);
+			builder.storeUint(hmLabel.n, m);
   		};
   	};
 	throw new Error('');
