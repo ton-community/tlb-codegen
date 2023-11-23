@@ -347,14 +347,11 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                     if (variable) {
                         variable.negated = true;
                         variable.const = toBeConst;
-                        // variable.deriveExpr = derivedExpr.derived
                         parameter = { variable: variable, paramExpr: derivedExpr.derived}
                     } else if (derivedExpr.name == '' && toBeConst) {
                         parameter = { variable: { negated: true, const: toBeConst, type: '#', name: derivedExpr.name, deriveExpr: derivedExpr.derived, calculated: false }, paramExpr: derivedExpr.derived };
                     } else {
-                        console.log(constructor)
-                        console.log(derivedExpr.name)
-                        throw new Error('hueta')
+                        throw new Error('Cannot identify combinator arg')
                     }
                 } else if (element instanceof NumberExpr) {
                     parameter = { variable: { negated: false, const: true, type: '#', name: '', deriveExpr: new TLBNumberExpr(element.num), calculated: false }, paramExpr: new TLBNumberExpr(element.num) }
