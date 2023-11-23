@@ -267,6 +267,12 @@ export function fillNegationExpressions(constructor: TLBConstructor) {
                 if (myMathExpr instanceof TLBBinaryOp) {
                     myMathExpr = myMathExpr.right
                 }
+                let variable = constructor.variablesMap.get(negatedVariable)
+                if (variable) {
+                    variable.negated = true;
+                    variable.deriveExpr = myMathExpr;
+                }
+                
                 constructor.negatedVariables.set(negatedVariable, convertToAST(myMathExpr));
             }
         }

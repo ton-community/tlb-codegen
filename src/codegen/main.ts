@@ -73,8 +73,14 @@ export function generate(tree: Program) {
 
       let slicePrefix: number[] = [0];
 
-      constructor.negatedVariables.forEach((expression: Expression, name: string) => {
-        subStructLoadProperties.push(tObjectProperty(tIdentifier(name), expression));
+      constructor.variables.forEach((variable) => {
+        if (variable.negated) {
+          if (variable.deriveExpr) {
+            subStructLoadProperties.push(tObjectProperty(tIdentifier(variable.name), convertToAST(variable.deriveExpr)));
+          } else {
+            throw new Error('')
+          }
+        }
       })
 
       declaration?.fields.forEach(element => { handleField(element, slicePrefix, tlbCode, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeDeclarations) })
