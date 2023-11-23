@@ -101,7 +101,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
         if (fieldInfo.storeExpr) {
           console.log('store', toCode(fieldInfo.storeExpr, {tabs: 0}))
         }
-        let storeFunctionsArray: Array<Expression> = []
         let wasNegated = false;
 
         if (field.expr.args.length > 0 && (field.expr.args[0] instanceof MathExpr || field.expr.args[0] instanceof NumberExpr || field.expr.args[0] instanceof NameExpr)) {
@@ -134,7 +133,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
             if (element instanceof NameExpr) {
               if (constructor.implicitFields.get(element.name)?.startsWith('#')) {
               } else {
-                storeFunctionsArray.push(tIdentifier('store' + element.name))
               }
             }
             if (element instanceof NumberExpr) {
@@ -147,36 +145,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
                 jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(field.name), tIdentifier(tmpTypeName))], getNegationDerivationFunctionBody(tlbCode, tmpTypeName, argIndex, field.name)))
                 subStructLoadProperties.push(tObjectProperty(tIdentifier(element.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(field.name)])))
               }
-            }
-            if (element instanceof CombinatorExpr) {
-              let theFieldType = 'number'
-              let theFieldLoadStoreName = 'Uint';
-              let theBitsLoad: Expression = tIdentifier('');
-              let theBitsStore: Expression = tIdentifier('');
-              if (element.args.length > 0 && (element.args[0] instanceof MathExpr || element.args[0] instanceof NumberExpr || element.args[0] instanceof NameExpr)) {
-                // (slice: Slice) => {return slice.loadUint(22);}
-                if (element.name == 'int') {
-                  theFieldLoadStoreName = 'Int'
-                  let myMathExpr = convertToMathExpr(element.args[0])
-                  theBitsLoad = convertToAST(myMathExpr);
-                  theBitsStore = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-                }
-                if (element.name == 'uint') {
-                  let myMathExpr = convertToMathExpr(element.args[0])
-                  theBitsLoad = convertToAST(myMathExpr);
-                  theBitsStore = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-                }
-                if (element.name == 'bits') {
-                  theFieldType = 'BitString'
-                  theFieldLoadStoreName = 'Bits'
-                  let myMathExpr = convertToMathExpr(element.args[0])
-                  theBitsLoad = convertToAST(myMathExpr);
-                  theBitsStore = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
-                }
-              }
-              // here
-              //(arg: number) => {return (builder: Builder) => {builder.storeUint(arg, 22);}}
-              storeFunctionsArray.push(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), tIdentifier(theFieldType))], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('store' + theFieldLoadStoreName)), [tIdentifier('arg'), theBitsStore]))]))]))
             }
           });
 
