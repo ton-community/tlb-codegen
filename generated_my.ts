@@ -1033,9 +1033,17 @@ export function loadManyComb(slice: Slice): ManyComb {
   }
 export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeOneComb<OneComb<OneComb<number>>>(manyComb.y, (arg: number) => {
+  		storeOneComb<OneComb<OneComb<number>>>(manyComb.y, (arg: OneComb<OneComb<number>>) => {
   			return (builder: Builder) => {
-  				builder.storeUint(arg, );
+  				storeOneComb<OneComb<number>>(arg, (arg: OneComb<number>) => {
+  					return (builder: Builder) => {
+  						storeOneComb<number>(arg, (arg: number) => {
+  							return (builder: Builder) => {
+  								builder.storeInt(arg, 3);
+  							};
+  						})(builder);
+  					};
+  				})(builder);
   			};
   		})(builder);
   	};

@@ -502,6 +502,60 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
 		builder.storeUint(lessThan.y, 3);
   	};
   }
+export type OneComb<A> = {
+  	kind: 'OneComb';
+	t: number;
+	x: A;
+  };
+export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
+  	let t: number = slice.loadUint(32);
+	let x: A = loadA(slice);
+	return {
+  		kind: 'OneComb',
+		t: t,
+		x: x
+  	};
+  }
+export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(oneComb.t, 32);
+		storeA(oneComb.x)(builder);
+  	};
+  }
+export type ManyComb = {
+  	kind: 'ManyComb';
+	y: OneComb<OneComb<OneComb<number>>>;
+  };
+export function loadManyComb(slice: Slice): ManyComb {
+  	let y: OneComb<OneComb<OneComb<number>>> = loadOneComb<OneComb<OneComb<number>>>(slice, (slice: Slice) => {
+  		return loadOneComb<OneComb<number>>(slice, (slice: Slice) => {
+  			return loadOneComb<number>(slice, (slice: Slice) => {
+  				return slice.loadInt(3);
+  			});
+  		});
+  	});
+	return {
+  		kind: 'ManyComb',
+		y: y
+  	};
+  }
+export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeOneComb<OneComb<OneComb<number>>>(manyComb.y, (arg: OneComb<OneComb<number>>) => {
+  			return (builder: Builder) => {
+  				storeOneComb<OneComb<number>>(arg, (arg: OneComb<number>) => {
+  					return (builder: Builder) => {
+  						storeOneComb<number>(arg, (arg: number) => {
+  							return (builder: Builder) => {
+  								builder.storeInt(arg, 3);
+  							};
+  						})(builder);
+  					};
+  				})(builder);
+  			};
+  		})(builder);
+  	};
+  }
 export function unary_unary_succ_get_n(x: Unary): number {
   	if ((x.kind == 'Unary_unary_zero')) {
   		return 0;
