@@ -2,6 +2,7 @@ import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr
 import { MyMathExpr, MyVarExpr, MyNumberExpr, MyBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
 import { Identifier, Expression, BinaryExpression } from "./tsgen";
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
+import util from 'util'
 
 export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr | CompareExpr): MyMathExpr {
     if (mathExpr instanceof NameExpr) {

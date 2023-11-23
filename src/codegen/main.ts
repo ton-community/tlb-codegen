@@ -93,7 +93,11 @@ export function generate(tree: Program) {
         }
         constructor.parameters.forEach(param => {
           if (param.variable.const && !param.variable.negated) {
-            conditions.push(tBinaryExpression(tIdentifier(param.variable.name), '==', getParamVarExpr(param)))
+            let argName = param.variable.name;
+            if (param.argName) {
+              argName = param.argName
+            }
+            conditions.push(tBinaryExpression(tIdentifier(argName), '==', getParamVarExpr(param)))
           }
         });
         loadStatements.push(tIfStatement(getCondition(conditions), constructorLoadStatements))
