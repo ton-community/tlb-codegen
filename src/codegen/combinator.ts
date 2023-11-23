@@ -169,7 +169,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
     subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
   } else { // TODO: handle other cases
-    result.typeParamExpr = tIdentifier('error');
+    throw new Error('Expression not supported: ' + expr);
   }
   if (result.argLoadExpr) {
     result.loadExpr = tFunctionCall(tMemberExpression(tIdentifier(theSlice), tIdentifier('load' + result.fieldLoadStoreSuffix)), [result.argLoadExpr])
@@ -179,6 +179,9 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       insideStoreParameters.push(result.argStoreExpr);
     }
     result.storeExpr = tFunctionCall(tMemberExpression(tIdentifier(theCell), tIdentifier('store' + result.fieldLoadStoreSuffix)), insideStoreParameters);
+  }
+  if (result.argLoadExpr == undefined && result.argStoreExpr != undefined || result.argLoadExpr != undefined && result.argStoreExpr == undefined) {
+    throw new Error('argLoadExpr and argStoreExpr should be both defined or both undefined')
   }
   return result;
 }
