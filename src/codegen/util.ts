@@ -289,6 +289,41 @@ export function reorganizeWithArg(myMathExpr: TLBMathExpr, argName: string, varN
     throw new Error('')
 }
 
+export function getCalculatedExpression(expr: TLBMathExpr, constructor: TLBConstructor): TLBMathExpr {
+    if (expr instanceof TLBVarExpr) {
+        let variable = constructor.variablesMap.get(expr.x);
+        if (variable) {
+            calculateVariable(variable, constructor);
+            if (variable.deriveExpr) {
+                return variable.deriveExpr;
+            }
+        }
+    }
+    if (expr instanceof TLBBinaryOp) {
+        let left = getCalculatedExpression(expr.left, constructor)
+        let right = getCalculatedExpression(expr.right, constructor)
+        return new TLBBinaryOp(left, right, expr.operation, expr.variables, expr.hasNeg)
+    }
+    return expr;
+}
+
+export function calculateVariable(variable: TLBVariable, constructor: TLBConstructor) {
+  if (variable.calculated) {
+    return;
+  }
+  if (!variable.deriveExpr) {
+    return
+  }
+  variable.calculated = true;
+  variable.deriveExpr = getCalculatedExpression(variable.deriveExpr, constructor);
+}
+
+export function calculateVariables(constructor: TLBConstructor) {
+  constructor.variables.forEach(variable => {
+    calculateVariable(variable, constructor)
+  });
+}
+
 export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
     declarations.forEach(declaration => {
         let tlbType: TLBType | undefined = tlbCode.types.get(declaration.combinator.name);
@@ -362,6 +397,7 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                 constructor.parametersMap.set(parameter.variable.name, parameter);
             });
             fillNegationExpressions(constructor);
+            calculateVariables(constructor);
         });
         checkConstructors(tlbType);
         fillParameterNames(tlbType);
