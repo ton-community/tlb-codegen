@@ -8,7 +8,7 @@ import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 import { BitString, Slice } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -148,6 +148,11 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(paramDifNamesC, (slice: Slice) => loadParamDifNames(slice, 2), storeParamDifNames);
         let paramDifNamesD: ParamDifNames = {kind: 'ParamDifNames_d', m: 4, x: {kind: 'ParamDifNames_d', m: 2, x: {kind: 'ParamDifNames_d', m: 1, x: {kind: 'ParamDifNames_b'}}}}
         checkSameOnStoreLoad(paramDifNamesD, (slice: Slice) => loadParamDifNames(slice, 3), storeParamDifNames);
+
+        let paramDifNamesUser: ParamDifNamesUser = {kind: 'ParamDifNamesUser', k: 4, x: {kind: 'ParamDifNames_c', n: 3, x: {kind: 'ParamDifNames_c', n: 2, x: {kind: 'ParamDifNames_c', n: 1, x:{kind: 'ParamDifNames_a'}}}}}
+        checkSameOnStoreLoad(paramDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser);
+        let paramDifNamesUserIncorrect: ParamDifNamesUser = {kind: 'ParamDifNamesUser', k: 5, x: {kind: 'ParamDifNames_c', n: 3, x: {kind: 'ParamDifNames_c', n: 2, x: {kind: 'ParamDifNames_c', n: 1, x:{kind: 'ParamDifNames_a'}}}}}
+        checkDifferOnStoreLoad(paramDifNamesUserIncorrect, loadParamDifNamesUser, storeParamDifNamesUser);
 
         let negationFromImplicit: NegationFromImplicit = {kind: 'NegationFromImplicit', t: 4, y: 2, z: 7}
         checkSameOnStoreLoad(negationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit)

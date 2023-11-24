@@ -815,6 +815,41 @@ export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Buil
   	};
 	throw new Error('');
   }
+export function paramDifNamesUser_get_k(x: ParamDifNames): number {
+  	if ((x.kind == 'ParamDifNames_a')) {
+  		return 1;
+  	};
+	if ((x.kind == 'ParamDifNames_b')) {
+  		return 1;
+  	};
+	if ((x.kind == 'ParamDifNames_c')) {
+  		let n = x.n;
+		return (n + 1);
+  	};
+	if ((x.kind == 'ParamDifNames_d')) {
+  		let m = x.m;
+		return (m * 2);
+  	};
+	throw new Error('');
+  }
+export type ParamDifNamesUser = {
+  	kind: 'ParamDifNamesUser';
+	k: number;
+	x: ParamDifNames;
+  };
+export function loadParamDifNamesUser(slice: Slice): ParamDifNamesUser {
+  	let x: ParamDifNames = loadParamDifNames(slice, 2);
+	return {
+  		kind: 'ParamDifNamesUser',
+		k: paramDifNamesUser_get_k(x),
+		x: x
+  	};
+  }
+export function storeParamDifNamesUser(paramDifNamesUser: ParamDifNamesUser): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeParamDifNames(paramDifNamesUser.x)(builder);
+  	};
+  }
 export type NegationFromImplicit = {
   	kind: 'NegationFromImplicit';
 	y: number;

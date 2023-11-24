@@ -47,5 +47,6 @@ a$0 = ParamDifNames 2 ~1;
 b$1 = ParamDifNames 3 ~1;
 c$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
 d$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
+e$0 {k:#} x:(ParamDifNames 2 ~k) = ParamDifNamesUser;
 
 b$1 {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit ~(y + 1);
