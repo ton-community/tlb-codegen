@@ -375,13 +375,13 @@ export type IntBitsInside = {
 	x: number;
 	a: IntBits<number>;
   };
-export function loadIntBitsInside(slice: Slice, x: number): IntBitsInside {
+export function loadIntBitsInside(slice: Slice, arg0: number): IntBitsInside {
   	let a: IntBits<number> = loadIntBits<number>(slice, (slice: Slice) => {
-  		return slice.loadInt((1 + x));
+  		return slice.loadInt((1 + (arg0 / 2)));
   	});
 	return {
   		kind: 'IntBitsInside',
-		x: x,
+		x: (arg0 / 2),
 		a: a
   	};
   }

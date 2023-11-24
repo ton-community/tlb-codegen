@@ -23,7 +23,7 @@ a$_ a:^ExprArgUser = CellTypedField;
 a$_ t:# ^[ q:# ] ^[ a:(## 32) ^[ e:# ] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = CellsSimple;
 
 b$_ d:int11 g:bits2 {Arg:Type} arg:Arg x:Any = IntBits Arg; 
-a$_ {x:#} a:(IntBits (int (1 + x))) = IntBitsInside x;
+a$_ {x:#} a:(IntBits (int (1 + x))) = IntBitsInside (x * 2);
 a$_ x:(IntBitsInside 6) = IntBitsOutside;
 
 a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntBitsParametrized e;

@@ -195,7 +195,7 @@ describe('Generating tlb code', () => {
                     g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2), 
                     x: beginCell().storeUint(76, 10).endCell().beginParse()
                 },
-                x: 6
+                x: 3
             }
         }
         checkSameOnStoreLoad(intBitsOutside, loadIntBitsOutside, storeIntBitsOutside);
