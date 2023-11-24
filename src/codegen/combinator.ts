@@ -47,7 +47,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         result.argStoreExpr = tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(expr.arg.name));
         let parameter = constructor.parametersMap.get(expr.arg.name)
         if (parameter) {
-          result.argLoadExpr = getParamVarExpr(parameter);
+          result.argLoadExpr = getParamVarExpr(parameter, constructor);
         }
       } // TODO: handle other cases
     } else if (expr.name == '#<') {
@@ -66,18 +66,18 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     if (expr.name == 'int' && expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
       result.fieldLoadStoreSuffix = 'Int'
       let myMathExpr = convertToMathExpr(expr.args[0])
-      result.argLoadExpr = convertToAST(myMathExpr);
-      result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+      result.argLoadExpr = convertToAST(myMathExpr, constructor);
+      result.argStoreExpr = convertToAST(myMathExpr, constructor, false, tIdentifier(variableSubStructName))
     } else if (expr.name == 'uint' && expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
       let myMathExpr = convertToMathExpr(expr.args[0])
-      result.argLoadExpr = convertToAST(myMathExpr);
-      result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+      result.argLoadExpr = convertToAST(myMathExpr, constructor);
+      result.argStoreExpr = convertToAST(myMathExpr, constructor, false, tIdentifier(variableSubStructName))
     } else if (expr.name == 'bits' && expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
       result.paramType = 'BitString'
       result.fieldLoadStoreSuffix = 'Bits'
       let myMathExpr = convertToMathExpr(expr.args[0])
-      result.argLoadExpr = convertToAST(myMathExpr);
-      result.argStoreExpr = convertToAST(myMathExpr, tIdentifier(variableSubStructName))
+      result.argLoadExpr = convertToAST(myMathExpr, constructor);
+      result.argStoreExpr = convertToAST(myMathExpr, constructor, false, tIdentifier(variableSubStructName))
     } else {
       let typeExpression: TypeParametersExpression = tTypeParametersExpression([]);
       let loadFunctionsArray: Array<Expression> = []

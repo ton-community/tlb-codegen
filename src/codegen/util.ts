@@ -40,7 +40,10 @@ export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr |
     return { n: 0, variables: new Set<string>(), hasNeg: false };
 }
 
-export function convertToAST(mathExpr: TLBMathExpr, objectId?: Identifier): Expression {
+export function convertToAST(mathExpr: TLBMathExpr, constructor: TLBConstructor, calculate: boolean = true, objectId?: Identifier): Expression {
+    if (calculate) {
+        mathExpr = getCalculatedExpression(mathExpr, constructor)
+    }
     if (mathExpr instanceof TLBVarExpr) {
         if (objectId != undefined) {
             return tMemberExpression(objectId, tIdentifier(mathExpr.x));
@@ -51,7 +54,7 @@ export function convertToAST(mathExpr: TLBMathExpr, objectId?: Identifier): Expr
         return tNumericLiteral(mathExpr.n)
     }
     if (mathExpr instanceof TLBBinaryOp) {
-        return tBinaryExpression(convertToAST(mathExpr.left, objectId), mathExpr.operation, convertToAST(mathExpr.right, objectId));
+        return tBinaryExpression(convertToAST(mathExpr.left, constructor, calculate, objectId), mathExpr.operation, convertToAST(mathExpr.right, constructor, calculate, objectId));
     }
     return tIdentifier('');
 }

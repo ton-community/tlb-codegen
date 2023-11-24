@@ -488,7 +488,7 @@ export type IntexArg2 = {
   };
 export function loadIntexArg2(slice: Slice, arg0: number): IntexArg2 {
   	let a: IntEx2<number> = loadIntEx2<number>(slice, (slice: Slice) => {
-  		return slice.loadInt((1 + x));
+  		return slice.loadInt((1 + (arg0 / 2)));
   	});
 	return {
   		kind: 'IntexArg2',

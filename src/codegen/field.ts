@@ -31,7 +31,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
     subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number')));
     let parameter = constructor.parametersMap.get(field.name)
     if (parameter && !parameter.variable.const && !parameter.variable.negated) {
-      subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), getParamVarExpr(parameter)))
+      subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), getParamVarExpr(parameter, constructor)))
     }
   }
 

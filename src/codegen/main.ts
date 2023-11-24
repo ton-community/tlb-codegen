@@ -76,7 +76,7 @@ export function generate(tree: Program) {
       constructor.variables.forEach((variable) => {
         if (variable.negated) {
           if (variable.deriveExpr) {
-            subStructLoadProperties.push(tObjectProperty(tIdentifier(variable.name), convertToAST(variable.deriveExpr)));
+            subStructLoadProperties.push(tObjectProperty(tIdentifier(variable.name), convertToAST(variable.deriveExpr, constructor)));
           }
         }
       })
@@ -101,7 +101,7 @@ export function generate(tree: Program) {
             if (param.argName) {
               argName = param.argName
             }
-            conditions.push(tBinaryExpression(tIdentifier(argName), '==', getParamVarExpr(param)))
+            conditions.push(tBinaryExpression(tIdentifier(argName), '==', getParamVarExpr(param, constructor)))
           }
         });
         loadStatements.push(tIfStatement(getCondition(conditions), constructorLoadStatements))
