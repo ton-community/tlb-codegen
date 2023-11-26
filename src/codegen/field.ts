@@ -81,6 +81,10 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
         }
         subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + fieldInfo.fieldLoadStoreSuffix)), storeParams)))
       }
+
+      fieldInfo.negatedVariablesLoads.forEach(element => {
+        addLoadProperty(element.name, element.expression, undefined, constructorLoadStatements, subStructLoadProperties)
+      });
     }
   }
 }

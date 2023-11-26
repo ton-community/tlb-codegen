@@ -585,10 +585,11 @@ export function loadUnary(slice: Slice): Unary {
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let x: Unary = loadUnary(slice);
+		let n = unary_unary_succ_get_n(x);
 		return {
   			kind: 'Unary_unary_succ',
-			n: unary_unary_succ_get_n(x),
-			x: x
+			x: x,
+			n: n
   		};
   	};
 	throw new Error('');
@@ -773,19 +774,21 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 2);
+		let n = paramDifNames_c_get_n(x);
 		return {
   			kind: 'ParamDifNames_c',
-			n: paramDifNames_c_get_n(x),
-			x: x
+			x: x,
+			n: n
   		};
   	};
 	if (((slice.preloadUint(1) == 0b0) && (arg0 == 3))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 3);
+		let m = paramDifNames_d_get_m(x);
 		return {
   			kind: 'ParamDifNames_d',
-			m: paramDifNames_d_get_m(x),
-			x: x
+			x: x,
+			m: m
   		};
   	};
 	throw new Error('');
@@ -839,10 +842,11 @@ export type ParamDifNamesUser = {
   };
 export function loadParamDifNamesUser(slice: Slice): ParamDifNamesUser {
   	let x: ParamDifNames = loadParamDifNames(slice, 2);
+	let k = paramDifNamesUser_get_k(x);
 	return {
   		kind: 'ParamDifNamesUser',
-		k: paramDifNamesUser_get_k(x),
-		x: x
+		x: x,
+		k: k
   	};
   }
 export function storeParamDifNamesUser(paramDifNamesUser: ParamDifNamesUser): (builder: Builder) => void {

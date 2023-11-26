@@ -568,13 +568,14 @@ export type Hashmap<X> = {
   };
 export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
+	let l = hashmap_get_l(label);
 	let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
 	return {
   		kind: 'Hashmap',
 		m: (n - l),
 		n: n,
-		l: hashmap_get_l(label),
 		label: label,
+		l: l,
 		node: node
   	};
   }
@@ -667,11 +668,12 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
+		let n = hmLabel_hml_short_get_n(len);
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
-			n: hmLabel_hml_short_get_n(len),
-			len: len
+			len: len,
+			n: n
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
@@ -747,10 +749,11 @@ export function loadUnary(slice: Slice): Unary {
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let x: Unary = loadUnary(slice);
+		let n = unary_unary_succ_get_n(x);
 		return {
   			kind: 'Unary_unary_succ',
-			n: unary_unary_succ_get_n(x),
-			x: x
+			x: x,
+			n: n
   		};
   	};
 	throw new Error('');
@@ -930,19 +933,21 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 2);
+		let n = paramDifNames_b_get_n(x);
 		return {
   			kind: 'ParamDifNames_b',
-			n: paramDifNames_b_get_n(x),
-			x: x
+			x: x,
+			n: n
   		};
   	};
 	if (((slice.preloadUint(1) == 0b0) && (arg0 == 3))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 3);
+		let m = paramDifNames_c_get_m(x);
 		return {
   			kind: 'ParamDifNames_c',
-			m: paramDifNames_c_get_m(x),
-			x: x
+			x: x,
+			m: m
   		};
   	};
 	throw new Error('');

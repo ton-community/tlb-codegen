@@ -35,8 +35,6 @@ a$_ a:^BitInteger = NFT;
 
 a$_ t:# ^[ q:# ] ^[ a:(## 32) ^[ e:# ] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = A;
 
-
-
 b$_ d:int11 g:bits2 {Arg:Type} arg:Arg x:Any = IntEx2 Arg; 
 a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntEx e;
 a$_ {x:#} a:(IntEx2 (int (1 + x))) = IntexArg2 (2 * x);

@@ -13,6 +13,7 @@ type FieldInfoType = {
   argStoreExpr: Expression | undefined
   paramType: string
   fieldLoadStoreSuffix: string
+  negatedVariablesLoads: Array<{name: string, expression: Expression}>
 }
 
 export function handleCombinator(expr: ParserExpression, fieldName: string, isField: boolean, variableCombinatorName: string, variableSubStructName: string, currentSlice: string, currentCell: string, constructor: TLBConstructor, jsCodeDeclarations: ASTNode[], fieldTypeName: string, argIndex: number, tlbCode: TLBCode, subStructLoadProperties: ObjectProperty[]): FieldInfoType {
@@ -22,7 +23,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     theSlice = currentSlice;
     theCell = currentCell;
   }
-  let result: FieldInfoType = { typeParamExpr: undefined, loadExpr: undefined, storeExpr: undefined, argLoadExpr: undefined, argStoreExpr: undefined, paramType: 'number', fieldLoadStoreSuffix: 'Uint' };
+  let result: FieldInfoType = { typeParamExpr: undefined, loadExpr: undefined, storeExpr: undefined, argLoadExpr: undefined, argStoreExpr: undefined, paramType: 'number', fieldLoadStoreSuffix: 'Uint', negatedVariablesLoads: [] };
 
   let insideStoreParameters: Expression[];
 
@@ -101,6 +102,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
           }
           storeFunctionsArray.push(subExprInfo.storeExpr);
         }
+        result.negatedVariablesLoads = result.negatedVariablesLoads.concat(subExprInfo.negatedVariablesLoads);
       });
       result.typeParamExpr = tTypeWithParameters(tIdentifier(expr.name), typeExpression);
 
@@ -165,7 +167,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
   } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) { // TODO: handle other case
     let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
     jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
-    subStructLoadProperties.push(tObjectProperty(tIdentifier(expr.expr.name), tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])))
+    result.negatedVariablesLoads.push({name: expr.expr.name, expression: tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])})
   } else { // TODO: handle other cases
     throw new Error('Expression not supported: ' + expr);
   }
