@@ -876,3 +876,34 @@ export function storeNegationFromImplicit(negationFromImplicit: NegationFromImpl
 		builder.storeUint(negationFromImplicit.z, 32);
   	};
   }
+export function unaryUserCheckOrder_get_l(label: Unary): number {
+  	if ((label.kind == 'Unary_unary_zero')) {
+  		return 0;
+  	};
+	if ((label.kind == 'Unary_unary_succ')) {
+  		let n = label.n;
+		return (n + 1);
+  	};
+	throw new Error('');
+  }
+export type UnaryUserCheckOrder = {
+  	kind: 'UnaryUserCheckOrder';
+	l: number;
+	m: number;
+	label: Unary;
+  };
+export function loadUnaryUserCheckOrder(slice: Slice): UnaryUserCheckOrder {
+  	let label: Unary = loadUnary(slice);
+	let l = unaryUserCheckOrder_get_l(label);
+	return {
+  		kind: 'UnaryUserCheckOrder',
+		m: (7 - l),
+		label: label,
+		l: l
+  	};
+  }
+export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrder): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeUnary(unaryUserCheckOrder.label)(builder);
+  	};
+  }

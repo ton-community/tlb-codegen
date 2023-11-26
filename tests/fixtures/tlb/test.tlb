@@ -50,3 +50,5 @@ d$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
 e$0 {k:#} x:(ParamDifNames 2 ~k) = ParamDifNamesUser;
 
 b$1 {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit ~(y + 1);
+
+hm_edge#_ {l:#} {m:#} label:(Unary ~l) {7 = (~m) + l} = UnaryUserCheckOrder;
