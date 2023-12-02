@@ -3,7 +3,7 @@ import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpre
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
-import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName } from './helpers'
+import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName, sliceLoad } from './helpers'
 
 type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined
@@ -168,8 +168,13 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
     jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
     result.negatedVariablesLoads.push({name: expr.expr.name, expression: tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])})
+  } else if (expr instanceof CellRefExpr) {
+    // let subExprInfo = handleCombinator(expr.expr, fieldName, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
+    // result = subExprInfo;
+    // if (result.loadExpr) {
+    //   result.loadExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [sliceLoad([1, 0], 'slice'), tExpressionStatement(tDeclareVariable(tIdentifier('loadFunc'), result.loadExpr)), tReturnStatement(tFunctionCall(tIdentifier('loadFunc'), [tIdentifier(getCurrentSlice([1, 0], 'slice'))]))])
+    // }
   } else { // TODO: handle other cases
-    console.log(expr)
     throw new Error('Expression not supported: ' + expr);
   }
   if (result.argLoadExpr) {
@@ -180,6 +185,13 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       insideStoreParameters.push(result.argStoreExpr);
     }
     result.storeExpr = tFunctionCall(tMemberExpression(tIdentifier(theCell), tIdentifier('store' + result.fieldLoadStoreSuffix)), insideStoreParameters);
+  }
+  if (result.argLoadExpr != undefined) {
+    result.loadExpr = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + result.fieldLoadStoreSuffix)), [result.argLoadExpr]);
+    if (result.paramType == 'Slice') {
+      result.loadExpr = tIdentifier(currentSlice)
+    }
+    result.typeParamExpr = tIdentifier(result.paramType);
   }
   if (result.argLoadExpr == undefined && result.argStoreExpr != undefined || result.argLoadExpr != undefined && result.argStoreExpr == undefined) {
     throw new Error('argLoadExpr and argStoreExpr should be both defined or both undefined')

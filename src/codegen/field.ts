@@ -55,25 +55,19 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
       let tmpTypeName = field.expr.name;
       let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
 
-      if (fieldInfo.argLoadExpr == undefined) {
-        let currentTypeParameters = tTypeParametersExpression([]);
-        if (fieldInfo.typeParamExpr && fieldInfo.typeParamExpr.type == 'TypeWithParameters') {
-          currentTypeParameters = fieldInfo.typeParamExpr.typeParameters;
-        }
-        subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tTypeWithParameters(tIdentifier(field.expr.name), currentTypeParameters)));
+      if (fieldInfo.loadExpr) {
+        addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, constructorLoadStatements, subStructLoadProperties);
+      }
 
-        if (fieldInfo.loadExpr) {
-          addLoadProperty(field.name, fieldInfo.loadExpr, tTypeWithParameters(tIdentifier(tmpTypeName), currentTypeParameters), constructorLoadStatements, subStructLoadProperties);
+      if (fieldInfo.argLoadExpr == undefined) {
+        if (fieldInfo.typeParamExpr) {
+          subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), fieldInfo.typeParamExpr));
         }
+        
         if (fieldInfo.storeExpr) {
           subStructStoreStatements.push(tExpressionStatement(fieldInfo.storeExpr))
         }
       } else if (fieldInfo.argLoadExpr != undefined && fieldInfo.argStoreExpr != undefined) {
-        let loadSt: Expression = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + fieldInfo.fieldLoadStoreSuffix)), [fieldInfo.argLoadExpr]);
-        if (fieldInfo.paramType == 'Slice') {
-          loadSt = tIdentifier(currentSlice)
-        }
-        addLoadProperty(field.name, loadSt, tIdentifier(fieldInfo.paramType), constructorLoadStatements, subStructLoadProperties)
         subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldInfo.paramType)))
         let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
         if (fieldInfo.paramType != 'BitString' && fieldInfo.paramType != 'Slice') {
