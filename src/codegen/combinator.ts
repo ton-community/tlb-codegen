@@ -169,6 +169,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
     result.negatedVariablesLoads.push({name: expr.expr.name, expression: tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])})
   } else { // TODO: handle other cases
+    console.log(expr)
     throw new Error('Expression not supported: ' + expr);
   }
   if (result.argLoadExpr) {

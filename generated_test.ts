@@ -184,6 +184,49 @@ export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => v
   		storeMaybe<SharpConstructor>(typedParam.x, storeSharpConstructor)(builder);
   	};
   }
+export type Either<X,Y> = Either_left<X,Y> | Either_right<X,Y>;
+export type Either_left<X,Y> = {
+  	kind: 'Either_left';
+	value: X;
+  };
+export type Either_right<X,Y> = {
+  	kind: 'Either_right';
+	value: Y;
+  };
+export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		let value: X = loadX(slice);
+		return {
+  			kind: 'Either_left',
+			value: value
+  		};
+  	};
+	if ((slice.preloadUint(1) == 0b1)) {
+  		slice.loadUint(1);
+		let value: Y = loadY(slice);
+		return {
+  			kind: 'Either_right',
+			value: value
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
+  	if ((either.kind == 'Either_left')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+			storeX(either.value)(builder);
+  		};
+  	};
+	if ((either.kind == 'Either_right')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+			storeY(either.value)(builder);
+  		};
+  	};
+	throw new Error('');
+  }
 export type BitLenArg = {
   	kind: 'BitLenArg';
 	x: number;
@@ -905,5 +948,57 @@ export function loadUnaryUserCheckOrder(slice: Slice): UnaryUserCheckOrder {
 export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrder): (builder: Builder) => void {
   	return (builder: Builder) => {
   		storeUnary(unaryUserCheckOrder.label)(builder);
+  	};
+  }
+export type CombArgCellRef<X> = {
+  	kind: 'CombArgCellRef';
+	info: number;
+	init: Maybe<Either<X,X>>;
+	body: Either<X,X>;
+  };
+export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X): CombArgCellRef<X> {
+  	let info: number = slice.loadInt(32);
+	let init: Maybe<Either<X,X>> = loadMaybe<Either<X,X>>(slice, (slice: Slice) => {
+  		return loadEither<X,X>(slice, loadX, loadX);
+  	});
+	let body: Either<X,X> = loadEither<X,X>(slice, loadX, loadX);
+	return {
+  		kind: 'CombArgCellRef',
+		info: info,
+		init: init,
+		body: body
+  	};
+  }
+export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeInt(combArgCellRef.info, 32);
+		storeMaybe<Either<X,X>>(combArgCellRef.init, (arg: Either<X,X>) => {
+  			return (builder: Builder) => {
+  				storeEither<X,X>(arg, storeX, storeX)(builder);
+  			};
+  		})(builder);
+		storeEither<X,X>(combArgCellRef.body, storeX, storeX)(builder);
+  	};
+  }
+export type CombArgCellRefUser = {
+  	kind: 'CombArgCellRefUser';
+	x: CombArgCellRef<number>;
+  };
+export function loadCombArgCellRefUser(slice: Slice): CombArgCellRefUser {
+  	let x: CombArgCellRef<number> = loadCombArgCellRef<number>(slice, (slice: Slice) => {
+  		return slice.loadInt(12);
+  	});
+	return {
+  		kind: 'CombArgCellRefUser',
+		x: x
+  	};
+  }
+export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeCombArgCellRef<number>(combArgCellRefUser.x, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeInt(arg, 12);
+  			};
+  		})(builder);
   	};
   }

@@ -11,6 +11,9 @@ nothing$0 {TheType:Type} = Maybe TheType;
 just$1 {TheType:Type} value:TheType = Maybe TheType;
 thejust$_ x:(Maybe SharpConstructor) = TypedParam;
 
+left$0 {X:Type} {Y:Type} value:X = Either X Y;
+right$1 {X:Type} {Y:Type} value:Y = Either X Y;
+
 a$_ {x:#} value:(## x) = BitLenArg x;
 a$_ t:(BitLenArg 4) = BitLenArgUser;
 
@@ -52,3 +55,8 @@ e$0 {k:#} x:(ParamDifNames 2 ~k) = ParamDifNamesUser;
 b$1 {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit ~(y + 1);
 
 hm_edge#_ {l:#} {m:#} label:(Unary ~l) {7 = (~m) + l} = UnaryUserCheckOrder;
+
+a$_ {X:Type} info:int32
+  init:(Maybe (Either X X))
+  body:(Either X X) = CombArgCellRef X;
+a$_ x:(CombArgCellRef int12) = CombArgCellRefUser;
