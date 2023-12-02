@@ -59,16 +59,15 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
         addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, constructorLoadStatements, subStructLoadProperties);
       }
 
-      if (fieldInfo.argLoadExpr == undefined) {
-        if (fieldInfo.typeParamExpr) {
-          subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), fieldInfo.typeParamExpr));
-        }
-        
+      if (fieldInfo.typeParamExpr) {
+        subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), fieldInfo.typeParamExpr));
+      }
+
+      if (fieldInfo.argLoadExpr == undefined) {     
         if (fieldInfo.storeExpr) {
           subStructStoreStatements.push(tExpressionStatement(fieldInfo.storeExpr))
         }
       } else if (fieldInfo.argLoadExpr != undefined && fieldInfo.argStoreExpr != undefined) {
-        subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier(fieldInfo.paramType)))
         let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
         if (fieldInfo.paramType != 'BitString' && fieldInfo.paramType != 'Slice') {
           storeParams.push(fieldInfo.argStoreExpr);
