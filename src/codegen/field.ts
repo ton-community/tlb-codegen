@@ -54,27 +54,15 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
     if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr) {
       let tmpTypeName = field.expr.name;
       let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
-
       if (fieldInfo.loadExpr) {
         addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, constructorLoadStatements, subStructLoadProperties);
       }
-
       if (fieldInfo.typeParamExpr) {
         subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), fieldInfo.typeParamExpr));
       }
-
-      if (fieldInfo.argLoadExpr == undefined) {     
-        if (fieldInfo.storeExpr) {
-          subStructStoreStatements.push(tExpressionStatement(fieldInfo.storeExpr))
-        }
-      } else if (fieldInfo.argLoadExpr != undefined && fieldInfo.argStoreExpr != undefined) {
-        let storeParams: Expression[] = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(field.name))];
-        if (fieldInfo.paramType != 'BitString' && fieldInfo.paramType != 'Slice') {
-          storeParams.push(fieldInfo.argStoreExpr);
-        }
-        subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + fieldInfo.fieldLoadStoreSuffix)), storeParams)))
+      if (fieldInfo.storeExpr) {
+        subStructStoreStatements.push(tExpressionStatement(fieldInfo.storeExpr))
       }
-
       fieldInfo.negatedVariablesLoads.forEach(element => {
         addLoadProperty(element.name, element.expression, undefined, constructorLoadStatements, subStructLoadProperties)
       });

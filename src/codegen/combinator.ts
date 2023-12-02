@@ -193,6 +193,9 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     }
     result.typeParamExpr = tIdentifier(result.paramType);
   }
+  if (result.argStoreExpr != undefined) {
+    result.storeExpr = tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + result.fieldLoadStoreSuffix)), insideStoreParameters);
+  }
   if (result.argLoadExpr == undefined && result.argStoreExpr != undefined || result.argLoadExpr != undefined && result.argStoreExpr == undefined) {
     throw new Error('argLoadExpr and argStoreExpr should be both defined or both undefined')
   }
