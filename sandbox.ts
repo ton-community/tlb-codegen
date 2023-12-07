@@ -1,4 +1,4 @@
-import { Slice, Builder } from "ton";
+import { Slice, Builder, beginCell } from "ton";
 export type Maybe<TheType> = {
 	value: TheType;
 };
@@ -9,7 +9,7 @@ export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => 
 	};
 }
 
-export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeSubType: (TheType: TheType) => ((builder: Builder) => void)): Builder {
+export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeSubType: (TheType: TheType) => ((builder: Builder) => void)): ((builder: Builder) => void) {
 	return (builder: Builder) => {
 		storeSubType(maybe.value)(builder);
 	};
@@ -444,41 +444,75 @@ export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder
 export type CombArgCellRef<X> = {
 	kind: 'CombArgCellRef';
   info: number;
-  init: Maybe<Either<X,X>>;
+  init: Maybe<Either<X,number>>;
+  other: Either<X,OneComb<X>>;
   body: Either<X,X>;
 };
 
-export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X): CombArgCellRef<X> {
-	let info: number = slice.loadInt(32);
-  let init: Maybe<Either<X,X>> = loadMaybe<Either<X,X>>(slice, (slice: Slice) => {
-		return loadEither<X,X>(slice, loadX, (slice: Slice) => {
-		  slice = slice.loadRef().beginParse();
-		  return (loadX)(slice);
-	  });
-	});
-  let body: Either<X,X> = loadEither<X,X>(slice, loadX, loadX);
-  return {
-		kind: 'CombArgCellRef',
-	  info: info,
-	  init: init,
-	  body: body
-	};
-}
+// export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X): CombArgCellRef<X> {
+// 	let info: number = slice.loadInt(32);
+//   let init: Maybe<Either<X,X>> = loadMaybe<Either<X,X>>(slice, (slice: Slice) => {
+// 		return loadEither<X,X>(slice, loadX, (slice: Slice) => {
+// 		  slice = slice.loadRef().beginParse();
+// 		  return (loadX)(slice);
+// 	  });
+// 	});
+//   let body: Either<X,X> = loadEither<X,X>(slice, loadX, loadX);
+//   let other: Either<X,X> = loadEither<X,X>(slice, loadX, loadX);
+
+//   return {
+// 		kind: 'CombArgCellRef',
+// 	  info: info,
+// 	  init: init,
+// 	  body: body
+// 	};
+// }
+
+// export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+// 	return (builder: Builder) => {
+// 		builder.storeInt(combArgCellRef.info, 32);
+// 	  storeMaybe<Either<X,X>>(combArgCellRef.init, (arg: Either<X,X>) => {
+// 			return (builder: Builder) => {
+// 				storeEither<X,X>(arg, storeX, (x: X) => {
+// 				  return (builder: Builder) => {
+// 					  let cell = beginCell();
+// 					  storeX(x)(cell);
+// 					  builder.storeRef(cell);
+// 				  }
+// 			  })(builder);
+// 			};
+// 		})(builder);
+// 	  storeEither<X,X>(combArgCellRef.body, storeX, storeX)(builder);
+// 	};
+// }
 
 export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
 	return (builder: Builder) => {
 		builder.storeInt(combArgCellRef.info, 32);
-	  storeMaybe<Either<X,X>>(combArgCellRef.init, (arg: Either<X,X>) => {
+	  	storeMaybe<Either<X,number>>(combArgCellRef.init, (arg: Either<X, number>) => {
 			return (builder: Builder) => {
-				storeEither<X,X>(arg, storeX, (x: X) => {
-				  return (builder: Builder) => {
-					  let cell = beginCell();
-					  storeX(x)(cell);
-					  builder.storeRef(cell);
-				  }
-			  })(builder);
+				storeEither<X,number>(arg, storeX, (arg: number) => {
+					return (builder: Builder) => {
+					  let cell1 = beginCell();
+					  cell1.storeInt(arg, 22);
+					  builder.storeRef(cell1);
+					};
+				})(builder);
 			};
 		})(builder);
-	  storeEither<X,X>(combArgCellRef.body, storeX, storeX)(builder);
+	    storeEither<X,OneComb<X>>(combArgCellRef.other, storeX, (arg: OneComb<X>) => {
+			return (builder: Builder) => {
+			  let cell1 = beginCell()
+			  storeOneComb<X>(arg, storeX)(cell1);
+			  builder.storeRef(cell1);
+			};
+		})(builder);
+	    storeEither<X,X>(combArgCellRef.body, storeX, (arg: X) => {
+			return (builder: Builder) => {
+			  let cell1 = beginCell()
+			  storeX(arg)(cell1);
+			  builder.storeRef(cell1);
+			};
+		})(builder);
 	};
 }

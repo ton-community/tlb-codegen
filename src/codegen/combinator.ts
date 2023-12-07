@@ -1,5 +1,5 @@
 import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr, CompareExpr, Expression as ParserExpression, TypeExpr } from '../../src/ast/nodes'
-import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray, TypeWithParameters, ArrowFunctionExpression } from './tsgen'
+import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray, TypeWithParameters, ArrowFunctionExpression, tMultiStatement } from './tsgen'
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
@@ -8,7 +8,7 @@ import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName, s
 type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined
   loadExpr: Expression | undefined
-  storeExpr: Expression | undefined
+  storeExpr: Statement | undefined
   argLoadExpr: Expression | undefined
   argStoreExpr: Expression | undefined
   paramType: string
@@ -16,7 +16,7 @@ type FieldInfoType = {
   negatedVariablesLoads: Array<{name: string, expression: Expression}>
 }
 
-export function handleCombinator(expr: ParserExpression, fieldName: string, isField: boolean, variableCombinatorName: string, variableSubStructName: string, currentSlice: string, currentCell: string, constructor: TLBConstructor, jsCodeDeclarations: ASTNode[], fieldTypeName: string, argIndex: number, tlbCode: TLBCode, subStructLoadProperties: ObjectProperty[]): FieldInfoType {
+export function handleCombinator(expr: ParserExpression, fieldName: string, isField: boolean, needArg: boolean, variableCombinatorName: string, variableSubStructName: string, currentSlice: string, currentCell: string, constructor: TLBConstructor, jsCodeDeclarations: ASTNode[], fieldTypeName: string, argIndex: number, tlbCode: TLBCode, subStructLoadProperties: ObjectProperty[]): FieldInfoType {
   let theSlice = 'slice';
   let theCell = 'builder';
   if (isField) {
@@ -27,11 +27,12 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
 
   let insideStoreParameters: Expression[];
 
-  if (isField) {
+  if (isField && !needArg) {
     insideStoreParameters = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(fieldName))];
   } else {
     insideStoreParameters = [tIdentifier('arg')]
   }
+
 
   if (expr instanceof BuiltinZeroArgs) {
     if (expr.name == '#') {
@@ -86,7 +87,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       let argIndex = -1;
       expr.args.forEach((arg) => {
         argIndex++;
-        let subExprInfo = handleCombinator(arg, fieldName, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
+        let subExprInfo = handleCombinator(arg, fieldName, false, needArg, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
         if (subExprInfo.typeParamExpr) {
           typeExpression.typeParameters.push(subExprInfo.typeParamExpr);
         }
@@ -97,10 +98,12 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
           loadFunctionsArray.push(subExprInfo.loadExpr);
         }
         if (subExprInfo.storeExpr && subExprInfo.typeParamExpr) {
-          if (subExprInfo.storeExpr.type == 'FunctionCall') {
-            subExprInfo.storeExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [tExpressionStatement(subExprInfo.storeExpr)]))])
-          }
-          storeFunctionsArray.push(subExprInfo.storeExpr);
+            if (subExprInfo.storeExpr.type == 'ExpressionStatement' && subExprInfo.storeExpr.expression.type == 'FunctionCall' || subExprInfo.storeExpr.type == 'MultiStatement') {
+              subExprInfo.storeExpr = tExpressionStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [subExprInfo.storeExpr]))]))
+            }
+            if (subExprInfo.storeExpr.type == 'ExpressionStatement') {
+              storeFunctionsArray.push(subExprInfo.storeExpr.expression); 
+            }
         }
         result.negatedVariablesLoads = result.negatedVariablesLoads.concat(subExprInfo.negatedVariablesLoads);
       });
@@ -111,7 +114,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       let insideLoadParameters: Array<Expression> = [tIdentifier(theSlice)];
 
       result.loadExpr = tFunctionCall(tIdentifier('load' + expr.name), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
-      result.storeExpr = tFunctionCall(tFunctionCall(tIdentifier('store' + expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(theCell)])
+      result.storeExpr = tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + expr.name), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(theCell)]))
     } 
     if (result.argLoadExpr) {
       result.typeParamExpr = tIdentifier(result.paramType);
@@ -147,15 +150,16 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       result.argLoadExpr = result.argStoreExpr = tNumericLiteral(theNum);
     } else {
       if (constructor.variablesMap.get(expr.name)?.type == '#') {
-        result.loadExpr = result.storeExpr = getVarExprByName(expr.name, constructor)
+        result.loadExpr = getVarExprByName(expr.name, constructor)
+        result.storeExpr = tExpressionStatement(result.loadExpr);
       } else {
         result.typeParamExpr = tIdentifier(expr.name);
         if (isField) {
           result.loadExpr = tFunctionCall(tIdentifier('load' + expr.name), [tIdentifier(theSlice)])
-          result.storeExpr = tFunctionCall(tFunctionCall(tIdentifier('store' + expr.name), [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(fieldName))]), [tIdentifier(currentCell)])
+          result.storeExpr = tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + expr.name), insideStoreParameters), [tIdentifier(currentCell)]))
         } else {
           result.loadExpr = tIdentifier('load' + expr.name)
-          result.storeExpr = tIdentifier('store' + expr.name)
+          result.storeExpr = tExpressionStatement(tIdentifier('store' + expr.name))
         }
       }
     }
@@ -169,11 +173,24 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
     result.negatedVariablesLoads.push({name: expr.expr.name, expression: tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])})
   } else if (expr instanceof CellRefExpr) {
-    // let subExprInfo = handleCombinator(expr.expr, fieldName, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
-    // result = subExprInfo;
-    // if (result.loadExpr) {
-    //   result.loadExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [sliceLoad([1, 0], 'slice'), tExpressionStatement(tDeclareVariable(tIdentifier('loadFunc'), result.loadExpr)), tReturnStatement(tFunctionCall(tIdentifier('loadFunc'), [tIdentifier(getCurrentSlice([1, 0], 'slice'))]))])
-    // }
+    let currentSlice = getCurrentSlice([1, 0], 'slice');
+    let currentCell = getCurrentSlice([1, 0], 'cell');
+
+    let subExprInfo = handleCombinator(expr.expr, fieldName, true, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
+    if (subExprInfo.loadExpr) {
+      result.typeParamExpr = subExprInfo.typeParamExpr;
+      result.storeExpr = subExprInfo.storeExpr;
+      result.negatedVariablesLoads = subExprInfo.negatedVariablesLoads;
+      result.paramType = subExprInfo.paramType;
+      result.loadExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [sliceLoad([1, 0], 'slice'), tReturnStatement(subExprInfo.loadExpr)])
+    }
+    if (subExprInfo.storeExpr) {
+      result.storeExpr = tMultiStatement([
+        tExpressionStatement(tDeclareVariable(tIdentifier(currentCell), tFunctionCall(tIdentifier('beginCell'), []))),
+        subExprInfo.storeExpr,
+        tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeRef')), [tIdentifier(currentCell)]))
+      ])
+    }
   } else { // TODO: handle other cases
     throw new Error('Expression not supported: ' + expr);
   }
@@ -184,7 +201,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     if (result.paramType != 'BitString' && result.paramType != 'Slice') {
       insideStoreParameters.push(result.argStoreExpr);
     }
-    result.storeExpr = tFunctionCall(tMemberExpression(tIdentifier(theCell), tIdentifier('store' + result.fieldLoadStoreSuffix)), insideStoreParameters);
+    result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(theCell), tIdentifier('store' + result.fieldLoadStoreSuffix)), insideStoreParameters));
   }
   if (result.argLoadExpr != undefined) {
     result.loadExpr = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + result.fieldLoadStoreSuffix)), [result.argLoadExpr]);
@@ -194,7 +211,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     result.typeParamExpr = tIdentifier(result.paramType);
   }
   if (result.argStoreExpr != undefined) {
-    result.storeExpr = tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + result.fieldLoadStoreSuffix)), insideStoreParameters);
+    result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + result.fieldLoadStoreSuffix)), insideStoreParameters));
   }
   if (result.argLoadExpr == undefined && result.argStoreExpr != undefined || result.argLoadExpr != undefined && result.argStoreExpr == undefined) {
     throw new Error('argLoadExpr and argStoreExpr should be both defined or both undefined')

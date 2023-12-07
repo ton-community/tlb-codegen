@@ -953,31 +953,62 @@ export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrde
 export type CombArgCellRef<X> = {
   	kind: 'CombArgCellRef';
 	info: number;
-	init: Maybe<Either<X,X>>;
+	init: Maybe<Either<X,number>>;
+	other: Either<X,OneComb<X>>;
 	body: Either<X,X>;
   };
 export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X): CombArgCellRef<X> {
   	let info: number = slice.loadInt(32);
-	let init: Maybe<Either<X,X>> = loadMaybe<Either<X,X>>(slice, (slice: Slice) => {
-  		return loadEither<X,X>(slice, loadX, loadX);
+	let init: Maybe<Either<X,number>> = loadMaybe<Either<X,number>>(slice, (slice: Slice) => {
+  		return loadEither<X,number>(slice, loadX, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return slice1.loadInt(22);
+  		});
   	});
-	let body: Either<X,X> = loadEither<X,X>(slice, loadX, loadX);
+	let other: Either<X,OneComb<X>> = loadEither<X,OneComb<X>>(slice, loadX, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return loadOneComb<X>(slice1, loadX);
+  	});
+	let body: Either<X,X> = loadEither<X,X>(slice, loadX, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return loadX(slice1);
+  	});
 	return {
   		kind: 'CombArgCellRef',
 		info: info,
 		init: init,
+		other: other,
 		body: body
   	};
   }
 export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
   		builder.storeInt(combArgCellRef.info, 32);
-		storeMaybe<Either<X,X>>(combArgCellRef.init, (arg: Either<X,X>) => {
+		storeMaybe<Either<X,number>>(combArgCellRef.init, (arg: Either<X,number>) => {
   			return (builder: Builder) => {
-  				storeEither<X,X>(arg, storeX, storeX)(builder);
+  				storeEither<X,number>(arg, storeX, (arg: number) => {
+  					return (builder: Builder) => {
+  						let cell1 = beginCell()
+						cell1.storeInt(arg, 22)
+						builder.storeRef(cell1);
+  					};
+  				})(builder);
   			};
   		})(builder);
-		storeEither<X,X>(combArgCellRef.body, storeX, storeX)(builder);
+		storeEither<X,OneComb<X>>(combArgCellRef.other, storeX, (arg: OneComb<X>) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeOneComb<X>(arg, storeX)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
+		storeEither<X,X>(combArgCellRef.body, storeX, (arg: X) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeX(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
   	};
   }
 export type CombArgCellRefUser = {

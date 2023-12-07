@@ -121,7 +121,7 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(manyComb, loadManyComb, storeManyComb);
         let manyCombIncorrect: ManyComb = {kind: 'ManyComb', y: {kind: 'OneComb', t: 5, x: {kind: 'OneComb', t: 8, x: {kind: 'OneComb', t: 7, x: 8}}}};
         checkThrowOnStoreLoad(manyCombIncorrect, loadManyComb, storeManyComb);
-        let combArgCellRefUser: CombArgCellRefUser = {kind: 'CombArgCellRefUser', x: {kind: 'CombArgCellRef', body: {'kind': 'Either_right', value: 3}, info: 4, init: {kind: 'Maybe_just', value: {kind: 'Either_right', value: 4}}}}
+        let combArgCellRefUser: CombArgCellRefUser = {kind: 'CombArgCellRefUser', x: {kind: 'CombArgCellRef', body: {'kind': 'Either_right', value: 3}, info: 4, other: {kind: 'Either_right', value: {kind: 'OneComb', t: 5, x: 5}}, init: {kind: 'Maybe_just', value: {kind: 'Either_right', value: 4}}}}
         checkSameOnStoreLoad(combArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser);
     });
 

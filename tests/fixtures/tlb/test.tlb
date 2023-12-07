@@ -57,6 +57,7 @@ b$1 {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit ~(y + 1);
 hm_edge#_ {l:#} {m:#} label:(Unary ~l) {7 = (~m) + l} = UnaryUserCheckOrder;
 
 a$_ {X:Type} info:int32
-  init:(Maybe (Either X X))
-  body:(Either X X) = CombArgCellRef X;
+  init:(Maybe (Either X ^int22))
+  other:(Either X ^(OneComb X))
+  body:(Either X ^X) = CombArgCellRef X;
 a$_ x:(CombArgCellRef int12) = CombArgCellRefUser;

@@ -41,19 +41,15 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
       slicePrefix.push(0)
 
       constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice))
-
       subStructStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
-
       handleField(new FieldNamedDef(field.name, field.expr.expr), slicePrefix, tlbCode, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeDeclarations)
-
       subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
-
       slicePrefix.pop();
     }
 
     if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr) {
       let tmpTypeName = field.expr.name;
-      let fieldInfo = handleCombinator(field.expr, field.name, true, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
+      let fieldInfo = handleCombinator(field.expr, field.name, true, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
       if (fieldInfo.loadExpr) {
         addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, constructorLoadStatements, subStructLoadProperties);
       }
@@ -61,7 +57,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
         subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), fieldInfo.typeParamExpr));
       }
       if (fieldInfo.storeExpr) {
-        subStructStoreStatements.push(tExpressionStatement(fieldInfo.storeExpr))
+        subStructStoreStatements.push(fieldInfo.storeExpr)
       }
       fieldInfo.negatedVariablesLoads.forEach(element => {
         addLoadProperty(element.name, element.expression, undefined, constructorLoadStatements, subStructLoadProperties)

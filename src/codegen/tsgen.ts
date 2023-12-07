@@ -136,8 +136,13 @@ export interface BinaryExpression extends ASTNode {
     right: Expression
 }
 
+export interface MultiStatement extends ASTNode {
+    type: "MultiStatement",
+    statements: Array<Statement>
+}
+
 export type TypeExpression = Identifier | TypeWithParameters | ArrowFunctionType;
-export type Statement = ReturnStatement | ExpressionStatement | IfStatement;
+export type Statement = ReturnStatement | ExpressionStatement | IfStatement | MultiStatement;
 export type Literal = NumericLiteral | BinaryNumericLiteral | StringLiteral;
 export type Expression = Identifier | TypeExpression | Literal | ObjectExpression | FunctionCall | MemberExpression | ArrowFunctionExpression | BinaryExpression | ArrowFunctionType | TypeParametersExpression | DeclareVariable;
 export type GenDeclaration = ImportDeclaration | StructDeclaration | UnionTypeDeclaration | FunctionDeclaration;
@@ -234,6 +239,10 @@ export function tDeclareVariable(name: Identifier, init?: Expression, typeName?:
     return { type: "DeclareVariable", name: name, init: init, typeName: typeName }
 }
 
+export function tMultiStatement(statements: Array<Statement>): MultiStatement {
+    return { type: "MultiStatement", statements: statements };
+}
+
 
 
 export function toCodeArray(nodeArray: Array<TheNode>, delimeter: string, prefix: string, printContext: PrintContext, suffix: string) {
@@ -315,6 +324,10 @@ export function toCode(node: TheNode, printContext: PrintContext): string {
         result += `{
   ${toCodeArray(node.objectValues, ',\n', '', addTab(printContext), '')}
   ${currentTabs}}`
+    }
+
+    if (node.type == "MultiStatement") {
+        result += toCodeArray(node.statements, '\n', '', printContext, '');
     }
 
     if (node.type == "ReturnStatement") {
