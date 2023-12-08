@@ -709,14 +709,18 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeUnary(hmLabel.len)(builder);
-			builder.storeBits(arg);
+			hmLabel.s.forEach((arg: BitString) => {
+  				builder.storeBits(arg);
+  			});
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b10, 2);
 			builder.storeUint(hmLabel.n, hmLabel.m);
-			builder.storeBits(arg);
+			hmLabel.s.forEach((arg: BitString) => {
+  				builder.storeBits(arg);
+  			});
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_same')) {
@@ -1098,6 +1102,8 @@ export function loadTupleCheck(slice: Slice): TupleCheck {
   }
 export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeInt(arg, 5);
+  		tupleCheck.s.forEach((arg: number) => {
+  			builder.storeInt(arg, 5);
+  		});
   	};
   }

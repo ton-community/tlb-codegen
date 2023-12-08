@@ -195,7 +195,10 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       if (expr.op == '*') {
         let subExprInfo = handleCombinator(expr.right, fieldName, false, needArg, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
         result.loadExpr = subExprInfo.loadExpr; simpleCycle(fieldName, tNumericLiteral(2)) //subExprInfo.loadExpr;
-        result.storeExpr = subExprInfo.storeExpr;
+        let currentParam = insideStoreParameters[0]
+        if (currentParam && subExprInfo.typeParamExpr && subExprInfo.storeExpr) {
+          result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(currentParam, tIdentifier('forEach')), [tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [subExprInfo.storeExpr])])) //subExprInfo.storeExpr;
+        }
         result.paramType = subExprInfo.paramType;
         if (subExprInfo.typeParamExpr) {
           result.typeParamExpr = tTypeWithParameters(tIdentifier('Array'), tTypeParametersExpression([subExprInfo.typeParamExpr]));
