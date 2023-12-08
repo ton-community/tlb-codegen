@@ -1122,3 +1122,24 @@ export function storeDollarTag(dollarTag: DollarTag): (builder: Builder) => void
 		builder.storeUint(dollarTag.x, 32);
   	};
   }
+
+  export type TupleCheck = {
+	kind: 'TupleCheck';
+  s: Array<number>;
+};
+export function loadTupleCheck(slice: Slice): TupleCheck {
+	let s: Array<number> = Array.from(Array(3).keys()).map(arg => {return slice.loadUint(5)});
+	console.log(s);
+  return {
+		kind: 'TupleCheck',
+	  s: s
+	};
+}
+export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => void {
+	return (builder: Builder) => {
+		tupleCheck.s.forEach((arg: number) => {
+			builder.storeInt(arg, 5);
+		});
+	};
+}
+

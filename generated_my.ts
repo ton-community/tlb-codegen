@@ -1094,7 +1094,7 @@ export type TupleCheck = {
 	s: Array<number>;
   };
 export function loadTupleCheck(slice: Slice): TupleCheck {
-  	let s: Array<number> = slice.loadInt(5);
+  	let s: Array<number> = Array.from(Array(3).keys()).map(arg => slice.loadUint(5));
 	return {
   		kind: 'TupleCheck',
 		s: s

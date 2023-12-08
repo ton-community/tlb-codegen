@@ -68,3 +68,5 @@ _ a:# = EmptyTag;
 
 a#f4 x:# = SharpTag;
 a$1011 x:# = DollarTag;
+
+a$_ s:(3 * int5) = TupleCheck;
