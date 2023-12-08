@@ -61,3 +61,5 @@ a$_ {X:Type} info:int32
   other:(Either X ^(OneComb X))
   body:(Either X ^X) = CombArgCellRef X;
 a$_ x:(CombArgCellRef int12) = CombArgCellRefUser;
+
+a$_ {n:#} ref:^(BitLenArg (n + 2)) = MathExprAsCombArg (n + 2);

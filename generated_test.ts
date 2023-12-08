@@ -1033,3 +1033,25 @@ export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser):
   		})(builder);
   	};
   }
+  
+export type MathExprAsCombArg = {
+  	kind: 'MathExprAsCombArg';
+	n: number;
+	ref: BitLenArg;
+  };
+export function loadMathExprAsCombArg(slice: Slice, arg0: number): MathExprAsCombArg {
+  	let slice1 = slice.loadRef().beginParse();
+	let ref: BitLenArg = loadBitLenArg(slice1, arg0 - 2 + 2);
+	return {
+  		kind: 'MathExprAsCombArg',
+		n: (arg0 - 2),
+		ref: ref
+  	};
+  }
+export function storeMathExprAsCombArg(mathExprAsCombArg: MathExprAsCombArg): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		let cell1 = beginCell();
+		storeBitLenArg(mathExprAsCombArg.ref)(cell1);
+		builder.storeRef(cell1);
+  	};
+  }

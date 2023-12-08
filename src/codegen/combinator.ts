@@ -191,6 +191,9 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeRef')), [tIdentifier(currentCell)]))
       ])
     }
+  } else if (expr instanceof MathExpr) {
+    result.argLoadExpr = convertToAST(convertToMathExpr(expr), constructor, true);
+    result.argStoreExpr = result.argLoadExpr;
   } else { // TODO: handle other cases
     throw new Error('Expression not supported: ' + expr);
   }
