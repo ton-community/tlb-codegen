@@ -122,6 +122,14 @@ export interface IfStatement extends ASTNode {
     elseBody: Array<Statement> | undefined
 }
 
+export interface ForCycle extends ASTNode {
+    type: "ForCycle",
+    init: Expression,
+    cond: Expression,
+    inc: Expression,
+    body: Array<Statement>
+}
+
 export interface DeclareVariable extends ASTNode {
     type: "DeclareVariable",
     name: Identifier,
@@ -142,7 +150,7 @@ export interface MultiStatement extends ASTNode {
 }
 
 export type TypeExpression = Identifier | TypeWithParameters | ArrowFunctionType;
-export type Statement = ReturnStatement | ExpressionStatement | IfStatement | MultiStatement;
+export type Statement = ReturnStatement | ExpressionStatement | IfStatement | MultiStatement | ForCycle;
 export type Literal = NumericLiteral | BinaryNumericLiteral | StringLiteral;
 export type Expression = Identifier | TypeExpression | Literal | ObjectExpression | FunctionCall | MemberExpression | ArrowFunctionExpression | BinaryExpression | ArrowFunctionType | TypeParametersExpression | DeclareVariable;
 export type GenDeclaration = ImportDeclaration | StructDeclaration | UnionTypeDeclaration | FunctionDeclaration;
@@ -180,6 +188,10 @@ export function tStructDeclaration(name: Identifier, fields: Array<TypedIdentifi
 
 export function tObjectProperty(key: Expression, value: Expression): ObjectProperty {
     return { type: "ObjectProperty", key: key, value: value }
+}
+
+export function tForCycle(init: Expression, cond: Expression, inc: Expression, body: Array<Statement>): ForCycle {
+    return { type: "ForCycle", init: init, cond: cond, inc: inc, body: body }
 }
 
 export function tObjectExpression(objectValues: Array<ObjectProperty>): ObjectExpression {
@@ -372,6 +384,12 @@ export function toCode(node: TheNode, printContext: PrintContext): string {
         result += `${currentTabs}if (${toCode(node.condition, printContext)}) {
   ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
   ${currentTabs}}`
+    }
+
+    if (node.type == "ForCycle") {
+        result += `${currentTabs}for (${toCode(node.init, printContext)};${toCode(node.cond, printContext)};${toCode(node.inc, printContext)}) {
+    ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
+    ${currentTabs}}`
     }
 
     if (node.type == "BinaryExpression") {

@@ -539,3 +539,26 @@ export function storeMathExprAsCombArg(mathExprAsCombArg: MathExprAsCombArg): (b
 	  builder.storeRef(cell1);
 	};
 }
+
+
+export type TupleCheck = {
+	b: Array<number>
+  	kind: 'TupleCheck';
+  };
+export function loadTupleCheck(slice: Slice): TupleCheck {
+	let b = new Array<number>();
+	for (let i = 0; i < 2; i++) {
+		b.push(slice.loadUint(5));
+	}
+  	return {
+  		kind: 'TupleCheck',
+		b: b
+  	};
+  }
+export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => void {
+  	return (builder: Builder) => {
+		tupleCheck.b.forEach(element => {
+			builder.storeUint(element, 5);
+		})
+  	};
+  }

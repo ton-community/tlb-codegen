@@ -78,3 +78,5 @@ t$1 {X:Type} {Y:#} t:# z:# { t = (~Y) * 2} = Same X ~(Y + 1);
 
 a$_ {A:Type} t:# x:A = OneComb A;
 a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;
+
+a$_ s:(3 * int5) = TupleCheck;

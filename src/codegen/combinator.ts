@@ -3,7 +3,7 @@ import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpre
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
-import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName, sliceLoad } from './helpers'
+import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName, simpleCycle, sliceLoad } from './helpers'
 
 type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined
@@ -32,7 +32,6 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
   } else {
     insideStoreParameters = [tIdentifier('arg')]
   }
-
 
   if (expr instanceof BuiltinZeroArgs) {
     if (expr.name == '#') {
@@ -63,7 +62,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         result.argLoadExpr = tIdentifier(expr.arg.name)
         result.argStoreExpr = tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(expr.arg.name));
       } // TODO: handle other cases
-    }
+    } 
   } else if (expr instanceof CombinatorExpr) {
     if (expr.name == 'int' && expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
       result.fieldLoadStoreSuffix = 'Int'
@@ -192,8 +191,23 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       ])
     }
   } else if (expr instanceof MathExpr) {
-    result.loadExpr = convertToAST(convertToMathExpr(expr), constructor, true);
-    result.storeExpr = tExpressionStatement(result.loadExpr);
+    if (fieldTypeName == '') {
+      if (expr.op == '*') {
+        let subExprInfo = handleCombinator(expr.right, fieldName, false, needArg, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
+        result.loadExpr = subExprInfo.loadExpr; simpleCycle(fieldName, tNumericLiteral(2)) //subExprInfo.loadExpr;
+        result.storeExpr = subExprInfo.storeExpr;
+        result.paramType = subExprInfo.paramType;
+        if (subExprInfo.typeParamExpr) {
+          result.typeParamExpr = tTypeWithParameters(tIdentifier('Array'), tTypeParametersExpression([subExprInfo.typeParamExpr]));
+        }
+        console.log(result)
+      } else {
+        throw new Error('')
+      }
+    } else {
+      result.loadExpr = convertToAST(convertToMathExpr(expr), constructor, true);
+      result.storeExpr = tExpressionStatement(result.loadExpr);
+    }
   } else { // TODO: handle other cases
     throw new Error('Expression not supported: ' + expr);
   }

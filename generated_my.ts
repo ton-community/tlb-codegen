@@ -652,11 +652,13 @@ export type HmLabel_hml_short = {
 	m: number;
 	n: number;
 	len: Unary;
+	s: Array<BitString>;
   };
 export type HmLabel_hml_long = {
   	kind: 'HmLabel_hml_long';
 	m: number;
 	n: number;
+	s: Array<BitString>;
   };
 export type HmLabel_hml_same = {
   	kind: 'HmLabel_hml_same';
@@ -669,20 +671,24 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
 		let n = hmLabel_hml_short_get_n(len);
+		let s: Array<BitString> = slice.loadBits(1);
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
 			len: len,
-			n: n
+			n: n,
+			s: s
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
 		let n: number = slice.loadUint(m);
+		let s: Array<BitString> = slice.loadBits(1);
 		return {
   			kind: 'HmLabel_hml_long',
 			m: m,
-			n: n
+			n: n,
+			s: s
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
@@ -703,12 +709,14 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeUnary(hmLabel.len)(builder);
+			builder.storeBits(arg);
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b10, 2);
 			builder.storeUint(hmLabel.n, hmLabel.m);
+			builder.storeBits(arg);
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_same')) {
@@ -1075,5 +1083,21 @@ export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
   				})(builder);
   			};
   		})(builder);
+  	};
+  }
+export type TupleCheck = {
+  	kind: 'TupleCheck';
+	s: Array<number>;
+  };
+export function loadTupleCheck(slice: Slice): TupleCheck {
+  	let s: Array<number> = slice.loadInt(5);
+	return {
+  		kind: 'TupleCheck',
+		s: s
+  	};
+  }
+export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeInt(arg, 5);
   	};
   }

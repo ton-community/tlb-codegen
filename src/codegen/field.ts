@@ -36,6 +36,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
   }
 
   if (field instanceof FieldNamedDef) {
+    // console.log(field)
     if (field.expr instanceof CellRefExpr) {
       slicePrefix[slicePrefix.length - 1]++;
       slicePrefix.push(0)
@@ -47,8 +48,14 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
       slicePrefix.pop();
     }
 
-    if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr) {
-      let tmpTypeName = field.expr.name;
+    if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr || field.expr instanceof MathExpr) {
+      let tmpTypeName: string;
+      if (field.expr instanceof MathExpr) {
+        tmpTypeName = ''
+      } else {
+        tmpTypeName = field.expr.name;
+      }
+
       let fieldInfo = handleCombinator(field.expr, field.name, true, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
       if (fieldInfo.loadExpr) {
         addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, constructorLoadStatements, subStructLoadProperties);
