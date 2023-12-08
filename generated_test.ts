@@ -1054,3 +1054,19 @@ export function storeMathExprAsCombArg(mathExprAsCombArg: MathExprAsCombArg): (b
 		builder.storeRef(cell1);
   	};
   }
+export type EmptyTag = {
+  	kind: 'EmptyTag';
+	a: number;
+  };
+export function loadEmptyTag(slice: Slice): EmptyTag {
+  	let a: number = slice.loadUint(32);
+	return {
+  		kind: 'EmptyTag',
+		a: a
+  	};
+  }
+export function storeEmptyTag(emptyTag: EmptyTag): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(emptyTag.a, 32);
+  	};
+  }

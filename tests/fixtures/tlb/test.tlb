@@ -63,3 +63,5 @@ a$_ {X:Type} info:int32
 a$_ x:(CombArgCellRef int12) = CombArgCellRefUser;
 
 a$_ {n:#} ref:^(BitLenArg (n + 2)) = MathExprAsCombArg (n + 2);
+
+_ a:# = EmptyTag;

@@ -16,7 +16,10 @@ export type ConstructorTag = {
 
 export function getConstructorTag(tag: string | null): ConstructorTag | null {
   if (tag == undefined) {
-    return null;
+    return {
+      bitLen: 0,
+      binary: ''
+    };
   }
   if (tag[0] == '$') {
 
