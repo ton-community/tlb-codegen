@@ -15,19 +15,25 @@ export type ConstructorTag = {
 }
 
 export function getConstructorTag(tag: string | null): ConstructorTag | null {
-  if (tag == undefined) {
+  if (tag == undefined || tag && tag.length > 1 && tag[1] == '_') {
     return {
       bitLen: 0,
       binary: ''
     };
   }
   if (tag[0] == '$') {
-
+    return {
+      bitLen: tag?.length - 1,
+      binary: '0b' + tag.slice(1)
+    }
   }
-  return {
-    bitLen: tag?.length - 1,
-    binary: '0b' + tag.slice(1)
+  if (tag[0] == '#') {
+    return {
+      bitLen: (tag?.length - 1) * 4,
+      binary: '0x' + tag.slice(1)
+    }
   }
+  throw new Error('Unknown tag' + tag);
 }
 
 export function generate(tree: Program) {
@@ -91,9 +97,9 @@ export function generate(tree: Program) {
       let structX = tStructDeclaration(tIdentifier(subStructName), subStructProperties, structTypeParametersExpr);
 
       constructorLoadStatements.push(tReturnStatement(tObjectExpression(subStructLoadProperties)));
-      if (tlbType.constructors.length > 1) {
+      if (tag.bitLen != 0 || tlbType.constructors.length > 1) {
         let conditions: Array<BinaryExpression> = []
-        if (tag.binary[tag.binary.length - 1] != '_') {
+        if (tag.bitLen != 0) {
           conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(tag.bitLen)]), '==', tIdentifier(tag.binary)))
           let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(tag.bitLen)]))]
           constructorLoadStatements = loadBitsStatement.concat(constructorLoadStatements);
@@ -112,7 +118,7 @@ export function generate(tree: Program) {
         loadStatements = loadStatements.concat(constructorLoadStatements);
       }
 
-      if (tlbType.constructors.length > 1 && tag.binary[tag.binary.length - 1] != '_') {
+      if (tag.bitLen != 0) {
         let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(tag.binary), tNumericLiteral(tag.bitLen)]))];
         subStructStoreStatements = preStoreStatement.concat(subStructStoreStatements)
       }
@@ -128,8 +134,8 @@ export function generate(tree: Program) {
 
     // loadTheType: (slice: Slice) => TheType
 
-    if (tlbType.constructors.length > 1) {
       loadStatements.push(tExpressionStatement(tIdentifier("throw new Error('')")))
+    if (tlbType.constructors.length > 1) {
       storeStatements.push(tExpressionStatement(tIdentifier("throw new Error('')")))
     }
 

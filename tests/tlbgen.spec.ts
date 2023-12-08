@@ -8,7 +8,7 @@ import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 import { BitString, Slice } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -113,10 +113,6 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(lessThan, loadLessThan, storeLessThan);
         let lessThanIncorrect: LessThan = {kind: 'LessThan', x: 77, y: 5} 
         checkThrowOnStoreLoad(lessThanIncorrect, loadLessThan, storeLessThan);
-        let sharpConstructor: SharpConstructor = {kind: 'SharpConstructor', c: 5, y: {'kind': 'FixedIntParam', y: 6} }
-        checkSameOnStoreLoad(sharpConstructor, loadSharpConstructor, storeSharpConstructor);
-        let emptyTag: EmptyTag = {kind: 'EmptyTag', a: 3}
-        checkSameOnStoreLoad(emptyTag, loadEmptyTag, storeEmptyTag);
     })
 
     test('Combinators', () => {
@@ -130,6 +126,33 @@ describe('Generating tlb code', () => {
         let mathExprAsCombArg: MathExprAsCombArg = {kind: 'MathExprAsCombArg', n: 8, ref: {kind: 'BitLenArg', x: 10, value: 1000}}
         checkSameOnStoreLoad(mathExprAsCombArg, (slice: Slice) => {return loadMathExprAsCombArg(slice, mathExprAsCombArg.n + 2)}, storeMathExprAsCombArg);
     });
+
+    test('Constructor Tags', () => {
+        let sharpConstructor: SharpConstructor = {kind: 'SharpConstructor', c: 5, y: {'kind': 'FixedIntParam', y: 6} }
+        checkSameOnStoreLoad(sharpConstructor, loadSharpConstructor, storeSharpConstructor);
+
+        let emptyTag: EmptyTag = {kind: 'EmptyTag', a: 3}
+        checkSameOnStoreLoad(emptyTag, loadEmptyTag, storeEmptyTag);
+        let emptyTagCell = beginCell();
+        storeEmptyTag(emptyTag)(emptyTagCell);
+        expect(emptyTagCell.endCell().beginParse().remainingBits == 32).toBeTruthy();
+
+        let sharpTag: SharpTag = {kind: 'SharpTag', x: 3}
+        checkSameOnStoreLoad(sharpTag, loadSharpTag, storeSharpTag);
+        let sharpTagCell = beginCell();
+        storeSharpTag(sharpTag)(sharpTagCell);
+        let sharpTagSlice = sharpTagCell.endCell().beginParse()
+        expect(sharpTagSlice.loadUint(8) == 0xf4).toBeTruthy();
+        expect(sharpTagSlice.remainingBits == 32).toBeTruthy();
+
+        let dollarTag: DollarTag = {kind: 'DollarTag', x: 3} 
+        checkSameOnStoreLoad(dollarTag, loadDollarTag, storeDollarTag);
+        let dollarTagCell = beginCell();
+        storeDollarTag(dollarTag)(dollarTagCell);
+        let dollarTagSlice = dollarTagCell.endCell().beginParse()
+        expect(dollarTagSlice.loadUint(4) == 0b1011).toBeTruthy();
+        expect(dollarTagSlice.remainingBits == 32).toBeTruthy();
+    })
 
     test('Advanced types', () => {
         expect.hasAssertions()
