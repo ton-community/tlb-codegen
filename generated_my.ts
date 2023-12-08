@@ -671,7 +671,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
 		let n = hmLabel_hml_short_get_n(len);
-		let s: Array<BitString> = slice.loadBits(1);
+		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
+  			return slice.loadBits(1);
+  		});
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
@@ -683,7 +685,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
 		let n: number = slice.loadUint(m);
-		let s: Array<BitString> = slice.loadBits(1);
+		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
+  			return slice.loadBits(1);
+  		});
 		return {
   			kind: 'HmLabel_hml_long',
 			m: m,
@@ -1094,7 +1098,9 @@ export type TupleCheck = {
 	s: Array<number>;
   };
 export function loadTupleCheck(slice: Slice): TupleCheck {
-  	let s: Array<number> = Array.from(Array(3).keys()).map(arg => slice.loadUint(5));
+  	let s: Array<number> = Array.from(Array(3).keys()).map((arg: number) => {
+  		return slice.loadInt(5);
+  	});
 	return {
   		kind: 'TupleCheck',
 		s: s

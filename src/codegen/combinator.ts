@@ -193,9 +193,12 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
   } else if (expr instanceof MathExpr) {
     if (fieldTypeName == '') {
       if (expr.op == '*') {
+        let arrayLength = convertToAST(convertToMathExpr(expr.left), constructor, true);
         let subExprInfo = handleCombinator(expr.right, fieldName, false, needArg, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
-        result.loadExpr = subExprInfo.loadExpr; simpleCycle(fieldName, tNumericLiteral(2)) //subExprInfo.loadExpr;
         let currentParam = insideStoreParameters[0]
+        if (subExprInfo.loadExpr) {
+          result.loadExpr = tFunctionCall(tMemberExpression(tFunctionCall(tMemberExpression(tIdentifier('Array'), tIdentifier('from')), [tFunctionCall(tMemberExpression(tFunctionCall(tIdentifier('Array'), [arrayLength]), tIdentifier('keys')), [])]), tIdentifier('map')), [tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), tIdentifier('number'))], [tReturnStatement(subExprInfo.loadExpr)])])
+        }
         if (currentParam && subExprInfo.typeParamExpr && subExprInfo.storeExpr) {
           result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(currentParam, tIdentifier('forEach')), [tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [subExprInfo.storeExpr])])) //subExprInfo.storeExpr;
         }
