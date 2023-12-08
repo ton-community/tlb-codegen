@@ -15,7 +15,6 @@ export function loadSimple(slice: Slice): Simple {
 		a: a,
 		b: b
   	};
-	throw new Error('');
   }
 export function storeSimple(simple: Simple): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -84,7 +83,6 @@ export function loadFixedIntParam(slice: Slice): FixedIntParam {
   		kind: 'FixedIntParam',
 		y: y
   	};
-	throw new Error('');
   }
 export function storeFixedIntParam(fixedIntParam: FixedIntParam): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -104,7 +102,6 @@ export function loadTypedField(slice: Slice): TypedField {
 		y: y,
 		c: c
   	};
-	throw new Error('');
   }
 export function storeTypedField(typedField: TypedField): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -125,7 +122,6 @@ export function loadSharpConstructor(slice: Slice): SharpConstructor {
 		y: y,
 		c: c
   	};
-	throw new Error('');
   }
 export function storeSharpConstructor(sharpConstructor: SharpConstructor): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -182,7 +178,6 @@ export function loadTypedParam(slice: Slice): TypedParam {
   		kind: 'TypedParam',
 		x: x
   	};
-	throw new Error('');
   }
 export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -244,7 +239,6 @@ export function loadBitLenArg(slice: Slice, x: number): BitLenArg {
 		x: x,
 		value: value
   	};
-	throw new Error('');
   }
 export function storeBitLenArg(bitLenArg: BitLenArg): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -261,7 +255,6 @@ export function loadBitLenArgUser(slice: Slice): BitLenArgUser {
   		kind: 'BitLenArgUser',
 		t: t
   	};
-	throw new Error('');
   }
 export function storeBitLenArgUser(bitLenArgUser: BitLenArgUser): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -280,7 +273,6 @@ export function loadExprArg(slice: Slice, arg0: number): ExprArg {
 		x: (arg0 - 2),
 		value: value
   	};
-	throw new Error('');
   }
 export function storeExprArg(exprArg: ExprArg): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -297,7 +289,6 @@ export function loadExprArgUser(slice: Slice): ExprArgUser {
   		kind: 'ExprArgUser',
 		t: t
   	};
-	throw new Error('');
   }
 export function storeExprArgUser(exprArgUser: ExprArgUser): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -314,7 +305,6 @@ export function loadComplexTypedField(slice: Slice): ComplexTypedField {
   		kind: 'ComplexTypedField',
 		a: a
   	};
-	throw new Error('');
   }
 export function storeComplexTypedField(complexTypedField: ComplexTypedField): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -332,7 +322,6 @@ export function loadCellTypedField(slice: Slice): CellTypedField {
   		kind: 'CellTypedField',
 		a: a
   	};
-	throw new Error('');
   }
 export function storeCellTypedField(cellTypedField: CellTypedField): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -374,7 +363,6 @@ export function loadCellsSimple(slice: Slice): CellsSimple {
 		d: d,
 		c: c
   	};
-	throw new Error('');
   }
 export function storeCellsSimple(cellsSimple: CellsSimple): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -416,7 +404,6 @@ export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): 
 		arg: arg,
 		x: x
   	};
-	throw new Error('');
   }
 export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -440,7 +427,6 @@ export function loadIntBitsInside(slice: Slice, arg0: number): IntBitsInside {
 		x: (arg0 / 2),
 		a: a
   	};
-	throw new Error('');
   }
 export function storeIntBitsInside(intBitsInside: IntBitsInside): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -461,7 +447,6 @@ export function loadIntBitsOutside(slice: Slice): IntBitsOutside {
   		kind: 'IntBitsOutside',
 		x: x
   	};
-	throw new Error('');
   }
 export function storeIntBitsOutside(intBitsOutside: IntBitsOutside): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -495,7 +480,6 @@ export function loadIntBitsParametrized(slice: Slice, e: number): IntBitsParamet
 		k: k,
 		tc: tc
   	};
-	throw new Error('');
   }
 export function storeIntBitsParametrized(intBitsParametrized: IntBitsParametrized): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -519,7 +503,6 @@ export function loadIntBitsParametrizedInside(slice: Slice, x: number): IntBitsP
 		x: x,
 		a: a
   	};
-	throw new Error('');
   }
 export function storeIntBitsParametrizedInside(intBitsParametrizedInside: IntBitsParametrizedInside): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -536,7 +519,6 @@ export function loadIntBitsParametrizedOutside(slice: Slice): IntBitsParametrize
   		kind: 'IntBitsParametrizedOutside',
 		x: x
   	};
-	throw new Error('');
   }
 export function storeIntBitsParametrizedOutside(intBitsParametrizedOutside: IntBitsParametrizedOutside): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -556,7 +538,6 @@ export function loadLessThan(slice: Slice): LessThan {
 		x: x,
 		y: y
   	};
-	throw new Error('');
   }
 export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -577,7 +558,6 @@ export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneCom
 		t: t,
 		x: x
   	};
-	throw new Error('');
   }
 export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -601,7 +581,6 @@ export function loadManyComb(slice: Slice): ManyComb {
   		kind: 'ManyComb',
 		y: y
   	};
-	throw new Error('');
   }
 export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -975,7 +954,6 @@ export function loadUnaryUserCheckOrder(slice: Slice): UnaryUserCheckOrder {
 		label: label,
 		l: l
   	};
-	throw new Error('');
   }
 export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrder): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -1012,7 +990,6 @@ export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X):
 		other: other,
 		body: body
   	};
-	throw new Error('');
   }
 export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -1056,7 +1033,6 @@ export function loadCombArgCellRefUser(slice: Slice): CombArgCellRefUser {
   		kind: 'CombArgCellRefUser',
 		x: x
   	};
-	throw new Error('');
   }
 export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -1080,7 +1056,6 @@ export function loadMathExprAsCombArg(slice: Slice, arg0: number): MathExprAsCom
 		n: (arg0 - 2),
 		ref: ref
   	};
-	throw new Error('');
   }
 export function storeMathExprAsCombArg(mathExprAsCombArg: MathExprAsCombArg): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -1099,7 +1074,6 @@ export function loadEmptyTag(slice: Slice): EmptyTag {
   		kind: 'EmptyTag',
 		a: a
   	};
-	throw new Error('');
   }
 export function storeEmptyTag(emptyTag: EmptyTag): (builder: Builder) => void {
   	return (builder: Builder) => {

@@ -9,7 +9,6 @@ export function loadBit(slice: Slice): Bit {
   	return {
   		kind: 'Bit'
   	};
-	throw new Error('');
   }
 export function storeBit(bit: Bit): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -29,7 +28,6 @@ export function loadSimple(slice: Slice): Simple {
 		a: a,
 		b: b
   	};
-	throw new Error('');
   }
 export function storeSimple(simple: Simple): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -98,7 +96,6 @@ export function loadY(slice: Slice): Y {
   		kind: 'Y',
 		y: y
   	};
-	throw new Error('');
   }
 export function storeY(y: Y): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -118,7 +115,6 @@ export function loadC(slice: Slice): C {
 		y: y,
 		c: c
   	};
-	throw new Error('');
   }
 export function storeC(c: C): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -139,7 +135,6 @@ export function loadD(slice: Slice): D {
 		y: y,
 		c: c
   	};
-	throw new Error('');
   }
 export function storeD(d: D): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -196,7 +191,6 @@ export function loadTheJust(slice: Slice): TheJust {
   		kind: 'TheJust',
 		x: x
   	};
-	throw new Error('');
   }
 export function storeTheJust(theJust: TheJust): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -259,7 +253,6 @@ export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (
 		first: first,
 		second: second
   	};
-	throw new Error('');
   }
 export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -274,7 +267,6 @@ export function loadUnit(slice: Slice): Unit {
   	return {
   		kind: 'Unit'
   	};
-	throw new Error('');
   }
 export function storeUnit(unit: Unit): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -293,7 +285,6 @@ export function loadExample1(slice: Slice, x: number): Example1 {
 		x: x,
 		value: value
   	};
-	throw new Error('');
   }
 export function storeExample1(example1: Example1): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -312,7 +303,6 @@ export function loadExample(slice: Slice, arg0: number): Example {
 		x: (arg0 - 2),
 		value: value
   	};
-	throw new Error('');
   }
 export function storeExample(example: Example): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -329,7 +319,6 @@ export function loadBitInteger(slice: Slice): BitInteger {
   		kind: 'BitInteger',
 		t: t
   	};
-	throw new Error('');
   }
 export function storeBitInteger(bitInteger: BitInteger): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -346,7 +335,6 @@ export function loadNFG(slice: Slice): NFG {
   		kind: 'NFG',
 		a: a
   	};
-	throw new Error('');
   }
 export function storeNFG(nFG: NFG): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -364,7 +352,6 @@ export function loadNFT(slice: Slice): NFT {
   		kind: 'NFT',
 		a: a
   	};
-	throw new Error('');
   }
 export function storeNFT(nFT: NFT): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -406,7 +393,6 @@ export function loadA(slice: Slice): A {
 		d: d,
 		c: c
   	};
-	throw new Error('');
   }
 export function storeA(a: A): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -448,7 +434,6 @@ export function loadIntEx2<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): I
 		arg: arg,
 		x: x
   	};
-	throw new Error('');
   }
 export function storeIntEx2<Arg>(intEx2: IntEx2<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -485,7 +470,6 @@ export function loadIntEx(slice: Slice, e: number): IntEx {
 		k: k,
 		tc: tc
   	};
-	throw new Error('');
   }
 export function storeIntEx(intEx: IntEx): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -511,7 +495,6 @@ export function loadIntexArg2(slice: Slice, arg0: number): IntexArg2 {
 		x: (arg0 / 2),
 		a: a
   	};
-	throw new Error('');
   }
 export function storeIntexArg2(intexArg2: IntexArg2): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -534,7 +517,6 @@ export function loadIntexArg(slice: Slice, x: number): IntexArg {
 		x: x,
 		a: a
   	};
-	throw new Error('');
   }
 export function storeIntexArg(intexArg: IntexArg): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -554,7 +536,6 @@ export function loadLessThan(slice: Slice): LessThan {
 		x: x,
 		y: y
   	};
-	throw new Error('');
   }
 export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -597,7 +578,6 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
 		l: l,
 		node: node
   	};
-	throw new Error('');
   }
 export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -1056,7 +1036,6 @@ export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneCom
 		t: t,
 		x: x
   	};
-	throw new Error('');
   }
 export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
@@ -1080,7 +1059,6 @@ export function loadManyComb(slice: Slice): ManyComb {
   		kind: 'ManyComb',
 		y: y
   	};
-	throw new Error('');
   }
 export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
   	return (builder: Builder) => {

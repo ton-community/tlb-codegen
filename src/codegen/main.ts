@@ -106,6 +106,7 @@ export function generate(tree: Program) {
 
     // loadTheType: (slice: Slice) => TheType
 
+    if (tlbType.constructors.length > 1 || tlbType.constructors.at(0)?.tag.bitLen != 0)
       loadStatements.push(tExpressionStatement(tIdentifier("throw new Error('')")))
     if (tlbType.constructors.length > 1) {
       storeStatements.push(tExpressionStatement(tIdentifier("throw new Error('')")))
