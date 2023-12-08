@@ -54,6 +54,12 @@ export type TLBParameter = {
     argName?: string,
 }
 
+
+export type TLBConstructorTag = {
+    bitLen: number,
+    binary: string
+}
+
 export type TLBConstructor = {
     parameters: Array<TLBParameter>
     variables: Array<TLBVariable>
@@ -61,6 +67,7 @@ export type TLBConstructor = {
     parametersMap: Map<string, TLBParameter>
     name: string
     declaration: Declaration
+    tag: TLBConstructorTag
 }
 
 export type TLBType = {

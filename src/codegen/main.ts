@@ -1,6 +1,6 @@
 import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr, CompareExpr, Expression as ParserExpression } from '../../src/ast/nodes'
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, GenDeclaration, toCodeArray, TypeWithParameters, ArrowFunctionExpression } from './tsgen'
-import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
+import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable, TLBConstructorTag } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
 import { constructorNodes } from '../parsing'
@@ -8,33 +8,6 @@ import { handleCombinator } from './combinator'
 import { FunctionDeclaration } from '@babel/types'
 import { handleField } from './field'
 import { getParamVarExpr, getSubStructName } from './helpers'
-
-export type ConstructorTag = {
-  bitLen: number,
-  binary: string
-}
-
-export function getConstructorTag(tag: string | null): ConstructorTag | null {
-  if (tag == undefined || tag && tag.length > 1 && tag[1] == '_') {
-    return {
-      bitLen: 0,
-      binary: ''
-    };
-  }
-  if (tag[0] == '$') {
-    return {
-      bitLen: tag?.length - 1,
-      binary: '0b' + tag.slice(1)
-    }
-  }
-  if (tag[0] == '#') {
-    return {
-      bitLen: (tag?.length - 1) * 4,
-      binary: '0x' + tag.slice(1)
-    }
-  }
-  throw new Error('Unknown tag' + tag);
-}
 
 export function generate(tree: Program) {
   let jsCodeDeclarations: GenDeclaration[] = []
@@ -73,8 +46,7 @@ export function generate(tree: Program) {
       let subStructLoadProperties: ObjectProperty[] = [tObjectProperty(tIdentifier('kind'), tStringLiteral(subStructName))]
       let subStructStoreStatements: Statement[] = []
 
-      let tag = getConstructorTag(declaration?.constructorDef.tag);
-      if (tag == undefined) {
+      if (constructor.tag == undefined) {
         return;
       }
 
@@ -97,11 +69,11 @@ export function generate(tree: Program) {
       let structX = tStructDeclaration(tIdentifier(subStructName), subStructProperties, structTypeParametersExpr);
 
       constructorLoadStatements.push(tReturnStatement(tObjectExpression(subStructLoadProperties)));
-      if (tag.bitLen != 0 || tlbType.constructors.length > 1) {
+      if (constructor.tag.bitLen != 0 || tlbType.constructors.length > 1) {
         let conditions: Array<BinaryExpression> = []
-        if (tag.bitLen != 0) {
-          conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(tag.bitLen)]), '==', tIdentifier(tag.binary)))
-          let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(tag.bitLen)]))]
+        if (constructor.tag.bitLen != 0) {
+          conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(constructor.tag.bitLen)]), '==', tIdentifier(constructor.tag.binary)))
+          let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(constructor.tag.bitLen)]))]
           constructorLoadStatements = loadBitsStatement.concat(constructorLoadStatements);
         }
         constructor.parameters.forEach(param => {
@@ -118,8 +90,8 @@ export function generate(tree: Program) {
         loadStatements = loadStatements.concat(constructorLoadStatements);
       }
 
-      if (tag.bitLen != 0) {
-        let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(tag.binary), tNumericLiteral(tag.bitLen)]))];
+      if (constructor.tag.bitLen != 0) {
+        let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(constructor.tag.binary), tNumericLiteral(constructor.tag.bitLen)]))];
         subStructStoreStatements = preStoreStatement.concat(subStructStoreStatements)
       }
       let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], subStructStoreStatements));

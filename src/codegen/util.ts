@@ -1,5 +1,5 @@
 import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr, Declaration, CompareExpr, FieldCurlyExprDef, FieldNamedDef } from "../ast/nodes";
-import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
+import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructorTag, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
 import { Identifier, Expression, BinaryExpression } from "./tsgen";
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
 import util from 'util'
@@ -327,13 +327,36 @@ export function calculateVariables(constructor: TLBConstructor) {
   });
 }
 
+
+export function getConstructorTag(tag: string | null): TLBConstructorTag {
+    if (tag == undefined || tag && tag.length > 1 && tag[1] == '_') {
+      return {
+        bitLen: 0,
+        binary: ''
+      };
+    }
+    if (tag[0] == '$') {
+      return {
+        bitLen: tag?.length - 1,
+        binary: '0b' + tag.slice(1)
+      }
+    }
+    if (tag[0] == '#') {
+      return {
+        bitLen: (tag?.length - 1) * 4,
+        binary: '0x' + tag.slice(1)
+      }
+    }
+    throw new Error('Unknown tag' + tag);
+  }
+
 export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
     declarations.forEach(declaration => {
         let tlbType: TLBType | undefined = tlbCode.types.get(declaration.combinator.name);
         if (tlbType == undefined) {
             tlbType = { name: declaration.combinator.name, constructors: [] }
         }
-        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>() });
+        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>(), tag: getConstructorTag(declaration.constructorDef.tag) });
         tlbCode.types.set(tlbType.name, tlbType);
     })
 
