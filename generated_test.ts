@@ -1033,7 +1033,6 @@ export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser):
   		})(builder);
   	};
   }
-  
 export type MathExprAsCombArg = {
   	kind: 'MathExprAsCombArg';
 	n: number;
@@ -1041,7 +1040,7 @@ export type MathExprAsCombArg = {
   };
 export function loadMathExprAsCombArg(slice: Slice, arg0: number): MathExprAsCombArg {
   	let slice1 = slice.loadRef().beginParse();
-	let ref: BitLenArg = loadBitLenArg(slice1, arg0 - 2 + 2);
+	let ref: BitLenArg = loadBitLenArg(slice1, ((arg0 - 2) + 2));
 	return {
   		kind: 'MathExprAsCombArg',
 		n: (arg0 - 2),

@@ -192,8 +192,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       ])
     }
   } else if (expr instanceof MathExpr) {
-    result.argLoadExpr = convertToAST(convertToMathExpr(expr), constructor, true);
-    result.argStoreExpr = result.argLoadExpr;
+    result.loadExpr = convertToAST(convertToMathExpr(expr), constructor, true);
+    result.storeExpr = tExpressionStatement(result.loadExpr);
   } else { // TODO: handle other cases
     throw new Error('Expression not supported: ' + expr);
   }
