@@ -1318,6 +1318,9 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 			hmLabel.s.forEach((arg: BitString) => {
   				builder.storeBits(arg);
   			});
+			if ((!(hmLabel.n <= hmLabel.m))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
@@ -1467,5 +1470,8 @@ export function loadImplicitCondition(slice: Slice): ImplicitCondition {
 export function storeImplicitCondition(implicitCondition: ImplicitCondition): (builder: Builder) => void {
   	return (builder: Builder) => {
   		builder.storeUint(implicitCondition.flags, 10);
+		if ((!(implicitCondition.flags <= 100))) {
+  			throw new Error('');
+  		};
   	};
   }

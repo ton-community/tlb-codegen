@@ -162,8 +162,19 @@ describe('Generating tlb code', () => {
     })
 
     test('Exceptions', () => {
-        let implicitCondition: ImplicitCondition = {kind: 'ImplicitCondition', flags: 200}
-        checkThrowOnStoreLoad(implicitCondition, loadImplicitCondition, storeImplicitCondition);
+        let implicitConditionIncorrect: ImplicitCondition = {kind: 'ImplicitCondition', flags: 200}
+        checkThrowOnStoreLoad(implicitConditionIncorrect, loadImplicitCondition, storeImplicitCondition);
+
+        let implicitCondition: ImplicitCondition = {kind: 'ImplicitCondition', flags: 100}
+        checkSameOnStoreLoad(implicitCondition, loadImplicitCondition, storeImplicitCondition);
+
+        let implicitConditionIncorrectCell = beginCell().storeUint(200, 10).endCell().beginParse();
+        expect(() => {
+            loadImplicitCondition(implicitConditionIncorrectCell)
+        }).toThrow(Error);
+
+        let implicitConditionCell = beginCell().storeUint(100, 10).endCell().beginParse();
+        expect(loadImplicitCondition(implicitConditionCell).flags == 100).toBeTruthy()
     })
 
     test('Hashmap', () => {

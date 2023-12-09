@@ -70,6 +70,7 @@ export function generate(tree: Program) {
 
       constructor.constraints.forEach(constraint => {
         constructorLoadStatements.push(tIfStatement(tUnaryOpExpression('!', convertToAST(constraint, constructor, true)), [tExpressionStatement(tIdentifier("throw new Error('')"))]));
+        subStructStoreStatements.push(tIfStatement(tUnaryOpExpression('!', convertToAST(constraint, constructor, true, tIdentifier(variableCombinatorName))), [tExpressionStatement(tIdentifier("throw new Error('')"))]))
       });
 
       constructorLoadStatements.push(tReturnStatement(tObjectExpression(subStructLoadProperties)));
