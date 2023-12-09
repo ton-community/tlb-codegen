@@ -23,7 +23,7 @@ export function loadTrue(slice: Slice): True {
   		kind: 'True'
   	};
   }
-export function storeTrue(true: True): (builder: Builder) => void {
+export function storeTrue(true0: True): (builder: Builder) => void {
   	return (builder: Builder) => {
   
   	};

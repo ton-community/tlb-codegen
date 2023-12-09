@@ -7,7 +7,7 @@ import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
 import { FunctionDeclaration } from '@babel/types'
 import { handleField } from './field'
-import { getParamVarExpr, getSubStructName } from './helpers'
+import { getParamVarExpr, getSubStructName, goodVariableName } from './helpers'
 
 export function generate(tree: Program) {
   let jsCodeDeclarations: GenDeclaration[] = []
@@ -22,7 +22,7 @@ export function generate(tree: Program) {
   fillConstructors(tree.declarations, tlbCode);
 
   tlbCode.types.forEach((tlbType: TLBType, combinatorName: string) => {
-    let variableCombinatorName = combinatorName.charAt(0).toLowerCase() + combinatorName.slice(1)
+    let variableCombinatorName = goodVariableName(firstLower(combinatorName), '0')
     if (combinatorName == undefined) {
       return;
     }
@@ -40,7 +40,7 @@ export function generate(tree: Program) {
       let declaration = constructor.declaration;
       let subStructName: string = getSubStructName(tlbType, constructor);
 
-      let variableSubStructName = firstLower(subStructName)
+      let variableSubStructName = goodVariableName(firstLower(subStructName), '_' + constructor.name)
 
       let subStructProperties: TypedIdentifier[] = [tTypedIdentifier(tIdentifier('kind'), tStringLiteral(subStructName))]
       let subStructLoadProperties: ObjectProperty[] = [tObjectProperty(tIdentifier('kind'), tStringLiteral(subStructName))]
@@ -129,7 +129,7 @@ export function generate(tree: Program) {
           storeFunctionParameters.push(
             tTypedIdentifier(tIdentifier('store' + element.variable.name),
               tArrowFunctionType(
-                [tTypedIdentifier(tIdentifier(firstLower(element.variable.name)), tIdentifier(element.variable.name))],
+                [tTypedIdentifier(tIdentifier(goodVariableName(firstLower(element.variable.name), '0')), tIdentifier(element.variable.name))],
                 tArrowFunctionType([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], tIdentifier('void')))))
         }
         if (element.variable.type == '#' && !element.variable.negated) {

@@ -323,10 +323,10 @@ export function loadCellTypedField(slice: Slice): CellTypedField {
 		a: a
   	};
   }
-export function storeCellTypedField(cellTypedField: CellTypedField): (builder: Builder) => void {
+export function storeCellTypedField(_cellTypedField: CellTypedField): (builder: Builder) => void {
   	return (builder: Builder) => {
   		let cell1 = beginCell();
-		storeExprArgUser(cellTypedField.a)(cell1);
+		storeExprArgUser(_cellTypedField.a)(cell1);
 		builder.storeRef(cell1);
   	};
   }
@@ -364,22 +364,22 @@ export function loadCellsSimple(slice: Slice): CellsSimple {
 		c: c
   	};
   }
-export function storeCellsSimple(cellsSimple: CellsSimple): (builder: Builder) => void {
+export function storeCellsSimple(_cellsSimple: CellsSimple): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(cellsSimple.t, 32);
+  		builder.storeUint(_cellsSimple.t, 32);
 		let cell1 = beginCell();
-		cell1.storeUint(cellsSimple.q, 32);
+		cell1.storeUint(_cellsSimple.q, 32);
 		builder.storeRef(cell1);
 		let cell2 = beginCell();
-		cell2.storeUint(cellsSimple.a, 32);
+		cell2.storeUint(_cellsSimple.a, 32);
 		let cell21 = beginCell();
-		cell21.storeUint(cellsSimple.e, 32);
+		cell21.storeUint(_cellsSimple.e, 32);
 		cell2.storeRef(cell21);
 		let cell22 = beginCell();
-		cell22.storeUint(cellsSimple.b, 32);
-		cell22.storeUint(cellsSimple.d, 32);
+		cell22.storeUint(_cellsSimple.b, 32);
+		cell22.storeUint(_cellsSimple.d, 32);
 		let cell221 = beginCell();
-		cell221.storeUint(cellsSimple.c, 32);
+		cell221.storeUint(_cellsSimple.c, 32);
 		cell22.storeRef(cell221);
 		cell2.storeRef(cell22);
 		builder.storeRef(cell2);
@@ -1529,4 +1529,17 @@ export function storeMultipleEmptyConstructor(multipleEmptyConstructor: Multiple
   		};
   	};
 	throw new Error('');
+  }
+export type True = {
+  	kind: 'True';
+  };
+export function loadTrue(slice: Slice): True {
+  	return {
+  		kind: 'True'
+  	};
+  }
+export function storeTrue(true0: True): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  
+  	};
   }

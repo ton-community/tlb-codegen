@@ -8,7 +8,7 @@ import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 import { BitString, Slice, Builder } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag, TupleCheck, loadTupleCheck, storeTupleCheck, HashmapE, loadHashmapE, storeHashmapE, HashmapEUser, loadHashmapEUser, storeHashmapEUser, ConditionalField, loadConditionalField, storeConditionalField, BitSelection, loadBitSelection, storeBitSelection, ImplicitCondition, loadImplicitCondition, storeImplicitCondition, MultipleEmptyConstructor, loadMultipleEmptyConstructor, storeMultipleEmptyConstructor } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag, TupleCheck, loadTupleCheck, storeTupleCheck, HashmapE, loadHashmapE, storeHashmapE, HashmapEUser, loadHashmapEUser, storeHashmapEUser, ConditionalField, loadConditionalField, storeConditionalField, BitSelection, loadBitSelection, storeBitSelection, ImplicitCondition, loadImplicitCondition, storeImplicitCondition, MultipleEmptyConstructor, loadMultipleEmptyConstructor, storeMultipleEmptyConstructor, True, loadTrue, storeTrue } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -125,12 +125,6 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(lessThan, loadLessThan, storeLessThan);
         let lessThanIncorrect: LessThan = {kind: 'LessThan', x: 77, y: 5} 
         checkThrowOnStoreLoad(lessThanIncorrect, loadLessThan, storeLessThan);
-        let multipleEmptyConstructor: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor__', a: 5}
-        checkSameOnStoreLoad(multipleEmptyConstructor, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 0);}, storeMultipleEmptyConstructor);
-        let multipleEmptyConstructor1: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor__1', b: 6}
-        checkSameOnStoreLoad(multipleEmptyConstructor1, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 1);}, storeMultipleEmptyConstructor);
-        let multipleEmptyConstructor2: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor_a', x: 5}
-        checkSameOnStoreLoad(multipleEmptyConstructor2, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 2);}, storeMultipleEmptyConstructor);
     })
 
     test('Combinators', () => {
@@ -144,6 +138,20 @@ describe('Generating tlb code', () => {
         let mathExprAsCombArg: MathExprAsCombArg = {kind: 'MathExprAsCombArg', n: 8, ref: {kind: 'BitLenArg', x: 10, value: 1000}}
         checkSameOnStoreLoad(mathExprAsCombArg, (slice: Slice) => {return loadMathExprAsCombArg(slice, mathExprAsCombArg.n + 2)}, storeMathExprAsCombArg);
     });
+
+    test('Naming', () => {
+        expect.hasAssertions()
+
+        let multipleEmptyConstructor: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor__', a: 5}
+        checkSameOnStoreLoad(multipleEmptyConstructor, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 0);}, storeMultipleEmptyConstructor);
+        let multipleEmptyConstructor1: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor__1', b: 6}
+        checkSameOnStoreLoad(multipleEmptyConstructor1, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 1);}, storeMultipleEmptyConstructor);
+        let multipleEmptyConstructor2: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor_a', x: 5}
+        checkSameOnStoreLoad(multipleEmptyConstructor2, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 2);}, storeMultipleEmptyConstructor);
+
+        let trueCheck: True = {kind: 'True'}
+        checkSameOnStoreLoad(trueCheck, loadTrue, storeTrue);
+    })
 
     test('Complex Expressions', () => {
         expect.hasAssertions()

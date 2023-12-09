@@ -40,6 +40,16 @@ export function isBadVarName(name: string): boolean {
   return false;
 }
 
+export function goodVariableName(name: string, possibleSuffix: string): string {
+  if (name.startsWith('slice') || name.startsWith('cell')) {
+    name = '_' + name;
+  }
+  while (isBadVarName(name)) {
+    name += possibleSuffix;
+  }
+  return name;
+}
+
 export function sliceLoad(slicePrefix: number[], currentSlice: string) {
   return tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')),
     tFunctionCall(tMemberExpression(
