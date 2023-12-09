@@ -86,3 +86,5 @@ hme_empty$0 {n:#} {X:Type} = HashmapE n X;
 hme_root$1 {n:#} {X:Type} root:^(Hashmap n X) = HashmapE n X;
 
 a$_ x:(HashmapE 8 uint16) = HashmapEUser;
+
+_ a:(## 1) b:a?(## 32) = ConditionalField;
