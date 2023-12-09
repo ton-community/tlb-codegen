@@ -98,4 +98,3 @@ _ b:(## 5) = MultipleEmptyConstructor 1;
 a$_ x:(## 6) = MultipleEmptyConstructor 2; 
 
 true$_ = True;
-//_ const:# = Const;
