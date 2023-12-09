@@ -47,9 +47,9 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
       slicePrefix.pop();
     }
 
-    if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr || field.expr instanceof MathExpr) {
+    if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr || field.expr instanceof MathExpr || field.expr instanceof CondExpr) {
       let tmpTypeName: string;
-      if (field.expr instanceof MathExpr) {
+      if (field.expr instanceof MathExpr || field.expr instanceof CondExpr) {
         tmpTypeName = ''
       } else {
         tmpTypeName = field.expr.name;

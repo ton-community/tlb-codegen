@@ -213,6 +213,10 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       result.loadExpr = convertToAST(convertToMathExpr(expr), constructor, true);
       result.storeExpr = tExpressionStatement(result.loadExpr);
     }
+  } else if (expr instanceof CondExpr) {
+    // let subExprInfo = handleCombinator(expr.condExpr, fieldName, false, needArg, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, fieldTypeName, argIndex, tlbCode, subStructLoadProperties);
+    // result.paramType = subExprInfo.paramType + ' | undefined';
+    // result.typeParamExpr = subExprInfo.typeParamExpr
   } else { // TODO: handle other cases
     throw new Error('Expression not supported: ' + expr);
   }

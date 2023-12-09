@@ -23,5 +23,5 @@ function generateCode(filename: string) {
 }
 
 generateCode('test')
-generateCode('my')
+// generateCode('my')
 // generateCode('block')

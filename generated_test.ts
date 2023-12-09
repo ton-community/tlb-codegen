@@ -1406,22 +1406,16 @@ export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder
 export type ConditionalField = {
   	kind: 'ConditionalField';
 	a: number;
-	b: number | undefined
   };
 export function loadConditionalField(slice: Slice): ConditionalField {
   	let a: number = slice.loadUint(1);
-	let b: number | undefined = a ? slice.loadUint(32) : undefined;
 	return {
   		kind: 'ConditionalField',
-		a: a,
-		b: b
+		a: a
   	};
   }
 export function storeConditionalField(conditionalField: ConditionalField): (builder: Builder) => void {
   	return (builder: Builder) => {
   		builder.storeUint(conditionalField.a, 1);
-		if (conditionalField.b != undefined) {
-			builder.storeUint(conditionalField.b, 32);
-		}
   	};
   }

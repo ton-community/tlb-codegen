@@ -560,25 +560,25 @@ export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => v
   	};
   }
 
-  export type ConditionalField = {
+export type ConditionalField = {
 	kind: 'ConditionalField';
-  a: number;
-  b: number | undefined
+	a: number;
+	b: number | undefined
 };
 export function loadConditionalField(slice: Slice): ConditionalField {
 	let a: number = slice.loadUint(1);
-  let b: number | undefined = a ? slice.loadUint(32) : undefined;
-  return {
+	let b: number | undefined = a ? slice.loadUint(32) : undefined;
+	return {
 		kind: 'ConditionalField',
-	  a: a,
-	  b: b
+		a: a,
+		b: b
 	};
 }
 export function storeConditionalField(conditionalField: ConditionalField): (builder: Builder) => void {
 	return (builder: Builder) => {
 		builder.storeUint(conditionalField.a, 1);
-	  if (conditionalField.b != undefined) {
-		  builder.storeUint(conditionalField.b, 32);
-	  }
+		if (conditionalField.b != undefined) {
+			builder.storeUint(conditionalField.b, 32);
+		}
 	};
 }
