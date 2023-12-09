@@ -67,26 +67,34 @@ export type BoolFalse = {
   	kind: 'BoolFalse';
   };
 export function loadBoolFalse(slice: Slice): BoolFalse {
-  	return {
-  		kind: 'BoolFalse'
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'BoolFalse'
+  		};
   	};
+	throw new Error('');
   }
 export function storeBoolFalse(boolFalse: BoolFalse): (builder: Builder) => void {
   	return (builder: Builder) => {
-  
+  		builder.storeUint(0b0, 1);
   	};
   }
 export type BoolTrue = {
   	kind: 'BoolTrue';
   };
 export function loadBoolTrue(slice: Slice): BoolTrue {
-  	return {
-  		kind: 'BoolTrue'
+  	if ((slice.preloadUint(1) == 0b1)) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'BoolTrue'
+  		};
   	};
+	throw new Error('');
   }
 export function storeBoolTrue(boolTrue: BoolTrue): (builder: Builder) => void {
   	return (builder: Builder) => {
-  
+  		builder.storeUint(0b1, 1);
   	};
   }
 export type Maybe<X> = Maybe_nothing<X> | Maybe_just<X>;
@@ -106,9 +114,10 @@ export function loadMaybe<X>(slice: Slice, loadX: (slice: Slice) => X): Maybe<X>
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let value: X = loadX(slice);
 		return {
   			kind: 'Maybe_just',
-			value: loadX(slice)
+			value: value
   		};
   	};
 	throw new Error('');
@@ -139,16 +148,18 @@ export type Either_right<X,Y> = {
 export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
+		let value: X = loadX(slice);
 		return {
   			kind: 'Either_left',
-			value: loadX(slice)
+			value: value
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let value: Y = loadY(slice);
 		return {
   			kind: 'Either_right',
-			value: loadY(slice)
+			value: value
   		};
   	};
 	throw new Error('');
@@ -174,10 +185,12 @@ export type Both<X,Y> = {
 	second: Y;
   };
 export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Both<X,Y> {
-  	return {
+  	let first: X = loadX(slice);
+	let second: Y = loadY(slice);
+	return {
   		kind: 'Both',
-		first: loadX(slice),
-		second: loadY(slice)
+		first: first,
+		second: second
   	};
   }
 export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
@@ -199,6 +212,21 @@ export function storeBit(bit: Bit): (builder: Builder) => void {
   
   	};
   }
+export function hashmap_get_l(label: HmLabel): number {
+  	if ((label.kind == 'HmLabel_hml_short')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_long')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_same')) {
+  		let n = label.n;
+		return n;
+  	};
+	throw new Error('');
+  }
 export type Hashmap<X> = {
   	kind: 'Hashmap';
 	n: number;
@@ -209,12 +237,15 @@ export type Hashmap<X> = {
   };
 export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
+	let l = hashmap_get_l(label);
+	let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
 	return {
   		kind: 'Hashmap',
 		m: (n - l),
 		n: n,
 		label: label,
-		node: loadHashmapNode<X>(slice, m, loadX)
+		l: l,
+		node: node
   	};
   }
 export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
@@ -234,21 +265,24 @@ export type HashmapNode_hmn_fork<X> = {
 	left: Hashmap<X>;
 	right: Hashmap<X>;
   };
-export function loadHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapNode<X> {
-  	if ((n == 0)) {
-  		return {
+export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): HashmapNode<X> {
+  	if ((arg0 == 0)) {
+  		let value: X = loadX(slice);
+		return {
   			kind: 'HashmapNode_hmn_leaf',
-			value: loadX(slice)
+			value: value
   		};
   	};
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
+		let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX);
 		let slice2 = slice.loadRef().beginParse();
+		let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX);
 		return {
   			kind: 'HashmapNode_hmn_fork',
-			n: (n + 1),
-			left: loadHashmap<X>(slice1, n, loadX),
-			right: loadHashmap<X>(slice2, n, loadX)
+			n: (arg0 - 1),
+			left: left,
+			right: right
   		};
   	};
 	throw new Error('');
@@ -287,42 +321,58 @@ export type HmLabel_hml_short = {
 	m: number;
 	n: number;
 	len: Unary;
+	s: Array<BitString>;
   };
 export type HmLabel_hml_long = {
   	kind: 'HmLabel_hml_long';
 	m: number;
+	n: number;
+	s: Array<BitString>;
   };
 export type HmLabel_hml_same = {
   	kind: 'HmLabel_hml_same';
 	m: number;
 	v: BitString;
+	n: number;
   };
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
+		let n = hmLabel_hml_short_get_n(len);
+		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
+  			return slice.loadBits(1);
+  		});
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
-			n: hmLabel_hml_short_get_n(len),
-			len: len
+			len: len,
+			n: n,
+			s: s
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
+		let n: number = slice.loadUint(m);
+		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
+  			return slice.loadBits(1);
+  		});
 		return {
   			kind: 'HmLabel_hml_long',
-			m: m
+			m: m,
+			n: n,
+			s: s
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
-		let v: BitString;
-		(v = slice.loadBits(1));
+		let v: BitString = slice.loadBits(1);
+		let n: number = slice.loadUint(m);
 		return {
   			kind: 'HmLabel_hml_same',
 			m: m,
-			v: v
+			v: v,
+			n: n
   		};
   	};
 	throw new Error('');
@@ -332,17 +382,25 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeUnary(hmLabel.len)(builder);
+			hmLabel.s.forEach((arg: BitString) => {
+  				builder.storeBits(arg);
+  			});
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b10, 2);
+			builder.storeUint(hmLabel.n, hmLabel.m);
+			hmLabel.s.forEach((arg: BitString) => {
+  				builder.storeBits(arg);
+  			});
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_same')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeBits(hmLabel.v);
+			builder.storeUint(hmLabel.n, hmLabel.m);
   		};
   	};
 	throw new Error('');
@@ -376,10 +434,11 @@ export function loadUnary(slice: Slice): Unary {
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let x: Unary = loadUnary(slice);
+		let n = unary_unary_succ_get_n(x);
 		return {
   			kind: 'Unary_unary_succ',
-			n: unary_unary_succ_get_n(x),
-			x: x
+			x: x,
+			n: n
   		};
   	};
 	throw new Error('');
@@ -419,10 +478,11 @@ export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) =
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
+		let root: Hashmap<X> = loadHashmap<X>(slice1, n, loadX);
 		return {
   			kind: 'HashmapE_hme_root',
 			n: n,
-			root: loadHashmap<X>(slice1, n, loadX)
+			root: root
   		};
   	};
 	throw new Error('');
@@ -443,11 +503,38 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
   	};
 	throw new Error('');
   }
+export type BitstringSet = {
+  	kind: 'BitstringSet';
+	n: number;
+	_: Hashmap<True>;
+  };
 export function loadBitstringSet(slice: Slice, n: number): BitstringSet {
-  
+  	let _: Hashmap<True> = loadHashmap<True>(slice, n, loadTrue);
+	return {
+  		kind: 'BitstringSet',
+		n: n,
+		_: _
+  	};
   }
 export function storeBitstringSet(bitstringSet: BitstringSet): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		storeHashmap<True>(bitstringSet._, storeTrue)(builder);
+  	};
+  }
+export function hashmapAug_get_l(label: HmLabel): number {
+  	if ((label.kind == 'HmLabel_hml_short')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_long')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_same')) {
+  		let n = label.n;
+		return n;
+  	};
+	throw new Error('');
   }
 export type HashmapAug<X,Y> = {
   	kind: 'HashmapAug';
@@ -459,12 +546,15 @@ export type HashmapAug<X,Y> = {
   };
 export function loadHashmapAug<X,Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAug<X,Y> {
   	let label: HmLabel = loadHmLabel(slice, n);
+	let l = hashmapAug_get_l(label);
+	let node: HashmapAugNode<X,Y> = loadHashmapAugNode<X,Y>(slice, (n - l), loadX, loadY);
 	return {
   		kind: 'HashmapAug',
 		m: (n - l),
 		n: n,
 		label: label,
-		node: loadHashmapAugNode<X,Y>(slice, m, loadX, loadY)
+		l: l,
+		node: node
   	};
   }
 export function storeHashmapAug<X,Y>(hashmapAug: HashmapAug<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
@@ -486,23 +576,28 @@ export type HashmapAugNode_ahmn_fork<X,Y> = {
 	right: HashmapAug<X,Y>;
 	extra: Y;
   };
-export function loadHashmapAugNode<X,Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugNode<X,Y> {
-  	if ((n == 0)) {
-  		return {
+export function loadHashmapAugNode<X,Y>(slice: Slice, arg0: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugNode<X,Y> {
+  	if ((arg0 == 0)) {
+  		let extra: Y = loadY(slice);
+		let value: X = loadX(slice);
+		return {
   			kind: 'HashmapAugNode_ahmn_leaf',
-			extra: loadY(slice),
-			value: loadX(slice)
+			extra: extra,
+			value: value
   		};
   	};
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
+		let left: HashmapAug<X,Y> = loadHashmapAug<X,Y>(slice1, (arg0 - 1), loadX, loadY);
 		let slice2 = slice.loadRef().beginParse();
+		let right: HashmapAug<X,Y> = loadHashmapAug<X,Y>(slice2, (arg0 - 1), loadX, loadY);
+		let extra: Y = loadY(slice);
 		return {
   			kind: 'HashmapAugNode_ahmn_fork',
-			n: (n + 1),
-			left: loadHashmapAug<X,Y>(slice1, n, loadX, loadY),
-			right: loadHashmapAug<X,Y>(slice2, n, loadX, loadY),
-			extra: loadY(slice)
+			n: (arg0 - 1),
+			left: left,
+			right: right,
+			extra: extra
   		};
   	};
 	throw new Error('');
@@ -542,20 +637,23 @@ export type HashmapAugE_ahme_root<X,Y> = {
 export function loadHashmapAugE<X,Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugE<X,Y> {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
+		let extra: Y = loadY(slice);
 		return {
   			kind: 'HashmapAugE_ahme_empty',
 			n: n,
-			extra: loadY(slice)
+			extra: extra
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
+		let root: HashmapAug<X,Y> = loadHashmapAug<X,Y>(slice1, n, loadX, loadY);
+		let extra: Y = loadY(slice);
 		return {
   			kind: 'HashmapAugE_ahme_root',
 			n: n,
-			root: loadHashmapAug<X,Y>(slice1, n, loadX, loadY),
-			extra: loadY(slice)
+			root: root,
+			extra: extra
   		};
   	};
 	throw new Error('');
@@ -578,6 +676,21 @@ export function storeHashmapAugE<X,Y>(hashmapAugE: HashmapAugE<X,Y>, storeX: (x:
   	};
 	throw new Error('');
   }
+export function varHashmap_get_l(label: HmLabel): number {
+  	if ((label.kind == 'HmLabel_hml_short')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_long')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_same')) {
+  		let n = label.n;
+		return n;
+  	};
+	throw new Error('');
+  }
 export type VarHashmap<X> = {
   	kind: 'VarHashmap';
 	n: number;
@@ -588,12 +701,15 @@ export type VarHashmap<X> = {
   };
 export function loadVarHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): VarHashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
+	let l = varHashmap_get_l(label);
+	let node: VarHashmapNode<X> = loadVarHashmapNode<X>(slice, (n - l), loadX);
 	return {
   		kind: 'VarHashmap',
 		m: (n - l),
 		n: n,
 		label: label,
-		node: loadVarHashmapNode<X>(slice, m, loadX)
+		l: l,
+		node: node
   	};
   }
 export function storeVarHashmap<X>(varHashmap: VarHashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
@@ -625,35 +741,40 @@ export type VarHashmapNode_vhmn_cont<X> = {
 export function loadVarHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): VarHashmapNode<X> {
   	if ((slice.preloadUint(2) == 0b00)) {
   		slice.loadUint(2);
+		let value: X = loadX(slice);
 		return {
   			kind: 'VarHashmapNode_vhmn_leaf',
 			n: n,
-			value: loadX(slice)
+			value: value
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
   		slice.loadUint(2);
 		let slice1 = slice.loadRef().beginParse();
+		let left: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX);
 		let slice2 = slice.loadRef().beginParse();
+		let right: VarHashmap<X> = loadVarHashmap<X>(slice2, (arg0 - 1), loadX);
+		let value: Maybe<X> = loadMaybe<X>(slice, loadX);
 		return {
   			kind: 'VarHashmapNode_vhmn_fork',
-			n: (n + 1),
-			left: loadVarHashmap<X>(slice1, n, loadX),
-			right: loadVarHashmap<X>(slice2, n, loadX),
-			value: loadMaybe<X>(slice, loadX)
+			n: (arg0 - 1),
+			left: left,
+			right: right,
+			value: value
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
-		let branch: BitString;
-		(branch = slice.loadBits(1));
+		let branch: BitString = slice.loadBits(1);
 		let slice1 = slice.loadRef().beginParse();
+		let child: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX);
+		let value: X = loadX(slice);
 		return {
   			kind: 'VarHashmapNode_vhmn_cont',
-			n: (n + 1),
+			n: (arg0 - 1),
 			branch: branch,
-			child: loadVarHashmap<X>(slice1, n, loadX),
-			value: loadX(slice)
+			child: child,
+			value: value
   		};
   	};
 	throw new Error('');
@@ -710,10 +831,11 @@ export function loadVarHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
+		let root: VarHashmap<X> = loadVarHashmap<X>(slice1, n, loadX);
 		return {
   			kind: 'VarHashmapE_vhme_root',
 			n: n,
-			root: loadVarHashmap<X>(slice1, n, loadX)
+			root: root
   		};
   	};
 	throw new Error('');
@@ -734,6 +856,21 @@ export function storeVarHashmapE<X>(varHashmapE: VarHashmapE<X>, storeX: (x: X) 
   	};
 	throw new Error('');
   }
+export function pfxHashmap_get_l(label: HmLabel): number {
+  	if ((label.kind == 'HmLabel_hml_short')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_long')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_same')) {
+  		let n = label.n;
+		return n;
+  	};
+	throw new Error('');
+  }
 export type PfxHashmap<X> = {
   	kind: 'PfxHashmap';
 	n: number;
@@ -744,12 +881,15 @@ export type PfxHashmap<X> = {
   };
 export function loadPfxHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): PfxHashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
+	let l = pfxHashmap_get_l(label);
+	let node: PfxHashmapNode<X> = loadPfxHashmapNode<X>(slice, (n - l), loadX);
 	return {
   		kind: 'PfxHashmap',
 		m: (n - l),
 		n: n,
 		label: label,
-		node: loadPfxHashmapNode<X>(slice, m, loadX)
+		l: l,
+		node: node
   	};
   }
 export function storePfxHashmap<X>(pfxHashmap: PfxHashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
@@ -773,21 +913,24 @@ export type PfxHashmapNode_phmn_fork<X> = {
 export function loadPfxHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): PfxHashmapNode<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
+		let value: X = loadX(slice);
 		return {
   			kind: 'PfxHashmapNode_phmn_leaf',
 			n: n,
-			value: loadX(slice)
+			value: value
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
+		let left: PfxHashmap<X> = loadPfxHashmap<X>(slice1, (arg0 - 1), loadX);
 		let slice2 = slice.loadRef().beginParse();
+		let right: PfxHashmap<X> = loadPfxHashmap<X>(slice2, (arg0 - 1), loadX);
 		return {
   			kind: 'PfxHashmapNode_phmn_fork',
-			n: (n + 1),
-			left: loadPfxHashmap<X>(slice1, n, loadX),
-			right: loadPfxHashmap<X>(slice2, n, loadX)
+			n: (arg0 - 1),
+			left: left,
+			right: right
   		};
   	};
 	throw new Error('');
@@ -833,10 +976,11 @@ export function loadPfxHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
+		let root: PfxHashmap<X> = loadPfxHashmap<X>(slice1, n, loadX);
 		return {
   			kind: 'PfxHashmapE_phme_root',
 			n: n,
-			root: loadPfxHashmap<X>(slice1, n, loadX)
+			root: root
   		};
   	};
 	throw new Error('');
@@ -875,10 +1019,8 @@ export function loadMsgAddressExt(slice: Slice): MsgAddressExt {
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
   		slice.loadUint(2);
-		let len: number;
-		(len = slice.loadUint(9));
-		let external_address: BitString;
-		(external_address = slice.loadBits(len));
+		let len: number = slice.loadUint(9);
+		let external_address: BitString = slice.loadBits(len);
 		return {
   			kind: 'MsgAddressExt_addr_extern',
 			len: len,
@@ -908,10 +1050,8 @@ export type Anycast = {
 	rewrite_pfx: BitString;
   };
 export function loadAnycast(slice: Slice): Anycast {
-  	let depth: number;
-	(depth = slice.loadUint(5));
-	let rewrite_pfx: BitString;
-	(rewrite_pfx = slice.loadBits(depth));
+  	let depth: number = slice.loadUint(5);
+	let rewrite_pfx: BitString = slice.loadBits(depth);
 	return {
   		kind: 'Anycast',
 		depth: depth,
@@ -941,28 +1081,25 @@ export type MsgAddressInt_addr_var = {
 export function loadMsgAddressInt(slice: Slice): MsgAddressInt {
   	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
-		let workchain_id: number;
-		(workchain_id = slice.loadInt(8));
-		let address: BitString;
-		(address = slice.loadBits(256));
+		let anycast: Maybe<Anycast> = loadMaybe<Anycast>(slice, loadAnycast);
+		let workchain_id: number = slice.loadInt(8);
+		let address: BitString = slice.loadBits(256);
 		return {
   			kind: 'MsgAddressInt_addr_std',
-			anycast: loadMaybe<Anycast>(slice, loadAnycast),
+			anycast: anycast,
 			workchain_id: workchain_id,
 			address: address
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
-		let addr_len: number;
-		(addr_len = slice.loadUint(9));
-		let workchain_id: number;
-		(workchain_id = slice.loadInt(32));
-		let address: BitString;
-		(address = slice.loadBits(addr_len));
+		let anycast: Maybe<Anycast> = loadMaybe<Anycast>(slice, loadAnycast);
+		let addr_len: number = slice.loadUint(9);
+		let workchain_id: number = slice.loadInt(32);
+		let address: BitString = slice.loadBits(addr_len);
 		return {
   			kind: 'MsgAddressInt_addr_var',
-			anycast: loadMaybe<Anycast>(slice, loadAnycast),
+			anycast: anycast,
 			addr_len: addr_len,
 			workchain_id: workchain_id,
 			address: address
@@ -990,12 +1127,44 @@ export function storeMsgAddressInt(msgAddressInt: MsgAddressInt): (builder: Buil
   	};
 	throw new Error('');
   }
-export type MsgAddress = ;
+export type MsgAddress = MsgAddress__ | MsgAddress__;
+export type MsgAddress__ = {
+  	kind: 'MsgAddress__';
+	_: MsgAddressInt;
+  };
+export type MsgAddress__ = {
+  	kind: 'MsgAddress__';
+	_: MsgAddressExt;
+  };
 export function loadMsgAddress(slice: Slice): MsgAddress {
-  	throw new Error('');
+  	if (true) {
+  		let _: MsgAddressInt = loadMsgAddressInt(slice);
+		return {
+  			kind: 'MsgAddress__',
+			_: _
+  		};
+  	};
+	if (true) {
+  		let _: MsgAddressExt = loadMsgAddressExt(slice);
+		return {
+  			kind: 'MsgAddress__',
+			_: _
+  		};
+  	};
+	throw new Error('');
   }
 export function storeMsgAddress(msgAddress: MsgAddress): (builder: Builder) => void {
-  	throw new Error('');
+  	if ((msgAddress.kind == 'MsgAddress__')) {
+  		return (builder: Builder) => {
+  			storeMsgAddressInt(msgAddress._)(builder);
+  		};
+  	};
+	if ((msgAddress.kind == 'MsgAddress__')) {
+  		return (builder: Builder) => {
+  			storeMsgAddressExt(msgAddress._)(builder);
+  		};
+  	};
+	throw new Error('');
   }
 export type VarUInteger = {
   	kind: 'VarUInteger';
@@ -1003,8 +1172,7 @@ export type VarUInteger = {
 	value: number;
   };
 export function loadVarUInteger(slice: Slice, n: number): VarUInteger {
-  	let value: number;
-	(value = slice.loadUint((len * 8)));
+  	let value: number = slice.loadUint((len * 8));
 	return {
   		kind: 'VarUInteger',
 		n: n,
@@ -1022,8 +1190,7 @@ export type VarInteger = {
 	value: number;
   };
 export function loadVarInteger(slice: Slice, n: number): VarInteger {
-  	let value: number;
-	(value = slice.loadInt((len * 8)));
+  	let value: number = slice.loadInt((len * 8));
 	return {
   		kind: 'VarInteger',
 		n: n,
@@ -1040,9 +1207,10 @@ export type Grams = {
 	amount: VarUInteger;
   };
 export function loadGrams(slice: Slice): Grams {
-  	return {
+  	let amount: VarUInteger = loadVarUInteger(slice, 16);
+	return {
   		kind: 'Grams',
-		amount: loadVarUInteger(slice, 16)
+		amount: amount
   	};
   }
 export function storeGrams(grams: Grams): (builder: Builder) => void {
@@ -1052,21 +1220,22 @@ export function storeGrams(grams: Grams): (builder: Builder) => void {
   }
 export type ExtraCurrencyCollection = {
   	kind: 'ExtraCurrencyCollection';
-	dict: HashmapE<number>;
+	dict: HashmapE<VarUInteger>;
   };
 export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollection {
-  	return {
+  	let dict: HashmapE<VarUInteger> = loadHashmapE<VarUInteger>(slice, 32, (slice: Slice) => {
+  		return loadVarUInteger(slice, 32);
+  	});
+	return {
   		kind: 'ExtraCurrencyCollection',
-		dict: loadHashmapE<number>(slice, 32, () => {
-  			return slice.loadUint();
-  		})
+		dict: dict
   	};
   }
 export function storeExtraCurrencyCollection(extraCurrencyCollection: ExtraCurrencyCollection): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeHashmapE<number>(extraCurrencyCollection.dict, (arg: number) => {
+  		storeHashmapE<VarUInteger>(extraCurrencyCollection.dict, (arg: VarUInteger) => {
   			return (builder: Builder) => {
-  				builder.storeUint(arg, );
+  				storeVarUInteger(arg)(builder);
   			};
   		})(builder);
   	};
@@ -1077,10 +1246,12 @@ export type CurrencyCollection = {
 	other: ExtraCurrencyCollection;
   };
 export function loadCurrencyCollection(slice: Slice): CurrencyCollection {
-  	return {
+  	let grams: Grams = loadGrams(slice);
+	let other: ExtraCurrencyCollection = loadExtraCurrencyCollection(slice);
+	return {
   		kind: 'CurrencyCollection',
-		grams: loadGrams(slice),
-		other: loadExtraCurrencyCollection(slice)
+		grams: grams,
+		other: other
   	};
   }
 export function storeCurrencyCollection(currencyCollection: CurrencyCollection): (builder: Builder) => void {
@@ -1119,43 +1290,52 @@ export type CommonMsgInfo_ext_out_msg_info = {
 export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
-		let created_lt: number;
-		(created_lt = slice.loadUint(64));
-		let created_at: number;
-		(created_at = slice.loadUint(32));
+		let ihr_disabled: Bool = loadBool(slice);
+		let bounce: Bool = loadBool(slice);
+		let bounced: Bool = loadBool(slice);
+		let src: MsgAddressInt = loadMsgAddressInt(slice);
+		let dest: MsgAddressInt = loadMsgAddressInt(slice);
+		let value: CurrencyCollection = loadCurrencyCollection(slice);
+		let ihr_fee: Grams = loadGrams(slice);
+		let fwd_fee: Grams = loadGrams(slice);
+		let created_lt: number = slice.loadUint(64);
+		let created_at: number = slice.loadUint(32);
 		return {
   			kind: 'CommonMsgInfo_int_msg_info',
-			ihr_disabled: loadBool(slice),
-			bounce: loadBool(slice),
-			bounced: loadBool(slice),
-			src: loadMsgAddressInt(slice),
-			dest: loadMsgAddressInt(slice),
-			value: loadCurrencyCollection(slice),
-			ihr_fee: loadGrams(slice),
-			fwd_fee: loadGrams(slice),
+			ihr_disabled: ihr_disabled,
+			bounce: bounce,
+			bounced: bounced,
+			src: src,
+			dest: dest,
+			value: value,
+			ihr_fee: ihr_fee,
+			fwd_fee: fwd_fee,
 			created_lt: created_lt,
 			created_at: created_at
   		};
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
+		let src: MsgAddressExt = loadMsgAddressExt(slice);
+		let dest: MsgAddressInt = loadMsgAddressInt(slice);
+		let import_fee: Grams = loadGrams(slice);
 		return {
   			kind: 'CommonMsgInfo_ext_in_msg_info',
-			src: loadMsgAddressExt(slice),
-			dest: loadMsgAddressInt(slice),
-			import_fee: loadGrams(slice)
+			src: src,
+			dest: dest,
+			import_fee: import_fee
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
-		let created_lt: number;
-		(created_lt = slice.loadUint(64));
-		let created_at: number;
-		(created_at = slice.loadUint(32));
+		let src: MsgAddressInt = loadMsgAddressInt(slice);
+		let dest: MsgAddressExt = loadMsgAddressExt(slice);
+		let created_lt: number = slice.loadUint(64);
+		let created_at: number = slice.loadUint(32);
 		return {
   			kind: 'CommonMsgInfo_ext_out_msg_info',
-			src: loadMsgAddressInt(slice),
-			dest: loadMsgAddressExt(slice),
+			src: src,
+			dest: dest,
 			created_lt: created_lt,
 			created_at: created_at
   		};
@@ -1221,34 +1401,40 @@ export type CommonMsgInfoRelaxed_ext_out_msg_info = {
 export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
-		let created_lt: number;
-		(created_lt = slice.loadUint(64));
-		let created_at: number;
-		(created_at = slice.loadUint(32));
+		let ihr_disabled: Bool = loadBool(slice);
+		let bounce: Bool = loadBool(slice);
+		let bounced: Bool = loadBool(slice);
+		let src: MsgAddress = loadMsgAddress(slice);
+		let dest: MsgAddressInt = loadMsgAddressInt(slice);
+		let value: CurrencyCollection = loadCurrencyCollection(slice);
+		let ihr_fee: Grams = loadGrams(slice);
+		let fwd_fee: Grams = loadGrams(slice);
+		let created_lt: number = slice.loadUint(64);
+		let created_at: number = slice.loadUint(32);
 		return {
   			kind: 'CommonMsgInfoRelaxed_int_msg_info',
-			ihr_disabled: loadBool(slice),
-			bounce: loadBool(slice),
-			bounced: loadBool(slice),
-			src: loadMsgAddress(slice),
-			dest: loadMsgAddressInt(slice),
-			value: loadCurrencyCollection(slice),
-			ihr_fee: loadGrams(slice),
-			fwd_fee: loadGrams(slice),
+			ihr_disabled: ihr_disabled,
+			bounce: bounce,
+			bounced: bounced,
+			src: src,
+			dest: dest,
+			value: value,
+			ihr_fee: ihr_fee,
+			fwd_fee: fwd_fee,
 			created_lt: created_lt,
 			created_at: created_at
   		};
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
-		let created_lt: number;
-		(created_lt = slice.loadUint(64));
-		let created_at: number;
-		(created_at = slice.loadUint(32));
+		let src: MsgAddress = loadMsgAddress(slice);
+		let dest: MsgAddressExt = loadMsgAddressExt(slice);
+		let created_lt: number = slice.loadUint(64);
+		let created_at: number = slice.loadUint(32);
 		return {
   			kind: 'CommonMsgInfoRelaxed_ext_out_msg_info',
-			src: loadMsgAddress(slice),
-			dest: loadMsgAddressExt(slice),
+			src: src,
+			dest: dest,
 			created_lt: created_lt,
 			created_at: created_at
   		};
@@ -1288,10 +1474,12 @@ export type TickTock = {
 	tock: Bool;
   };
 export function loadTickTock(slice: Slice): TickTock {
-  	return {
+  	let tick: Bool = loadBool(slice);
+	let tock: Bool = loadBool(slice);
+	return {
   		kind: 'TickTock',
-		tick: loadBool(slice),
-		tock: loadBool(slice)
+		tick: tick,
+		tock: tock
   	};
   }
 export function storeTickTock(tickTock: TickTock): (builder: Builder) => void {
@@ -1300,11 +1488,61 @@ export function storeTickTock(tickTock: TickTock): (builder: Builder) => void {
 		storeBool(tickTock.tock)(builder);
   	};
   }
+export type StateInit = {
+  	kind: 'StateInit';
+	split_depth: Maybe<number>;
+	special: Maybe<TickTock>;
+	code: Maybe<Slice>;
+	data: Maybe<Slice>;
+	library: HashmapE<SimpleLib>;
+  };
 export function loadStateInit(slice: Slice): StateInit {
-  
+  	let split_depth: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+  		return slice.loadUint(5);
+  	});
+	let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock);
+	let code: Maybe<Slice> = loadMaybe<Slice>(slice, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return slice1;
+  	});
+	let data: Maybe<Slice> = loadMaybe<Slice>(slice, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return slice1;
+  	});
+	let library: HashmapE<SimpleLib> = loadHashmapE<SimpleLib>(slice, 256, loadSimpleLib);
+	return {
+  		kind: 'StateInit',
+		split_depth: split_depth,
+		special: special,
+		code: code,
+		data: data,
+		library: library
+  	};
   }
 export function storeStateInit(stateInit: StateInit): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		storeMaybe<number>(stateInit.split_depth, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeUint(arg, 5);
+  			};
+  		})(builder);
+		storeMaybe<TickTock>(stateInit.special, storeTickTock)(builder);
+		storeMaybe<Slice>(stateInit.code, (arg: Slice) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				cell1.storeSlice(arg)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
+		storeMaybe<Slice>(stateInit.data, (arg: Slice) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				cell1.storeSlice(arg)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
+		storeHashmapE<SimpleLib>(stateInit.library, storeSimpleLib)(builder);
+  	};
   }
 export type SimpleLib = {
   	kind: 'SimpleLib';
@@ -1312,12 +1550,12 @@ export type SimpleLib = {
 	root: Slice;
   };
 export function loadSimpleLib(slice: Slice): SimpleLib {
-  	let slice1 = slice.loadRef().beginParse();
-	let root: Slice;
-	(root = slice1);
+  	let public: Bool = loadBool(slice);
+	let slice1 = slice.loadRef().beginParse();
+	let root: Slice = slice1;
 	return {
   		kind: 'SimpleLib',
-		public: loadBool(slice),
+		public: public,
 		root: root
   	};
   }
@@ -1332,62 +1570,111 @@ export function storeSimpleLib(simpleLib: SimpleLib): (builder: Builder) => void
 export type Message<X> = {
   	kind: 'Message';
 	info: CommonMsgInfo;
-	init: Maybe<number>;
-	body: Either<X>;
+	init: Maybe<Either<StateInit,StateInit>>;
+	body: Either<X,X>;
   };
 export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X): Message<X> {
-  	return {
+  	let info: CommonMsgInfo = loadCommonMsgInfo(slice);
+	let init: Maybe<Either<StateInit,StateInit>> = loadMaybe<Either<StateInit,StateInit>>(slice, (slice: Slice) => {
+  		return loadEither<StateInit,StateInit>(slice, loadStateInit, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadStateInit(slice1);
+  		});
+  	});
+	let body: Either<X,X> = loadEither<X,X>(slice, loadX, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return loadX(slice1);
+  	});
+	return {
   		kind: 'Message',
-		info: loadCommonMsgInfo(slice),
-		init: loadMaybe<number>(slice, () => {
-  			return slice.loadUint();
-  		}),
-		body: loadEither<X>(slice, loadX)
+		info: info,
+		init: init,
+		body: body
   	};
   }
 export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
   		storeCommonMsgInfo(message.info)(builder);
-		storeMaybe<number>(message.init, (arg: number) => {
+		storeMaybe<Either<StateInit,StateInit>>(message.init, (arg: Either<StateInit,StateInit>) => {
   			return (builder: Builder) => {
-  				builder.storeUint(arg, );
+  				storeEither<StateInit,StateInit>(arg, storeStateInit, (arg: StateInit) => {
+  					return (builder: Builder) => {
+  						let cell1 = beginCell()
+						storeStateInit(arg)(cell1)
+						builder.storeRef(cell1);
+  					};
+  				})(builder);
   			};
   		})(builder);
-		storeEither<X>(message.body, storeX)(builder);
+		storeEither<X,X>(message.body, storeX, (arg: X) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeX(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
   	};
   }
 export type MessageRelaxed<X> = {
   	kind: 'MessageRelaxed';
 	info: CommonMsgInfoRelaxed;
-	init: Maybe<number>;
-	body: Either<X>;
+	init: Maybe<Either<StateInit,StateInit>>;
+	body: Either<X,X>;
   };
 export function loadMessageRelaxed<X>(slice: Slice, loadX: (slice: Slice) => X): MessageRelaxed<X> {
-  	return {
+  	let info: CommonMsgInfoRelaxed = loadCommonMsgInfoRelaxed(slice);
+	let init: Maybe<Either<StateInit,StateInit>> = loadMaybe<Either<StateInit,StateInit>>(slice, (slice: Slice) => {
+  		return loadEither<StateInit,StateInit>(slice, loadStateInit, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadStateInit(slice1);
+  		});
+  	});
+	let body: Either<X,X> = loadEither<X,X>(slice, loadX, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return loadX(slice1);
+  	});
+	return {
   		kind: 'MessageRelaxed',
-		info: loadCommonMsgInfoRelaxed(slice),
-		init: loadMaybe<number>(slice, () => {
-  			return slice.loadUint();
-  		}),
-		body: loadEither<X>(slice, loadX)
+		info: info,
+		init: init,
+		body: body
   	};
   }
 export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
   		storeCommonMsgInfoRelaxed(messageRelaxed.info)(builder);
-		storeMaybe<number>(messageRelaxed.init, (arg: number) => {
+		storeMaybe<Either<StateInit,StateInit>>(messageRelaxed.init, (arg: Either<StateInit,StateInit>) => {
   			return (builder: Builder) => {
-  				builder.storeUint(arg, );
+  				storeEither<StateInit,StateInit>(arg, storeStateInit, (arg: StateInit) => {
+  					return (builder: Builder) => {
+  						let cell1 = beginCell()
+						storeStateInit(arg)(cell1)
+						builder.storeRef(cell1);
+  					};
+  				})(builder);
   			};
   		})(builder);
-		storeEither<X>(messageRelaxed.body, storeX)(builder);
+		storeEither<X,X>(messageRelaxed.body, storeX, (arg: X) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeX(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
   	};
   }
+export type MessageAny = {
+  	kind: 'MessageAny';
+  };
 export function loadMessageAny(slice: Slice): MessageAny {
-  
+  	return {
+  		kind: 'MessageAny'
+  	};
   }
 export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type IntermediateAddress = IntermediateAddress_interm_addr_regular | IntermediateAddress_interm_addr_simple | IntermediateAddress_interm_addr_ext;
 export type IntermediateAddress_interm_addr_regular = {
@@ -1407,8 +1694,7 @@ export type IntermediateAddress_interm_addr_ext = {
 export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
-		let use_dest_bits: number;
-		(use_dest_bits = slice.loadUint(7));
+		let use_dest_bits: number = slice.loadUint(7);
 		return {
   			kind: 'IntermediateAddress_interm_addr_regular',
 			use_dest_bits: use_dest_bits
@@ -1416,10 +1702,8 @@ export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
-		let workchain_id: number;
-		(workchain_id = slice.loadInt(8));
-		let addr_pfx: number;
-		(addr_pfx = slice.loadUint(64));
+		let workchain_id: number = slice.loadInt(8);
+		let addr_pfx: number = slice.loadUint(64);
 		return {
   			kind: 'IntermediateAddress_interm_addr_simple',
 			workchain_id: workchain_id,
@@ -1428,10 +1712,8 @@ export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
-		let workchain_id: number;
-		(workchain_id = slice.loadInt(32));
-		let addr_pfx: number;
-		(addr_pfx = slice.loadUint(64));
+		let workchain_id: number = slice.loadInt(32);
+		let addr_pfx: number = slice.loadUint(64);
 		return {
   			kind: 'IntermediateAddress_interm_addr_ext',
 			workchain_id: workchain_id,
@@ -1468,37 +1750,50 @@ export type MsgEnvelope = {
 	cur_addr: IntermediateAddress;
 	next_addr: IntermediateAddress;
 	fwd_fee_remaining: Grams;
-	msg: Message<Any>;
+	msg: Message<Slice>;
   };
 export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
-  	let slice1 = slice.loadRef().beginParse();
-	return {
-  		kind: 'MsgEnvelope',
-		cur_addr: loadIntermediateAddress(slice),
-		next_addr: loadIntermediateAddress(slice),
-		fwd_fee_remaining: loadGrams(slice),
-		msg: loadMessage<Any>(slice1, loadAny)
+  	if ((slice.preloadUint(4) == 0x4)) {
+  		slice.loadUint(4);
+		let cur_addr: IntermediateAddress = loadIntermediateAddress(slice);
+		let next_addr: IntermediateAddress = loadIntermediateAddress(slice);
+		let fwd_fee_remaining: Grams = loadGrams(slice);
+		let slice1 = slice.loadRef().beginParse();
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, slice1);
+		return {
+  			kind: 'MsgEnvelope',
+			cur_addr: cur_addr,
+			next_addr: next_addr,
+			fwd_fee_remaining: fwd_fee_remaining,
+			msg: msg
+  		};
   	};
+	throw new Error('');
   }
 export function storeMsgEnvelope(msgEnvelope: MsgEnvelope): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeIntermediateAddress(msgEnvelope.cur_addr)(builder);
+  		builder.storeUint(0x4, 4);
+		storeIntermediateAddress(msgEnvelope.cur_addr)(builder);
 		storeIntermediateAddress(msgEnvelope.next_addr)(builder);
 		storeGrams(msgEnvelope.fwd_fee_remaining)(builder);
 		let cell1 = beginCell();
-		storeMessage<Any>(msgEnvelope.msg, storeAny)(cell1);
+		storeMessage<Slice>(msgEnvelope.msg, (arg: Slice) => {
+  			return (builder: Builder) => {
+  				cell1.storeSlice(arg);
+  			};
+  		})(cell1);
 		builder.storeRef(cell1);
   	};
   }
 export type InMsg = InMsg_msg_import_ext | InMsg_msg_import_ihr | InMsg_msg_import_imm | InMsg_msg_import_fin | InMsg_msg_import_tr | InMsg_msg_discard_fin | InMsg_msg_discard_tr;
 export type InMsg_msg_import_ext = {
   	kind: 'InMsg_msg_import_ext';
-	msg: Message<Any>;
+	msg: Message<Slice>;
 	transaction: Transaction;
   };
 export type InMsg_msg_import_ihr = {
   	kind: 'InMsg_msg_import_ihr';
-	msg: Message<Any>;
+	msg: Message<Slice>;
 	transaction: Transaction;
 	ihr_fee: Grams;
 	proof_created: Slice;
@@ -1538,86 +1833,100 @@ export function loadInMsg(slice: Slice): InMsg {
   	if ((slice.preloadUint(3) == 0b000)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let transaction: Transaction = loadTransaction(slice2);
 		return {
   			kind: 'InMsg_msg_import_ext',
-			msg: loadMessage<Any>(slice1, loadAny),
-			transaction: loadTransaction(slice2)
+			msg: msg,
+			transaction: transaction
   		};
   	};
 	if ((slice.preloadUint(3) == 0b010)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let transaction: Transaction = loadTransaction(slice2);
+		let ihr_fee: Grams = loadGrams(slice);
 		let slice3 = slice.loadRef().beginParse();
-		let proof_created: Slice;
-		(proof_created = slice3);
+		let proof_created: Slice = slice3;
 		return {
   			kind: 'InMsg_msg_import_ihr',
-			msg: loadMessage<Any>(slice1, loadAny),
-			transaction: loadTransaction(slice2),
-			ihr_fee: loadGrams(slice),
+			msg: msg,
+			transaction: transaction,
+			ihr_fee: ihr_fee,
 			proof_created: proof_created
   		};
   	};
 	if ((slice.preloadUint(3) == 0b011)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let transaction: Transaction = loadTransaction(slice2);
+		let fwd_fee: Grams = loadGrams(slice);
 		return {
   			kind: 'InMsg_msg_import_imm',
-			in_msg: loadMsgEnvelope(slice1),
-			transaction: loadTransaction(slice2),
-			fwd_fee: loadGrams(slice)
+			in_msg: in_msg,
+			transaction: transaction,
+			fwd_fee: fwd_fee
   		};
   	};
 	if ((slice.preloadUint(3) == 0b100)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let transaction: Transaction = loadTransaction(slice2);
+		let fwd_fee: Grams = loadGrams(slice);
 		return {
   			kind: 'InMsg_msg_import_fin',
-			in_msg: loadMsgEnvelope(slice1),
-			transaction: loadTransaction(slice2),
-			fwd_fee: loadGrams(slice)
+			in_msg: in_msg,
+			transaction: transaction,
+			fwd_fee: fwd_fee
   		};
   	};
 	if ((slice.preloadUint(3) == 0b101)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let out_msg: MsgEnvelope = loadMsgEnvelope(slice2);
+		let transit_fee: Grams = loadGrams(slice);
 		return {
   			kind: 'InMsg_msg_import_tr',
-			in_msg: loadMsgEnvelope(slice1),
-			out_msg: loadMsgEnvelope(slice2),
-			transit_fee: loadGrams(slice)
+			in_msg: in_msg,
+			out_msg: out_msg,
+			transit_fee: transit_fee
   		};
   	};
 	if ((slice.preloadUint(3) == 0b110)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
-		let transaction_id: number;
-		(transaction_id = slice.loadUint(64));
+		let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
+		let transaction_id: number = slice.loadUint(64);
+		let fwd_fee: Grams = loadGrams(slice);
 		return {
   			kind: 'InMsg_msg_discard_fin',
-			in_msg: loadMsgEnvelope(slice1),
+			in_msg: in_msg,
 			transaction_id: transaction_id,
-			fwd_fee: loadGrams(slice)
+			fwd_fee: fwd_fee
   		};
   	};
 	if ((slice.preloadUint(3) == 0b111)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
-		let transaction_id: number;
-		(transaction_id = slice.loadUint(64));
+		let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
+		let transaction_id: number = slice.loadUint(64);
+		let fwd_fee: Grams = loadGrams(slice);
 		let slice2 = slice.loadRef().beginParse();
-		let proof_delivered: Slice;
-		(proof_delivered = slice2);
+		let proof_delivered: Slice = slice2;
 		return {
   			kind: 'InMsg_msg_discard_tr',
-			in_msg: loadMsgEnvelope(slice1),
+			in_msg: in_msg,
 			transaction_id: transaction_id,
-			fwd_fee: loadGrams(slice),
+			fwd_fee: fwd_fee,
 			proof_delivered: proof_delivered
   		};
   	};
@@ -1628,7 +1937,11 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
   		return (builder: Builder) => {
   			builder.storeUint(0b000, 3);
 			let cell1 = beginCell();
-			storeMessage<Any>(inMsg.msg, storeAny)(cell1);
+			storeMessage<Slice>(inMsg.msg, (arg: Slice) => {
+  				return (builder: Builder) => {
+  					cell1.storeSlice(arg);
+  				};
+  			})(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeTransaction(inMsg.transaction)(cell2);
@@ -1639,7 +1952,11 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
   		return (builder: Builder) => {
   			builder.storeUint(0b010, 3);
 			let cell1 = beginCell();
-			storeMessage<Any>(inMsg.msg, storeAny)(cell1);
+			storeMessage<Slice>(inMsg.msg, (arg: Slice) => {
+  				return (builder: Builder) => {
+  					cell1.storeSlice(arg);
+  				};
+  			})(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeTransaction(inMsg.transaction)(cell2);
@@ -1717,10 +2034,12 @@ export type ImportFees = {
 	value_imported: CurrencyCollection;
   };
 export function loadImportFees(slice: Slice): ImportFees {
-  	return {
+  	let fees_collected: Grams = loadGrams(slice);
+	let value_imported: CurrencyCollection = loadCurrencyCollection(slice);
+	return {
   		kind: 'ImportFees',
-		fees_collected: loadGrams(slice),
-		value_imported: loadCurrencyCollection(slice)
+		fees_collected: fees_collected,
+		value_imported: value_imported
   	};
   }
 export function storeImportFees(importFees: ImportFees): (builder: Builder) => void {
@@ -1729,16 +2048,23 @@ export function storeImportFees(importFees: ImportFees): (builder: Builder) => v
 		storeCurrencyCollection(importFees.value_imported)(builder);
   	};
   }
+export type InMsgDescr = {
+  	kind: 'InMsgDescr';
+  };
 export function loadInMsgDescr(slice: Slice): InMsgDescr {
-  
+  	return {
+  		kind: 'InMsgDescr'
+  	};
   }
 export function storeInMsgDescr(inMsgDescr: InMsgDescr): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type OutMsg = OutMsg_msg_export_ext | OutMsg_msg_export_imm | OutMsg_msg_export_new | OutMsg_msg_export_tr | OutMsg_msg_export_deq | OutMsg_msg_export_deq_short | OutMsg_msg_export_tr_req | OutMsg_msg_export_deq_imm;
 export type OutMsg_msg_export_ext = {
   	kind: 'OutMsg_msg_export_ext';
-	msg: Message<Any>;
+	msg: Message<Slice>;
 	transaction: Transaction;
   };
 export type OutMsg_msg_export_imm = {
@@ -1783,66 +2109,71 @@ export function loadOutMsg(slice: Slice): OutMsg {
   	if ((slice.preloadUint(3) == 0b000)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let transaction: Transaction = loadTransaction(slice2);
 		return {
   			kind: 'OutMsg_msg_export_ext',
-			msg: loadMessage<Any>(slice1, loadAny),
-			transaction: loadTransaction(slice2)
+			msg: msg,
+			transaction: transaction
   		};
   	};
 	if ((slice.preloadUint(3) == 0b010)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let transaction: Transaction = loadTransaction(slice2);
 		let slice3 = slice.loadRef().beginParse();
+		let reimport: InMsg = loadInMsg(slice3);
 		return {
   			kind: 'OutMsg_msg_export_imm',
-			out_msg: loadMsgEnvelope(slice1),
-			transaction: loadTransaction(slice2),
-			reimport: loadInMsg(slice3)
+			out_msg: out_msg,
+			transaction: transaction,
+			reimport: reimport
   		};
   	};
 	if ((slice.preloadUint(3) == 0b001)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let transaction: Transaction = loadTransaction(slice2);
 		return {
   			kind: 'OutMsg_msg_export_new',
-			out_msg: loadMsgEnvelope(slice1),
-			transaction: loadTransaction(slice2)
+			out_msg: out_msg,
+			transaction: transaction
   		};
   	};
 	if ((slice.preloadUint(3) == 0b011)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let imported: InMsg = loadInMsg(slice2);
 		return {
   			kind: 'OutMsg_msg_export_tr',
-			out_msg: loadMsgEnvelope(slice1),
-			imported: loadInMsg(slice2)
+			out_msg: out_msg,
+			imported: imported
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1100)) {
   		slice.loadUint(4);
 		let slice1 = slice.loadRef().beginParse();
-		let import_block_lt: number;
-		(import_block_lt = slice.loadUint(63));
+		let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
+		let import_block_lt: number = slice.loadUint(63);
 		return {
   			kind: 'OutMsg_msg_export_deq',
-			out_msg: loadMsgEnvelope(slice1),
+			out_msg: out_msg,
 			import_block_lt: import_block_lt
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1101)) {
   		slice.loadUint(4);
-		let msg_env_hash: BitString;
-		(msg_env_hash = slice.loadBits(256));
-		let next_workchain: number;
-		(next_workchain = slice.loadInt(32));
-		let next_addr_pfx: number;
-		(next_addr_pfx = slice.loadUint(64));
-		let import_block_lt: number;
-		(import_block_lt = slice.loadUint(64));
+		let msg_env_hash: BitString = slice.loadBits(256);
+		let next_workchain: number = slice.loadInt(32);
+		let next_addr_pfx: number = slice.loadUint(64);
+		let import_block_lt: number = slice.loadUint(64);
 		return {
   			kind: 'OutMsg_msg_export_deq_short',
 			msg_env_hash: msg_env_hash,
@@ -1854,21 +2185,25 @@ export function loadOutMsg(slice: Slice): OutMsg {
 	if ((slice.preloadUint(3) == 0b111)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let imported: InMsg = loadInMsg(slice2);
 		return {
   			kind: 'OutMsg_msg_export_tr_req',
-			out_msg: loadMsgEnvelope(slice1),
-			imported: loadInMsg(slice2)
+			out_msg: out_msg,
+			imported: imported
   		};
   	};
 	if ((slice.preloadUint(3) == 0b100)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
+		let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let reimport: InMsg = loadInMsg(slice2);
 		return {
   			kind: 'OutMsg_msg_export_deq_imm',
-			out_msg: loadMsgEnvelope(slice1),
-			reimport: loadInMsg(slice2)
+			out_msg: out_msg,
+			reimport: reimport
   		};
   	};
 	throw new Error('');
@@ -1878,7 +2213,11 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
   		return (builder: Builder) => {
   			builder.storeUint(0b000, 3);
 			let cell1 = beginCell();
-			storeMessage<Any>(outMsg.msg, storeAny)(cell1);
+			storeMessage<Slice>(outMsg.msg, (arg: Slice) => {
+  				return (builder: Builder) => {
+  					cell1.storeSlice(arg);
+  				};
+  			})(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeTransaction(outMsg.transaction)(cell2);
@@ -1963,23 +2302,54 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
+export type EnqueuedMsg = {
+  	kind: 'EnqueuedMsg';
+	enqueued_lt: number;
+	out_msg: MsgEnvelope;
+  };
 export function loadEnqueuedMsg(slice: Slice): EnqueuedMsg {
-  
+  	let enqueued_lt: number = slice.loadUint(64);
+	let slice1 = slice.loadRef().beginParse();
+	let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
+	return {
+  		kind: 'EnqueuedMsg',
+		enqueued_lt: enqueued_lt,
+		out_msg: out_msg
+  	};
   }
 export function storeEnqueuedMsg(enqueuedMsg: EnqueuedMsg): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		builder.storeUint(enqueuedMsg.enqueued_lt, 64);
+		let cell1 = beginCell();
+		storeMsgEnvelope(enqueuedMsg.out_msg)(cell1);
+		builder.storeRef(cell1);
+  	};
   }
+export type OutMsgDescr = {
+  	kind: 'OutMsgDescr';
+  };
 export function loadOutMsgDescr(slice: Slice): OutMsgDescr {
-  
+  	return {
+  		kind: 'OutMsgDescr'
+  	};
   }
 export function storeOutMsgDescr(outMsgDescr: OutMsgDescr): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
+export type OutMsgQueue = {
+  	kind: 'OutMsgQueue';
+  };
 export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
-  
+  	return {
+  		kind: 'OutMsgQueue'
+  	};
   }
 export function storeOutMsgQueue(outMsgQueue: OutMsgQueue): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type ProcessedUpto = {
   	kind: 'ProcessedUpto';
@@ -1987,10 +2357,8 @@ export type ProcessedUpto = {
 	last_msg_hash: BitString;
   };
 export function loadProcessedUpto(slice: Slice): ProcessedUpto {
-  	let last_msg_lt: number;
-	(last_msg_lt = slice.loadUint(64));
-	let last_msg_hash: BitString;
-	(last_msg_hash = slice.loadBits(256));
+  	let last_msg_lt: number = slice.loadUint(64);
+	let last_msg_hash: BitString = slice.loadBits(256);
 	return {
   		kind: 'ProcessedUpto',
 		last_msg_lt: last_msg_lt,
@@ -2003,19 +2371,25 @@ export function storeProcessedUpto(processedUpto: ProcessedUpto): (builder: Buil
 		builder.storeBits(processedUpto.last_msg_hash);
   	};
   }
+export type ProcessedInfo = {
+  	kind: 'ProcessedInfo';
+  };
 export function loadProcessedInfo(slice: Slice): ProcessedInfo {
-  
+  	return {
+  		kind: 'ProcessedInfo'
+  	};
   }
 export function storeProcessedInfo(processedInfo: ProcessedInfo): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type IhrPendingSince = {
   	kind: 'IhrPendingSince';
 	import_lt: number;
   };
 export function loadIhrPendingSince(slice: Slice): IhrPendingSince {
-  	let import_lt: number;
-	(import_lt = slice.loadUint(64));
+  	let import_lt: number = slice.loadUint(64);
 	return {
   		kind: 'IhrPendingSince',
 		import_lt: import_lt
@@ -2026,17 +2400,42 @@ export function storeIhrPendingSince(ihrPendingSince: IhrPendingSince): (builder
   		builder.storeUint(ihrPendingSince.import_lt, 64);
   	};
   }
+export type IhrPendingInfo = {
+  	kind: 'IhrPendingInfo';
+  };
 export function loadIhrPendingInfo(slice: Slice): IhrPendingInfo {
-  
+  	return {
+  		kind: 'IhrPendingInfo'
+  	};
   }
 export function storeIhrPendingInfo(ihrPendingInfo: IhrPendingInfo): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
+export type OutMsgQueueInfo = {
+  	kind: 'OutMsgQueueInfo';
+	out_queue: OutMsgQueue;
+	proc_info: ProcessedInfo;
+	ihr_pending: IhrPendingInfo;
+  };
 export function loadOutMsgQueueInfo(slice: Slice): OutMsgQueueInfo {
-  
+  	let out_queue: OutMsgQueue = loadOutMsgQueue(slice);
+	let proc_info: ProcessedInfo = loadProcessedInfo(slice);
+	let ihr_pending: IhrPendingInfo = loadIhrPendingInfo(slice);
+	return {
+  		kind: 'OutMsgQueueInfo',
+		out_queue: out_queue,
+		proc_info: proc_info,
+		ihr_pending: ihr_pending
+  	};
   }
 export function storeOutMsgQueueInfo(outMsgQueueInfo: OutMsgQueueInfo): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		storeOutMsgQueue(outMsgQueueInfo.out_queue)(builder);
+		storeProcessedInfo(outMsgQueueInfo.proc_info)(builder);
+		storeIhrPendingInfo(outMsgQueueInfo.ihr_pending)(builder);
+  	};
   }
 export type StorageUsed = {
   	kind: 'StorageUsed';
@@ -2045,11 +2444,14 @@ export type StorageUsed = {
 	public_cells: VarUInteger;
   };
 export function loadStorageUsed(slice: Slice): StorageUsed {
-  	return {
+  	let cells: VarUInteger = loadVarUInteger(slice, 7);
+	let bits: VarUInteger = loadVarUInteger(slice, 7);
+	let public_cells: VarUInteger = loadVarUInteger(slice, 7);
+	return {
   		kind: 'StorageUsed',
-		cells: loadVarUInteger(slice, 7),
-		bits: loadVarUInteger(slice, 7),
-		public_cells: loadVarUInteger(slice, 7)
+		cells: cells,
+		bits: bits,
+		public_cells: public_cells
   	};
   }
 export function storeStorageUsed(storageUsed: StorageUsed): (builder: Builder) => void {
@@ -2065,10 +2467,12 @@ export type StorageUsedShort = {
 	bits: VarUInteger;
   };
 export function loadStorageUsedShort(slice: Slice): StorageUsedShort {
-  	return {
+  	let cells: VarUInteger = loadVarUInteger(slice, 7);
+	let bits: VarUInteger = loadVarUInteger(slice, 7);
+	return {
   		kind: 'StorageUsedShort',
-		cells: loadVarUInteger(slice, 7),
-		bits: loadVarUInteger(slice, 7)
+		cells: cells,
+		bits: bits
   	};
   }
 export function storeStorageUsedShort(storageUsedShort: StorageUsedShort): (builder: Builder) => void {
@@ -2084,13 +2488,14 @@ export type StorageInfo = {
 	due_payment: Maybe<Grams>;
   };
 export function loadStorageInfo(slice: Slice): StorageInfo {
-  	let last_paid: number;
-	(last_paid = slice.loadUint(32));
+  	let used: StorageUsed = loadStorageUsed(slice);
+	let last_paid: number = slice.loadUint(32);
+	let due_payment: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
 	return {
   		kind: 'StorageInfo',
-		used: loadStorageUsed(slice),
+		used: used,
 		last_paid: last_paid,
-		due_payment: loadMaybe<Grams>(slice, loadGrams)
+		due_payment: due_payment
   	};
   }
 export function storeStorageInfo(storageInfo: StorageInfo): (builder: Builder) => void {
@@ -2119,11 +2524,14 @@ export function loadAccount(slice: Slice): Account {
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let addr: MsgAddressInt = loadMsgAddressInt(slice);
+		let storage_stat: StorageInfo = loadStorageInfo(slice);
+		let storage: AccountStorage = loadAccountStorage(slice);
 		return {
   			kind: 'Account_account',
-			addr: loadMsgAddressInt(slice),
-			storage_stat: loadStorageInfo(slice),
-			storage: loadAccountStorage(slice)
+			addr: addr,
+			storage_stat: storage_stat,
+			storage: storage
   		};
   	};
 	throw new Error('');
@@ -2151,13 +2559,14 @@ export type AccountStorage = {
 	state: AccountState;
   };
 export function loadAccountStorage(slice: Slice): AccountStorage {
-  	let last_trans_lt: number;
-	(last_trans_lt = slice.loadUint(64));
+  	let last_trans_lt: number = slice.loadUint(64);
+	let balance: CurrencyCollection = loadCurrencyCollection(slice);
+	let state: AccountState = loadAccountState(slice);
 	return {
   		kind: 'AccountStorage',
 		last_trans_lt: last_trans_lt,
-		balance: loadCurrencyCollection(slice),
-		state: loadAccountState(slice)
+		balance: balance,
+		state: state
   	};
   }
 export function storeAccountStorage(accountStorage: AccountStorage): (builder: Builder) => void {
@@ -2188,15 +2597,15 @@ export function loadAccountState(slice: Slice): AccountState {
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let _: StateInit = loadStateInit(slice);
 		return {
   			kind: 'AccountState_account_active',
-			_: loadStateInit(slice)
+			_: _
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
   		slice.loadUint(2);
-		let state_hash: BitString;
-		(state_hash = slice.loadBits(256));
+		let state_hash: BitString = slice.loadBits(256);
 		return {
   			kind: 'AccountState_account_frozen',
 			state_hash: state_hash
@@ -2295,13 +2704,12 @@ export type ShardAccount = {
   };
 export function loadShardAccount(slice: Slice): ShardAccount {
   	let slice1 = slice.loadRef().beginParse();
-	let last_trans_hash: BitString;
-	(last_trans_hash = slice.loadBits(256));
-	let last_trans_lt: number;
-	(last_trans_lt = slice.loadUint(64));
+	let account: Account = loadAccount(slice1);
+	let last_trans_hash: BitString = slice.loadBits(256);
+	let last_trans_lt: number = slice.loadUint(64);
 	return {
   		kind: 'ShardAccount',
-		account: loadAccount(slice1),
+		account: account,
 		last_trans_hash: last_trans_hash,
 		last_trans_lt: last_trans_lt
   	};
@@ -2321,12 +2729,12 @@ export type DepthBalanceInfo = {
 	balance: CurrencyCollection;
   };
 export function loadDepthBalanceInfo(slice: Slice): DepthBalanceInfo {
-  	let split_depth: number;
-	(split_depth = slice.loadUint(5));
+  	let split_depth: number = slice.loadUint(5);
+	let balance: CurrencyCollection = loadCurrencyCollection(slice);
 	return {
   		kind: 'DepthBalanceInfo',
 		split_depth: split_depth,
-		balance: loadCurrencyCollection(slice)
+		balance: balance
   	};
   }
 export function storeDepthBalanceInfo(depthBalanceInfo: DepthBalanceInfo): (builder: Builder) => void {
@@ -2335,11 +2743,18 @@ export function storeDepthBalanceInfo(depthBalanceInfo: DepthBalanceInfo): (buil
 		storeCurrencyCollection(depthBalanceInfo.balance)(builder);
   	};
   }
+export type ShardAccounts = {
+  	kind: 'ShardAccounts';
+  };
 export function loadShardAccounts(slice: Slice): ShardAccounts {
-  
+  	return {
+  		kind: 'ShardAccounts'
+  	};
   }
 export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type Transaction = {
   	kind: 'Transaction';
@@ -2351,48 +2766,60 @@ export type Transaction = {
 	outmsg_cnt: number;
 	orig_status: AccountStatus;
 	end_status: AccountStatus;
-	in_msg: Maybe;
-	out_msgs: HashmapE;
+	in_msg: Maybe<Message<Slice>>;
+	out_msgs: HashmapE<Message<Slice>>;
 	total_fees: CurrencyCollection;
 	state_update: HASH_UPDATE<Account>;
 	description: TransactionDescr;
   };
 export function loadTransaction(slice: Slice): Transaction {
-  	let account_addr: BitString;
-	(account_addr = slice.loadBits(256));
-	let lt: number;
-	(lt = slice.loadUint(64));
-	let prev_trans_hash: BitString;
-	(prev_trans_hash = slice.loadBits(256));
-	let prev_trans_lt: number;
-	(prev_trans_lt = slice.loadUint(64));
-	let now: number;
-	(now = slice.loadUint(32));
-	let outmsg_cnt: number;
-	(outmsg_cnt = slice.loadUint(15));
-	let slice1 = slice.loadRef().beginParse();
-	let slice2 = slice.loadRef().beginParse();
-	let slice3 = slice.loadRef().beginParse();
-	return {
-  		kind: 'Transaction',
-		account_addr: account_addr,
-		lt: lt,
-		prev_trans_hash: prev_trans_hash,
-		prev_trans_lt: prev_trans_lt,
-		now: now,
-		outmsg_cnt: outmsg_cnt,
-		orig_status: loadAccountStatus(slice),
-		end_status: loadAccountStatus(slice),
-		in_msg: loadMaybe(slice1),
-		out_msgs: loadHashmapE(slice1, 15),
-		total_fees: loadCurrencyCollection(slice),
-		state_update: loadHASH_UPDATE<Account>(slice2, loadAccount),
-		description: loadTransactionDescr(slice3)
+  	if ((slice.preloadUint(4) == 0b0111)) {
+  		slice.loadUint(4);
+		let account_addr: BitString = slice.loadBits(256);
+		let lt: number = slice.loadUint(64);
+		let prev_trans_hash: BitString = slice.loadBits(256);
+		let prev_trans_lt: number = slice.loadUint(64);
+		let now: number = slice.loadUint(32);
+		let outmsg_cnt: number = slice.loadUint(15);
+		let orig_status: AccountStatus = loadAccountStatus(slice);
+		let end_status: AccountStatus = loadAccountStatus(slice);
+		let slice1 = slice.loadRef().beginParse();
+		let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadMessage<Slice>(slice1, slice1);
+  		});
+		let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadMessage<Slice>(slice1, slice1);
+  		});
+		let total_fees: CurrencyCollection = loadCurrencyCollection(slice);
+		let slice2 = slice.loadRef().beginParse();
+		let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount);
+		let slice3 = slice.loadRef().beginParse();
+		let description: TransactionDescr = loadTransactionDescr(slice3);
+		return {
+  			kind: 'Transaction',
+			account_addr: account_addr,
+			lt: lt,
+			prev_trans_hash: prev_trans_hash,
+			prev_trans_lt: prev_trans_lt,
+			now: now,
+			outmsg_cnt: outmsg_cnt,
+			orig_status: orig_status,
+			end_status: end_status,
+			in_msg: in_msg,
+			out_msgs: out_msgs,
+			total_fees: total_fees,
+			state_update: state_update,
+			description: description
+  		};
   	};
+	throw new Error('');
   }
 export function storeTransaction(transaction: Transaction): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(transaction.account_addr);
+  		builder.storeUint(0b0111, 4);
+		builder.storeBits(transaction.account_addr);
 		builder.storeUint(transaction.lt, 64);
 		builder.storeBits(transaction.prev_trans_hash);
 		builder.storeUint(transaction.prev_trans_lt, 64);
@@ -2401,8 +2828,28 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
 		storeAccountStatus(transaction.orig_status)(builder);
 		storeAccountStatus(transaction.end_status)(builder);
 		let cell1 = beginCell();
-		storeMaybe(transaction.in_msg)(cell1);
-		storeHashmapE(transaction.out_msgs)(cell1);
+		storeMaybe<Message<Slice>>(transaction.in_msg, (arg: Message<Slice>) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeMessage<Slice>(arg, (arg: Slice) => {
+  					return (builder: Builder) => {
+  						cell1.storeSlice(arg);
+  					};
+  				})(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(cell1);
+		storeHashmapE<Message<Slice>>(transaction.out_msgs, (arg: Message<Slice>) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeMessage<Slice>(arg, (arg: Slice) => {
+  					return (builder: Builder) => {
+  						cell1.storeSlice(arg);
+  					};
+  				})(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(cell1);
 		builder.storeRef(cell1);
 		storeCurrencyCollection(transaction.total_fees)(builder);
 		let cell2 = beginCell();
@@ -2421,23 +2868,28 @@ export type MERKLE_UPDATE<X> = {
 	new: X;
   };
 export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): MERKLE_UPDATE<X> {
-  	let old_hash: BitString;
-	(old_hash = slice.loadBits(256));
-	let new_hash: BitString;
-	(new_hash = slice.loadBits(256));
-	let slice1 = slice.loadRef().beginParse();
-	let slice2 = slice.loadRef().beginParse();
-	return {
-  		kind: 'MERKLE_UPDATE',
-		old_hash: old_hash,
-		new_hash: new_hash,
-		old: loadX(slice1),
-		new: loadX(slice2)
+  	if ((slice.preloadUint(8) == 0x02)) {
+  		slice.loadUint(8);
+		let old_hash: BitString = slice.loadBits(256);
+		let new_hash: BitString = slice.loadBits(256);
+		let slice1 = slice.loadRef().beginParse();
+		let old: X = loadX(slice1);
+		let slice2 = slice.loadRef().beginParse();
+		let new: X = loadX(slice2);
+		return {
+  			kind: 'MERKLE_UPDATE',
+			old_hash: old_hash,
+			new_hash: new_hash,
+			old: old,
+			new: new
+  		};
   	};
+	throw new Error('');
   }
 export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(mERKLE_UPDATE.old_hash);
+  		builder.storeUint(0x02, 8);
+		builder.storeBits(mERKLE_UPDATE.old_hash);
 		builder.storeBits(mERKLE_UPDATE.new_hash);
 		let cell1 = beginCell();
 		storeX(mERKLE_UPDATE.old)(cell1);
@@ -2453,19 +2905,22 @@ export type HASH_UPDATE<X> = {
 	new_hash: BitString;
   };
 export function loadHASH_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): HASH_UPDATE<X> {
-  	let old_hash: BitString;
-	(old_hash = slice.loadBits(256));
-	let new_hash: BitString;
-	(new_hash = slice.loadBits(256));
-	return {
-  		kind: 'HASH_UPDATE',
-		old_hash: old_hash,
-		new_hash: new_hash
+  	if ((slice.preloadUint(8) == 0x72)) {
+  		slice.loadUint(8);
+		let old_hash: BitString = slice.loadBits(256);
+		let new_hash: BitString = slice.loadBits(256);
+		return {
+  			kind: 'HASH_UPDATE',
+			old_hash: old_hash,
+			new_hash: new_hash
+  		};
   	};
+	throw new Error('');
   }
 export function storeHASH_UPDATE<X>(hASH_UPDATE: HASH_UPDATE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(hASH_UPDATE.old_hash);
+  		builder.storeUint(0x72, 8);
+		builder.storeBits(hASH_UPDATE.old_hash);
 		builder.storeBits(hASH_UPDATE.new_hash);
   	};
   }
@@ -2476,21 +2931,25 @@ export type MERKLE_PROOF<X> = {
 	virtual_root: X;
   };
 export function loadMERKLE_PROOF<X>(slice: Slice, loadX: (slice: Slice) => X): MERKLE_PROOF<X> {
-  	let virtual_hash: BitString;
-	(virtual_hash = slice.loadBits(256));
-	let depth: number;
-	(depth = slice.loadUint(16));
-	let slice1 = slice.loadRef().beginParse();
-	return {
-  		kind: 'MERKLE_PROOF',
-		virtual_hash: virtual_hash,
-		depth: depth,
-		virtual_root: loadX(slice1)
+  	if ((slice.preloadUint(8) == 0x03)) {
+  		slice.loadUint(8);
+		let virtual_hash: BitString = slice.loadBits(256);
+		let depth: number = slice.loadUint(16);
+		let slice1 = slice.loadRef().beginParse();
+		let virtual_root: X = loadX(slice1);
+		return {
+  			kind: 'MERKLE_PROOF',
+			virtual_hash: virtual_hash,
+			depth: depth,
+			virtual_root: virtual_root
+  		};
   	};
+	throw new Error('');
   }
 export function storeMERKLE_PROOF<X>(mERKLE_PROOF: MERKLE_PROOF<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(mERKLE_PROOF.virtual_hash);
+  		builder.storeUint(0x03, 8);
+		builder.storeBits(mERKLE_PROOF.virtual_hash);
 		builder.storeUint(mERKLE_PROOF.depth, 16);
 		let cell1 = beginCell();
 		storeX(mERKLE_PROOF.virtual_root)(cell1);
@@ -2500,34 +2959,56 @@ export function storeMERKLE_PROOF<X>(mERKLE_PROOF: MERKLE_PROOF<X>, storeX: (x: 
 export type AccountBlock = {
   	kind: 'AccountBlock';
 	account_addr: BitString;
-	transactions: HashmapAug<CurrencyCollection>;
+	transactions: HashmapAug<Transaction,CurrencyCollection>;
 	state_update: HASH_UPDATE<Account>;
   };
 export function loadAccountBlock(slice: Slice): AccountBlock {
-  	let account_addr: BitString;
-	(account_addr = slice.loadBits(256));
-	let slice1 = slice.loadRef().beginParse();
-	return {
-  		kind: 'AccountBlock',
-		account_addr: account_addr,
-		transactions: loadHashmapAug<CurrencyCollection>(slice, 64, loadCurrencyCollection),
-		state_update: loadHASH_UPDATE<Account>(slice1, loadAccount)
+  	if ((slice.preloadUint(4) == 0x5)) {
+  		slice.loadUint(4);
+		let account_addr: BitString = slice.loadBits(256);
+		let transactions: HashmapAug<Transaction,CurrencyCollection> = loadHashmapAug<Transaction,CurrencyCollection>(slice, 64, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadTransaction(slice1);
+  		}, loadCurrencyCollection);
+		let slice1 = slice.loadRef().beginParse();
+		let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice1, loadAccount);
+		return {
+  			kind: 'AccountBlock',
+			account_addr: account_addr,
+			transactions: transactions,
+			state_update: state_update
+  		};
   	};
+	throw new Error('');
   }
 export function storeAccountBlock(accountBlock: AccountBlock): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(accountBlock.account_addr);
-		storeHashmapAug<CurrencyCollection>(accountBlock.transactions, storeCurrencyCollection)(builder);
+  		builder.storeUint(0x5, 4);
+		builder.storeBits(accountBlock.account_addr);
+		storeHashmapAug<Transaction,CurrencyCollection>(accountBlock.transactions, (arg: Transaction) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeTransaction(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		}, storeCurrencyCollection)(builder);
 		let cell1 = beginCell();
 		storeHASH_UPDATE<Account>(accountBlock.state_update, storeAccount)(cell1);
 		builder.storeRef(cell1);
   	};
   }
+export type ShardAccountBlocks = {
+  	kind: 'ShardAccountBlocks';
+  };
 export function loadShardAccountBlocks(slice: Slice): ShardAccountBlocks {
-  
+  	return {
+  		kind: 'ShardAccountBlocks'
+  	};
   }
 export function storeShardAccountBlocks(shardAccountBlocks: ShardAccountBlocks): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type TrStoragePhase = {
   	kind: 'TrStoragePhase';
@@ -2536,11 +3017,14 @@ export type TrStoragePhase = {
 	status_change: AccStatusChange;
   };
 export function loadTrStoragePhase(slice: Slice): TrStoragePhase {
-  	return {
+  	let storage_fees_collected: Grams = loadGrams(slice);
+	let storage_fees_due: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
+	let status_change: AccStatusChange = loadAccStatusChange(slice);
+	return {
   		kind: 'TrStoragePhase',
-		storage_fees_collected: loadGrams(slice),
-		storage_fees_due: loadMaybe<Grams>(slice, loadGrams),
-		status_change: loadAccStatusChange(slice)
+		storage_fees_collected: storage_fees_collected,
+		storage_fees_due: storage_fees_due,
+		status_change: status_change
   	};
   }
 export function storeTrStoragePhase(trStoragePhase: TrStoragePhase): (builder: Builder) => void {
@@ -2605,10 +3089,12 @@ export type TrCreditPhase = {
 	credit: CurrencyCollection;
   };
 export function loadTrCreditPhase(slice: Slice): TrCreditPhase {
-  	return {
+  	let due_fees_collected: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
+	let credit: CurrencyCollection = loadCurrencyCollection(slice);
+	return {
   		kind: 'TrCreditPhase',
-		due_fees_collected: loadMaybe<Grams>(slice, loadGrams),
-		credit: loadCurrencyCollection(slice)
+		due_fees_collected: due_fees_collected,
+		credit: credit
   	};
   }
 export function storeTrCreditPhase(trCreditPhase: TrCreditPhase): (builder: Builder) => void {
@@ -2630,10 +3116,10 @@ export type TrComputePhase_tr_phase_compute_vm = {
 	gas_fees: Grams;
 	gas_used: VarUInteger;
 	gas_limit: VarUInteger;
-	gas_credit: Maybe<number>;
+	gas_credit: Maybe<VarUInteger>;
 	mode: number;
 	exit_code: number;
-	exit_arg: Maybe<int32>;
+	exit_arg: Maybe<number>;
 	vm_steps: number;
 	vm_init_state_hash: BitString;
 	vm_final_state_hash: BitString;
@@ -2641,38 +3127,44 @@ export type TrComputePhase_tr_phase_compute_vm = {
 export function loadTrComputePhase(slice: Slice): TrComputePhase {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
+		let reason: ComputeSkipReason = loadComputeSkipReason(slice);
 		return {
   			kind: 'TrComputePhase_tr_phase_compute_skipped',
-			reason: loadComputeSkipReason(slice)
+			reason: reason
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let success: Bool = loadBool(slice);
+		let msg_state_used: Bool = loadBool(slice);
+		let account_activated: Bool = loadBool(slice);
+		let gas_fees: Grams = loadGrams(slice);
 		let slice1 = slice.loadRef().beginParse();
-		let mode: number;
-		(mode = slice1.loadInt(8));
-		let exit_code: number;
-		(exit_code = slice1.loadInt(32));
-		let vm_steps: number;
-		(vm_steps = slice1.loadUint(32));
-		let vm_init_state_hash: BitString;
-		(vm_init_state_hash = slice1.loadBits(256));
-		let vm_final_state_hash: BitString;
-		(vm_final_state_hash = slice1.loadBits(256));
+		let gas_used: VarUInteger = loadVarUInteger(slice1, 7);
+		let gas_limit: VarUInteger = loadVarUInteger(slice1, 7);
+		let gas_credit: Maybe<VarUInteger> = loadMaybe<VarUInteger>(slice1, (slice: Slice) => {
+  			return loadVarUInteger(slice, 3);
+  		});
+		let mode: number = slice1.loadInt(8);
+		let exit_code: number = slice1.loadInt(32);
+		let exit_arg: Maybe<number> = loadMaybe<number>(slice1, (slice: Slice) => {
+  			return slice1.loadInt(32);
+  		});
+		let vm_steps: number = slice1.loadUint(32);
+		let vm_init_state_hash: BitString = slice1.loadBits(256);
+		let vm_final_state_hash: BitString = slice1.loadBits(256);
 		return {
   			kind: 'TrComputePhase_tr_phase_compute_vm',
-			success: loadBool(slice),
-			msg_state_used: loadBool(slice),
-			account_activated: loadBool(slice),
-			gas_fees: loadGrams(slice),
-			gas_used: loadVarUInteger(slice1, 7),
-			gas_limit: loadVarUInteger(slice1, 7),
-			gas_credit: loadMaybe<number>(slice1, () => {
-  				return slice1.loadUint();
-  			}),
+			success: success,
+			msg_state_used: msg_state_used,
+			account_activated: account_activated,
+			gas_fees: gas_fees,
+			gas_used: gas_used,
+			gas_limit: gas_limit,
+			gas_credit: gas_credit,
 			mode: mode,
 			exit_code: exit_code,
-			exit_arg: loadMaybe<int32>(slice1, loadint32),
+			exit_arg: exit_arg,
 			vm_steps: vm_steps,
 			vm_init_state_hash: vm_init_state_hash,
 			vm_final_state_hash: vm_final_state_hash
@@ -2697,14 +3189,18 @@ export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: B
 			let cell1 = beginCell();
 			storeVarUInteger(trComputePhase.gas_used)(cell1);
 			storeVarUInteger(trComputePhase.gas_limit)(cell1);
-			storeMaybe<number>(trComputePhase.gas_credit, (arg: number) => {
+			storeMaybe<VarUInteger>(trComputePhase.gas_credit, (arg: VarUInteger) => {
   				return (builder: Builder) => {
-  					builder.storeUint(arg, );
+  					storeVarUInteger(arg)(builder);
   				};
   			})(cell1);
 			cell1.storeInt(trComputePhase.mode, 8);
 			cell1.storeInt(trComputePhase.exit_code, 32);
-			storeMaybe<int32>(trComputePhase.exit_arg, storeint32)(cell1);
+			storeMaybe<number>(trComputePhase.exit_arg, (arg: number) => {
+  				return (builder: Builder) => {
+  					cell1.storeInt(arg, 32);
+  				};
+  			})(cell1);
 			cell1.storeUint(trComputePhase.vm_steps, 32);
 			cell1.storeBits(trComputePhase.vm_init_state_hash);
 			cell1.storeBits(trComputePhase.vm_final_state_hash);
@@ -2771,7 +3267,7 @@ export type TrActionPhase = {
 	total_fwd_fees: Maybe<Grams>;
 	total_action_fees: Maybe<Grams>;
 	result_code: number;
-	result_arg: Maybe<int32>;
+	result_arg: Maybe<number>;
 	tot_actions: number;
 	spec_actions: number;
 	skipped_actions: number;
@@ -2780,34 +3276,38 @@ export type TrActionPhase = {
 	tot_msg_size: StorageUsedShort;
   };
 export function loadTrActionPhase(slice: Slice): TrActionPhase {
-  	let result_code: number;
-	(result_code = slice.loadInt(32));
-	let tot_actions: number;
-	(tot_actions = slice.loadUint(16));
-	let spec_actions: number;
-	(spec_actions = slice.loadUint(16));
-	let skipped_actions: number;
-	(skipped_actions = slice.loadUint(16));
-	let msgs_created: number;
-	(msgs_created = slice.loadUint(16));
-	let action_list_hash: BitString;
-	(action_list_hash = slice.loadBits(256));
+  	let success: Bool = loadBool(slice);
+	let valid: Bool = loadBool(slice);
+	let no_funds: Bool = loadBool(slice);
+	let status_change: AccStatusChange = loadAccStatusChange(slice);
+	let total_fwd_fees: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
+	let total_action_fees: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
+	let result_code: number = slice.loadInt(32);
+	let result_arg: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+  		return slice.loadInt(32);
+  	});
+	let tot_actions: number = slice.loadUint(16);
+	let spec_actions: number = slice.loadUint(16);
+	let skipped_actions: number = slice.loadUint(16);
+	let msgs_created: number = slice.loadUint(16);
+	let action_list_hash: BitString = slice.loadBits(256);
+	let tot_msg_size: StorageUsedShort = loadStorageUsedShort(slice);
 	return {
   		kind: 'TrActionPhase',
-		success: loadBool(slice),
-		valid: loadBool(slice),
-		no_funds: loadBool(slice),
-		status_change: loadAccStatusChange(slice),
-		total_fwd_fees: loadMaybe<Grams>(slice, loadGrams),
-		total_action_fees: loadMaybe<Grams>(slice, loadGrams),
+		success: success,
+		valid: valid,
+		no_funds: no_funds,
+		status_change: status_change,
+		total_fwd_fees: total_fwd_fees,
+		total_action_fees: total_action_fees,
 		result_code: result_code,
-		result_arg: loadMaybe<int32>(slice, loadint32),
+		result_arg: result_arg,
 		tot_actions: tot_actions,
 		spec_actions: spec_actions,
 		skipped_actions: skipped_actions,
 		msgs_created: msgs_created,
 		action_list_hash: action_list_hash,
-		tot_msg_size: loadStorageUsedShort(slice)
+		tot_msg_size: tot_msg_size
   	};
   }
 export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Builder) => void {
@@ -2819,7 +3319,11 @@ export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Buil
 		storeMaybe<Grams>(trActionPhase.total_fwd_fees, storeGrams)(builder);
 		storeMaybe<Grams>(trActionPhase.total_action_fees, storeGrams)(builder);
 		builder.storeInt(trActionPhase.result_code, 32);
-		storeMaybe<int32>(trActionPhase.result_arg, storeint32)(builder);
+		storeMaybe<number>(trActionPhase.result_arg, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeInt(arg, 32);
+  			};
+  		})(builder);
 		builder.storeUint(trActionPhase.tot_actions, 16);
 		builder.storeUint(trActionPhase.spec_actions, 16);
 		builder.storeUint(trActionPhase.skipped_actions, 16);
@@ -2852,19 +3356,24 @@ export function loadTrBouncePhase(slice: Slice): TrBouncePhase {
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
   		slice.loadUint(2);
+		let msg_size: StorageUsedShort = loadStorageUsedShort(slice);
+		let req_fwd_fees: Grams = loadGrams(slice);
 		return {
   			kind: 'TrBouncePhase_tr_phase_bounce_nofunds',
-			msg_size: loadStorageUsedShort(slice),
-			req_fwd_fees: loadGrams(slice)
+			msg_size: msg_size,
+			req_fwd_fees: req_fwd_fees
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let msg_size: StorageUsedShort = loadStorageUsedShort(slice);
+		let msg_fees: Grams = loadGrams(slice);
+		let fwd_fees: Grams = loadGrams(slice);
 		return {
   			kind: 'TrBouncePhase_tr_phase_bounce_ok',
-			msg_size: loadStorageUsedShort(slice),
-			msg_fees: loadGrams(slice),
-			fwd_fees: loadGrams(slice)
+			msg_size: msg_size,
+			msg_fees: msg_fees,
+			fwd_fees: fwd_fees
   		};
   	};
 	throw new Error('');
@@ -2899,7 +3408,7 @@ export type TransactionDescr_trans_ord = {
 	storage_ph: Maybe<TrStoragePhase>;
 	credit_ph: Maybe<TrCreditPhase>;
 	compute_ph: TrComputePhase;
-	action: Maybe;
+	action: Maybe<TrActionPhase>;
 	aborted: Bool;
 	bounce: Maybe<TrBouncePhase>;
 	destroyed: Bool;
@@ -2913,7 +3422,7 @@ export type TransactionDescr_trans_tick_tock = {
 	is_tock: Bool;
 	storage_ph: TrStoragePhase;
 	compute_ph: TrComputePhase;
-	action: Maybe;
+	action: Maybe<TrActionPhase>;
 	aborted: Bool;
 	destroyed: Bool;
   };
@@ -2922,7 +3431,7 @@ export type TransactionDescr_trans_split_prepare = {
 	split_info: SplitMergeInfo;
 	storage_ph: Maybe<TrStoragePhase>;
 	compute_ph: TrComputePhase;
-	action: Maybe;
+	action: Maybe<TrActionPhase>;
 	aborted: Bool;
 	destroyed: Bool;
   };
@@ -2945,88 +3454,135 @@ export type TransactionDescr_trans_merge_install = {
 	storage_ph: Maybe<TrStoragePhase>;
 	credit_ph: Maybe<TrCreditPhase>;
 	compute_ph: TrComputePhase;
-	action: Maybe;
+	action: Maybe<TrActionPhase>;
 	aborted: Bool;
 	destroyed: Bool;
   };
 export function loadTransactionDescr(slice: Slice): TransactionDescr {
   	if ((slice.preloadUint(4) == 0b0000)) {
   		slice.loadUint(4);
+		let credit_first: Bool = loadBool(slice);
+		let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
+		let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
+		let compute_ph: TrComputePhase = loadTrComputePhase(slice);
+		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadTrActionPhase(slice1);
+  		});
+		let aborted: Bool = loadBool(slice);
+		let bounce: Maybe<TrBouncePhase> = loadMaybe<TrBouncePhase>(slice, loadTrBouncePhase);
+		let destroyed: Bool = loadBool(slice);
 		return {
   			kind: 'TransactionDescr_trans_ord',
-			credit_first: loadBool(slice),
-			storage_ph: loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase),
-			credit_ph: loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase),
-			compute_ph: loadTrComputePhase(slice),
-			action: loadMaybe(slice),
-			aborted: loadBool(slice),
-			bounce: loadMaybe<TrBouncePhase>(slice, loadTrBouncePhase),
-			destroyed: loadBool(slice)
+			credit_first: credit_first,
+			storage_ph: storage_ph,
+			credit_ph: credit_ph,
+			compute_ph: compute_ph,
+			action: action,
+			aborted: aborted,
+			bounce: bounce,
+			destroyed: destroyed
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0001)) {
   		slice.loadUint(4);
+		let storage_ph: TrStoragePhase = loadTrStoragePhase(slice);
 		return {
   			kind: 'TransactionDescr_trans_storage',
-			storage_ph: loadTrStoragePhase(slice)
+			storage_ph: storage_ph
   		};
   	};
 	if ((slice.preloadUint(3) == 0b001)) {
   		slice.loadUint(3);
+		let is_tock: Bool = loadBool(slice);
+		let storage_ph: TrStoragePhase = loadTrStoragePhase(slice);
+		let compute_ph: TrComputePhase = loadTrComputePhase(slice);
+		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadTrActionPhase(slice1);
+  		});
+		let aborted: Bool = loadBool(slice);
+		let destroyed: Bool = loadBool(slice);
 		return {
   			kind: 'TransactionDescr_trans_tick_tock',
-			is_tock: loadBool(slice),
-			storage_ph: loadTrStoragePhase(slice),
-			compute_ph: loadTrComputePhase(slice),
-			action: loadMaybe(slice),
-			aborted: loadBool(slice),
-			destroyed: loadBool(slice)
+			is_tock: is_tock,
+			storage_ph: storage_ph,
+			compute_ph: compute_ph,
+			action: action,
+			aborted: aborted,
+			destroyed: destroyed
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0100)) {
   		slice.loadUint(4);
+		let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
+		let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
+		let compute_ph: TrComputePhase = loadTrComputePhase(slice);
+		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadTrActionPhase(slice1);
+  		});
+		let aborted: Bool = loadBool(slice);
+		let destroyed: Bool = loadBool(slice);
 		return {
   			kind: 'TransactionDescr_trans_split_prepare',
-			split_info: loadSplitMergeInfo(slice),
-			storage_ph: loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase),
-			compute_ph: loadTrComputePhase(slice),
-			action: loadMaybe(slice),
-			aborted: loadBool(slice),
-			destroyed: loadBool(slice)
+			split_info: split_info,
+			storage_ph: storage_ph,
+			compute_ph: compute_ph,
+			action: action,
+			aborted: aborted,
+			destroyed: destroyed
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0101)) {
   		slice.loadUint(4);
+		let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
 		let slice1 = slice.loadRef().beginParse();
+		let prepare_transaction: Transaction = loadTransaction(slice1);
+		let installed: Bool = loadBool(slice);
 		return {
   			kind: 'TransactionDescr_trans_split_install',
-			split_info: loadSplitMergeInfo(slice),
-			prepare_transaction: loadTransaction(slice1),
-			installed: loadBool(slice)
+			split_info: split_info,
+			prepare_transaction: prepare_transaction,
+			installed: installed
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0110)) {
   		slice.loadUint(4);
+		let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
+		let storage_ph: TrStoragePhase = loadTrStoragePhase(slice);
+		let aborted: Bool = loadBool(slice);
 		return {
   			kind: 'TransactionDescr_trans_merge_prepare',
-			split_info: loadSplitMergeInfo(slice),
-			storage_ph: loadTrStoragePhase(slice),
-			aborted: loadBool(slice)
+			split_info: split_info,
+			storage_ph: storage_ph,
+			aborted: aborted
   		};
   	};
 	if ((slice.preloadUint(4) == 0b0111)) {
   		slice.loadUint(4);
+		let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
 		let slice1 = slice.loadRef().beginParse();
+		let prepare_transaction: Transaction = loadTransaction(slice1);
+		let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
+		let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
+		let compute_ph: TrComputePhase = loadTrComputePhase(slice);
+		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadTrActionPhase(slice1);
+  		});
+		let aborted: Bool = loadBool(slice);
+		let destroyed: Bool = loadBool(slice);
 		return {
   			kind: 'TransactionDescr_trans_merge_install',
-			split_info: loadSplitMergeInfo(slice),
-			prepare_transaction: loadTransaction(slice1),
-			storage_ph: loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase),
-			credit_ph: loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase),
-			compute_ph: loadTrComputePhase(slice),
-			action: loadMaybe(slice),
-			aborted: loadBool(slice),
-			destroyed: loadBool(slice)
+			split_info: split_info,
+			prepare_transaction: prepare_transaction,
+			storage_ph: storage_ph,
+			credit_ph: credit_ph,
+			compute_ph: compute_ph,
+			action: action,
+			aborted: aborted,
+			destroyed: destroyed
   		};
   	};
 	throw new Error('');
@@ -3039,7 +3595,13 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
 			storeMaybe<TrStoragePhase>(transactionDescr.storage_ph, storeTrStoragePhase)(builder);
 			storeMaybe<TrCreditPhase>(transactionDescr.credit_ph, storeTrCreditPhase)(builder);
 			storeTrComputePhase(transactionDescr.compute_ph)(builder);
-			storeMaybe(transactionDescr.action)(builder);
+			storeMaybe<TrActionPhase>(transactionDescr.action, (arg: TrActionPhase) => {
+  				return (builder: Builder) => {
+  					let cell1 = beginCell()
+					storeTrActionPhase(arg)(cell1)
+					builder.storeRef(cell1);
+  				};
+  			})(builder);
 			storeBool(transactionDescr.aborted)(builder);
 			storeMaybe<TrBouncePhase>(transactionDescr.bounce, storeTrBouncePhase)(builder);
 			storeBool(transactionDescr.destroyed)(builder);
@@ -3057,7 +3619,13 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
 			storeBool(transactionDescr.is_tock)(builder);
 			storeTrStoragePhase(transactionDescr.storage_ph)(builder);
 			storeTrComputePhase(transactionDescr.compute_ph)(builder);
-			storeMaybe(transactionDescr.action)(builder);
+			storeMaybe<TrActionPhase>(transactionDescr.action, (arg: TrActionPhase) => {
+  				return (builder: Builder) => {
+  					let cell1 = beginCell()
+					storeTrActionPhase(arg)(cell1)
+					builder.storeRef(cell1);
+  				};
+  			})(builder);
 			storeBool(transactionDescr.aborted)(builder);
 			storeBool(transactionDescr.destroyed)(builder);
   		};
@@ -3068,7 +3636,13 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
 			storeSplitMergeInfo(transactionDescr.split_info)(builder);
 			storeMaybe<TrStoragePhase>(transactionDescr.storage_ph, storeTrStoragePhase)(builder);
 			storeTrComputePhase(transactionDescr.compute_ph)(builder);
-			storeMaybe(transactionDescr.action)(builder);
+			storeMaybe<TrActionPhase>(transactionDescr.action, (arg: TrActionPhase) => {
+  				return (builder: Builder) => {
+  					let cell1 = beginCell()
+					storeTrActionPhase(arg)(cell1)
+					builder.storeRef(cell1);
+  				};
+  			})(builder);
 			storeBool(transactionDescr.aborted)(builder);
 			storeBool(transactionDescr.destroyed)(builder);
   		};
@@ -3101,7 +3675,13 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
 			storeMaybe<TrStoragePhase>(transactionDescr.storage_ph, storeTrStoragePhase)(builder);
 			storeMaybe<TrCreditPhase>(transactionDescr.credit_ph, storeTrCreditPhase)(builder);
 			storeTrComputePhase(transactionDescr.compute_ph)(builder);
-			storeMaybe(transactionDescr.action)(builder);
+			storeMaybe<TrActionPhase>(transactionDescr.action, (arg: TrActionPhase) => {
+  				return (builder: Builder) => {
+  					let cell1 = beginCell()
+					storeTrActionPhase(arg)(cell1)
+					builder.storeRef(cell1);
+  				};
+  			})(builder);
 			storeBool(transactionDescr.aborted)(builder);
 			storeBool(transactionDescr.destroyed)(builder);
   		};
@@ -3116,14 +3696,10 @@ export type SplitMergeInfo = {
 	sibling_addr: BitString;
   };
 export function loadSplitMergeInfo(slice: Slice): SplitMergeInfo {
-  	let cur_shard_pfx_len: number;
-	(cur_shard_pfx_len = slice.loadUint(6));
-	let acc_split_depth: number;
-	(acc_split_depth = slice.loadUint(6));
-	let this_addr: BitString;
-	(this_addr = slice.loadBits(256));
-	let sibling_addr: BitString;
-	(sibling_addr = slice.loadBits(256));
+  	let cur_shard_pfx_len: number = slice.loadUint(6);
+	let acc_split_depth: number = slice.loadUint(6);
+	let this_addr: BitString = slice.loadBits(256);
+	let sibling_addr: BitString = slice.loadBits(256);
 	return {
   		kind: 'SplitMergeInfo',
 		cur_shard_pfx_len: cur_shard_pfx_len,
@@ -3152,33 +3728,34 @@ export type SmartContractInfo = {
 	myself: MsgAddressInt;
   };
 export function loadSmartContractInfo(slice: Slice): SmartContractInfo {
-  	let actions: number;
-	(actions = slice.loadUint(16));
-	let msgs_sent: number;
-	(msgs_sent = slice.loadUint(16));
-	let unixtime: number;
-	(unixtime = slice.loadUint(32));
-	let block_lt: number;
-	(block_lt = slice.loadUint(64));
-	let trans_lt: number;
-	(trans_lt = slice.loadUint(64));
-	let rand_seed: BitString;
-	(rand_seed = slice.loadBits(256));
-	return {
-  		kind: 'SmartContractInfo',
-		actions: actions,
-		msgs_sent: msgs_sent,
-		unixtime: unixtime,
-		block_lt: block_lt,
-		trans_lt: trans_lt,
-		rand_seed: rand_seed,
-		balance_remaining: loadCurrencyCollection(slice),
-		myself: loadMsgAddressInt(slice)
+  	if ((slice.preloadUint(32) == 0x076ef1ea)) {
+  		slice.loadUint(32);
+		let actions: number = slice.loadUint(16);
+		let msgs_sent: number = slice.loadUint(16);
+		let unixtime: number = slice.loadUint(32);
+		let block_lt: number = slice.loadUint(64);
+		let trans_lt: number = slice.loadUint(64);
+		let rand_seed: BitString = slice.loadBits(256);
+		let balance_remaining: CurrencyCollection = loadCurrencyCollection(slice);
+		let myself: MsgAddressInt = loadMsgAddressInt(slice);
+		return {
+  			kind: 'SmartContractInfo',
+			actions: actions,
+			msgs_sent: msgs_sent,
+			unixtime: unixtime,
+			block_lt: block_lt,
+			trans_lt: trans_lt,
+			rand_seed: rand_seed,
+			balance_remaining: balance_remaining,
+			myself: myself
+  		};
   	};
+	throw new Error('');
   }
 export function storeSmartContractInfo(smartContractInfo: SmartContractInfo): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(smartContractInfo.actions, 16);
+  		builder.storeUint(0x076ef1ea, 32);
+		builder.storeUint(smartContractInfo.actions, 16);
 		builder.storeUint(smartContractInfo.msgs_sent, 16);
 		builder.storeUint(smartContractInfo.unixtime, 32);
 		builder.storeUint(smartContractInfo.block_lt, 64);
@@ -3198,19 +3775,21 @@ export type OutList_out_list = {
 	prev: OutList;
 	action: OutAction;
   };
-export function loadOutList(slice: Slice, n: number): OutList {
-  	if ((n == 0)) {
+export function loadOutList(slice: Slice, arg0: number): OutList {
+  	if ((arg0 == 0)) {
   		return {
   			kind: 'OutList_out_list_empty'
   		};
   	};
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
+		let prev: OutList = loadOutList(slice1, (arg0 - 1));
+		let action: OutAction = loadOutAction(slice);
 		return {
   			kind: 'OutList_out_list',
-			n: (n + 1),
-			prev: loadOutList(slice1, n),
-			action: loadOutAction(slice)
+			n: (arg0 - 1),
+			prev: prev,
+			action: action
   		};
   	};
 	throw new Error('');
@@ -3235,7 +3814,7 @@ export type OutAction = OutAction_action_send_msg | OutAction_action_set_code | 
 export type OutAction_action_send_msg = {
   	kind: 'OutAction_action_send_msg';
 	mode: number;
-	out_msg: MessageRelaxed<Any>;
+	out_msg: MessageRelaxed<Slice>;
   };
 export type OutAction_action_set_code = {
   	kind: 'OutAction_action_set_code';
@@ -3252,45 +3831,44 @@ export type OutAction_action_change_library = {
 	libref: LibRef;
   };
 export function loadOutAction(slice: Slice): OutAction {
-  	if ((slice.preloadUint(8) == 0b0ec3c86d)) {
-  		slice.loadUint(8);
-		let mode: number;
-		(mode = slice.loadUint(8));
+  	if ((slice.preloadUint(32) == 0x0ec3c86d)) {
+  		slice.loadUint(32);
+		let mode: number = slice.loadUint(8);
 		let slice1 = slice.loadRef().beginParse();
+		let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, slice1);
 		return {
   			kind: 'OutAction_action_send_msg',
 			mode: mode,
-			out_msg: loadMessageRelaxed<Any>(slice1, loadAny)
+			out_msg: out_msg
   		};
   	};
-	if ((slice.preloadUint(8) == 0bad4de08e)) {
-  		slice.loadUint(8);
+	if ((slice.preloadUint(32) == 0xad4de08e)) {
+  		slice.loadUint(32);
 		let slice1 = slice.loadRef().beginParse();
-		let new_code: Slice;
-		(new_code = slice1);
+		let new_code: Slice = slice1;
 		return {
   			kind: 'OutAction_action_set_code',
 			new_code: new_code
   		};
   	};
-	if ((slice.preloadUint(8) == 0b36e6b809)) {
-  		slice.loadUint(8);
-		let mode: number;
-		(mode = slice.loadUint(8));
+	if ((slice.preloadUint(32) == 0x36e6b809)) {
+  		slice.loadUint(32);
+		let mode: number = slice.loadUint(8);
+		let currency: CurrencyCollection = loadCurrencyCollection(slice);
 		return {
   			kind: 'OutAction_action_reserve_currency',
 			mode: mode,
-			currency: loadCurrencyCollection(slice)
+			currency: currency
   		};
   	};
-	if ((slice.preloadUint(8) == 0b26fa1dd4)) {
-  		slice.loadUint(8);
-		let mode: number;
-		(mode = slice.loadUint(7));
+	if ((slice.preloadUint(32) == 0x26fa1dd4)) {
+  		slice.loadUint(32);
+		let mode: number = slice.loadUint(7);
+		let libref: LibRef = loadLibRef(slice);
 		return {
   			kind: 'OutAction_action_change_library',
 			mode: mode,
-			libref: loadLibRef(slice)
+			libref: libref
   		};
   	};
 	throw new Error('');
@@ -3298,16 +3876,20 @@ export function loadOutAction(slice: Slice): OutAction {
 export function storeOutAction(outAction: OutAction): (builder: Builder) => void {
   	if ((outAction.kind == 'OutAction_action_send_msg')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b0ec3c86d, 8);
+  			builder.storeUint(0x0ec3c86d, 32);
 			builder.storeUint(outAction.mode, 8);
 			let cell1 = beginCell();
-			storeMessageRelaxed<Any>(outAction.out_msg, storeAny)(cell1);
+			storeMessageRelaxed<Slice>(outAction.out_msg, (arg: Slice) => {
+  				return (builder: Builder) => {
+  					cell1.storeSlice(arg);
+  				};
+  			})(cell1);
 			builder.storeRef(cell1);
   		};
   	};
 	if ((outAction.kind == 'OutAction_action_set_code')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bad4de08e, 8);
+  			builder.storeUint(0xad4de08e, 32);
 			let cell1 = beginCell();
 			cell1.storeSlice(outAction.new_code);
 			builder.storeRef(cell1);
@@ -3315,14 +3897,14 @@ export function storeOutAction(outAction: OutAction): (builder: Builder) => void
   	};
 	if ((outAction.kind == 'OutAction_action_reserve_currency')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b36e6b809, 8);
+  			builder.storeUint(0x36e6b809, 32);
 			builder.storeUint(outAction.mode, 8);
 			storeCurrencyCollection(outAction.currency)(builder);
   		};
   	};
 	if ((outAction.kind == 'OutAction_action_change_library')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b26fa1dd4, 8);
+  			builder.storeUint(0x26fa1dd4, 32);
 			builder.storeUint(outAction.mode, 7);
 			storeLibRef(outAction.libref)(builder);
   		};
@@ -3341,8 +3923,7 @@ export type LibRef_libref_ref = {
 export function loadLibRef(slice: Slice): LibRef {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
-		let lib_hash: BitString;
-		(lib_hash = slice.loadBits(256));
+		let lib_hash: BitString = slice.loadBits(256);
 		return {
   			kind: 'LibRef_libref_hash',
 			lib_hash: lib_hash
@@ -3351,8 +3932,7 @@ export function loadLibRef(slice: Slice): LibRef {
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
-		let library: Slice;
-		(library = slice1);
+		let library: Slice = slice1;
 		return {
   			kind: 'LibRef_libref_ref',
 			library: library
@@ -3384,12 +3964,12 @@ export type OutListNode = {
   };
 export function loadOutListNode(slice: Slice): OutListNode {
   	let slice1 = slice.loadRef().beginParse();
-	let prev: Slice;
-	(prev = slice1);
+	let prev: Slice = slice1;
+	let action: OutAction = loadOutAction(slice);
 	return {
   		kind: 'OutListNode',
 		prev: prev,
-		action: loadOutAction(slice)
+		action: action
   	};
   }
 export function storeOutListNode(outListNode: OutListNode): (builder: Builder) => void {
@@ -3407,22 +3987,24 @@ export type ShardIdent = {
 	shard_prefix: number;
   };
 export function loadShardIdent(slice: Slice): ShardIdent {
-  	let shard_pfx_bits: number;
-	(shard_pfx_bits = slice.loadUint(6));
-	let workchain_id: number;
-	(workchain_id = slice.loadInt(32));
-	let shard_prefix: number;
-	(shard_prefix = slice.loadUint(64));
-	return {
-  		kind: 'ShardIdent',
-		shard_pfx_bits: shard_pfx_bits,
-		workchain_id: workchain_id,
-		shard_prefix: shard_prefix
+  	if ((slice.preloadUint(2) == 0b00)) {
+  		slice.loadUint(2);
+		let shard_pfx_bits: number = slice.loadUint(6);
+		let workchain_id: number = slice.loadInt(32);
+		let shard_prefix: number = slice.loadUint(64);
+		return {
+  			kind: 'ShardIdent',
+			shard_pfx_bits: shard_pfx_bits,
+			workchain_id: workchain_id,
+			shard_prefix: shard_prefix
+  		};
   	};
+	throw new Error('');
   }
 export function storeShardIdent(shardIdent: ShardIdent): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(shardIdent.shard_pfx_bits, 6);
+  		builder.storeUint(0b00, 2);
+		builder.storeUint(shardIdent.shard_pfx_bits, 6);
 		builder.storeInt(shardIdent.workchain_id, 32);
 		builder.storeUint(shardIdent.shard_prefix, 64);
   	};
@@ -3435,14 +4017,10 @@ export type ExtBlkRef = {
 	file_hash: BitString;
   };
 export function loadExtBlkRef(slice: Slice): ExtBlkRef {
-  	let end_lt: number;
-	(end_lt = slice.loadUint(64));
-	let seq_no: number;
-	(seq_no = slice.loadUint(32));
-	let root_hash: BitString;
-	(root_hash = slice.loadBits(256));
-	let file_hash: BitString;
-	(file_hash = slice.loadBits(256));
+  	let end_lt: number = slice.loadUint(64);
+	let seq_no: number = slice.loadUint(32);
+	let root_hash: BitString = slice.loadBits(256);
+	let file_hash: BitString = slice.loadBits(256);
 	return {
   		kind: 'ExtBlkRef',
 		end_lt: end_lt,
@@ -3467,15 +4045,13 @@ export type BlockIdExt = {
 	file_hash: BitString;
   };
 export function loadBlockIdExt(slice: Slice): BlockIdExt {
-  	let seq_no: number;
-	(seq_no = slice.loadUint(32));
-	let root_hash: BitString;
-	(root_hash = slice.loadBits(256));
-	let file_hash: BitString;
-	(file_hash = slice.loadBits(256));
+  	let shard_id: ShardIdent = loadShardIdent(slice);
+	let seq_no: number = slice.loadUint(32);
+	let root_hash: BitString = slice.loadBits(256);
+	let file_hash: BitString = slice.loadBits(256);
 	return {
   		kind: 'BlockIdExt',
-		shard_id: loadShardIdent(slice),
+		shard_id: shard_id,
 		seq_no: seq_no,
 		root_hash: root_hash,
 		file_hash: file_hash
@@ -3494,9 +4070,10 @@ export type BlkMasterInfo = {
 	master: ExtBlkRef;
   };
 export function loadBlkMasterInfo(slice: Slice): BlkMasterInfo {
-  	return {
+  	let master: ExtBlkRef = loadExtBlkRef(slice);
+	return {
   		kind: 'BlkMasterInfo',
-		master: loadExtBlkRef(slice)
+		master: master
   	};
   }
 export function storeBlkMasterInfo(blkMasterInfo: BlkMasterInfo): (builder: Builder) => void {
@@ -3522,54 +4099,61 @@ export type ShardStateUnsplit = {
 	total_validator_fees: CurrencyCollection;
 	libraries: HashmapE<LibDescr>;
 	master_ref: Maybe<BlkMasterInfo>;
-	custom: Maybe;
+	custom: Maybe<McStateExtra>;
   };
 export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
-  	let global_id: number;
-	(global_id = slice.loadInt(32));
-	let seq_no: number;
-	(seq_no = slice.loadUint(32));
-	let vert_seq_no: number;
-	(vert_seq_no = slice.loadUint(32));
-	let gen_utime: number;
-	(gen_utime = slice.loadUint(32));
-	let gen_lt: number;
-	(gen_lt = slice.loadUint(64));
-	let min_ref_mc_seqno: number;
-	(min_ref_mc_seqno = slice.loadUint(32));
-	let slice1 = slice.loadRef().beginParse();
-	let before_split: number;
-	(before_split = slice.loadUint(1));
-	let slice2 = slice.loadRef().beginParse();
-	let slice3 = slice.loadRef().beginParse();
-	let overload_history: number;
-	(overload_history = slice3.loadUint(64));
-	let underload_history: number;
-	(underload_history = slice3.loadUint(64));
-	return {
-  		kind: 'ShardStateUnsplit',
-		global_id: global_id,
-		shard_id: loadShardIdent(slice),
-		seq_no: seq_no,
-		vert_seq_no: vert_seq_no,
-		gen_utime: gen_utime,
-		gen_lt: gen_lt,
-		min_ref_mc_seqno: min_ref_mc_seqno,
-		out_msg_queue_info: loadOutMsgQueueInfo(slice1),
-		before_split: before_split,
-		accounts: loadShardAccounts(slice2),
-		overload_history: overload_history,
-		underload_history: underload_history,
-		total_balance: loadCurrencyCollection(slice3),
-		total_validator_fees: loadCurrencyCollection(slice3),
-		libraries: loadHashmapE<LibDescr>(slice3, 256, loadLibDescr),
-		master_ref: loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo),
-		custom: loadMaybe(slice)
+  	if ((slice.preloadUint(32) == 0x9023afe2)) {
+  		slice.loadUint(32);
+		let global_id: number = slice.loadInt(32);
+		let shard_id: ShardIdent = loadShardIdent(slice);
+		let seq_no: number = slice.loadUint(32);
+		let vert_seq_no: number = slice.loadUint(32);
+		let gen_utime: number = slice.loadUint(32);
+		let gen_lt: number = slice.loadUint(64);
+		let min_ref_mc_seqno: number = slice.loadUint(32);
+		let slice1 = slice.loadRef().beginParse();
+		let out_msg_queue_info: OutMsgQueueInfo = loadOutMsgQueueInfo(slice1);
+		let before_split: number = slice.loadUint(1);
+		let slice2 = slice.loadRef().beginParse();
+		let accounts: ShardAccounts = loadShardAccounts(slice2);
+		let slice3 = slice.loadRef().beginParse();
+		let overload_history: number = slice3.loadUint(64);
+		let underload_history: number = slice3.loadUint(64);
+		let total_balance: CurrencyCollection = loadCurrencyCollection(slice3);
+		let total_validator_fees: CurrencyCollection = loadCurrencyCollection(slice3);
+		let libraries: HashmapE<LibDescr> = loadHashmapE<LibDescr>(slice3, 256, loadLibDescr);
+		let master_ref: Maybe<BlkMasterInfo> = loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo);
+		let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadMcStateExtra(slice1);
+  		});
+		return {
+  			kind: 'ShardStateUnsplit',
+			global_id: global_id,
+			shard_id: shard_id,
+			seq_no: seq_no,
+			vert_seq_no: vert_seq_no,
+			gen_utime: gen_utime,
+			gen_lt: gen_lt,
+			min_ref_mc_seqno: min_ref_mc_seqno,
+			out_msg_queue_info: out_msg_queue_info,
+			before_split: before_split,
+			accounts: accounts,
+			overload_history: overload_history,
+			underload_history: underload_history,
+			total_balance: total_balance,
+			total_validator_fees: total_validator_fees,
+			libraries: libraries,
+			master_ref: master_ref,
+			custom: custom
+  		};
   	};
+	throw new Error('');
   }
 export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeInt(shardStateUnsplit.global_id, 32);
+  		builder.storeUint(0x9023afe2, 32);
+		builder.storeInt(shardStateUnsplit.global_id, 32);
 		storeShardIdent(shardStateUnsplit.shard_id)(builder);
 		builder.storeUint(shardStateUnsplit.seq_no, 32);
 		builder.storeUint(shardStateUnsplit.vert_seq_no, 32);
@@ -3591,32 +4175,53 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
 		storeHashmapE<LibDescr>(shardStateUnsplit.libraries, storeLibDescr)(cell3);
 		storeMaybe<BlkMasterInfo>(shardStateUnsplit.master_ref, storeBlkMasterInfo)(cell3);
 		builder.storeRef(cell3);
-		storeMaybe(shardStateUnsplit.custom)(builder);
+		storeMaybe<McStateExtra>(shardStateUnsplit.custom, (arg: McStateExtra) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeMcStateExtra(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
   	};
   }
-export type ShardState = ShardState_split_state;
+export type ShardState = ShardState__ | ShardState_split_state;
+export type ShardState__ = {
+  	kind: 'ShardState__';
+  };
 export type ShardState_split_state = {
   	kind: 'ShardState_split_state';
 	left: ShardStateUnsplit;
 	right: ShardStateUnsplit;
   };
 export function loadShardState(slice: Slice): ShardState {
-  	if ((slice.preloadUint(8) == 0b5f327da5)) {
-  		slice.loadUint(8);
+  	if (true) {
+  		return {
+  			kind: 'ShardState__'
+  		};
+  	};
+	if ((slice.preloadUint(32) == 0x5f327da5)) {
+  		slice.loadUint(32);
 		let slice1 = slice.loadRef().beginParse();
+		let left: ShardStateUnsplit = loadShardStateUnsplit(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let right: ShardStateUnsplit = loadShardStateUnsplit(slice2);
 		return {
   			kind: 'ShardState_split_state',
-			left: loadShardStateUnsplit(slice1),
-			right: loadShardStateUnsplit(slice2)
+			left: left,
+			right: right
   		};
   	};
 	throw new Error('');
   }
 export function storeShardState(shardState: ShardState): (builder: Builder) => void {
-  	if ((shardState.kind == 'ShardState_split_state')) {
+  	if ((shardState.kind == 'ShardState__')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b5f327da5, 8);
+  
+  		};
+  	};
+	if ((shardState.kind == 'ShardState_split_state')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0x5f327da5, 32);
 			let cell1 = beginCell();
 			storeShardStateUnsplit(shardState.left)(cell1);
 			builder.storeRef(cell1);
@@ -3633,18 +4238,23 @@ export type LibDescr = {
 	publishers: Hashmap<True>;
   };
 export function loadLibDescr(slice: Slice): LibDescr {
-  	let slice1 = slice.loadRef().beginParse();
-	let lib: Slice;
-	(lib = slice1);
-	return {
-  		kind: 'LibDescr',
-		lib: lib,
-		publishers: loadHashmap<True>(slice, 256, loadTrue)
+  	if ((slice.preloadUint(2) == 0b00)) {
+  		slice.loadUint(2);
+		let slice1 = slice.loadRef().beginParse();
+		let lib: Slice = slice1;
+		let publishers: Hashmap<True> = loadHashmap<True>(slice, 256, loadTrue);
+		return {
+  			kind: 'LibDescr',
+			lib: lib,
+			publishers: publishers
+  		};
   	};
+	throw new Error('');
   }
 export function storeLibDescr(libDescr: LibDescr): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		let cell1 = beginCell();
+  		builder.storeUint(0b00, 2);
+		let cell1 = beginCell();
 		cell1.storeSlice(libDescr.lib);
 		builder.storeRef(cell1);
 		storeHashmap<True>(libDescr.publishers, storeTrue)(builder);
@@ -3673,70 +4283,64 @@ export type BlockInfo = {
 	gen_catchain_seqno: number;
 	min_ref_mc_seqno: number;
 	prev_key_block_seqno: number;
-	prev_ref: BlkPrevInfo<after_merge>;
+	prev_ref: BlkPrevInfo;
   };
 export function loadBlockInfo(slice: Slice): BlockInfo {
-  	let version: number;
-	(version = slice.loadUint(32));
-	let not_master: number;
-	(not_master = slice.loadUint(1));
-	let after_merge: number;
-	(after_merge = slice.loadUint(1));
-	let before_split: number;
-	(before_split = slice.loadUint(1));
-	let after_split: number;
-	(after_split = slice.loadUint(1));
-	let vert_seqno_incr: number;
-	(vert_seqno_incr = slice.loadUint(1));
-	let flags: number;
-	(flags = slice.loadUint(8));
-	let seq_no: number;
-	(seq_no = slice.loadUint(32));
-	let vert_seq_no: number;
-	(vert_seq_no = slice.loadUint(32));
-	let gen_utime: number;
-	(gen_utime = slice.loadUint(32));
-	let start_lt: number;
-	(start_lt = slice.loadUint(64));
-	let end_lt: number;
-	(end_lt = slice.loadUint(64));
-	let gen_validator_list_hash_short: number;
-	(gen_validator_list_hash_short = slice.loadUint(32));
-	let gen_catchain_seqno: number;
-	(gen_catchain_seqno = slice.loadUint(32));
-	let min_ref_mc_seqno: number;
-	(min_ref_mc_seqno = slice.loadUint(32));
-	let prev_key_block_seqno: number;
-	(prev_key_block_seqno = slice.loadUint(32));
-	let slice1 = slice.loadRef().beginParse();
-	return {
-  		kind: 'BlockInfo',
-		version: version,
-		not_master: not_master,
-		after_merge: after_merge,
-		before_split: before_split,
-		after_split: after_split,
-		want_split: loadBool(slice),
-		want_merge: loadBool(slice),
-		key_block: loadBool(slice),
-		vert_seqno_incr: vert_seqno_incr,
-		flags: flags,
-		seq_no: seq_no,
-		vert_seq_no: vert_seq_no,
-		shard: loadShardIdent(slice),
-		gen_utime: gen_utime,
-		start_lt: start_lt,
-		end_lt: end_lt,
-		gen_validator_list_hash_short: gen_validator_list_hash_short,
-		gen_catchain_seqno: gen_catchain_seqno,
-		min_ref_mc_seqno: min_ref_mc_seqno,
-		prev_key_block_seqno: prev_key_block_seqno,
-		prev_ref: loadBlkPrevInfo<after_merge>(slice1, loadafter_merge)
+  	if ((slice.preloadUint(32) == 0x9bc7a987)) {
+  		slice.loadUint(32);
+		let version: number = slice.loadUint(32);
+		let not_master: number = slice.loadUint(1);
+		let after_merge: number = slice.loadUint(1);
+		let before_split: number = slice.loadUint(1);
+		let after_split: number = slice.loadUint(1);
+		let want_split: Bool = loadBool(slice);
+		let want_merge: Bool = loadBool(slice);
+		let key_block: Bool = loadBool(slice);
+		let vert_seqno_incr: number = slice.loadUint(1);
+		let flags: number = slice.loadUint(8);
+		let seq_no: number = slice.loadUint(32);
+		let vert_seq_no: number = slice.loadUint(32);
+		let shard: ShardIdent = loadShardIdent(slice);
+		let gen_utime: number = slice.loadUint(32);
+		let start_lt: number = slice.loadUint(64);
+		let end_lt: number = slice.loadUint(64);
+		let gen_validator_list_hash_short: number = slice.loadUint(32);
+		let gen_catchain_seqno: number = slice.loadUint(32);
+		let min_ref_mc_seqno: number = slice.loadUint(32);
+		let prev_key_block_seqno: number = slice.loadUint(32);
+		let slice1 = slice.loadRef().beginParse();
+		let prev_ref: BlkPrevInfo = loadBlkPrevInfo(slice1, after_merge);
+		return {
+  			kind: 'BlockInfo',
+			version: version,
+			not_master: not_master,
+			after_merge: after_merge,
+			before_split: before_split,
+			after_split: after_split,
+			want_split: want_split,
+			want_merge: want_merge,
+			key_block: key_block,
+			vert_seqno_incr: vert_seqno_incr,
+			flags: flags,
+			seq_no: seq_no,
+			vert_seq_no: vert_seq_no,
+			shard: shard,
+			gen_utime: gen_utime,
+			start_lt: start_lt,
+			end_lt: end_lt,
+			gen_validator_list_hash_short: gen_validator_list_hash_short,
+			gen_catchain_seqno: gen_catchain_seqno,
+			min_ref_mc_seqno: min_ref_mc_seqno,
+			prev_key_block_seqno: prev_key_block_seqno,
+			prev_ref: prev_ref
+  		};
   	};
+	throw new Error('');
   }
 export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(blockInfo.version, 32);
+  		builder.storeUint(0x9bc7a987, 32);
+		builder.storeUint(blockInfo.version, 32);
 		builder.storeUint(blockInfo.not_master, 1);
 		builder.storeUint(blockInfo.after_merge, 1);
 		builder.storeUint(blockInfo.before_split, 1);
@@ -3757,7 +4361,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
 		builder.storeUint(blockInfo.min_ref_mc_seqno, 32);
 		builder.storeUint(blockInfo.prev_key_block_seqno, 32);
 		let cell1 = beginCell();
-		storeBlkPrevInfo<after_merge>(blockInfo.prev_ref, storeafter_merge)(cell1);
+		storeBlkPrevInfo(blockInfo.prev_ref)(cell1);
 		builder.storeRef(cell1);
   	};
   }
@@ -3773,18 +4377,21 @@ export type BlkPrevInfo_prev_blks_info = {
   };
 export function loadBlkPrevInfo(slice: Slice, arg0: number): BlkPrevInfo {
   	if ((arg0 == 0)) {
-  		return {
+  		let prev: ExtBlkRef = loadExtBlkRef(slice);
+		return {
   			kind: 'BlkPrevInfo_prev_blk_info',
-			prev: loadExtBlkRef(slice)
+			prev: prev
   		};
   	};
 	if ((arg0 == 1)) {
   		let slice1 = slice.loadRef().beginParse();
+		let prev1: ExtBlkRef = loadExtBlkRef(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let prev2: ExtBlkRef = loadExtBlkRef(slice2);
 		return {
   			kind: 'BlkPrevInfo_prev_blks_info',
-			prev1: loadExtBlkRef(slice1),
-			prev2: loadExtBlkRef(slice2)
+			prev1: prev1,
+			prev2: prev2
   		};
   	};
 	throw new Error('');
@@ -3816,24 +4423,32 @@ export type Block = {
 	extra: BlockExtra;
   };
 export function loadBlock(slice: Slice): Block {
-  	let global_id: number;
-	(global_id = slice.loadInt(32));
-	let slice1 = slice.loadRef().beginParse();
-	let slice2 = slice.loadRef().beginParse();
-	let slice3 = slice.loadRef().beginParse();
-	let slice4 = slice.loadRef().beginParse();
-	return {
-  		kind: 'Block',
-		global_id: global_id,
-		info: loadBlockInfo(slice1),
-		value_flow: loadValueFlow(slice2),
-		state_update: loadMERKLE_UPDATE<ShardState>(slice3, loadShardState),
-		extra: loadBlockExtra(slice4)
+  	if ((slice.preloadUint(32) == 0x11ef55aa)) {
+  		slice.loadUint(32);
+		let global_id: number = slice.loadInt(32);
+		let slice1 = slice.loadRef().beginParse();
+		let info: BlockInfo = loadBlockInfo(slice1);
+		let slice2 = slice.loadRef().beginParse();
+		let value_flow: ValueFlow = loadValueFlow(slice2);
+		let slice3 = slice.loadRef().beginParse();
+		let state_update: MERKLE_UPDATE<ShardState> = loadMERKLE_UPDATE<ShardState>(slice3, loadShardState);
+		let slice4 = slice.loadRef().beginParse();
+		let extra: BlockExtra = loadBlockExtra(slice4);
+		return {
+  			kind: 'Block',
+			global_id: global_id,
+			info: info,
+			value_flow: value_flow,
+			state_update: state_update,
+			extra: extra
+  		};
   	};
+	throw new Error('');
   }
 export function storeBlock(block: Block): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeInt(block.global_id, 32);
+  		builder.storeUint(0x11ef55aa, 32);
+		builder.storeInt(block.global_id, 32);
 		let cell1 = beginCell();
 		storeBlockInfo(block.info)(cell1);
 		builder.storeRef(cell1);
@@ -3848,17 +4463,113 @@ export function storeBlock(block: Block): (builder: Builder) => void {
 		builder.storeRef(cell4);
   	};
   }
+export type BlockExtra = {
+  	kind: 'BlockExtra';
+	in_msg_descr: InMsgDescr;
+	out_msg_descr: OutMsgDescr;
+	account_blocks: ShardAccountBlocks;
+	rand_seed: BitString;
+	created_by: BitString;
+	custom: Maybe<McBlockExtra>;
+  };
 export function loadBlockExtra(slice: Slice): BlockExtra {
-  
+  	let slice1 = slice.loadRef().beginParse();
+	let in_msg_descr: InMsgDescr = loadInMsgDescr(slice1);
+	let slice2 = slice.loadRef().beginParse();
+	let out_msg_descr: OutMsgDescr = loadOutMsgDescr(slice2);
+	let slice3 = slice.loadRef().beginParse();
+	let account_blocks: ShardAccountBlocks = loadShardAccountBlocks(slice3);
+	let rand_seed: BitString = slice.loadBits(256);
+	let created_by: BitString = slice.loadBits(256);
+	let custom: Maybe<McBlockExtra> = loadMaybe<McBlockExtra>(slice, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return loadMcBlockExtra(slice1);
+  	});
+	return {
+  		kind: 'BlockExtra',
+		in_msg_descr: in_msg_descr,
+		out_msg_descr: out_msg_descr,
+		account_blocks: account_blocks,
+		rand_seed: rand_seed,
+		created_by: created_by,
+		custom: custom
+  	};
   }
 export function storeBlockExtra(blockExtra: BlockExtra): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		let cell1 = beginCell();
+		storeInMsgDescr(blockExtra.in_msg_descr)(cell1);
+		builder.storeRef(cell1);
+		let cell2 = beginCell();
+		storeOutMsgDescr(blockExtra.out_msg_descr)(cell2);
+		builder.storeRef(cell2);
+		let cell3 = beginCell();
+		storeShardAccountBlocks(blockExtra.account_blocks)(cell3);
+		builder.storeRef(cell3);
+		builder.storeBits(blockExtra.rand_seed);
+		builder.storeBits(blockExtra.created_by);
+		storeMaybe<McBlockExtra>(blockExtra.custom, (arg: McBlockExtra) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeMcBlockExtra(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
+  	};
   }
+export type ValueFlow = {
+  	kind: 'ValueFlow';
+	from_prev_blk: CurrencyCollection;
+	to_next_blk: CurrencyCollection;
+	imported: CurrencyCollection;
+	exported: CurrencyCollection;
+	fees_collected: CurrencyCollection;
+	fees_imported: CurrencyCollection;
+	recovered: CurrencyCollection;
+	created: CurrencyCollection;
+	minted: CurrencyCollection;
+  };
 export function loadValueFlow(slice: Slice): ValueFlow {
-  
+  	let slice1 = slice.loadRef().beginParse();
+	let from_prev_blk: CurrencyCollection = loadCurrencyCollection(slice1);
+	let to_next_blk: CurrencyCollection = loadCurrencyCollection(slice1);
+	let imported: CurrencyCollection = loadCurrencyCollection(slice1);
+	let exported: CurrencyCollection = loadCurrencyCollection(slice1);
+	let fees_collected: CurrencyCollection = loadCurrencyCollection(slice);
+	let slice2 = slice.loadRef().beginParse();
+	let fees_imported: CurrencyCollection = loadCurrencyCollection(slice2);
+	let recovered: CurrencyCollection = loadCurrencyCollection(slice2);
+	let created: CurrencyCollection = loadCurrencyCollection(slice2);
+	let minted: CurrencyCollection = loadCurrencyCollection(slice2);
+	return {
+  		kind: 'ValueFlow',
+		from_prev_blk: from_prev_blk,
+		to_next_blk: to_next_blk,
+		imported: imported,
+		exported: exported,
+		fees_collected: fees_collected,
+		fees_imported: fees_imported,
+		recovered: recovered,
+		created: created,
+		minted: minted
+  	};
   }
 export function storeValueFlow(valueFlow: ValueFlow): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		let cell1 = beginCell();
+		storeCurrencyCollection(valueFlow.from_prev_blk)(cell1);
+		storeCurrencyCollection(valueFlow.to_next_blk)(cell1);
+		storeCurrencyCollection(valueFlow.imported)(cell1);
+		storeCurrencyCollection(valueFlow.exported)(cell1);
+		builder.storeRef(cell1);
+		storeCurrencyCollection(valueFlow.fees_collected)(builder);
+		let cell2 = beginCell();
+		storeCurrencyCollection(valueFlow.fees_imported)(cell2);
+		storeCurrencyCollection(valueFlow.recovered)(cell2);
+		storeCurrencyCollection(valueFlow.created)(cell2);
+		storeCurrencyCollection(valueFlow.minted)(cell2);
+		builder.storeRef(cell2);
+  	};
   }
 export type BinTree<X> = BinTree_bt_leaf<X> | BinTree_bt_fork<X>;
 export type BinTree_bt_leaf<X> = {
@@ -3873,19 +4584,22 @@ export type BinTree_bt_fork<X> = {
 export function loadBinTree<X>(slice: Slice, loadX: (slice: Slice) => X): BinTree<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
+		let leaf: X = loadX(slice);
 		return {
   			kind: 'BinTree_bt_leaf',
-			leaf: loadX(slice)
+			leaf: leaf
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
+		let left: BinTree<X> = loadBinTree<X>(slice1, loadX);
 		let slice2 = slice.loadRef().beginParse();
+		let right: BinTree<X> = loadBinTree<X>(slice2, loadX);
 		return {
   			kind: 'BinTree_bt_fork',
-			left: loadBinTree<X>(slice1, loadX),
-			right: loadBinTree<X>(slice2, loadX)
+			left: left,
+			right: right
   		};
   	};
 	throw new Error('');
@@ -3933,10 +4647,8 @@ export function loadFutureSplitMerge(slice: Slice): FutureSplitMerge {
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
-		let split_utime: number;
-		(split_utime = slice.loadUint(32));
-		let interval: number;
-		(interval = slice.loadUint(32));
+		let split_utime: number = slice.loadUint(32);
+		let interval: number = slice.loadUint(32);
 		return {
   			kind: 'FutureSplitMerge_fsm_split',
 			split_utime: split_utime,
@@ -3945,10 +4657,8 @@ export function loadFutureSplitMerge(slice: Slice): FutureSplitMerge {
   	};
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
-		let merge_utime: number;
-		(merge_utime = slice.loadUint(32));
-		let interval: number;
-		(interval = slice.loadUint(32));
+		let merge_utime: number = slice.loadUint(32);
+		let interval: number = slice.loadUint(32);
 		return {
   			kind: 'FutureSplitMerge_fsm_merge',
 			merge_utime: merge_utime,
@@ -4025,30 +4735,27 @@ export type ShardDescr_shard_descr_new = {
 	funds_created: CurrencyCollection;
   };
 export function loadShardDescr(slice: Slice): ShardDescr {
-  	if ((slice.preloadUint(1) == 0bb)) {
-  		slice.loadUint(1);
-		let seq_no: number;
-		(seq_no = slice.loadUint(32));
-		let reg_mc_seqno: number;
-		(reg_mc_seqno = slice.loadUint(32));
-		let start_lt: number;
-		(start_lt = slice.loadUint(64));
-		let end_lt: number;
-		(end_lt = slice.loadUint(64));
-		let root_hash: BitString;
-		(root_hash = slice.loadBits(256));
-		let file_hash: BitString;
-		(file_hash = slice.loadBits(256));
-		let flags: number;
-		(flags = slice.loadUint(3));
-		let next_catchain_seqno: number;
-		(next_catchain_seqno = slice.loadUint(32));
-		let next_validator_shard: number;
-		(next_validator_shard = slice.loadUint(64));
-		let min_ref_mc_seqno: number;
-		(min_ref_mc_seqno = slice.loadUint(32));
-		let gen_utime: number;
-		(gen_utime = slice.loadUint(32));
+  	if ((slice.preloadUint(4) == 0xb)) {
+  		slice.loadUint(4);
+		let seq_no: number = slice.loadUint(32);
+		let reg_mc_seqno: number = slice.loadUint(32);
+		let start_lt: number = slice.loadUint(64);
+		let end_lt: number = slice.loadUint(64);
+		let root_hash: BitString = slice.loadBits(256);
+		let file_hash: BitString = slice.loadBits(256);
+		let before_split: Bool = loadBool(slice);
+		let before_merge: Bool = loadBool(slice);
+		let want_split: Bool = loadBool(slice);
+		let want_merge: Bool = loadBool(slice);
+		let nx_cc_updated: Bool = loadBool(slice);
+		let flags: number = slice.loadUint(3);
+		let next_catchain_seqno: number = slice.loadUint(32);
+		let next_validator_shard: number = slice.loadUint(64);
+		let min_ref_mc_seqno: number = slice.loadUint(32);
+		let gen_utime: number = slice.loadUint(32);
+		let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice);
+		let fees_collected: CurrencyCollection = loadCurrencyCollection(slice);
+		let funds_created: CurrencyCollection = loadCurrencyCollection(slice);
 		return {
   			kind: 'ShardDescr_shard_descr',
 			seq_no: seq_no,
@@ -4057,46 +4764,43 @@ export function loadShardDescr(slice: Slice): ShardDescr {
 			end_lt: end_lt,
 			root_hash: root_hash,
 			file_hash: file_hash,
-			before_split: loadBool(slice),
-			before_merge: loadBool(slice),
-			want_split: loadBool(slice),
-			want_merge: loadBool(slice),
-			nx_cc_updated: loadBool(slice),
+			before_split: before_split,
+			before_merge: before_merge,
+			want_split: want_split,
+			want_merge: want_merge,
+			nx_cc_updated: nx_cc_updated,
 			flags: flags,
 			next_catchain_seqno: next_catchain_seqno,
 			next_validator_shard: next_validator_shard,
 			min_ref_mc_seqno: min_ref_mc_seqno,
 			gen_utime: gen_utime,
-			split_merge_at: loadFutureSplitMerge(slice),
-			fees_collected: loadCurrencyCollection(slice),
-			funds_created: loadCurrencyCollection(slice)
+			split_merge_at: split_merge_at,
+			fees_collected: fees_collected,
+			funds_created: funds_created
   		};
   	};
-	if ((slice.preloadUint(1) == 0ba)) {
-  		slice.loadUint(1);
-		let seq_no: number;
-		(seq_no = slice.loadUint(32));
-		let reg_mc_seqno: number;
-		(reg_mc_seqno = slice.loadUint(32));
-		let start_lt: number;
-		(start_lt = slice.loadUint(64));
-		let end_lt: number;
-		(end_lt = slice.loadUint(64));
-		let root_hash: BitString;
-		(root_hash = slice.loadBits(256));
-		let file_hash: BitString;
-		(file_hash = slice.loadBits(256));
-		let flags: number;
-		(flags = slice.loadUint(3));
-		let next_catchain_seqno: number;
-		(next_catchain_seqno = slice.loadUint(32));
-		let next_validator_shard: number;
-		(next_validator_shard = slice.loadUint(64));
-		let min_ref_mc_seqno: number;
-		(min_ref_mc_seqno = slice.loadUint(32));
-		let gen_utime: number;
-		(gen_utime = slice.loadUint(32));
+	if ((slice.preloadUint(4) == 0xa)) {
+  		slice.loadUint(4);
+		let seq_no: number = slice.loadUint(32);
+		let reg_mc_seqno: number = slice.loadUint(32);
+		let start_lt: number = slice.loadUint(64);
+		let end_lt: number = slice.loadUint(64);
+		let root_hash: BitString = slice.loadBits(256);
+		let file_hash: BitString = slice.loadBits(256);
+		let before_split: Bool = loadBool(slice);
+		let before_merge: Bool = loadBool(slice);
+		let want_split: Bool = loadBool(slice);
+		let want_merge: Bool = loadBool(slice);
+		let nx_cc_updated: Bool = loadBool(slice);
+		let flags: number = slice.loadUint(3);
+		let next_catchain_seqno: number = slice.loadUint(32);
+		let next_validator_shard: number = slice.loadUint(64);
+		let min_ref_mc_seqno: number = slice.loadUint(32);
+		let gen_utime: number = slice.loadUint(32);
+		let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice);
 		let slice1 = slice.loadRef().beginParse();
+		let fees_collected: CurrencyCollection = loadCurrencyCollection(slice1);
+		let funds_created: CurrencyCollection = loadCurrencyCollection(slice1);
 		return {
   			kind: 'ShardDescr_shard_descr_new',
 			seq_no: seq_no,
@@ -4105,19 +4809,19 @@ export function loadShardDescr(slice: Slice): ShardDescr {
 			end_lt: end_lt,
 			root_hash: root_hash,
 			file_hash: file_hash,
-			before_split: loadBool(slice),
-			before_merge: loadBool(slice),
-			want_split: loadBool(slice),
-			want_merge: loadBool(slice),
-			nx_cc_updated: loadBool(slice),
+			before_split: before_split,
+			before_merge: before_merge,
+			want_split: want_split,
+			want_merge: want_merge,
+			nx_cc_updated: nx_cc_updated,
 			flags: flags,
 			next_catchain_seqno: next_catchain_seqno,
 			next_validator_shard: next_validator_shard,
 			min_ref_mc_seqno: min_ref_mc_seqno,
 			gen_utime: gen_utime,
-			split_merge_at: loadFutureSplitMerge(slice),
-			fees_collected: loadCurrencyCollection(slice1),
-			funds_created: loadCurrencyCollection(slice1)
+			split_merge_at: split_merge_at,
+			fees_collected: fees_collected,
+			funds_created: funds_created
   		};
   	};
 	throw new Error('');
@@ -4125,7 +4829,7 @@ export function loadShardDescr(slice: Slice): ShardDescr {
 export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => void {
   	if ((shardDescr.kind == 'ShardDescr_shard_descr')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bb, 1);
+  			builder.storeUint(0xb, 4);
 			builder.storeUint(shardDescr.seq_no, 32);
 			builder.storeUint(shardDescr.reg_mc_seqno, 32);
 			builder.storeUint(shardDescr.start_lt, 64);
@@ -4149,7 +4853,7 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
   	};
 	if ((shardDescr.kind == 'ShardDescr_shard_descr_new')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0ba, 1);
+  			builder.storeUint(0xa, 4);
 			builder.storeUint(shardDescr.seq_no, 32);
 			builder.storeUint(shardDescr.reg_mc_seqno, 32);
 			builder.storeUint(shardDescr.start_lt, 64);
@@ -4175,11 +4879,18 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
   	};
 	throw new Error('');
   }
+export type ShardHashes = {
+  	kind: 'ShardHashes';
+  };
 export function loadShardHashes(slice: Slice): ShardHashes {
-  
+  	return {
+  		kind: 'ShardHashes'
+  	};
   }
 export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type BinTreeAug<X,Y> = BinTreeAug_bta_leaf<X,Y> | BinTreeAug_bta_fork<X,Y>;
 export type BinTreeAug_bta_leaf<X,Y> = {
@@ -4196,21 +4907,26 @@ export type BinTreeAug_bta_fork<X,Y> = {
 export function loadBinTreeAug<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): BinTreeAug<X,Y> {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
+		let extra: Y = loadY(slice);
+		let leaf: X = loadX(slice);
 		return {
   			kind: 'BinTreeAug_bta_leaf',
-			extra: loadY(slice),
-			leaf: loadX(slice)
+			extra: extra,
+			leaf: leaf
   		};
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
+		let left: BinTreeAug<X,Y> = loadBinTreeAug<X,Y>(slice1, loadX, loadY);
 		let slice2 = slice.loadRef().beginParse();
+		let right: BinTreeAug<X,Y> = loadBinTreeAug<X,Y>(slice2, loadX, loadY);
+		let extra: Y = loadY(slice);
 		return {
   			kind: 'BinTreeAug_bta_fork',
-			left: loadBinTreeAug<X,Y>(slice1, loadX, loadY),
-			right: loadBinTreeAug<X,Y>(slice2, loadX, loadY),
-			extra: loadY(slice)
+			left: left,
+			right: right,
+			extra: extra
   		};
   	};
 	throw new Error('');
@@ -4237,23 +4953,70 @@ export function storeBinTreeAug<X,Y>(binTreeAug: BinTreeAug<X,Y>, storeX: (x: X)
   	};
 	throw new Error('');
   }
+export type ShardFeeCreated = {
+  	kind: 'ShardFeeCreated';
+	fees: CurrencyCollection;
+	create: CurrencyCollection;
+  };
 export function loadShardFeeCreated(slice: Slice): ShardFeeCreated {
-  
+  	let fees: CurrencyCollection = loadCurrencyCollection(slice);
+	let create: CurrencyCollection = loadCurrencyCollection(slice);
+	return {
+  		kind: 'ShardFeeCreated',
+		fees: fees,
+		create: create
+  	};
   }
 export function storeShardFeeCreated(shardFeeCreated: ShardFeeCreated): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		storeCurrencyCollection(shardFeeCreated.fees)(builder);
+		storeCurrencyCollection(shardFeeCreated.create)(builder);
+  	};
   }
+export type ShardFees = {
+  	kind: 'ShardFees';
+  };
 export function loadShardFees(slice: Slice): ShardFees {
-  
+  	return {
+  		kind: 'ShardFees'
+  	};
   }
 export function storeShardFees(shardFees: ShardFees): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
+export type ConfigParams = {
+  	kind: 'ConfigParams';
+	config_addr: BitString;
+	config: Hashmap<Slice>;
+  };
 export function loadConfigParams(slice: Slice): ConfigParams {
-  
+  	let config_addr: BitString = slice.loadBits(256);
+	let slice1 = slice.loadRef().beginParse();
+	let config: Hashmap<Slice> = loadHashmap<Slice>(slice1, 32, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return slice1;
+  	});
+	return {
+  		kind: 'ConfigParams',
+		config_addr: config_addr,
+		config: config
+  	};
   }
 export function storeConfigParams(configParams: ConfigParams): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		builder.storeBits(configParams.config_addr);
+		let cell1 = beginCell();
+		storeHashmap<Slice>(configParams.config, (arg: Slice) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				cell1.storeSlice(arg)
+				builder.storeRef(cell1);
+  			};
+  		})(cell1);
+		builder.storeRef(cell1);
+  	};
   }
 export type ValidatorInfo = {
   	kind: 'ValidatorInfo';
@@ -4262,15 +5025,14 @@ export type ValidatorInfo = {
 	nx_cc_updated: Bool;
   };
 export function loadValidatorInfo(slice: Slice): ValidatorInfo {
-  	let validator_list_hash_short: number;
-	(validator_list_hash_short = slice.loadUint(32));
-	let catchain_seqno: number;
-	(catchain_seqno = slice.loadUint(32));
+  	let validator_list_hash_short: number = slice.loadUint(32);
+	let catchain_seqno: number = slice.loadUint(32);
+	let nx_cc_updated: Bool = loadBool(slice);
 	return {
   		kind: 'ValidatorInfo',
 		validator_list_hash_short: validator_list_hash_short,
 		catchain_seqno: catchain_seqno,
-		nx_cc_updated: loadBool(slice)
+		nx_cc_updated: nx_cc_updated
   	};
   }
 export function storeValidatorInfo(validatorInfo: ValidatorInfo): (builder: Builder) => void {
@@ -4286,10 +5048,8 @@ export type ValidatorBaseInfo = {
 	catchain_seqno: number;
   };
 export function loadValidatorBaseInfo(slice: Slice): ValidatorBaseInfo {
-  	let validator_list_hash_short: number;
-	(validator_list_hash_short = slice.loadUint(32));
-	let catchain_seqno: number;
-	(catchain_seqno = slice.loadUint(32));
+  	let validator_list_hash_short: number = slice.loadUint(32);
+	let catchain_seqno: number = slice.loadUint(32);
 	return {
   		kind: 'ValidatorBaseInfo',
 		validator_list_hash_short: validator_list_hash_short,
@@ -4302,23 +5062,58 @@ export function storeValidatorBaseInfo(validatorBaseInfo: ValidatorBaseInfo): (b
 		builder.storeUint(validatorBaseInfo.catchain_seqno, 32);
   	};
   }
+export type KeyMaxLt = {
+  	kind: 'KeyMaxLt';
+	key: Bool;
+	max_end_lt: number;
+  };
 export function loadKeyMaxLt(slice: Slice): KeyMaxLt {
-  
+  	let key: Bool = loadBool(slice);
+	let max_end_lt: number = slice.loadUint(64);
+	return {
+  		kind: 'KeyMaxLt',
+		key: key,
+		max_end_lt: max_end_lt
+  	};
   }
 export function storeKeyMaxLt(keyMaxLt: KeyMaxLt): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		storeBool(keyMaxLt.key)(builder);
+		builder.storeUint(keyMaxLt.max_end_lt, 64);
+  	};
   }
+export type KeyExtBlkRef = {
+  	kind: 'KeyExtBlkRef';
+	key: Bool;
+	blk_ref: ExtBlkRef;
+  };
 export function loadKeyExtBlkRef(slice: Slice): KeyExtBlkRef {
-  
+  	let key: Bool = loadBool(slice);
+	let blk_ref: ExtBlkRef = loadExtBlkRef(slice);
+	return {
+  		kind: 'KeyExtBlkRef',
+		key: key,
+		blk_ref: blk_ref
+  	};
   }
 export function storeKeyExtBlkRef(keyExtBlkRef: KeyExtBlkRef): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		storeBool(keyExtBlkRef.key)(builder);
+		storeExtBlkRef(keyExtBlkRef.blk_ref)(builder);
+  	};
   }
+export type OldMcBlocksInfo = {
+  	kind: 'OldMcBlocksInfo';
+  };
 export function loadOldMcBlocksInfo(slice: Slice): OldMcBlocksInfo {
-  
+  	return {
+  		kind: 'OldMcBlocksInfo'
+  	};
   }
 export function storeOldMcBlocksInfo(oldMcBlocksInfo: OldMcBlocksInfo): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type Counters = {
   	kind: 'Counters';
@@ -4328,14 +5123,10 @@ export type Counters = {
 	cnt65536: number;
   };
 export function loadCounters(slice: Slice): Counters {
-  	let last_updated: number;
-	(last_updated = slice.loadUint(32));
-	let total: number;
-	(total = slice.loadUint(64));
-	let cnt2048: number;
-	(cnt2048 = slice.loadUint(64));
-	let cnt65536: number;
-	(cnt65536 = slice.loadUint(64));
+  	let last_updated: number = slice.loadUint(32);
+	let total: number = slice.loadUint(64);
+	let cnt2048: number = slice.loadUint(64);
+	let cnt65536: number = slice.loadUint(64);
 	return {
   		kind: 'Counters',
 		last_updated: last_updated,
@@ -4358,15 +5149,22 @@ export type CreatorStats = {
 	shard_blocks: Counters;
   };
 export function loadCreatorStats(slice: Slice): CreatorStats {
-  	return {
-  		kind: 'CreatorStats',
-		mc_blocks: loadCounters(slice),
-		shard_blocks: loadCounters(slice)
+  	if ((slice.preloadUint(4) == 0x4)) {
+  		slice.loadUint(4);
+		let mc_blocks: Counters = loadCounters(slice);
+		let shard_blocks: Counters = loadCounters(slice);
+		return {
+  			kind: 'CreatorStats',
+			mc_blocks: mc_blocks,
+			shard_blocks: shard_blocks
+  		};
   	};
+	throw new Error('');
   }
 export function storeCreatorStats(creatorStats: CreatorStats): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeCounters(creatorStats.mc_blocks)(builder);
+  		builder.storeUint(0x4, 4);
+		storeCounters(creatorStats.mc_blocks)(builder);
 		storeCounters(creatorStats.shard_blocks)(builder);
   	};
   }
@@ -4377,21 +5175,25 @@ export type BlockCreateStats_block_create_stats = {
   };
 export type BlockCreateStats_block_create_stats_ext = {
   	kind: 'BlockCreateStats_block_create_stats_ext';
-	counters: HashmapAugE<CreatorStats,uint32>;
+	counters: HashmapAugE<CreatorStats,number>;
   };
 export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
-  	if ((slice.preloadUint(2) == 0b17)) {
-  		slice.loadUint(2);
+  	if ((slice.preloadUint(8) == 0x17)) {
+  		slice.loadUint(8);
+		let counters: HashmapE<CreatorStats> = loadHashmapE<CreatorStats>(slice, 256, loadCreatorStats);
 		return {
   			kind: 'BlockCreateStats_block_create_stats',
-			counters: loadHashmapE<CreatorStats>(slice, 256, loadCreatorStats)
+			counters: counters
   		};
   	};
-	if ((slice.preloadUint(2) == 0b34)) {
-  		slice.loadUint(2);
+	if ((slice.preloadUint(8) == 0x34)) {
+  		slice.loadUint(8);
+		let counters: HashmapAugE<CreatorStats,number> = loadHashmapAugE<CreatorStats,number>(slice, 256, loadCreatorStats, (slice: Slice) => {
+  			return slice.loadUint(32);
+  		});
 		return {
   			kind: 'BlockCreateStats_block_create_stats_ext',
-			counters: loadHashmapAugE<CreatorStats,uint32>(slice, 256, loadCreatorStats, loaduint32)
+			counters: counters
   		};
   	};
 	throw new Error('');
@@ -4399,14 +5201,18 @@ export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
 export function storeBlockCreateStats(blockCreateStats: BlockCreateStats): (builder: Builder) => void {
   	if ((blockCreateStats.kind == 'BlockCreateStats_block_create_stats')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b17, 2);
+  			builder.storeUint(0x17, 8);
 			storeHashmapE<CreatorStats>(blockCreateStats.counters, storeCreatorStats)(builder);
   		};
   	};
 	if ((blockCreateStats.kind == 'BlockCreateStats_block_create_stats_ext')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b34, 2);
-			storeHashmapAugE<CreatorStats,uint32>(blockCreateStats.counters, storeCreatorStats, storeuint32)(builder);
+  			builder.storeUint(0x34, 8);
+			storeHashmapAugE<CreatorStats,number>(blockCreateStats.counters, storeCreatorStats, (arg: number) => {
+  				return (builder: Builder) => {
+  					builder.storeUint(arg, 32);
+  				};
+  			})(builder);
   		};
   	};
 	throw new Error('');
@@ -4423,24 +5229,35 @@ export type McStateExtra = {
 	global_balance: CurrencyCollection;
   };
 export function loadMcStateExtra(slice: Slice): McStateExtra {
-  	let slice1 = slice.loadRef().beginParse();
-	let flags: number;
-	(flags = slice1.loadUint(16));
-	return {
-  		kind: 'McStateExtra',
-		shard_hashes: loadShardHashes(slice),
-		config: loadConfigParams(slice),
-		flags: flags,
-		validator_info: loadValidatorInfo(slice1),
-		prev_blocks: loadOldMcBlocksInfo(slice1),
-		after_key_block: loadBool(slice1),
-		last_key_block: loadMaybe<ExtBlkRef>(slice1, loadExtBlkRef),
-		global_balance: loadCurrencyCollection(slice)
+  	if ((slice.preloadUint(16) == 0xcc26)) {
+  		slice.loadUint(16);
+		let shard_hashes: ShardHashes = loadShardHashes(slice);
+		let config: ConfigParams = loadConfigParams(slice);
+		let slice1 = slice.loadRef().beginParse();
+		let flags: number = slice1.loadUint(16);
+		let validator_info: ValidatorInfo = loadValidatorInfo(slice1);
+		let prev_blocks: OldMcBlocksInfo = loadOldMcBlocksInfo(slice1);
+		let after_key_block: Bool = loadBool(slice1);
+		let last_key_block: Maybe<ExtBlkRef> = loadMaybe<ExtBlkRef>(slice1, loadExtBlkRef);
+		let global_balance: CurrencyCollection = loadCurrencyCollection(slice);
+		return {
+  			kind: 'McStateExtra',
+			shard_hashes: shard_hashes,
+			config: config,
+			flags: flags,
+			validator_info: validator_info,
+			prev_blocks: prev_blocks,
+			after_key_block: after_key_block,
+			last_key_block: last_key_block,
+			global_balance: global_balance
+  		};
   	};
+	throw new Error('');
   }
 export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeShardHashes(mcStateExtra.shard_hashes)(builder);
+  		builder.storeUint(0xcc26, 16);
+		storeShardHashes(mcStateExtra.shard_hashes)(builder);
 		storeConfigParams(mcStateExtra.config)(builder);
 		let cell1 = beginCell();
 		cell1.storeUint(mcStateExtra.flags, 16);
@@ -4457,16 +5274,20 @@ export type SigPubKey = {
 	pubkey: BitString;
   };
 export function loadSigPubKey(slice: Slice): SigPubKey {
-  	let pubkey: BitString;
-	(pubkey = slice.loadBits(256));
-	return {
-  		kind: 'SigPubKey',
-		pubkey: pubkey
+  	if ((slice.preloadUint(32) == 0x8e81278a)) {
+  		slice.loadUint(32);
+		let pubkey: BitString = slice.loadBits(256);
+		return {
+  			kind: 'SigPubKey',
+			pubkey: pubkey
+  		};
   	};
+	throw new Error('');
   }
 export function storeSigPubKey(sigPubKey: SigPubKey): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(sigPubKey.pubkey);
+  		builder.storeUint(0x8e81278a, 32);
+		builder.storeBits(sigPubKey.pubkey);
   	};
   }
 export type CryptoSignatureSimple = {
@@ -4475,44 +5296,62 @@ export type CryptoSignatureSimple = {
 	s: BitString;
   };
 export function loadCryptoSignatureSimple(slice: Slice): CryptoSignatureSimple {
-  	let R: BitString;
-	(R = slice.loadBits(256));
-	let s: BitString;
-	(s = slice.loadBits(256));
-	return {
-  		kind: 'CryptoSignatureSimple',
-		R: R,
-		s: s
+  	if ((slice.preloadUint(4) == 0x5)) {
+  		slice.loadUint(4);
+		let R: BitString = slice.loadBits(256);
+		let s: BitString = slice.loadBits(256);
+		return {
+  			kind: 'CryptoSignatureSimple',
+			R: R,
+			s: s
+  		};
   	};
+	throw new Error('');
   }
 export function storeCryptoSignatureSimple(cryptoSignatureSimple: CryptoSignatureSimple): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(cryptoSignatureSimple.R);
+  		builder.storeUint(0x5, 4);
+		builder.storeBits(cryptoSignatureSimple.R);
 		builder.storeBits(cryptoSignatureSimple.s);
   	};
   }
-export type CryptoSignature = CryptoSignature_chained_signature;
+export type CryptoSignature = CryptoSignature__ | CryptoSignature_chained_signature;
+export type CryptoSignature__ = {
+  	kind: 'CryptoSignature__';
+  };
 export type CryptoSignature_chained_signature = {
   	kind: 'CryptoSignature_chained_signature';
 	signed_cert: SignedCertificate;
 	temp_key_signature: CryptoSignatureSimple;
   };
 export function loadCryptoSignature(slice: Slice): CryptoSignature {
-  	if ((slice.preloadUint(1) == 0bf)) {
-  		slice.loadUint(1);
+  	if (true) {
+  		return {
+  			kind: 'CryptoSignature__'
+  		};
+  	};
+	if ((slice.preloadUint(4) == 0xf)) {
+  		slice.loadUint(4);
 		let slice1 = slice.loadRef().beginParse();
+		let signed_cert: SignedCertificate = loadSignedCertificate(slice1);
+		let temp_key_signature: CryptoSignatureSimple = loadCryptoSignatureSimple(slice);
 		return {
   			kind: 'CryptoSignature_chained_signature',
-			signed_cert: loadSignedCertificate(slice1),
-			temp_key_signature: loadCryptoSignatureSimple(slice)
+			signed_cert: signed_cert,
+			temp_key_signature: temp_key_signature
   		};
   	};
 	throw new Error('');
   }
 export function storeCryptoSignature(cryptoSignature: CryptoSignature): (builder: Builder) => void {
-  	if ((cryptoSignature.kind == 'CryptoSignature_chained_signature')) {
+  	if ((cryptoSignature.kind == 'CryptoSignature__')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bf, 1);
+  
+  		};
+  	};
+	if ((cryptoSignature.kind == 'CryptoSignature_chained_signature')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0xf, 4);
 			let cell1 = beginCell();
 			storeSignedCertificate(cryptoSignature.signed_cert)(cell1);
 			builder.storeRef(cell1);
@@ -4527,12 +5366,12 @@ export type CryptoSignaturePair = {
 	sign: CryptoSignature;
   };
 export function loadCryptoSignaturePair(slice: Slice): CryptoSignaturePair {
-  	let node_id_short: BitString;
-	(node_id_short = slice.loadBits(256));
+  	let node_id_short: BitString = slice.loadBits(256);
+	let sign: CryptoSignature = loadCryptoSignature(slice);
 	return {
   		kind: 'CryptoSignaturePair',
 		node_id_short: node_id_short,
-		sign: loadCryptoSignature(slice)
+		sign: sign
   	};
   }
 export function storeCryptoSignaturePair(cryptoSignaturePair: CryptoSignaturePair): (builder: Builder) => void {
@@ -4548,20 +5387,24 @@ export type Certificate = {
 	valid_until: number;
   };
 export function loadCertificate(slice: Slice): Certificate {
-  	let valid_since: number;
-	(valid_since = slice.loadUint(32));
-	let valid_until: number;
-	(valid_until = slice.loadUint(32));
-	return {
-  		kind: 'Certificate',
-		temp_key: loadSigPubKey(slice),
-		valid_since: valid_since,
-		valid_until: valid_until
+  	if ((slice.preloadUint(4) == 0x4)) {
+  		slice.loadUint(4);
+		let temp_key: SigPubKey = loadSigPubKey(slice);
+		let valid_since: number = slice.loadUint(32);
+		let valid_until: number = slice.loadUint(32);
+		return {
+  			kind: 'Certificate',
+			temp_key: temp_key,
+			valid_since: valid_since,
+			valid_until: valid_until
+  		};
   	};
+	throw new Error('');
   }
 export function storeCertificate(certificate: Certificate): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeSigPubKey(certificate.temp_key)(builder);
+  		builder.storeUint(0x4, 4);
+		storeSigPubKey(certificate.temp_key)(builder);
 		builder.storeUint(certificate.valid_since, 32);
 		builder.storeUint(certificate.valid_until, 32);
   	};
@@ -4571,14 +5414,20 @@ export type CertificateEnv = {
 	certificate: Certificate;
   };
 export function loadCertificateEnv(slice: Slice): CertificateEnv {
-  	return {
-  		kind: 'CertificateEnv',
-		certificate: loadCertificate(slice)
+  	if ((slice.preloadUint(28) == 0xa419b7d)) {
+  		slice.loadUint(28);
+		let certificate: Certificate = loadCertificate(slice);
+		return {
+  			kind: 'CertificateEnv',
+			certificate: certificate
+  		};
   	};
+	throw new Error('');
   }
 export function storeCertificateEnv(certificateEnv: CertificateEnv): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeCertificate(certificateEnv.certificate)(builder);
+  		builder.storeUint(0xa419b7d, 28);
+		storeCertificate(certificateEnv.certificate)(builder);
   	};
   }
 export type SignedCertificate = {
@@ -4587,10 +5436,12 @@ export type SignedCertificate = {
 	certificate_signature: CryptoSignature;
   };
 export function loadSignedCertificate(slice: Slice): SignedCertificate {
-  	return {
+  	let certificate: Certificate = loadCertificate(slice);
+	let certificate_signature: CryptoSignature = loadCryptoSignature(slice);
+	return {
   		kind: 'SignedCertificate',
-		certificate: loadCertificate(slice),
-		certificate_signature: loadCryptoSignature(slice)
+		certificate: certificate,
+		certificate_signature: certificate_signature
   	};
   }
 export function storeSignedCertificate(signedCertificate: SignedCertificate): (builder: Builder) => void {
@@ -4605,32 +5456,59 @@ export type McBlockExtra = {
 	shard_hashes: ShardHashes;
 	shard_fees: ShardFees;
 	prev_blk_signatures: HashmapE<CryptoSignaturePair>;
-	recover_create_msg: Maybe;
-	mint_msg: Maybe;
+	recover_create_msg: Maybe<InMsg>;
+	mint_msg: Maybe<InMsg>;
   };
 export function loadMcBlockExtra(slice: Slice): McBlockExtra {
-  	let key_block: number;
-	(key_block = slice.loadUint(1));
-	let slice1 = slice.loadRef().beginParse();
-	return {
-  		kind: 'McBlockExtra',
-		key_block: key_block,
-		shard_hashes: loadShardHashes(slice),
-		shard_fees: loadShardFees(slice),
-		prev_blk_signatures: loadHashmapE<CryptoSignaturePair>(slice1, 16, loadCryptoSignaturePair),
-		recover_create_msg: loadMaybe(slice1),
-		mint_msg: loadMaybe(slice1)
+  	if ((slice.preloadUint(16) == 0xcca5)) {
+  		slice.loadUint(16);
+		let key_block: number = slice.loadUint(1);
+		let shard_hashes: ShardHashes = loadShardHashes(slice);
+		let shard_fees: ShardFees = loadShardFees(slice);
+		let slice1 = slice.loadRef().beginParse();
+		let prev_blk_signatures: HashmapE<CryptoSignaturePair> = loadHashmapE<CryptoSignaturePair>(slice1, 16, loadCryptoSignaturePair);
+		let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadInMsg(slice1);
+  		});
+		let mint_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadInMsg(slice1);
+  		});
+		return {
+  			kind: 'McBlockExtra',
+			key_block: key_block,
+			shard_hashes: shard_hashes,
+			shard_fees: shard_fees,
+			prev_blk_signatures: prev_blk_signatures,
+			recover_create_msg: recover_create_msg,
+			mint_msg: mint_msg
+  		};
   	};
+	throw new Error('');
   }
 export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(mcBlockExtra.key_block, 1);
+  		builder.storeUint(0xcca5, 16);
+		builder.storeUint(mcBlockExtra.key_block, 1);
 		storeShardHashes(mcBlockExtra.shard_hashes)(builder);
 		storeShardFees(mcBlockExtra.shard_fees)(builder);
 		let cell1 = beginCell();
 		storeHashmapE<CryptoSignaturePair>(mcBlockExtra.prev_blk_signatures, storeCryptoSignaturePair)(cell1);
-		storeMaybe(mcBlockExtra.recover_create_msg)(cell1);
-		storeMaybe(mcBlockExtra.mint_msg)(cell1);
+		storeMaybe<InMsg>(mcBlockExtra.recover_create_msg, (arg: InMsg) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeInMsg(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(cell1);
+		storeMaybe<InMsg>(mcBlockExtra.mint_msg, (arg: InMsg) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeInMsg(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(cell1);
 		builder.storeRef(cell1);
   	};
   }
@@ -4647,25 +5525,24 @@ export type ValidatorDescr_validator_addr = {
 	adnl_addr: BitString;
   };
 export function loadValidatorDescr(slice: Slice): ValidatorDescr {
-  	if ((slice.preloadUint(2) == 0b53)) {
-  		slice.loadUint(2);
-		let weight: number;
-		(weight = slice.loadUint(64));
+  	if ((slice.preloadUint(8) == 0x53)) {
+  		slice.loadUint(8);
+		let public_key: SigPubKey = loadSigPubKey(slice);
+		let weight: number = slice.loadUint(64);
 		return {
   			kind: 'ValidatorDescr_validator',
-			public_key: loadSigPubKey(slice),
+			public_key: public_key,
 			weight: weight
   		};
   	};
-	if ((slice.preloadUint(2) == 0b73)) {
-  		slice.loadUint(2);
-		let weight: number;
-		(weight = slice.loadUint(64));
-		let adnl_addr: BitString;
-		(adnl_addr = slice.loadBits(256));
+	if ((slice.preloadUint(8) == 0x73)) {
+  		slice.loadUint(8);
+		let public_key: SigPubKey = loadSigPubKey(slice);
+		let weight: number = slice.loadUint(64);
+		let adnl_addr: BitString = slice.loadBits(256);
 		return {
   			kind: 'ValidatorDescr_validator_addr',
-			public_key: loadSigPubKey(slice),
+			public_key: public_key,
 			weight: weight,
 			adnl_addr: adnl_addr
   		};
@@ -4675,14 +5552,14 @@ export function loadValidatorDescr(slice: Slice): ValidatorDescr {
 export function storeValidatorDescr(validatorDescr: ValidatorDescr): (builder: Builder) => void {
   	if ((validatorDescr.kind == 'ValidatorDescr_validator')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b53, 2);
+  			builder.storeUint(0x53, 8);
 			storeSigPubKey(validatorDescr.public_key)(builder);
 			builder.storeUint(validatorDescr.weight, 64);
   		};
   	};
 	if ((validatorDescr.kind == 'ValidatorDescr_validator_addr')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b73, 2);
+  			builder.storeUint(0x73, 8);
 			storeSigPubKey(validatorDescr.public_key)(builder);
 			builder.storeUint(validatorDescr.weight, 64);
 			builder.storeBits(validatorDescr.adnl_addr);
@@ -4708,34 +5585,28 @@ export type ValidatorSet_validators_ext = {
 	list: HashmapE<ValidatorDescr>;
   };
 export function loadValidatorSet(slice: Slice): ValidatorSet {
-  	if ((slice.preloadUint(2) == 0b11)) {
-  		slice.loadUint(2);
-		let utime_since: number;
-		(utime_since = slice.loadUint(32));
-		let utime_until: number;
-		(utime_until = slice.loadUint(32));
-		let main: number;
-		(main = slice.loadUint(16));
+  	if ((slice.preloadUint(8) == 0x11)) {
+  		slice.loadUint(8);
+		let utime_since: number = slice.loadUint(32);
+		let utime_until: number = slice.loadUint(32);
+		let main: number = slice.loadUint(16);
+		let list: Hashmap<ValidatorDescr> = loadHashmap<ValidatorDescr>(slice, 16, loadValidatorDescr);
 		return {
   			kind: 'ValidatorSet_validators',
 			utime_since: utime_since,
 			utime_until: utime_until,
 			main: main,
-			list: loadHashmap<ValidatorDescr>(slice, 16, loadValidatorDescr)
+			list: list
   		};
   	};
-	if ((slice.preloadUint(2) == 0b12)) {
-  		slice.loadUint(2);
-		let utime_since: number;
-		(utime_since = slice.loadUint(32));
-		let utime_until: number;
-		(utime_until = slice.loadUint(32));
-		let total: number;
-		(total = slice.loadUint(16));
-		let main: number;
-		(main = slice.loadUint(16));
-		let total_weight: number;
-		(total_weight = slice.loadUint(64));
+	if ((slice.preloadUint(8) == 0x12)) {
+  		slice.loadUint(8);
+		let utime_since: number = slice.loadUint(32);
+		let utime_until: number = slice.loadUint(32);
+		let total: number = slice.loadUint(16);
+		let main: number = slice.loadUint(16);
+		let total_weight: number = slice.loadUint(64);
+		let list: HashmapE<ValidatorDescr> = loadHashmapE<ValidatorDescr>(slice, 16, loadValidatorDescr);
 		return {
   			kind: 'ValidatorSet_validators_ext',
 			utime_since: utime_since,
@@ -4743,7 +5614,7 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
 			total: total,
 			main: main,
 			total_weight: total_weight,
-			list: loadHashmapE<ValidatorDescr>(slice, 16, loadValidatorDescr)
+			list: list
   		};
   	};
 	throw new Error('');
@@ -4751,7 +5622,7 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
 export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder) => void {
   	if ((validatorSet.kind == 'ValidatorSet_validators')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b11, 2);
+  			builder.storeUint(0x11, 8);
 			builder.storeUint(validatorSet.utime_since, 32);
 			builder.storeUint(validatorSet.utime_until, 32);
 			builder.storeUint(validatorSet.main, 16);
@@ -4760,7 +5631,7 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
   	};
 	if ((validatorSet.kind == 'ValidatorSet_validators_ext')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b12, 2);
+  			builder.storeUint(0x12, 8);
 			builder.storeUint(validatorSet.utime_since, 32);
 			builder.storeUint(validatorSet.utime_until, 32);
 			builder.storeUint(validatorSet.total, 16);
@@ -4771,7 +5642,83 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
   	};
 	throw new Error('');
   }
-export type ConfigParam = ConfigParam_config_mc_gas_prices | ConfigParam_config_gas_prices | ConfigParam_config_mc_block_limits | ConfigParam_config_block_limits | ConfigParam_config_mc_fwd_prices | ConfigParam_config_fwd_prices;
+export type ConfigParam = ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam_config_mc_gas_prices | ConfigParam_config_gas_prices | ConfigParam_config_mc_block_limits | ConfigParam_config_block_limits | ConfigParam_config_mc_fwd_prices | ConfigParam_config_fwd_prices | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__;
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	config_addr: BitString;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	elector_addr: BitString;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	minter_addr: BitString;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	fee_collector_addr: BitString;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	dns_root_addr: BitString;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	mint_new_price: Grams;
+	mint_add_price: Grams;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	to_mint: ExtraCurrencyCollection;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	mandatory_params: Hashmap<True>;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	critical_params: Hashmap<True>;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	workchains: HashmapE<WorkchainDescr>;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	validators_elected_for: number;
+	elections_start_before: number;
+	elections_end_before: number;
+	stake_held_for: number;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	max_validators: number;
+	max_main_validators: number;
+	min_validators: number;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	min_stake: Grams;
+	max_stake: Grams;
+	min_total_stake: Grams;
+	max_stake_factor: number;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
 export type ConfigParam_config_mc_gas_prices = {
   	kind: 'ConfigParam_config_mc_gas_prices';
   };
@@ -4790,8 +5737,191 @@ export type ConfigParam_config_mc_fwd_prices = {
 export type ConfigParam_config_fwd_prices = {
   	kind: 'ConfigParam_config_fwd_prices';
   };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	fundamental_smc_addr: HashmapE<True>;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	prev_validators: ValidatorSet;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	prev_temp_validators: ValidatorSet;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	cur_validators: ValidatorSet;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	cur_temp_validators: ValidatorSet;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	next_validators: ValidatorSet;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+	next_temp_validators: ValidatorSet;
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
+export type ConfigParam__ = {
+  	kind: 'ConfigParam__';
+  };
 export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
-  	if ((arg0 == 20)) {
+  	if ((arg0 == 0)) {
+  		let config_addr: BitString = slice.loadBits(256);
+		return {
+  			kind: 'ConfigParam__',
+			config_addr: config_addr
+  		};
+  	};
+	if ((arg0 == 1)) {
+  		let elector_addr: BitString = slice.loadBits(256);
+		return {
+  			kind: 'ConfigParam__',
+			elector_addr: elector_addr
+  		};
+  	};
+	if ((arg0 == 2)) {
+  		let minter_addr: BitString = slice.loadBits(256);
+		return {
+  			kind: 'ConfigParam__',
+			minter_addr: minter_addr
+  		};
+  	};
+	if ((arg0 == 3)) {
+  		let fee_collector_addr: BitString = slice.loadBits(256);
+		return {
+  			kind: 'ConfigParam__',
+			fee_collector_addr: fee_collector_addr
+  		};
+  	};
+	if ((arg0 == 4)) {
+  		let dns_root_addr: BitString = slice.loadBits(256);
+		return {
+  			kind: 'ConfigParam__',
+			dns_root_addr: dns_root_addr
+  		};
+  	};
+	if ((arg0 == 6)) {
+  		let mint_new_price: Grams = loadGrams(slice);
+		let mint_add_price: Grams = loadGrams(slice);
+		return {
+  			kind: 'ConfigParam__',
+			mint_new_price: mint_new_price,
+			mint_add_price: mint_add_price
+  		};
+  	};
+	if ((arg0 == 7)) {
+  		let to_mint: ExtraCurrencyCollection = loadExtraCurrencyCollection(slice);
+		return {
+  			kind: 'ConfigParam__',
+			to_mint: to_mint
+  		};
+  	};
+	if ((arg0 == 8)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 9)) {
+  		let mandatory_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue);
+		return {
+  			kind: 'ConfigParam__',
+			mandatory_params: mandatory_params
+  		};
+  	};
+	if ((arg0 == 10)) {
+  		let critical_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue);
+		return {
+  			kind: 'ConfigParam__',
+			critical_params: critical_params
+  		};
+  	};
+	if ((arg0 == 11)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 12)) {
+  		let workchains: HashmapE<WorkchainDescr> = loadHashmapE<WorkchainDescr>(slice, 32, loadWorkchainDescr);
+		return {
+  			kind: 'ConfigParam__',
+			workchains: workchains
+  		};
+  	};
+	if ((arg0 == 13)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 14)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 15)) {
+  		let validators_elected_for: number = slice.loadUint(32);
+		let elections_start_before: number = slice.loadUint(32);
+		let elections_end_before: number = slice.loadUint(32);
+		let stake_held_for: number = slice.loadUint(32);
+		return {
+  			kind: 'ConfigParam__',
+			validators_elected_for: validators_elected_for,
+			elections_start_before: elections_start_before,
+			elections_end_before: elections_end_before,
+			stake_held_for: stake_held_for
+  		};
+  	};
+	if ((arg0 == 16)) {
+  		let max_validators: number = slice.loadUint(16);
+		let max_main_validators: number = slice.loadUint(16);
+		let min_validators: number = slice.loadUint(16);
+		return {
+  			kind: 'ConfigParam__',
+			max_validators: max_validators,
+			max_main_validators: max_main_validators,
+			min_validators: min_validators
+  		};
+  	};
+	if ((arg0 == 17)) {
+  		let min_stake: Grams = loadGrams(slice);
+		let max_stake: Grams = loadGrams(slice);
+		let min_total_stake: Grams = loadGrams(slice);
+		let max_stake_factor: number = slice.loadUint(32);
+		return {
+  			kind: 'ConfigParam__',
+			min_stake: min_stake,
+			max_stake: max_stake,
+			min_total_stake: min_total_stake,
+			max_stake_factor: max_stake_factor
+  		};
+  	};
+	if ((arg0 == 18)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 20)) {
   		return {
   			kind: 'ConfigParam_config_mc_gas_prices'
   		};
@@ -4821,10 +5951,193 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   			kind: 'ConfigParam_config_fwd_prices'
   		};
   	};
+	if ((arg0 == 28)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 29)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 31)) {
+  		let fundamental_smc_addr: HashmapE<True> = loadHashmapE<True>(slice, 256, loadTrue);
+		return {
+  			kind: 'ConfigParam__',
+			fundamental_smc_addr: fundamental_smc_addr
+  		};
+  	};
+	if ((arg0 == 32)) {
+  		let prev_validators: ValidatorSet = loadValidatorSet(slice);
+		return {
+  			kind: 'ConfigParam__',
+			prev_validators: prev_validators
+  		};
+  	};
+	if ((arg0 == 33)) {
+  		let prev_temp_validators: ValidatorSet = loadValidatorSet(slice);
+		return {
+  			kind: 'ConfigParam__',
+			prev_temp_validators: prev_temp_validators
+  		};
+  	};
+	if ((arg0 == 34)) {
+  		let cur_validators: ValidatorSet = loadValidatorSet(slice);
+		return {
+  			kind: 'ConfigParam__',
+			cur_validators: cur_validators
+  		};
+  	};
+	if ((arg0 == 35)) {
+  		let cur_temp_validators: ValidatorSet = loadValidatorSet(slice);
+		return {
+  			kind: 'ConfigParam__',
+			cur_temp_validators: cur_temp_validators
+  		};
+  	};
+	if ((arg0 == 36)) {
+  		let next_validators: ValidatorSet = loadValidatorSet(slice);
+		return {
+  			kind: 'ConfigParam__',
+			next_validators: next_validators
+  		};
+  	};
+	if ((arg0 == 37)) {
+  		let next_temp_validators: ValidatorSet = loadValidatorSet(slice);
+		return {
+  			kind: 'ConfigParam__',
+			next_temp_validators: next_temp_validators
+  		};
+  	};
+	if ((arg0 == 39)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 40)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 71)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 72)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
+	if ((arg0 == 73)) {
+  		return {
+  			kind: 'ConfigParam__'
+  		};
+  	};
 	throw new Error('');
   }
 export function storeConfigParam(configParam: ConfigParam): (builder: Builder) => void {
-  	if ((configParam.kind == 'ConfigParam_config_mc_gas_prices')) {
+  	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			builder.storeBits(configParam.config_addr);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			builder.storeBits(configParam.elector_addr);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			builder.storeBits(configParam.minter_addr);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			builder.storeBits(configParam.fee_collector_addr);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			builder.storeBits(configParam.dns_root_addr);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeGrams(configParam.mint_new_price)(builder);
+			storeGrams(configParam.mint_add_price)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeExtraCurrencyCollection(configParam.to_mint)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeHashmap<True>(configParam.mandatory_params, storeTrue)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeHashmap<True>(configParam.critical_params, storeTrue)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeHashmapE<WorkchainDescr>(configParam.workchains, storeWorkchainDescr)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(configParam.validators_elected_for, 32);
+			builder.storeUint(configParam.elections_start_before, 32);
+			builder.storeUint(configParam.elections_end_before, 32);
+			builder.storeUint(configParam.stake_held_for, 32);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(configParam.max_validators, 16);
+			builder.storeUint(configParam.max_main_validators, 16);
+			builder.storeUint(configParam.min_validators, 16);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeGrams(configParam.min_stake)(builder);
+			storeGrams(configParam.max_stake)(builder);
+			storeGrams(configParam.min_total_stake)(builder);
+			builder.storeUint(configParam.max_stake_factor, 32);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam_config_mc_gas_prices')) {
   		return (builder: Builder) => {
   
   		};
@@ -4854,6 +6167,76 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   
   		};
   	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeHashmapE<True>(configParam.fundamental_smc_addr, storeTrue)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeValidatorSet(configParam.prev_validators)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeValidatorSet(configParam.prev_temp_validators)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeValidatorSet(configParam.cur_validators)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeValidatorSet(configParam.cur_temp_validators)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeValidatorSet(configParam.next_validators)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  			storeValidatorSet(configParam.next_temp_validators)(builder);
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
+	if ((configParam.kind == 'ConfigParam__')) {
+  		return (builder: Builder) => {
+  
+  		};
+  	};
 	throw new Error('');
   }
 export type GlobalVersion = {
@@ -4862,19 +6245,22 @@ export type GlobalVersion = {
 	capabilities: number;
   };
 export function loadGlobalVersion(slice: Slice): GlobalVersion {
-  	let version: number;
-	(version = slice.loadUint(32));
-	let capabilities: number;
-	(capabilities = slice.loadUint(64));
-	return {
-  		kind: 'GlobalVersion',
-		version: version,
-		capabilities: capabilities
+  	if ((slice.preloadUint(8) == 0xc4)) {
+  		slice.loadUint(8);
+		let version: number = slice.loadUint(32);
+		let capabilities: number = slice.loadUint(64);
+		return {
+  			kind: 'GlobalVersion',
+			version: version,
+			capabilities: capabilities
+  		};
   	};
+	throw new Error('');
   }
 export function storeGlobalVersion(globalVersion: GlobalVersion): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(globalVersion.version, 32);
+  		builder.storeUint(0xc4, 8);
+		builder.storeUint(globalVersion.version, 32);
 		builder.storeUint(globalVersion.capabilities, 64);
   	};
   }
@@ -4890,37 +6276,34 @@ export type ConfigProposalSetup = {
 	cell_price: number;
   };
 export function loadConfigProposalSetup(slice: Slice): ConfigProposalSetup {
-  	let min_tot_rounds: number;
-	(min_tot_rounds = slice.loadUint(8));
-	let max_tot_rounds: number;
-	(max_tot_rounds = slice.loadUint(8));
-	let min_wins: number;
-	(min_wins = slice.loadUint(8));
-	let max_losses: number;
-	(max_losses = slice.loadUint(8));
-	let min_store_sec: number;
-	(min_store_sec = slice.loadUint(32));
-	let max_store_sec: number;
-	(max_store_sec = slice.loadUint(32));
-	let bit_price: number;
-	(bit_price = slice.loadUint(32));
-	let cell_price: number;
-	(cell_price = slice.loadUint(32));
-	return {
-  		kind: 'ConfigProposalSetup',
-		min_tot_rounds: min_tot_rounds,
-		max_tot_rounds: max_tot_rounds,
-		min_wins: min_wins,
-		max_losses: max_losses,
-		min_store_sec: min_store_sec,
-		max_store_sec: max_store_sec,
-		bit_price: bit_price,
-		cell_price: cell_price
+  	if ((slice.preloadUint(8) == 0x36)) {
+  		slice.loadUint(8);
+		let min_tot_rounds: number = slice.loadUint(8);
+		let max_tot_rounds: number = slice.loadUint(8);
+		let min_wins: number = slice.loadUint(8);
+		let max_losses: number = slice.loadUint(8);
+		let min_store_sec: number = slice.loadUint(32);
+		let max_store_sec: number = slice.loadUint(32);
+		let bit_price: number = slice.loadUint(32);
+		let cell_price: number = slice.loadUint(32);
+		return {
+  			kind: 'ConfigProposalSetup',
+			min_tot_rounds: min_tot_rounds,
+			max_tot_rounds: max_tot_rounds,
+			min_wins: min_wins,
+			max_losses: max_losses,
+			min_store_sec: min_store_sec,
+			max_store_sec: max_store_sec,
+			bit_price: bit_price,
+			cell_price: cell_price
+  		};
   	};
+	throw new Error('');
   }
 export function storeConfigProposalSetup(configProposalSetup: ConfigProposalSetup): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(configProposalSetup.min_tot_rounds, 8);
+  		builder.storeUint(0x36, 8);
+		builder.storeUint(configProposalSetup.min_tot_rounds, 8);
 		builder.storeUint(configProposalSetup.max_tot_rounds, 8);
 		builder.storeUint(configProposalSetup.min_wins, 8);
 		builder.storeUint(configProposalSetup.max_losses, 8);
@@ -4936,17 +6319,24 @@ export type ConfigVotingSetup = {
 	critical_params: ConfigProposalSetup;
   };
 export function loadConfigVotingSetup(slice: Slice): ConfigVotingSetup {
-  	let slice1 = slice.loadRef().beginParse();
-	let slice2 = slice.loadRef().beginParse();
-	return {
-  		kind: 'ConfigVotingSetup',
-		normal_params: loadConfigProposalSetup(slice1),
-		critical_params: loadConfigProposalSetup(slice2)
+  	if ((slice.preloadUint(8) == 0x91)) {
+  		slice.loadUint(8);
+		let slice1 = slice.loadRef().beginParse();
+		let normal_params: ConfigProposalSetup = loadConfigProposalSetup(slice1);
+		let slice2 = slice.loadRef().beginParse();
+		let critical_params: ConfigProposalSetup = loadConfigProposalSetup(slice2);
+		return {
+  			kind: 'ConfigVotingSetup',
+			normal_params: normal_params,
+			critical_params: critical_params
+  		};
   	};
+	throw new Error('');
   }
 export function storeConfigVotingSetup(configVotingSetup: ConfigVotingSetup): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		let cell1 = beginCell();
+  		builder.storeUint(0x91, 8);
+		let cell1 = beginCell();
 		storeConfigProposalSetup(configVotingSetup.normal_params)(cell1);
 		builder.storeRef(cell1);
 		let cell2 = beginCell();
@@ -4957,24 +6347,45 @@ export function storeConfigVotingSetup(configVotingSetup: ConfigVotingSetup): (b
 export type ConfigProposal = {
   	kind: 'ConfigProposal';
 	param_id: number;
-	param_value: Maybe;
-	if_hash_equal: Maybe<uint256>;
+	param_value: Maybe<Slice>;
+	if_hash_equal: Maybe<number>;
   };
 export function loadConfigProposal(slice: Slice): ConfigProposal {
-  	let param_id: number;
-	(param_id = slice.loadInt(32));
-	return {
-  		kind: 'ConfigProposal',
-		param_id: param_id,
-		param_value: loadMaybe(slice),
-		if_hash_equal: loadMaybe<uint256>(slice, loaduint256)
+  	if ((slice.preloadUint(8) == 0xf3)) {
+  		slice.loadUint(8);
+		let param_id: number = slice.loadInt(32);
+		let param_value: Maybe<Slice> = loadMaybe<Slice>(slice, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return slice1;
+  		});
+		let if_hash_equal: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+  			return slice.loadUint(256);
+  		});
+		return {
+  			kind: 'ConfigProposal',
+			param_id: param_id,
+			param_value: param_value,
+			if_hash_equal: if_hash_equal
+  		};
   	};
+	throw new Error('');
   }
 export function storeConfigProposal(configProposal: ConfigProposal): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeInt(configProposal.param_id, 32);
-		storeMaybe(configProposal.param_value)(builder);
-		storeMaybe<uint256>(configProposal.if_hash_equal, storeuint256)(builder);
+  		builder.storeUint(0xf3, 8);
+		builder.storeInt(configProposal.param_id, 32);
+		storeMaybe<Slice>(configProposal.param_value, (arg: Slice) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				cell1.storeSlice(arg)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
+		storeMaybe<number>(configProposal.if_hash_equal, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeUint(arg, 256);
+  			};
+  		})(builder);
   	};
   }
 export type ConfigProposalStatus = {
@@ -4990,35 +6401,37 @@ export type ConfigProposalStatus = {
 	losses: number;
   };
 export function loadConfigProposalStatus(slice: Slice): ConfigProposalStatus {
-  	let expires: number;
-	(expires = slice.loadUint(32));
-	let slice1 = slice.loadRef().beginParse();
-	let remaining_weight: number;
-	(remaining_weight = slice.loadInt(64));
-	let validator_set_id: number;
-	(validator_set_id = slice.loadUint(256));
-	let rounds_remaining: number;
-	(rounds_remaining = slice.loadUint(8));
-	let wins: number;
-	(wins = slice.loadUint(8));
-	let losses: number;
-	(losses = slice.loadUint(8));
-	return {
-  		kind: 'ConfigProposalStatus',
-		expires: expires,
-		proposal: loadConfigProposal(slice1),
-		is_critical: loadBool(slice),
-		voters: loadHashmapE<True>(slice, 16, loadTrue),
-		remaining_weight: remaining_weight,
-		validator_set_id: validator_set_id,
-		rounds_remaining: rounds_remaining,
-		wins: wins,
-		losses: losses
+  	if ((slice.preloadUint(8) == 0xce)) {
+  		slice.loadUint(8);
+		let expires: number = slice.loadUint(32);
+		let slice1 = slice.loadRef().beginParse();
+		let proposal: ConfigProposal = loadConfigProposal(slice1);
+		let is_critical: Bool = loadBool(slice);
+		let voters: HashmapE<True> = loadHashmapE<True>(slice, 16, loadTrue);
+		let remaining_weight: number = slice.loadInt(64);
+		let validator_set_id: number = slice.loadUint(256);
+		let rounds_remaining: number = slice.loadUint(8);
+		let wins: number = slice.loadUint(8);
+		let losses: number = slice.loadUint(8);
+		return {
+  			kind: 'ConfigProposalStatus',
+			expires: expires,
+			proposal: proposal,
+			is_critical: is_critical,
+			voters: voters,
+			remaining_weight: remaining_weight,
+			validator_set_id: validator_set_id,
+			rounds_remaining: rounds_remaining,
+			wins: wins,
+			losses: losses
+  		};
   	};
+	throw new Error('');
   }
 export function storeConfigProposalStatus(configProposalStatus: ConfigProposalStatus): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(configProposalStatus.expires, 32);
+  		builder.storeUint(0xce, 8);
+		builder.storeUint(configProposalStatus.expires, 32);
 		let cell1 = beginCell();
 		storeConfigProposal(configProposalStatus.proposal)(cell1);
 		builder.storeRef(cell1);
@@ -5045,28 +6458,22 @@ export type WorkchainFormat_wfmt_ext = {
 	workchain_type_id: number;
   };
 export function loadWorkchainFormat(slice: Slice, arg0: number): WorkchainFormat {
-  	if (((slice.preloadUint(1) == 0b1) && (arg0 == 1))) {
-  		slice.loadUint(1);
-		let vm_version: number;
-		(vm_version = slice.loadInt(32));
-		let vm_mode: number;
-		(vm_mode = slice.loadUint(64));
+  	if (((slice.preloadUint(4) == 0x1) && (arg0 == 1))) {
+  		slice.loadUint(4);
+		let vm_version: number = slice.loadInt(32);
+		let vm_mode: number = slice.loadUint(64);
 		return {
   			kind: 'WorkchainFormat_wfmt_basic',
 			vm_version: vm_version,
 			vm_mode: vm_mode
   		};
   	};
-	if (((slice.preloadUint(1) == 0b0) && (arg0 == 0))) {
-  		slice.loadUint(1);
-		let min_addr_len: number;
-		(min_addr_len = slice.loadUint(12));
-		let max_addr_len: number;
-		(max_addr_len = slice.loadUint(12));
-		let addr_len_step: number;
-		(addr_len_step = slice.loadUint(12));
-		let workchain_type_id: number;
-		(workchain_type_id = slice.loadUint(32));
+	if (((slice.preloadUint(4) == 0x0) && (arg0 == 0))) {
+  		slice.loadUint(4);
+		let min_addr_len: number = slice.loadUint(12);
+		let max_addr_len: number = slice.loadUint(12);
+		let addr_len_step: number = slice.loadUint(12);
+		let workchain_type_id: number = slice.loadUint(32);
 		return {
   			kind: 'WorkchainFormat_wfmt_ext',
 			min_addr_len: min_addr_len,
@@ -5080,14 +6487,14 @@ export function loadWorkchainFormat(slice: Slice, arg0: number): WorkchainFormat
 export function storeWorkchainFormat(workchainFormat: WorkchainFormat): (builder: Builder) => void {
   	if ((workchainFormat.kind == 'WorkchainFormat_wfmt_basic')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b1, 1);
+  			builder.storeUint(0x1, 4);
 			builder.storeInt(workchainFormat.vm_version, 32);
 			builder.storeUint(workchainFormat.vm_mode, 64);
   		};
   	};
 	if ((workchainFormat.kind == 'WorkchainFormat_wfmt_ext')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b0, 1);
+  			builder.storeUint(0x0, 4);
 			builder.storeUint(workchainFormat.min_addr_len, 12);
 			builder.storeUint(workchainFormat.max_addr_len, 12);
 			builder.storeUint(workchainFormat.addr_len_step, 12);
@@ -5109,46 +6516,45 @@ export type WorkchainDescr = {
 	zerostate_root_hash: BitString;
 	zerostate_file_hash: BitString;
 	version: number;
-	format: WorkchainFormat<basic>;
+	format: WorkchainFormat;
   };
 export function loadWorkchainDescr(slice: Slice): WorkchainDescr {
-  	let enabled_since: number;
-	(enabled_since = slice.loadUint(32));
-	let actual_min_split: number;
-	(actual_min_split = slice.loadUint(8));
-	let min_split: number;
-	(min_split = slice.loadUint(8));
-	let max_split: number;
-	(max_split = slice.loadUint(8));
-	let basic: number;
-	(basic = slice.loadUint(1));
-	let flags: number;
-	(flags = slice.loadUint(13));
-	let zerostate_root_hash: BitString;
-	(zerostate_root_hash = slice.loadBits(256));
-	let zerostate_file_hash: BitString;
-	(zerostate_file_hash = slice.loadBits(256));
-	let version: number;
-	(version = slice.loadUint(32));
-	return {
-  		kind: 'WorkchainDescr',
-		enabled_since: enabled_since,
-		actual_min_split: actual_min_split,
-		min_split: min_split,
-		max_split: max_split,
-		basic: basic,
-		active: loadBool(slice),
-		accept_msgs: loadBool(slice),
-		flags: flags,
-		zerostate_root_hash: zerostate_root_hash,
-		zerostate_file_hash: zerostate_file_hash,
-		version: version,
-		format: loadWorkchainFormat<basic>(slice, loadbasic)
+  	if ((slice.preloadUint(8) == 0xa6)) {
+  		slice.loadUint(8);
+		let enabled_since: number = slice.loadUint(32);
+		let actual_min_split: number = slice.loadUint(8);
+		let min_split: number = slice.loadUint(8);
+		let max_split: number = slice.loadUint(8);
+		let basic: number = slice.loadUint(1);
+		let active: Bool = loadBool(slice);
+		let accept_msgs: Bool = loadBool(slice);
+		let flags: number = slice.loadUint(13);
+		let zerostate_root_hash: BitString = slice.loadBits(256);
+		let zerostate_file_hash: BitString = slice.loadBits(256);
+		let version: number = slice.loadUint(32);
+		let format: WorkchainFormat = loadWorkchainFormat(slice, basic);
+		return {
+  			kind: 'WorkchainDescr',
+			enabled_since: enabled_since,
+			actual_min_split: actual_min_split,
+			min_split: min_split,
+			max_split: max_split,
+			basic: basic,
+			active: active,
+			accept_msgs: accept_msgs,
+			flags: flags,
+			zerostate_root_hash: zerostate_root_hash,
+			zerostate_file_hash: zerostate_file_hash,
+			version: version,
+			format: format
+  		};
   	};
+	throw new Error('');
   }
 export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(workchainDescr.enabled_since, 32);
+  		builder.storeUint(0xa6, 8);
+		builder.storeUint(workchainDescr.enabled_since, 32);
 		builder.storeUint(workchainDescr.actual_min_split, 8);
 		builder.storeUint(workchainDescr.min_split, 8);
 		builder.storeUint(workchainDescr.max_split, 8);
@@ -5159,7 +6565,7 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
 		builder.storeBits(workchainDescr.zerostate_root_hash);
 		builder.storeBits(workchainDescr.zerostate_file_hash);
 		builder.storeUint(workchainDescr.version, 32);
-		storeWorkchainFormat<basic>(workchainDescr.format, storebasic)(builder);
+		storeWorkchainFormat(workchainDescr.format)(builder);
   	};
   }
 export type ComplaintPricing = {
@@ -5169,16 +6575,24 @@ export type ComplaintPricing = {
 	cell_price: Grams;
   };
 export function loadComplaintPricing(slice: Slice): ComplaintPricing {
-  	return {
-  		kind: 'ComplaintPricing',
-		deposit: loadGrams(slice),
-		bit_price: loadGrams(slice),
-		cell_price: loadGrams(slice)
+  	if ((slice.preloadUint(8) == 0x1a)) {
+  		slice.loadUint(8);
+		let deposit: Grams = loadGrams(slice);
+		let bit_price: Grams = loadGrams(slice);
+		let cell_price: Grams = loadGrams(slice);
+		return {
+  			kind: 'ComplaintPricing',
+			deposit: deposit,
+			bit_price: bit_price,
+			cell_price: cell_price
+  		};
   	};
+	throw new Error('');
   }
 export function storeComplaintPricing(complaintPricing: ComplaintPricing): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeGrams(complaintPricing.deposit)(builder);
+  		builder.storeUint(0x1a, 8);
+		storeGrams(complaintPricing.deposit)(builder);
 		storeGrams(complaintPricing.bit_price)(builder);
 		storeGrams(complaintPricing.cell_price)(builder);
   	};
@@ -5189,15 +6603,22 @@ export type BlockCreateFees = {
 	basechain_block_fee: Grams;
   };
 export function loadBlockCreateFees(slice: Slice): BlockCreateFees {
-  	return {
-  		kind: 'BlockCreateFees',
-		masterchain_block_fee: loadGrams(slice),
-		basechain_block_fee: loadGrams(slice)
+  	if ((slice.preloadUint(8) == 0x6b)) {
+  		slice.loadUint(8);
+		let masterchain_block_fee: Grams = loadGrams(slice);
+		let basechain_block_fee: Grams = loadGrams(slice);
+		return {
+  			kind: 'BlockCreateFees',
+			masterchain_block_fee: masterchain_block_fee,
+			basechain_block_fee: basechain_block_fee
+  		};
   	};
+	throw new Error('');
   }
 export function storeBlockCreateFees(blockCreateFees: BlockCreateFees): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeGrams(blockCreateFees.masterchain_block_fee)(builder);
+  		builder.storeUint(0x6b, 8);
+		storeGrams(blockCreateFees.masterchain_block_fee)(builder);
 		storeGrams(blockCreateFees.basechain_block_fee)(builder);
   	};
   }
@@ -5210,28 +6631,28 @@ export type StoragePrices = {
 	mc_cell_price_ps: number;
   };
 export function loadStoragePrices(slice: Slice): StoragePrices {
-  	let utime_since: number;
-	(utime_since = slice.loadUint(32));
-	let bit_price_ps: number;
-	(bit_price_ps = slice.loadUint(64));
-	let cell_price_ps: number;
-	(cell_price_ps = slice.loadUint(64));
-	let mc_bit_price_ps: number;
-	(mc_bit_price_ps = slice.loadUint(64));
-	let mc_cell_price_ps: number;
-	(mc_cell_price_ps = slice.loadUint(64));
-	return {
-  		kind: 'StoragePrices',
-		utime_since: utime_since,
-		bit_price_ps: bit_price_ps,
-		cell_price_ps: cell_price_ps,
-		mc_bit_price_ps: mc_bit_price_ps,
-		mc_cell_price_ps: mc_cell_price_ps
+  	if ((slice.preloadUint(8) == 0xcc)) {
+  		slice.loadUint(8);
+		let utime_since: number = slice.loadUint(32);
+		let bit_price_ps: number = slice.loadUint(64);
+		let cell_price_ps: number = slice.loadUint(64);
+		let mc_bit_price_ps: number = slice.loadUint(64);
+		let mc_cell_price_ps: number = slice.loadUint(64);
+		return {
+  			kind: 'StoragePrices',
+			utime_since: utime_since,
+			bit_price_ps: bit_price_ps,
+			cell_price_ps: cell_price_ps,
+			mc_bit_price_ps: mc_bit_price_ps,
+			mc_cell_price_ps: mc_cell_price_ps
+  		};
   	};
+	throw new Error('');
   }
 export function storeStoragePrices(storagePrices: StoragePrices): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(storagePrices.utime_since, 32);
+  		builder.storeUint(0xcc, 8);
+		builder.storeUint(storagePrices.utime_since, 32);
 		builder.storeUint(storagePrices.bit_price_ps, 64);
 		builder.storeUint(storagePrices.cell_price_ps, 64);
 		builder.storeUint(storagePrices.mc_bit_price_ps, 64);
@@ -5265,20 +6686,14 @@ export type GasLimitsPrices_gas_flat_pfx = {
 	other: GasLimitsPrices;
   };
 export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
-  	if ((slice.preloadUint(2) == 0bdd)) {
-  		slice.loadUint(2);
-		let gas_price: number;
-		(gas_price = slice.loadUint(64));
-		let gas_limit: number;
-		(gas_limit = slice.loadUint(64));
-		let gas_credit: number;
-		(gas_credit = slice.loadUint(64));
-		let block_gas_limit: number;
-		(block_gas_limit = slice.loadUint(64));
-		let freeze_due_limit: number;
-		(freeze_due_limit = slice.loadUint(64));
-		let delete_due_limit: number;
-		(delete_due_limit = slice.loadUint(64));
+  	if ((slice.preloadUint(8) == 0xdd)) {
+  		slice.loadUint(8);
+		let gas_price: number = slice.loadUint(64);
+		let gas_limit: number = slice.loadUint(64);
+		let gas_credit: number = slice.loadUint(64);
+		let block_gas_limit: number = slice.loadUint(64);
+		let freeze_due_limit: number = slice.loadUint(64);
+		let delete_due_limit: number = slice.loadUint(64);
 		return {
   			kind: 'GasLimitsPrices_gas_prices',
 			gas_price: gas_price,
@@ -5289,22 +6704,15 @@ export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
 			delete_due_limit: delete_due_limit
   		};
   	};
-	if ((slice.preloadUint(2) == 0bde)) {
-  		slice.loadUint(2);
-		let gas_price: number;
-		(gas_price = slice.loadUint(64));
-		let gas_limit: number;
-		(gas_limit = slice.loadUint(64));
-		let special_gas_limit: number;
-		(special_gas_limit = slice.loadUint(64));
-		let gas_credit: number;
-		(gas_credit = slice.loadUint(64));
-		let block_gas_limit: number;
-		(block_gas_limit = slice.loadUint(64));
-		let freeze_due_limit: number;
-		(freeze_due_limit = slice.loadUint(64));
-		let delete_due_limit: number;
-		(delete_due_limit = slice.loadUint(64));
+	if ((slice.preloadUint(8) == 0xde)) {
+  		slice.loadUint(8);
+		let gas_price: number = slice.loadUint(64);
+		let gas_limit: number = slice.loadUint(64);
+		let special_gas_limit: number = slice.loadUint(64);
+		let gas_credit: number = slice.loadUint(64);
+		let block_gas_limit: number = slice.loadUint(64);
+		let freeze_due_limit: number = slice.loadUint(64);
+		let delete_due_limit: number = slice.loadUint(64);
 		return {
   			kind: 'GasLimitsPrices_gas_prices_ext',
 			gas_price: gas_price,
@@ -5316,17 +6724,16 @@ export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
 			delete_due_limit: delete_due_limit
   		};
   	};
-	if ((slice.preloadUint(2) == 0bd1)) {
-  		slice.loadUint(2);
-		let flat_gas_limit: number;
-		(flat_gas_limit = slice.loadUint(64));
-		let flat_gas_price: number;
-		(flat_gas_price = slice.loadUint(64));
+	if ((slice.preloadUint(8) == 0xd1)) {
+  		slice.loadUint(8);
+		let flat_gas_limit: number = slice.loadUint(64);
+		let flat_gas_price: number = slice.loadUint(64);
+		let other: GasLimitsPrices = loadGasLimitsPrices(slice);
 		return {
   			kind: 'GasLimitsPrices_gas_flat_pfx',
 			flat_gas_limit: flat_gas_limit,
 			flat_gas_price: flat_gas_price,
-			other: loadGasLimitsPrices(slice)
+			other: other
   		};
   	};
 	throw new Error('');
@@ -5334,7 +6741,7 @@ export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
 export function storeGasLimitsPrices(gasLimitsPrices: GasLimitsPrices): (builder: Builder) => void {
   	if ((gasLimitsPrices.kind == 'GasLimitsPrices_gas_prices')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bdd, 2);
+  			builder.storeUint(0xdd, 8);
 			builder.storeUint(gasLimitsPrices.gas_price, 64);
 			builder.storeUint(gasLimitsPrices.gas_limit, 64);
 			builder.storeUint(gasLimitsPrices.gas_credit, 64);
@@ -5345,7 +6752,7 @@ export function storeGasLimitsPrices(gasLimitsPrices: GasLimitsPrices): (builder
   	};
 	if ((gasLimitsPrices.kind == 'GasLimitsPrices_gas_prices_ext')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bde, 2);
+  			builder.storeUint(0xde, 8);
 			builder.storeUint(gasLimitsPrices.gas_price, 64);
 			builder.storeUint(gasLimitsPrices.gas_limit, 64);
 			builder.storeUint(gasLimitsPrices.special_gas_limit, 64);
@@ -5357,7 +6764,7 @@ export function storeGasLimitsPrices(gasLimitsPrices: GasLimitsPrices): (builder
   	};
 	if ((gasLimitsPrices.kind == 'GasLimitsPrices_gas_flat_pfx')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bd1, 2);
+  			builder.storeUint(0xd1, 8);
 			builder.storeUint(gasLimitsPrices.flat_gas_limit, 64);
 			builder.storeUint(gasLimitsPrices.flat_gas_price, 64);
 			storeGasLimitsPrices(gasLimitsPrices.other)(builder);
@@ -5372,22 +6779,24 @@ export type ParamLimits = {
 	hard_limit: number;
   };
 export function loadParamLimits(slice: Slice): ParamLimits {
-  	let underload: number;
-	(underload = slice.loadUint(32));
-	let soft_limit: number;
-	(soft_limit = slice.loadUint(32));
-	let hard_limit: number;
-	(hard_limit = slice.loadUint(32));
-	return {
-  		kind: 'ParamLimits',
-		underload: underload,
-		soft_limit: soft_limit,
-		hard_limit: hard_limit
+  	if ((slice.preloadUint(8) == 0xc3)) {
+  		slice.loadUint(8);
+		let underload: number = slice.loadUint(32);
+		let soft_limit: number = slice.loadUint(32);
+		let hard_limit: number = slice.loadUint(32);
+		return {
+  			kind: 'ParamLimits',
+			underload: underload,
+			soft_limit: soft_limit,
+			hard_limit: hard_limit
+  		};
   	};
+	throw new Error('');
   }
 export function storeParamLimits(paramLimits: ParamLimits): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(paramLimits.underload, 32);
+  		builder.storeUint(0xc3, 8);
+		builder.storeUint(paramLimits.underload, 32);
 		builder.storeUint(paramLimits.soft_limit, 32);
 		builder.storeUint(paramLimits.hard_limit, 32);
   	};
@@ -5399,16 +6808,24 @@ export type BlockLimits = {
 	lt_delta: ParamLimits;
   };
 export function loadBlockLimits(slice: Slice): BlockLimits {
-  	return {
-  		kind: 'BlockLimits',
-		bytes: loadParamLimits(slice),
-		gas: loadParamLimits(slice),
-		lt_delta: loadParamLimits(slice)
+  	if ((slice.preloadUint(8) == 0x5d)) {
+  		slice.loadUint(8);
+		let bytes: ParamLimits = loadParamLimits(slice);
+		let gas: ParamLimits = loadParamLimits(slice);
+		let lt_delta: ParamLimits = loadParamLimits(slice);
+		return {
+  			kind: 'BlockLimits',
+			bytes: bytes,
+			gas: gas,
+			lt_delta: lt_delta
+  		};
   	};
+	throw new Error('');
   }
 export function storeBlockLimits(blockLimits: BlockLimits): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeParamLimits(blockLimits.bytes)(builder);
+  		builder.storeUint(0x5d, 8);
+		storeParamLimits(blockLimits.bytes)(builder);
 		storeParamLimits(blockLimits.gas)(builder);
 		storeParamLimits(blockLimits.lt_delta)(builder);
   	};
@@ -5423,31 +6840,30 @@ export type MsgForwardPrices = {
 	next_frac: number;
   };
 export function loadMsgForwardPrices(slice: Slice): MsgForwardPrices {
-  	let lump_price: number;
-	(lump_price = slice.loadUint(64));
-	let bit_price: number;
-	(bit_price = slice.loadUint(64));
-	let cell_price: number;
-	(cell_price = slice.loadUint(64));
-	let ihr_price_factor: number;
-	(ihr_price_factor = slice.loadUint(32));
-	let first_frac: number;
-	(first_frac = slice.loadUint(16));
-	let next_frac: number;
-	(next_frac = slice.loadUint(16));
-	return {
-  		kind: 'MsgForwardPrices',
-		lump_price: lump_price,
-		bit_price: bit_price,
-		cell_price: cell_price,
-		ihr_price_factor: ihr_price_factor,
-		first_frac: first_frac,
-		next_frac: next_frac
+  	if ((slice.preloadUint(8) == 0xea)) {
+  		slice.loadUint(8);
+		let lump_price: number = slice.loadUint(64);
+		let bit_price: number = slice.loadUint(64);
+		let cell_price: number = slice.loadUint(64);
+		let ihr_price_factor: number = slice.loadUint(32);
+		let first_frac: number = slice.loadUint(16);
+		let next_frac: number = slice.loadUint(16);
+		return {
+  			kind: 'MsgForwardPrices',
+			lump_price: lump_price,
+			bit_price: bit_price,
+			cell_price: cell_price,
+			ihr_price_factor: ihr_price_factor,
+			first_frac: first_frac,
+			next_frac: next_frac
+  		};
   	};
+	throw new Error('');
   }
 export function storeMsgForwardPrices(msgForwardPrices: MsgForwardPrices): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(msgForwardPrices.lump_price, 64);
+  		builder.storeUint(0xea, 8);
+		builder.storeUint(msgForwardPrices.lump_price, 64);
 		builder.storeUint(msgForwardPrices.bit_price, 64);
 		builder.storeUint(msgForwardPrices.cell_price, 64);
 		builder.storeUint(msgForwardPrices.ihr_price_factor, 32);
@@ -5473,16 +6889,12 @@ export type CatchainConfig_catchain_config_new = {
 	shard_validators_num: number;
   };
 export function loadCatchainConfig(slice: Slice): CatchainConfig {
-  	if ((slice.preloadUint(2) == 0bc1)) {
-  		slice.loadUint(2);
-		let mc_catchain_lifetime: number;
-		(mc_catchain_lifetime = slice.loadUint(32));
-		let shard_catchain_lifetime: number;
-		(shard_catchain_lifetime = slice.loadUint(32));
-		let shard_validators_lifetime: number;
-		(shard_validators_lifetime = slice.loadUint(32));
-		let shard_validators_num: number;
-		(shard_validators_num = slice.loadUint(32));
+  	if ((slice.preloadUint(8) == 0xc1)) {
+  		slice.loadUint(8);
+		let mc_catchain_lifetime: number = slice.loadUint(32);
+		let shard_catchain_lifetime: number = slice.loadUint(32);
+		let shard_validators_lifetime: number = slice.loadUint(32);
+		let shard_validators_num: number = slice.loadUint(32);
 		return {
   			kind: 'CatchainConfig_catchain_config',
 			mc_catchain_lifetime: mc_catchain_lifetime,
@@ -5491,22 +6903,18 @@ export function loadCatchainConfig(slice: Slice): CatchainConfig {
 			shard_validators_num: shard_validators_num
   		};
   	};
-	if ((slice.preloadUint(2) == 0bc2)) {
-  		slice.loadUint(2);
-		let flags: number;
-		(flags = slice.loadUint(7));
-		let mc_catchain_lifetime: number;
-		(mc_catchain_lifetime = slice.loadUint(32));
-		let shard_catchain_lifetime: number;
-		(shard_catchain_lifetime = slice.loadUint(32));
-		let shard_validators_lifetime: number;
-		(shard_validators_lifetime = slice.loadUint(32));
-		let shard_validators_num: number;
-		(shard_validators_num = slice.loadUint(32));
+	if ((slice.preloadUint(8) == 0xc2)) {
+  		slice.loadUint(8);
+		let flags: number = slice.loadUint(7);
+		let shuffle_mc_validators: Bool = loadBool(slice);
+		let mc_catchain_lifetime: number = slice.loadUint(32);
+		let shard_catchain_lifetime: number = slice.loadUint(32);
+		let shard_validators_lifetime: number = slice.loadUint(32);
+		let shard_validators_num: number = slice.loadUint(32);
 		return {
   			kind: 'CatchainConfig_catchain_config_new',
 			flags: flags,
-			shuffle_mc_validators: loadBool(slice),
+			shuffle_mc_validators: shuffle_mc_validators,
 			mc_catchain_lifetime: mc_catchain_lifetime,
 			shard_catchain_lifetime: shard_catchain_lifetime,
 			shard_validators_lifetime: shard_validators_lifetime,
@@ -5518,7 +6926,7 @@ export function loadCatchainConfig(slice: Slice): CatchainConfig {
 export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: Builder) => void {
   	if ((catchainConfig.kind == 'CatchainConfig_catchain_config')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bc1, 2);
+  			builder.storeUint(0xc1, 8);
 			builder.storeUint(catchainConfig.mc_catchain_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_catchain_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_validators_lifetime, 32);
@@ -5527,7 +6935,7 @@ export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: B
   	};
 	if ((catchainConfig.kind == 'CatchainConfig_catchain_config_new')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bc2, 2);
+  			builder.storeUint(0xc2, 8);
 			builder.storeUint(catchainConfig.flags, 7);
 			storeBool(catchainConfig.shuffle_mc_validators)(builder);
 			builder.storeUint(catchainConfig.mc_catchain_lifetime, 32);
@@ -5593,24 +7001,16 @@ export type ConsensusConfig_consensus_config_v4 = {
 	catchain_max_blocks_coeff: number;
   };
 export function loadConsensusConfig(slice: Slice): ConsensusConfig {
-  	if ((slice.preloadUint(2) == 0bd6)) {
-  		slice.loadUint(2);
-		let round_candidates: number;
-		(round_candidates = slice.loadUint(32));
-		let next_candidate_delay_ms: number;
-		(next_candidate_delay_ms = slice.loadUint(32));
-		let consensus_timeout_ms: number;
-		(consensus_timeout_ms = slice.loadUint(32));
-		let fast_attempts: number;
-		(fast_attempts = slice.loadUint(32));
-		let attempt_duration: number;
-		(attempt_duration = slice.loadUint(32));
-		let catchain_max_deps: number;
-		(catchain_max_deps = slice.loadUint(32));
-		let max_block_bytes: number;
-		(max_block_bytes = slice.loadUint(32));
-		let max_collated_bytes: number;
-		(max_collated_bytes = slice.loadUint(32));
+  	if ((slice.preloadUint(8) == 0xd6)) {
+  		slice.loadUint(8);
+		let round_candidates: number = slice.loadUint(32);
+		let next_candidate_delay_ms: number = slice.loadUint(32);
+		let consensus_timeout_ms: number = slice.loadUint(32);
+		let fast_attempts: number = slice.loadUint(32);
+		let attempt_duration: number = slice.loadUint(32);
+		let catchain_max_deps: number = slice.loadUint(32);
+		let max_block_bytes: number = slice.loadUint(32);
+		let max_collated_bytes: number = slice.loadUint(32);
 		return {
   			kind: 'ConsensusConfig_consensus_config',
 			round_candidates: round_candidates,
@@ -5623,30 +7023,22 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 			max_collated_bytes: max_collated_bytes
   		};
   	};
-	if ((slice.preloadUint(2) == 0bd7)) {
-  		slice.loadUint(2);
-		let flags: number;
-		(flags = slice.loadUint(7));
-		let round_candidates: number;
-		(round_candidates = slice.loadUint(8));
-		let next_candidate_delay_ms: number;
-		(next_candidate_delay_ms = slice.loadUint(32));
-		let consensus_timeout_ms: number;
-		(consensus_timeout_ms = slice.loadUint(32));
-		let fast_attempts: number;
-		(fast_attempts = slice.loadUint(32));
-		let attempt_duration: number;
-		(attempt_duration = slice.loadUint(32));
-		let catchain_max_deps: number;
-		(catchain_max_deps = slice.loadUint(32));
-		let max_block_bytes: number;
-		(max_block_bytes = slice.loadUint(32));
-		let max_collated_bytes: number;
-		(max_collated_bytes = slice.loadUint(32));
+	if ((slice.preloadUint(8) == 0xd7)) {
+  		slice.loadUint(8);
+		let flags: number = slice.loadUint(7);
+		let new_catchain_ids: Bool = loadBool(slice);
+		let round_candidates: number = slice.loadUint(8);
+		let next_candidate_delay_ms: number = slice.loadUint(32);
+		let consensus_timeout_ms: number = slice.loadUint(32);
+		let fast_attempts: number = slice.loadUint(32);
+		let attempt_duration: number = slice.loadUint(32);
+		let catchain_max_deps: number = slice.loadUint(32);
+		let max_block_bytes: number = slice.loadUint(32);
+		let max_collated_bytes: number = slice.loadUint(32);
 		return {
   			kind: 'ConsensusConfig_consensus_config_new',
 			flags: flags,
-			new_catchain_ids: loadBool(slice),
+			new_catchain_ids: new_catchain_ids,
 			round_candidates: round_candidates,
 			next_candidate_delay_ms: next_candidate_delay_ms,
 			consensus_timeout_ms: consensus_timeout_ms,
@@ -5657,32 +7049,23 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 			max_collated_bytes: max_collated_bytes
   		};
   	};
-	if ((slice.preloadUint(2) == 0bd8)) {
-  		slice.loadUint(2);
-		let flags: number;
-		(flags = slice.loadUint(7));
-		let round_candidates: number;
-		(round_candidates = slice.loadUint(8));
-		let next_candidate_delay_ms: number;
-		(next_candidate_delay_ms = slice.loadUint(32));
-		let consensus_timeout_ms: number;
-		(consensus_timeout_ms = slice.loadUint(32));
-		let fast_attempts: number;
-		(fast_attempts = slice.loadUint(32));
-		let attempt_duration: number;
-		(attempt_duration = slice.loadUint(32));
-		let catchain_max_deps: number;
-		(catchain_max_deps = slice.loadUint(32));
-		let max_block_bytes: number;
-		(max_block_bytes = slice.loadUint(32));
-		let max_collated_bytes: number;
-		(max_collated_bytes = slice.loadUint(32));
-		let proto_version: number;
-		(proto_version = slice.loadUint(16));
+	if ((slice.preloadUint(8) == 0xd8)) {
+  		slice.loadUint(8);
+		let flags: number = slice.loadUint(7);
+		let new_catchain_ids: Bool = loadBool(slice);
+		let round_candidates: number = slice.loadUint(8);
+		let next_candidate_delay_ms: number = slice.loadUint(32);
+		let consensus_timeout_ms: number = slice.loadUint(32);
+		let fast_attempts: number = slice.loadUint(32);
+		let attempt_duration: number = slice.loadUint(32);
+		let catchain_max_deps: number = slice.loadUint(32);
+		let max_block_bytes: number = slice.loadUint(32);
+		let max_collated_bytes: number = slice.loadUint(32);
+		let proto_version: number = slice.loadUint(16);
 		return {
   			kind: 'ConsensusConfig_consensus_config_v3',
 			flags: flags,
-			new_catchain_ids: loadBool(slice),
+			new_catchain_ids: new_catchain_ids,
 			round_candidates: round_candidates,
 			next_candidate_delay_ms: next_candidate_delay_ms,
 			consensus_timeout_ms: consensus_timeout_ms,
@@ -5694,34 +7077,24 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 			proto_version: proto_version
   		};
   	};
-	if ((slice.preloadUint(2) == 0bd9)) {
-  		slice.loadUint(2);
-		let flags: number;
-		(flags = slice.loadUint(7));
-		let round_candidates: number;
-		(round_candidates = slice.loadUint(8));
-		let next_candidate_delay_ms: number;
-		(next_candidate_delay_ms = slice.loadUint(32));
-		let consensus_timeout_ms: number;
-		(consensus_timeout_ms = slice.loadUint(32));
-		let fast_attempts: number;
-		(fast_attempts = slice.loadUint(32));
-		let attempt_duration: number;
-		(attempt_duration = slice.loadUint(32));
-		let catchain_max_deps: number;
-		(catchain_max_deps = slice.loadUint(32));
-		let max_block_bytes: number;
-		(max_block_bytes = slice.loadUint(32));
-		let max_collated_bytes: number;
-		(max_collated_bytes = slice.loadUint(32));
-		let proto_version: number;
-		(proto_version = slice.loadUint(16));
-		let catchain_max_blocks_coeff: number;
-		(catchain_max_blocks_coeff = slice.loadUint(32));
+	if ((slice.preloadUint(8) == 0xd9)) {
+  		slice.loadUint(8);
+		let flags: number = slice.loadUint(7);
+		let new_catchain_ids: Bool = loadBool(slice);
+		let round_candidates: number = slice.loadUint(8);
+		let next_candidate_delay_ms: number = slice.loadUint(32);
+		let consensus_timeout_ms: number = slice.loadUint(32);
+		let fast_attempts: number = slice.loadUint(32);
+		let attempt_duration: number = slice.loadUint(32);
+		let catchain_max_deps: number = slice.loadUint(32);
+		let max_block_bytes: number = slice.loadUint(32);
+		let max_collated_bytes: number = slice.loadUint(32);
+		let proto_version: number = slice.loadUint(16);
+		let catchain_max_blocks_coeff: number = slice.loadUint(32);
 		return {
   			kind: 'ConsensusConfig_consensus_config_v4',
 			flags: flags,
-			new_catchain_ids: loadBool(slice),
+			new_catchain_ids: new_catchain_ids,
 			round_candidates: round_candidates,
 			next_candidate_delay_ms: next_candidate_delay_ms,
 			consensus_timeout_ms: consensus_timeout_ms,
@@ -5739,7 +7112,7 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder: Builder) => void {
   	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bd6, 2);
+  			builder.storeUint(0xd6, 8);
 			builder.storeUint(consensusConfig.round_candidates, 32);
 			builder.storeUint(consensusConfig.next_candidate_delay_ms, 32);
 			builder.storeUint(consensusConfig.consensus_timeout_ms, 32);
@@ -5752,7 +7125,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_new')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bd7, 2);
+  			builder.storeUint(0xd7, 8);
 			builder.storeUint(consensusConfig.flags, 7);
 			storeBool(consensusConfig.new_catchain_ids)(builder);
 			builder.storeUint(consensusConfig.round_candidates, 8);
@@ -5767,7 +7140,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_v3')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bd8, 2);
+  			builder.storeUint(0xd8, 8);
 			builder.storeUint(consensusConfig.flags, 7);
 			storeBool(consensusConfig.new_catchain_ids)(builder);
 			builder.storeUint(consensusConfig.round_candidates, 8);
@@ -5783,7 +7156,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_v4')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bd9, 2);
+  			builder.storeUint(0xd9, 8);
 			builder.storeUint(consensusConfig.flags, 7);
 			storeBool(consensusConfig.new_catchain_ids)(builder);
 			builder.storeUint(consensusConfig.round_candidates, 8);
@@ -5808,23 +7181,26 @@ export type ValidatorTempKey = {
 	valid_until: number;
   };
 export function loadValidatorTempKey(slice: Slice): ValidatorTempKey {
-  	let adnl_addr: BitString;
-	(adnl_addr = slice.loadBits(256));
-	let seqno: number;
-	(seqno = slice.loadUint(32));
-	let valid_until: number;
-	(valid_until = slice.loadUint(32));
-	return {
-  		kind: 'ValidatorTempKey',
-		adnl_addr: adnl_addr,
-		temp_public_key: loadSigPubKey(slice),
-		seqno: seqno,
-		valid_until: valid_until
+  	if ((slice.preloadUint(4) == 0x3)) {
+  		slice.loadUint(4);
+		let adnl_addr: BitString = slice.loadBits(256);
+		let temp_public_key: SigPubKey = loadSigPubKey(slice);
+		let seqno: number = slice.loadUint(32);
+		let valid_until: number = slice.loadUint(32);
+		return {
+  			kind: 'ValidatorTempKey',
+			adnl_addr: adnl_addr,
+			temp_public_key: temp_public_key,
+			seqno: seqno,
+			valid_until: valid_until
+  		};
   	};
+	throw new Error('');
   }
 export function storeValidatorTempKey(validatorTempKey: ValidatorTempKey): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(validatorTempKey.adnl_addr);
+  		builder.storeUint(0x3, 4);
+		builder.storeBits(validatorTempKey.adnl_addr);
 		storeSigPubKey(validatorTempKey.temp_public_key)(builder);
 		builder.storeUint(validatorTempKey.seqno, 32);
 		builder.storeUint(validatorTempKey.valid_until, 32);
@@ -5836,16 +7212,23 @@ export type ValidatorSignedTempKey = {
 	signature: CryptoSignature;
   };
 export function loadValidatorSignedTempKey(slice: Slice): ValidatorSignedTempKey {
-  	let slice1 = slice.loadRef().beginParse();
-	return {
-  		kind: 'ValidatorSignedTempKey',
-		key: loadValidatorTempKey(slice1),
-		signature: loadCryptoSignature(slice)
+  	if ((slice.preloadUint(4) == 0x4)) {
+  		slice.loadUint(4);
+		let slice1 = slice.loadRef().beginParse();
+		let key: ValidatorTempKey = loadValidatorTempKey(slice1);
+		let signature: CryptoSignature = loadCryptoSignature(slice);
+		return {
+  			kind: 'ValidatorSignedTempKey',
+			key: key,
+			signature: signature
+  		};
   	};
+	throw new Error('');
   }
 export function storeValidatorSignedTempKey(validatorSignedTempKey: ValidatorSignedTempKey): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		let cell1 = beginCell();
+  		builder.storeUint(0x4, 4);
+		let cell1 = beginCell();
 		storeValidatorTempKey(validatorSignedTempKey.key)(cell1);
 		builder.storeRef(cell1);
 		storeCryptoSignature(validatorSignedTempKey.signature)(builder);
@@ -5866,44 +7249,40 @@ export type MisbehaviourPunishmentConfig = {
 	medium_proportional_mult: number;
   };
 export function loadMisbehaviourPunishmentConfig(slice: Slice): MisbehaviourPunishmentConfig {
-  	let default_proportional_fine: number;
-	(default_proportional_fine = slice.loadUint(32));
-	let severity_flat_mult: number;
-	(severity_flat_mult = slice.loadUint(16));
-	let severity_proportional_mult: number;
-	(severity_proportional_mult = slice.loadUint(16));
-	let unpunishable_interval: number;
-	(unpunishable_interval = slice.loadUint(16));
-	let long_interval: number;
-	(long_interval = slice.loadUint(16));
-	let long_flat_mult: number;
-	(long_flat_mult = slice.loadUint(16));
-	let long_proportional_mult: number;
-	(long_proportional_mult = slice.loadUint(16));
-	let medium_interval: number;
-	(medium_interval = slice.loadUint(16));
-	let medium_flat_mult: number;
-	(medium_flat_mult = slice.loadUint(16));
-	let medium_proportional_mult: number;
-	(medium_proportional_mult = slice.loadUint(16));
-	return {
-  		kind: 'MisbehaviourPunishmentConfig',
-		default_flat_fine: loadGrams(slice),
-		default_proportional_fine: default_proportional_fine,
-		severity_flat_mult: severity_flat_mult,
-		severity_proportional_mult: severity_proportional_mult,
-		unpunishable_interval: unpunishable_interval,
-		long_interval: long_interval,
-		long_flat_mult: long_flat_mult,
-		long_proportional_mult: long_proportional_mult,
-		medium_interval: medium_interval,
-		medium_flat_mult: medium_flat_mult,
-		medium_proportional_mult: medium_proportional_mult
+  	if ((slice.preloadUint(8) == 0x01)) {
+  		slice.loadUint(8);
+		let default_flat_fine: Grams = loadGrams(slice);
+		let default_proportional_fine: number = slice.loadUint(32);
+		let severity_flat_mult: number = slice.loadUint(16);
+		let severity_proportional_mult: number = slice.loadUint(16);
+		let unpunishable_interval: number = slice.loadUint(16);
+		let long_interval: number = slice.loadUint(16);
+		let long_flat_mult: number = slice.loadUint(16);
+		let long_proportional_mult: number = slice.loadUint(16);
+		let medium_interval: number = slice.loadUint(16);
+		let medium_flat_mult: number = slice.loadUint(16);
+		let medium_proportional_mult: number = slice.loadUint(16);
+		return {
+  			kind: 'MisbehaviourPunishmentConfig',
+			default_flat_fine: default_flat_fine,
+			default_proportional_fine: default_proportional_fine,
+			severity_flat_mult: severity_flat_mult,
+			severity_proportional_mult: severity_proportional_mult,
+			unpunishable_interval: unpunishable_interval,
+			long_interval: long_interval,
+			long_flat_mult: long_flat_mult,
+			long_proportional_mult: long_proportional_mult,
+			medium_interval: medium_interval,
+			medium_flat_mult: medium_flat_mult,
+			medium_proportional_mult: medium_proportional_mult
+  		};
   	};
+	throw new Error('');
   }
 export function storeMisbehaviourPunishmentConfig(misbehaviourPunishmentConfig: MisbehaviourPunishmentConfig): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeGrams(misbehaviourPunishmentConfig.default_flat_fine)(builder);
+  		builder.storeUint(0x01, 8);
+		storeGrams(misbehaviourPunishmentConfig.default_flat_fine)(builder);
 		builder.storeUint(misbehaviourPunishmentConfig.default_proportional_fine, 32);
 		builder.storeUint(misbehaviourPunishmentConfig.severity_flat_mult, 16);
 		builder.storeUint(misbehaviourPunishmentConfig.severity_proportional_mult, 16);
@@ -5920,21 +7299,21 @@ export type OracleBridgeParams = {
   	kind: 'OracleBridgeParams';
 	bridge_address: BitString;
 	oracle_mutlisig_address: BitString;
-	oracles: HashmapE<uint256>;
+	oracles: HashmapE<number>;
 	external_chain_address: BitString;
   };
 export function loadOracleBridgeParams(slice: Slice): OracleBridgeParams {
-  	let bridge_address: BitString;
-	(bridge_address = slice.loadBits(256));
-	let oracle_mutlisig_address: BitString;
-	(oracle_mutlisig_address = slice.loadBits(256));
-	let external_chain_address: BitString;
-	(external_chain_address = slice.loadBits(256));
+  	let bridge_address: BitString = slice.loadBits(256);
+	let oracle_mutlisig_address: BitString = slice.loadBits(256);
+	let oracles: HashmapE<number> = loadHashmapE<number>(slice, 256, (slice: Slice) => {
+  		return slice.loadUint(256);
+  	});
+	let external_chain_address: BitString = slice.loadBits(256);
 	return {
   		kind: 'OracleBridgeParams',
 		bridge_address: bridge_address,
 		oracle_mutlisig_address: oracle_mutlisig_address,
-		oracles: loadHashmapE<uint256>(slice, 256, loaduint256),
+		oracles: oracles,
 		external_chain_address: external_chain_address
   	};
   }
@@ -5942,7 +7321,11 @@ export function storeOracleBridgeParams(oracleBridgeParams: OracleBridgeParams):
   	return (builder: Builder) => {
   		builder.storeBits(oracleBridgeParams.bridge_address);
 		builder.storeBits(oracleBridgeParams.oracle_mutlisig_address);
-		storeHashmapE<uint256>(oracleBridgeParams.oracles, storeuint256)(builder);
+		storeHashmapE<number>(oracleBridgeParams.oracles, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeUint(arg, 256);
+  			};
+  		})(builder);
 		builder.storeBits(oracleBridgeParams.external_chain_address);
   	};
   }
@@ -5953,15 +7336,14 @@ export type BlockSignaturesPure = {
 	signatures: HashmapE<CryptoSignaturePair>;
   };
 export function loadBlockSignaturesPure(slice: Slice): BlockSignaturesPure {
-  	let sig_count: number;
-	(sig_count = slice.loadUint(32));
-	let sig_weight: number;
-	(sig_weight = slice.loadUint(64));
+  	let sig_count: number = slice.loadUint(32);
+	let sig_weight: number = slice.loadUint(64);
+	let signatures: HashmapE<CryptoSignaturePair> = loadHashmapE<CryptoSignaturePair>(slice, 16, loadCryptoSignaturePair);
 	return {
   		kind: 'BlockSignaturesPure',
 		sig_count: sig_count,
 		sig_weight: sig_weight,
-		signatures: loadHashmapE<CryptoSignaturePair>(slice, 16, loadCryptoSignaturePair)
+		signatures: signatures
   	};
   }
 export function storeBlockSignaturesPure(blockSignaturesPure: BlockSignaturesPure): (builder: Builder) => void {
@@ -5977,15 +7359,22 @@ export type BlockSignatures = {
 	pure_signatures: BlockSignaturesPure;
   };
 export function loadBlockSignatures(slice: Slice): BlockSignatures {
-  	return {
-  		kind: 'BlockSignatures',
-		validator_info: loadValidatorBaseInfo(slice),
-		pure_signatures: loadBlockSignaturesPure(slice)
+  	if ((slice.preloadUint(8) == 0x11)) {
+  		slice.loadUint(8);
+		let validator_info: ValidatorBaseInfo = loadValidatorBaseInfo(slice);
+		let pure_signatures: BlockSignaturesPure = loadBlockSignaturesPure(slice);
+		return {
+  			kind: 'BlockSignatures',
+			validator_info: validator_info,
+			pure_signatures: pure_signatures
+  		};
   	};
+	throw new Error('');
   }
 export function storeBlockSignatures(blockSignatures: BlockSignatures): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeValidatorBaseInfo(blockSignatures.validator_info)(builder);
+  		builder.storeUint(0x11, 8);
+		storeValidatorBaseInfo(blockSignatures.validator_info)(builder);
 		storeBlockSignaturesPure(blockSignatures.pure_signatures)(builder);
   	};
   }
@@ -5993,26 +7382,41 @@ export type BlockProof = {
   	kind: 'BlockProof';
 	proof_for: BlockIdExt;
 	root: Slice;
-	signatures: Maybe;
+	signatures: Maybe<BlockSignatures>;
   };
 export function loadBlockProof(slice: Slice): BlockProof {
-  	let slice1 = slice.loadRef().beginParse();
-	let root: Slice;
-	(root = slice1);
-	return {
-  		kind: 'BlockProof',
-		proof_for: loadBlockIdExt(slice),
-		root: root,
-		signatures: loadMaybe(slice)
+  	if ((slice.preloadUint(8) == 0xc3)) {
+  		slice.loadUint(8);
+		let proof_for: BlockIdExt = loadBlockIdExt(slice);
+		let slice1 = slice.loadRef().beginParse();
+		let root: Slice = slice1;
+		let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadBlockSignatures(slice1);
+  		});
+		return {
+  			kind: 'BlockProof',
+			proof_for: proof_for,
+			root: root,
+			signatures: signatures
+  		};
   	};
+	throw new Error('');
   }
 export function storeBlockProof(blockProof: BlockProof): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeBlockIdExt(blockProof.proof_for)(builder);
+  		builder.storeUint(0xc3, 8);
+		storeBlockIdExt(blockProof.proof_for)(builder);
 		let cell1 = beginCell();
 		cell1.storeSlice(blockProof.root);
 		builder.storeRef(cell1);
-		storeMaybe(blockProof.signatures)(builder);
+		storeMaybe<BlockSignatures>(blockProof.signatures, (arg: BlockSignatures) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeBlockSignatures(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
   	};
   }
 export type ProofChain = ProofChain_chain_empty | ProofChain_chain_link;
@@ -6024,19 +7428,18 @@ export type ProofChain_chain_link = {
 	n: number;
 	root: Slice;
   };
-export function loadProofChain(slice: Slice, n: number): ProofChain {
-  	if ((n == 0)) {
+export function loadProofChain(slice: Slice, arg0: number): ProofChain {
+  	if ((arg0 == 0)) {
   		return {
   			kind: 'ProofChain_chain_empty'
   		};
   	};
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
-		let root: Slice;
-		(root = slice1);
+		let root: Slice = slice1;
 		return {
   			kind: 'ProofChain_chain_link',
-			n: (n + 1),
+			n: (arg0 - 1),
 			root: root
   		};
   	};
@@ -6060,42 +7463,73 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
 export type TopBlockDescr = {
   	kind: 'TopBlockDescr';
 	proof_for: BlockIdExt;
-	signatures: Maybe;
+	signatures: Maybe<BlockSignatures>;
 	len: number;
-	chain: ProofChain<len>;
+	chain: ProofChain;
   };
 export function loadTopBlockDescr(slice: Slice): TopBlockDescr {
-  	let len: number;
-	(len = slice.loadUint(8));
-	return {
-  		kind: 'TopBlockDescr',
-		proof_for: loadBlockIdExt(slice),
-		signatures: loadMaybe(slice),
-		len: len,
-		chain: loadProofChain<len>(slice, loadlen)
+  	if ((slice.preloadUint(8) == 0xd5)) {
+  		slice.loadUint(8);
+		let proof_for: BlockIdExt = loadBlockIdExt(slice);
+		let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadBlockSignatures(slice1);
+  		});
+		let len: number = slice.loadUint(8);
+		let chain: ProofChain = loadProofChain(slice, len);
+		return {
+  			kind: 'TopBlockDescr',
+			proof_for: proof_for,
+			signatures: signatures,
+			len: len,
+			chain: chain
+  		};
   	};
+	throw new Error('');
   }
 export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeBlockIdExt(topBlockDescr.proof_for)(builder);
-		storeMaybe(topBlockDescr.signatures)(builder);
+  		builder.storeUint(0xd5, 8);
+		storeBlockIdExt(topBlockDescr.proof_for)(builder);
+		storeMaybe<BlockSignatures>(topBlockDescr.signatures, (arg: BlockSignatures) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeBlockSignatures(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
 		builder.storeUint(topBlockDescr.len, 8);
-		storeProofChain<len>(topBlockDescr.chain, storelen)(builder);
+		storeProofChain(topBlockDescr.chain)(builder);
   	};
   }
 export type TopBlockDescrSet = {
   	kind: 'TopBlockDescrSet';
-	collection: HashmapE;
+	collection: HashmapE<TopBlockDescr>;
   };
 export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
-  	return {
-  		kind: 'TopBlockDescrSet',
-		collection: loadHashmapE(slice, 96)
+  	if ((slice.preloadUint(32) == 0x4ac789f3)) {
+  		slice.loadUint(32);
+		let collection: HashmapE<TopBlockDescr> = loadHashmapE<TopBlockDescr>(slice, 96, (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadTopBlockDescr(slice1);
+  		});
+		return {
+  			kind: 'TopBlockDescrSet',
+			collection: collection
+  		};
   	};
+	throw new Error('');
   }
 export function storeTopBlockDescrSet(topBlockDescrSet: TopBlockDescrSet): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeHashmapE(topBlockDescrSet.collection)(builder);
+  		builder.storeUint(0x4ac789f3, 32);
+		storeHashmapE<TopBlockDescr>(topBlockDescrSet.collection, (arg: TopBlockDescr) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				storeTopBlockDescr(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
   	};
   }
 export type ProducerInfo = {
@@ -6106,21 +7540,28 @@ export type ProducerInfo = {
 	prod_proof: MERKLE_PROOF<ShardState>;
   };
 export function loadProducerInfo(slice: Slice): ProducerInfo {
-  	let utime: number;
-	(utime = slice.loadUint(32));
-	let slice1 = slice.loadRef().beginParse();
-	let slice2 = slice.loadRef().beginParse();
-	return {
-  		kind: 'ProducerInfo',
-		utime: utime,
-		mc_blk_ref: loadExtBlkRef(slice),
-		state_proof: loadMERKLE_PROOF<Block>(slice1, loadBlock),
-		prod_proof: loadMERKLE_PROOF<ShardState>(slice2, loadShardState)
+  	if ((slice.preloadUint(8) == 0x34)) {
+  		slice.loadUint(8);
+		let utime: number = slice.loadUint(32);
+		let mc_blk_ref: ExtBlkRef = loadExtBlkRef(slice);
+		let slice1 = slice.loadRef().beginParse();
+		let state_proof: MERKLE_PROOF<Block> = loadMERKLE_PROOF<Block>(slice1, loadBlock);
+		let slice2 = slice.loadRef().beginParse();
+		let prod_proof: MERKLE_PROOF<ShardState> = loadMERKLE_PROOF<ShardState>(slice2, loadShardState);
+		return {
+  			kind: 'ProducerInfo',
+			utime: utime,
+			mc_blk_ref: mc_blk_ref,
+			state_proof: state_proof,
+			prod_proof: prod_proof
+  		};
   	};
+	throw new Error('');
   }
 export function storeProducerInfo(producerInfo: ProducerInfo): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(producerInfo.utime, 32);
+  		builder.storeUint(0x34, 8);
+		builder.storeUint(producerInfo.utime, 32);
 		storeExtBlkRef(producerInfo.mc_blk_ref)(builder);
 		let cell1 = beginCell();
 		storeMERKLE_PROOF<Block>(producerInfo.state_proof, storeBlock)(cell1);
@@ -6130,12 +7571,61 @@ export function storeProducerInfo(producerInfo: ProducerInfo): (builder: Builder
 		builder.storeRef(cell2);
   	};
   }
-export type ComplaintDescr = ;
+export type ComplaintDescr = ComplaintDescr_no_blk_gen | ComplaintDescr_no_blk_gen_diff;
+export type ComplaintDescr_no_blk_gen = {
+  	kind: 'ComplaintDescr_no_blk_gen';
+	from_utime: number;
+	prod_info: ProducerInfo;
+  };
+export type ComplaintDescr_no_blk_gen_diff = {
+  	kind: 'ComplaintDescr_no_blk_gen_diff';
+	prod_info_old: ProducerInfo;
+	prod_info_new: ProducerInfo;
+  };
 export function loadComplaintDescr(slice: Slice): ComplaintDescr {
-  	throw new Error('');
+  	if (true) {
+  		let from_utime: number = slice.loadUint(32);
+		let slice1 = slice.loadRef().beginParse();
+		let prod_info: ProducerInfo = loadProducerInfo(slice1);
+		return {
+  			kind: 'ComplaintDescr_no_blk_gen',
+			from_utime: from_utime,
+			prod_info: prod_info
+  		};
+  	};
+	if (true) {
+  		let slice1 = slice.loadRef().beginParse();
+		let prod_info_old: ProducerInfo = loadProducerInfo(slice1);
+		let slice2 = slice.loadRef().beginParse();
+		let prod_info_new: ProducerInfo = loadProducerInfo(slice2);
+		return {
+  			kind: 'ComplaintDescr_no_blk_gen_diff',
+			prod_info_old: prod_info_old,
+			prod_info_new: prod_info_new
+  		};
+  	};
+	throw new Error('');
   }
 export function storeComplaintDescr(complaintDescr: ComplaintDescr): (builder: Builder) => void {
-  	throw new Error('');
+  	if ((complaintDescr.kind == 'ComplaintDescr_no_blk_gen')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(complaintDescr.from_utime, 32);
+			let cell1 = beginCell();
+			storeProducerInfo(complaintDescr.prod_info)(cell1);
+			builder.storeRef(cell1);
+  		};
+  	};
+	if ((complaintDescr.kind == 'ComplaintDescr_no_blk_gen_diff')) {
+  		return (builder: Builder) => {
+  			let cell1 = beginCell();
+			storeProducerInfo(complaintDescr.prod_info_old)(cell1);
+			builder.storeRef(cell1);
+			let cell2 = beginCell();
+			storeProducerInfo(complaintDescr.prod_info_new)(cell2);
+			builder.storeRef(cell2);
+  		};
+  	};
+	throw new Error('');
   }
 export type ValidatorComplaint = {
   	kind: 'ValidatorComplaint';
@@ -6149,32 +7639,35 @@ export type ValidatorComplaint = {
 	suggested_fine_part: number;
   };
 export function loadValidatorComplaint(slice: Slice): ValidatorComplaint {
-  	let validator_pubkey: BitString;
-	(validator_pubkey = slice.loadBits(256));
-	let slice1 = slice.loadRef().beginParse();
-	let created_at: number;
-	(created_at = slice.loadUint(32));
-	let severity: number;
-	(severity = slice.loadUint(8));
-	let reward_addr: number;
-	(reward_addr = slice.loadUint(256));
-	let suggested_fine_part: number;
-	(suggested_fine_part = slice.loadUint(32));
-	return {
-  		kind: 'ValidatorComplaint',
-		validator_pubkey: validator_pubkey,
-		description: loadComplaintDescr(slice1),
-		created_at: created_at,
-		severity: severity,
-		reward_addr: reward_addr,
-		paid: loadGrams(slice),
-		suggested_fine: loadGrams(slice),
-		suggested_fine_part: suggested_fine_part
+  	if ((slice.preloadUint(8) == 0xbc)) {
+  		slice.loadUint(8);
+		let validator_pubkey: BitString = slice.loadBits(256);
+		let slice1 = slice.loadRef().beginParse();
+		let description: ComplaintDescr = loadComplaintDescr(slice1);
+		let created_at: number = slice.loadUint(32);
+		let severity: number = slice.loadUint(8);
+		let reward_addr: number = slice.loadUint(256);
+		let paid: Grams = loadGrams(slice);
+		let suggested_fine: Grams = loadGrams(slice);
+		let suggested_fine_part: number = slice.loadUint(32);
+		return {
+  			kind: 'ValidatorComplaint',
+			validator_pubkey: validator_pubkey,
+			description: description,
+			created_at: created_at,
+			severity: severity,
+			reward_addr: reward_addr,
+			paid: paid,
+			suggested_fine: suggested_fine,
+			suggested_fine_part: suggested_fine_part
+  		};
   	};
+	throw new Error('');
   }
 export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeBits(validatorComplaint.validator_pubkey);
+  		builder.storeUint(0xbc, 8);
+		builder.storeBits(validatorComplaint.validator_pubkey);
 		let cell1 = beginCell();
 		storeComplaintDescr(validatorComplaint.description)(cell1);
 		builder.storeRef(cell1);
@@ -6194,22 +7687,27 @@ export type ValidatorComplaintStatus = {
 	weight_remaining: number;
   };
 export function loadValidatorComplaintStatus(slice: Slice): ValidatorComplaintStatus {
-  	let slice1 = slice.loadRef().beginParse();
-	let vset_id: number;
-	(vset_id = slice.loadUint(256));
-	let weight_remaining: number;
-	(weight_remaining = slice.loadInt(64));
-	return {
-  		kind: 'ValidatorComplaintStatus',
-		complaint: loadValidatorComplaint(slice1),
-		voters: loadHashmapE<True>(slice, 16, loadTrue),
-		vset_id: vset_id,
-		weight_remaining: weight_remaining
+  	if ((slice.preloadUint(8) == 0x2d)) {
+  		slice.loadUint(8);
+		let slice1 = slice.loadRef().beginParse();
+		let complaint: ValidatorComplaint = loadValidatorComplaint(slice1);
+		let voters: HashmapE<True> = loadHashmapE<True>(slice, 16, loadTrue);
+		let vset_id: number = slice.loadUint(256);
+		let weight_remaining: number = slice.loadInt(64);
+		return {
+  			kind: 'ValidatorComplaintStatus',
+			complaint: complaint,
+			voters: voters,
+			vset_id: vset_id,
+			weight_remaining: weight_remaining
+  		};
   	};
+	throw new Error('');
   }
 export function storeValidatorComplaintStatus(validatorComplaintStatus: ValidatorComplaintStatus): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		let cell1 = beginCell();
+  		builder.storeUint(0x2d, 8);
+		let cell1 = beginCell();
 		storeValidatorComplaint(validatorComplaintStatus.complaint)(cell1);
 		builder.storeRef(cell1);
 		storeHashmapE<True>(validatorComplaintStatus.voters, storeTrue)(builder);
@@ -6251,81 +7749,79 @@ export type VmStackValue_vm_stk_cont = {
 export type VmStackValue_vm_stk_tuple = {
   	kind: 'VmStackValue_vm_stk_tuple';
 	len: number;
-	data: VmTuple<len>;
+	data: VmTuple;
   };
 export function loadVmStackValue(slice: Slice): VmStackValue {
-  	if ((slice.preloadUint(2) == 0b00)) {
-  		slice.loadUint(2);
+  	if ((slice.preloadUint(8) == 0x00)) {
+  		slice.loadUint(8);
 		return {
   			kind: 'VmStackValue_vm_stk_null'
   		};
   	};
-	if ((slice.preloadUint(2) == 0b01)) {
-  		slice.loadUint(2);
-		let value: number;
-		(value = slice.loadInt(64));
+	if ((slice.preloadUint(8) == 0x01)) {
+  		slice.loadUint(8);
+		let value: number = slice.loadInt(64);
 		return {
   			kind: 'VmStackValue_vm_stk_tinyint',
 			value: value
   		};
   	};
-	if ((slice.preloadUint(4) == 0b0201)) {
-  		slice.loadUint(4);
-		let value: number;
-		(value = slice.loadInt(257));
+	if ((slice.preloadUint(16) == 0x0201)) {
+  		slice.loadUint(16);
+		let value: number = slice.loadInt(257);
 		return {
   			kind: 'VmStackValue_vm_stk_int',
 			value: value
   		};
   	};
-	if ((slice.preloadUint(4) == 0b02ff)) {
-  		slice.loadUint(4);
+	if ((slice.preloadUint(16) == 0x02ff)) {
+  		slice.loadUint(16);
 		return {
   			kind: 'VmStackValue_vm_stk_nan'
   		};
   	};
-	if ((slice.preloadUint(2) == 0b03)) {
-  		slice.loadUint(2);
+	if ((slice.preloadUint(8) == 0x03)) {
+  		slice.loadUint(8);
 		let slice1 = slice.loadRef().beginParse();
-		let cell: Slice;
-		(cell = slice1);
+		let cell: Slice = slice1;
 		return {
   			kind: 'VmStackValue_vm_stk_cell',
 			cell: cell
   		};
   	};
-	if ((slice.preloadUint(2) == 0b04)) {
-  		slice.loadUint(2);
+	if ((slice.preloadUint(8) == 0x04)) {
+  		slice.loadUint(8);
+		let _: VmCellSlice = loadVmCellSlice(slice);
 		return {
   			kind: 'VmStackValue_vm_stk_slice',
-			_: loadVmCellSlice(slice)
+			_: _
   		};
   	};
-	if ((slice.preloadUint(2) == 0b05)) {
-  		slice.loadUint(2);
+	if ((slice.preloadUint(8) == 0x05)) {
+  		slice.loadUint(8);
 		let slice1 = slice.loadRef().beginParse();
-		let cell: Slice;
-		(cell = slice1);
+		let cell: Slice = slice1;
 		return {
   			kind: 'VmStackValue_vm_stk_builder',
 			cell: cell
   		};
   	};
-	if ((slice.preloadUint(2) == 0b06)) {
-  		slice.loadUint(2);
+	if ((slice.preloadUint(8) == 0x06)) {
+  		slice.loadUint(8);
+		let cont: VmCont = loadVmCont(slice);
 		return {
   			kind: 'VmStackValue_vm_stk_cont',
-			cont: loadVmCont(slice)
+			cont: cont
   		};
   	};
-	if ((slice.preloadUint(2) == 0b07)) {
-  		slice.loadUint(2);
-		let len: number;
-		(len = slice.loadUint(16));
+	if ((slice.preloadUint(8) == 0x07)) {
+  		slice.loadUint(8);
+		let len: number = slice.loadUint(16);
+		let data: VmTuple = loadVmTuple(slice, len);
 		return {
   			kind: 'VmStackValue_vm_stk_tuple',
 			len: len,
-			data: loadVmTuple<len>(slice, loadlen)
+			data: data
   		};
   	};
 	throw new Error('');
@@ -6333,29 +7829,29 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
 export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder) => void {
   	if ((vmStackValue.kind == 'VmStackValue_vm_stk_null')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b00, 2);
+  			builder.storeUint(0x00, 8);
   		};
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_tinyint')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b01, 2);
+  			builder.storeUint(0x01, 8);
 			builder.storeInt(vmStackValue.value, 64);
   		};
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_int')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b0201, 4);
+  			builder.storeUint(0x0201, 16);
 			builder.storeInt(vmStackValue.value, 257);
   		};
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_nan')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b02ff, 4);
+  			builder.storeUint(0x02ff, 16);
   		};
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_cell')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b03, 2);
+  			builder.storeUint(0x03, 8);
 			let cell1 = beginCell();
 			cell1.storeSlice(vmStackValue.cell);
 			builder.storeRef(cell1);
@@ -6363,13 +7859,13 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_slice')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b04, 2);
+  			builder.storeUint(0x04, 8);
 			storeVmCellSlice(vmStackValue._)(builder);
   		};
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_builder')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b05, 2);
+  			builder.storeUint(0x05, 8);
 			let cell1 = beginCell();
 			cell1.storeSlice(vmStackValue.cell);
 			builder.storeRef(cell1);
@@ -6377,24 +7873,53 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_cont')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b06, 2);
+  			builder.storeUint(0x06, 8);
 			storeVmCont(vmStackValue.cont)(builder);
   		};
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_tuple')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b07, 2);
+  			builder.storeUint(0x07, 8);
 			builder.storeUint(vmStackValue.len, 16);
-			storeVmTuple<len>(vmStackValue.data, storelen)(builder);
+			storeVmTuple(vmStackValue.data)(builder);
   		};
   	};
 	throw new Error('');
   }
+export type VmCellSlice = {
+  	kind: 'VmCellSlice';
+	cell: Slice;
+	st_bits: number;
+	end_bits: number;
+	st_ref: number;
+	end_ref: number;
+  };
 export function loadVmCellSlice(slice: Slice): VmCellSlice {
-  
+  	let slice1 = slice.loadRef().beginParse();
+	let cell: Slice = slice1;
+	let st_bits: number = slice.loadUint(10);
+	let end_bits: number = slice.loadUint(10);
+	let st_ref: number = slice.loadUint(3);
+	let end_ref: number = slice.loadUint(3);
+	return {
+  		kind: 'VmCellSlice',
+		cell: cell,
+		st_bits: st_bits,
+		end_bits: end_bits,
+		st_ref: st_ref,
+		end_ref: end_ref
+  	};
   }
 export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		let cell1 = beginCell();
+		cell1.storeSlice(vmCellSlice.cell);
+		builder.storeRef(cell1);
+		builder.storeUint(vmCellSlice.st_bits, 10);
+		builder.storeUint(vmCellSlice.end_bits, 10);
+		builder.storeUint(vmCellSlice.st_ref, 3);
+		builder.storeUint(vmCellSlice.end_ref, 3);
+  	};
   }
 export type VmTupleRef = VmTupleRef_vm_tupref_nil | VmTupleRef_vm_tupref_single | VmTupleRef_vm_tupref_any;
 export type VmTupleRef_vm_tupref_nil = {
@@ -6409,25 +7934,27 @@ export type VmTupleRef_vm_tupref_any = {
 	n: number;
 	ref: VmTuple;
   };
-export function loadVmTupleRef(slice: Slice, n: number): VmTupleRef {
-  	if ((n == 0)) {
+export function loadVmTupleRef(slice: Slice, arg0: number): VmTupleRef {
+  	if ((arg0 == 0)) {
   		return {
   			kind: 'VmTupleRef_vm_tupref_nil'
   		};
   	};
-	if ((n == 1)) {
+	if ((arg0 == 1)) {
   		let slice1 = slice.loadRef().beginParse();
+		let entry: VmStackValue = loadVmStackValue(slice1);
 		return {
   			kind: 'VmTupleRef_vm_tupref_single',
-			entry: loadVmStackValue(slice1)
+			entry: entry
   		};
   	};
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
+		let ref: VmTuple = loadVmTuple(slice1, ((arg0 - 2) + 2));
 		return {
   			kind: 'VmTupleRef_vm_tupref_any',
-			n: (n + 2),
-			ref: loadVmTuple(slice1)
+			n: (arg0 - 2),
+			ref: ref
   		};
   	};
 	throw new Error('');
@@ -6464,19 +7991,21 @@ export type VmTuple_vm_tuple_tcons = {
 	head: VmTupleRef;
 	tail: VmStackValue;
   };
-export function loadVmTuple(slice: Slice, n: number): VmTuple {
-  	if ((n == 0)) {
+export function loadVmTuple(slice: Slice, arg0: number): VmTuple {
+  	if ((arg0 == 0)) {
   		return {
   			kind: 'VmTuple_vm_tuple_nil'
   		};
   	};
 	if (true) {
-  		let slice1 = slice.loadRef().beginParse();
+  		let head: VmTupleRef = loadVmTupleRef(slice, (arg0 - 1));
+		let slice1 = slice.loadRef().beginParse();
+		let tail: VmStackValue = loadVmStackValue(slice1);
 		return {
   			kind: 'VmTuple_vm_tuple_tcons',
-			n: (n + 1),
-			head: loadVmTupleRef(slice, n),
-			tail: loadVmStackValue(slice1)
+			n: (arg0 - 1),
+			head: head,
+			tail: tail
   		};
   	};
 	throw new Error('');
@@ -6500,21 +8029,21 @@ export function storeVmTuple(vmTuple: VmTuple): (builder: Builder) => void {
 export type VmStack = {
   	kind: 'VmStack';
 	depth: number;
-	stack: VmStackList<depth>;
+	stack: VmStackList;
   };
 export function loadVmStack(slice: Slice): VmStack {
-  	let depth: number;
-	(depth = slice.loadUint(24));
+  	let depth: number = slice.loadUint(24);
+	let stack: VmStackList = loadVmStackList(slice, depth);
 	return {
   		kind: 'VmStack',
 		depth: depth,
-		stack: loadVmStackList<depth>(slice, loaddepth)
+		stack: stack
   	};
   }
 export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
   	return (builder: Builder) => {
   		builder.storeUint(vmStack.depth, 24);
-		storeVmStackList<depth>(vmStack.stack, storedepth)(builder);
+		storeVmStackList(vmStack.stack)(builder);
   	};
   }
 export type VmStackList = VmStackList_vm_stk_cons | VmStackList_vm_stk_nil;
@@ -6527,14 +8056,16 @@ export type VmStackList_vm_stk_cons = {
 export type VmStackList_vm_stk_nil = {
   	kind: 'VmStackList_vm_stk_nil';
   };
-export function loadVmStackList(slice: Slice, n: number): VmStackList {
+export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
   	if (true) {
   		let slice1 = slice.loadRef().beginParse();
+		let rest: VmStackList = loadVmStackList(slice1, (arg0 - 1));
+		let tos: VmStackValue = loadVmStackValue(slice);
 		return {
   			kind: 'VmStackList_vm_stk_cons',
-			n: (n + 1),
-			rest: loadVmStackList(slice1, n),
-			tos: loadVmStackValue(slice)
+			n: (arg0 - 1),
+			rest: rest,
+			tos: tos
   		};
   	};
 	if ((n == 0)) {
@@ -6560,11 +8091,21 @@ export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) =
   	};
 	throw new Error('');
   }
+export type VmSaveList = {
+  	kind: 'VmSaveList';
+	cregs: HashmapE<VmStackValue>;
+  };
 export function loadVmSaveList(slice: Slice): VmSaveList {
-  
+  	let cregs: HashmapE<VmStackValue> = loadHashmapE<VmStackValue>(slice, 4, loadVmStackValue);
+	return {
+  		kind: 'VmSaveList',
+		cregs: cregs
+  	};
   }
 export function storeVmSaveList(vmSaveList: VmSaveList): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		storeHashmapE<VmStackValue>(vmSaveList.cregs, storeVmStackValue)(builder);
+  	};
   }
 export type VmGasLimits = {
   	kind: 'VmGasLimits';
@@ -6574,15 +8115,11 @@ export type VmGasLimits = {
 	credit: number;
   };
 export function loadVmGasLimits(slice: Slice): VmGasLimits {
-  	let remaining: number;
-	(remaining = slice.loadInt(64));
+  	let remaining: number = slice.loadInt(64);
 	let slice1 = slice.loadRef().beginParse();
-	let max_limit: number;
-	(max_limit = slice1.loadInt(64));
-	let cur_limit: number;
-	(cur_limit = slice1.loadInt(64));
-	let credit: number;
-	(credit = slice1.loadInt(64));
+	let max_limit: number = slice1.loadInt(64);
+	let cur_limit: number = slice1.loadInt(64);
+	let credit: number = slice1.loadInt(64);
 	return {
   		kind: 'VmGasLimits',
 		remaining: remaining,
@@ -6601,34 +8138,69 @@ export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) =
 		builder.storeRef(cell1);
   	};
   }
+export type VmLibraries = {
+  	kind: 'VmLibraries';
+	libraries: HashmapE<Slice>;
+  };
 export function loadVmLibraries(slice: Slice): VmLibraries {
-  
+  	let libraries: HashmapE<Slice> = loadHashmapE<Slice>(slice, 256, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return slice1;
+  	});
+	return {
+  		kind: 'VmLibraries',
+		libraries: libraries
+  	};
   }
 export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) => void {
-  
+  	return (builder: Builder) => {
+  		storeHashmapE<Slice>(vmLibraries.libraries, (arg: Slice) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				cell1.storeSlice(arg)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
+  	};
   }
 export type VmControlData = {
   	kind: 'VmControlData';
-	nargs: Maybe<uint13>;
+	nargs: Maybe<number>;
 	stack: Maybe<VmStack>;
 	save: VmSaveList;
-	cp: Maybe<int16>;
+	cp: Maybe<number>;
   };
 export function loadVmControlData(slice: Slice): VmControlData {
-  	return {
+  	let nargs: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+  		return slice.loadUint(13);
+  	});
+	let stack: Maybe<VmStack> = loadMaybe<VmStack>(slice, loadVmStack);
+	let save: VmSaveList = loadVmSaveList(slice);
+	let cp: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+  		return slice.loadInt(16);
+  	});
+	return {
   		kind: 'VmControlData',
-		nargs: loadMaybe<uint13>(slice, loaduint13),
-		stack: loadMaybe<VmStack>(slice, loadVmStack),
-		save: loadVmSaveList(slice),
-		cp: loadMaybe<int16>(slice, loadint16)
+		nargs: nargs,
+		stack: stack,
+		save: save,
+		cp: cp
   	};
   }
 export function storeVmControlData(vmControlData: VmControlData): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeMaybe<uint13>(vmControlData.nargs, storeuint13)(builder);
+  		storeMaybe<number>(vmControlData.nargs, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeUint(arg, 13);
+  			};
+  		})(builder);
 		storeMaybe<VmStack>(vmControlData.stack, storeVmStack)(builder);
 		storeVmSaveList(vmControlData.save)(builder);
-		storeMaybe<int16>(vmControlData.cp, storeint16)(builder);
+		storeMaybe<number>(vmControlData.cp, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeInt(arg, 16);
+  			};
+  		})(builder);
   	};
   }
 export type VmCont = VmCont_vmc_std | VmCont_vmc_envelope | VmCont_vmc_quit | VmCont_vmc_quit_exc | VmCont_vmc_repeat | VmCont_vmc_until | VmCont_vmc_again | VmCont_vmc_while_cond | VmCont_vmc_while_body | VmCont_vmc_pushint;
@@ -6684,25 +8256,28 @@ export type VmCont_vmc_pushint = {
 export function loadVmCont(slice: Slice): VmCont {
   	if ((slice.preloadUint(2) == 0b00)) {
   		slice.loadUint(2);
+		let cdata: VmControlData = loadVmControlData(slice);
+		let code: VmCellSlice = loadVmCellSlice(slice);
 		return {
   			kind: 'VmCont_vmc_std',
-			cdata: loadVmControlData(slice),
-			code: loadVmCellSlice(slice)
+			cdata: cdata,
+			code: code
   		};
   	};
 	if ((slice.preloadUint(2) == 0b01)) {
   		slice.loadUint(2);
+		let cdata: VmControlData = loadVmControlData(slice);
 		let slice1 = slice.loadRef().beginParse();
+		let next: VmCont = loadVmCont(slice1);
 		return {
   			kind: 'VmCont_vmc_envelope',
-			cdata: loadVmControlData(slice),
-			next: loadVmCont(slice1)
+			cdata: cdata,
+			next: next
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1000)) {
   		slice.loadUint(4);
-		let exit_code: number;
-		(exit_code = slice.loadInt(32));
+		let exit_code: number = slice.loadInt(32);
 		return {
   			kind: 'VmCont_vmc_quit',
 			exit_code: exit_code
@@ -6716,68 +8291,78 @@ export function loadVmCont(slice: Slice): VmCont {
   	};
 	if ((slice.preloadUint(5) == 0b10100)) {
   		slice.loadUint(5);
-		let count: number;
-		(count = slice.loadUint(63));
+		let count: number = slice.loadUint(63);
 		let slice1 = slice.loadRef().beginParse();
+		let body: VmCont = loadVmCont(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let after: VmCont = loadVmCont(slice2);
 		return {
   			kind: 'VmCont_vmc_repeat',
 			count: count,
-			body: loadVmCont(slice1),
-			after: loadVmCont(slice2)
+			body: body,
+			after: after
   		};
   	};
 	if ((slice.preloadUint(6) == 0b110000)) {
   		slice.loadUint(6);
 		let slice1 = slice.loadRef().beginParse();
+		let body: VmCont = loadVmCont(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let after: VmCont = loadVmCont(slice2);
 		return {
   			kind: 'VmCont_vmc_until',
-			body: loadVmCont(slice1),
-			after: loadVmCont(slice2)
+			body: body,
+			after: after
   		};
   	};
 	if ((slice.preloadUint(6) == 0b110001)) {
   		slice.loadUint(6);
 		let slice1 = slice.loadRef().beginParse();
+		let body: VmCont = loadVmCont(slice1);
 		return {
   			kind: 'VmCont_vmc_again',
-			body: loadVmCont(slice1)
+			body: body
   		};
   	};
 	if ((slice.preloadUint(6) == 0b110010)) {
   		slice.loadUint(6);
 		let slice1 = slice.loadRef().beginParse();
+		let cond: VmCont = loadVmCont(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let body: VmCont = loadVmCont(slice2);
 		let slice3 = slice.loadRef().beginParse();
+		let after: VmCont = loadVmCont(slice3);
 		return {
   			kind: 'VmCont_vmc_while_cond',
-			cond: loadVmCont(slice1),
-			body: loadVmCont(slice2),
-			after: loadVmCont(slice3)
+			cond: cond,
+			body: body,
+			after: after
   		};
   	};
 	if ((slice.preloadUint(6) == 0b110011)) {
   		slice.loadUint(6);
 		let slice1 = slice.loadRef().beginParse();
+		let cond: VmCont = loadVmCont(slice1);
 		let slice2 = slice.loadRef().beginParse();
+		let body: VmCont = loadVmCont(slice2);
 		let slice3 = slice.loadRef().beginParse();
+		let after: VmCont = loadVmCont(slice3);
 		return {
   			kind: 'VmCont_vmc_while_body',
-			cond: loadVmCont(slice1),
-			body: loadVmCont(slice2),
-			after: loadVmCont(slice3)
+			cond: cond,
+			body: body,
+			after: after
   		};
   	};
 	if ((slice.preloadUint(4) == 0b1111)) {
   		slice.loadUint(4);
-		let value: number;
-		(value = slice.loadInt(32));
+		let value: number = slice.loadInt(32);
 		let slice1 = slice.loadRef().beginParse();
+		let next: VmCont = loadVmCont(slice1);
 		return {
   			kind: 'VmCont_vmc_pushint',
 			value: value,
-			next: loadVmCont(slice1)
+			next: next
   		};
   	};
 	throw new Error('');
@@ -6880,11 +8465,18 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
+export type DNS_RecordSet = {
+  	kind: 'DNS_RecordSet';
+  };
 export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
-  
+  	return {
+  		kind: 'DNS_RecordSet'
+  	};
   }
 export function storeDNS_RecordSet(dNS_RecordSet: DNS_RecordSet): (builder: Builder) => void {
+  	return (builder: Builder) => {
   
+  	};
   }
 export type TextChunkRef = TextChunkRef_chunk_ref | TextChunkRef_chunk_ref_empty;
 export type TextChunkRef_chunk_ref = {
@@ -6895,13 +8487,14 @@ export type TextChunkRef_chunk_ref = {
 export type TextChunkRef_chunk_ref_empty = {
   	kind: 'TextChunkRef_chunk_ref_empty';
   };
-export function loadTextChunkRef(slice: Slice, n: number): TextChunkRef {
+export function loadTextChunkRef(slice: Slice, arg0: number): TextChunkRef {
   	if (true) {
   		let slice1 = slice.loadRef().beginParse();
+		let ref: TextChunks = loadTextChunks(slice1, ((arg0 - 1) + 1));
 		return {
   			kind: 'TextChunkRef_chunk_ref',
-			n: (n + 1),
-			ref: loadTextChunks(slice1)
+			n: (arg0 - 1),
+			ref: ref
   		};
   	};
 	if ((n == 0)) {
@@ -6937,18 +8530,17 @@ export type TextChunks_text_chunk = {
 export type TextChunks_text_chunk_empty = {
   	kind: 'TextChunks_text_chunk_empty';
   };
-export function loadTextChunks(slice: Slice, n: number): TextChunks {
+export function loadTextChunks(slice: Slice, arg0: number): TextChunks {
   	if (true) {
-  		let len: number;
-		(len = slice.loadUint(8));
-		let data: BitString;
-		(data = slice.loadBits((len * 8)));
+  		let len: number = slice.loadUint(8);
+		let data: BitString = slice.loadBits((len * 8));
+		let next: TextChunkRef = loadTextChunkRef(slice, (arg0 - 1));
 		return {
   			kind: 'TextChunks_text_chunk',
-			n: (n + 1),
+			n: (arg0 - 1),
 			len: len,
 			data: data,
-			next: loadTextChunkRef(slice, n)
+			next: next
   		};
   	};
 	if ((n == 0)) {
@@ -6976,21 +8568,21 @@ export function storeTextChunks(textChunks: TextChunks): (builder: Builder) => v
 export type Text = {
   	kind: 'Text';
 	chunks: number;
-	rest: TextChunks<chunks>;
+	rest: TextChunks;
   };
 export function loadText(slice: Slice): Text {
-  	let chunks: number;
-	(chunks = slice.loadUint(8));
+  	let chunks: number = slice.loadUint(8);
+	let rest: TextChunks = loadTextChunks(slice, chunks);
 	return {
   		kind: 'Text',
 		chunks: chunks,
-		rest: loadTextChunks<chunks>(slice, loadchunks)
+		rest: rest
   	};
   }
 export function storeText(text: Text): (builder: Builder) => void {
   	return (builder: Builder) => {
   		builder.storeUint(text.chunks, 8);
-		storeTextChunks<chunks>(text.rest, storechunks)(builder);
+		storeTextChunks(text.rest)(builder);
   	};
   }
 export type DNSRecord = DNSRecord_dns_text | DNSRecord_dns_next_resolver | DNSRecord_dns_adnl_address | DNSRecord_dns_smc_address;
@@ -7013,39 +8605,39 @@ export type DNSRecord_dns_smc_address = {
 	flags: number;
   };
 export function loadDNSRecord(slice: Slice): DNSRecord {
-  	if ((slice.preloadUint(4) == 0b1eda)) {
-  		slice.loadUint(4);
+  	if ((slice.preloadUint(16) == 0x1eda)) {
+  		slice.loadUint(16);
+		let _: Text = loadText(slice);
 		return {
   			kind: 'DNSRecord_dns_text',
-			_: loadText(slice)
+			_: _
   		};
   	};
-	if ((slice.preloadUint(4) == 0bba93)) {
-  		slice.loadUint(4);
+	if ((slice.preloadUint(16) == 0xba93)) {
+  		slice.loadUint(16);
+		let resolver: MsgAddressInt = loadMsgAddressInt(slice);
 		return {
   			kind: 'DNSRecord_dns_next_resolver',
-			resolver: loadMsgAddressInt(slice)
+			resolver: resolver
   		};
   	};
-	if ((slice.preloadUint(4) == 0bad01)) {
-  		slice.loadUint(4);
-		let adnl_addr: BitString;
-		(adnl_addr = slice.loadBits(256));
-		let flags: number;
-		(flags = slice.loadUint(8));
+	if ((slice.preloadUint(16) == 0xad01)) {
+  		slice.loadUint(16);
+		let adnl_addr: BitString = slice.loadBits(256);
+		let flags: number = slice.loadUint(8);
 		return {
   			kind: 'DNSRecord_dns_adnl_address',
 			adnl_addr: adnl_addr,
 			flags: flags
   		};
   	};
-	if ((slice.preloadUint(4) == 0b9fd3)) {
-  		slice.loadUint(4);
-		let flags: number;
-		(flags = slice.loadUint(8));
+	if ((slice.preloadUint(16) == 0x9fd3)) {
+  		slice.loadUint(16);
+		let smc_addr: MsgAddressInt = loadMsgAddressInt(slice);
+		let flags: number = slice.loadUint(8);
 		return {
   			kind: 'DNSRecord_dns_smc_address',
-			smc_addr: loadMsgAddressInt(slice),
+			smc_addr: smc_addr,
 			flags: flags
   		};
   	};
@@ -7054,26 +8646,26 @@ export function loadDNSRecord(slice: Slice): DNSRecord {
 export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void {
   	if ((dNSRecord.kind == 'DNSRecord_dns_text')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b1eda, 4);
+  			builder.storeUint(0x1eda, 16);
 			storeText(dNSRecord._)(builder);
   		};
   	};
 	if ((dNSRecord.kind == 'DNSRecord_dns_next_resolver')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bba93, 4);
+  			builder.storeUint(0xba93, 16);
 			storeMsgAddressInt(dNSRecord.resolver)(builder);
   		};
   	};
 	if ((dNSRecord.kind == 'DNSRecord_dns_adnl_address')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bad01, 4);
+  			builder.storeUint(0xad01, 16);
 			builder.storeBits(dNSRecord.adnl_addr);
 			builder.storeUint(dNSRecord.flags, 8);
   		};
   	};
 	if ((dNSRecord.kind == 'DNSRecord_dns_smc_address')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b9fd3, 4);
+  			builder.storeUint(0x9fd3, 16);
 			storeMsgAddressInt(dNSRecord.smc_addr)(builder);
 			builder.storeUint(dNSRecord.flags, 8);
   		};
@@ -7098,10 +8690,12 @@ export function loadProtoList(slice: Slice): ProtoList {
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let head: Protocol = loadProtocol(slice);
+		let tail: ProtoList = loadProtoList(slice);
 		return {
   			kind: 'ProtoList_proto_list_next',
-			head: loadProtocol(slice),
-			tail: loadProtoList(slice)
+			head: head,
+			tail: tail
   		};
   	};
 	throw new Error('');
@@ -7125,13 +8719,17 @@ export type Protocol = {
   	kind: 'Protocol';
   };
 export function loadProtocol(slice: Slice): Protocol {
-  	return {
-  		kind: 'Protocol'
+  	if ((slice.preloadUint(16) == 0x4854)) {
+  		slice.loadUint(16);
+		return {
+  			kind: 'Protocol'
+  		};
   	};
+	throw new Error('');
   }
 export function storeProtocol(protocol: Protocol): (builder: Builder) => void {
   	return (builder: Builder) => {
-  
+  		builder.storeUint(0x4854, 16);
   	};
   }
 export type SmcCapList = SmcCapList_cap_list_nil | SmcCapList_cap_list_next;
@@ -7152,10 +8750,12 @@ export function loadSmcCapList(slice: Slice): SmcCapList {
   	};
 	if ((slice.preloadUint(1) == 0b1)) {
   		slice.loadUint(1);
+		let head: SmcCapability = loadSmcCapability(slice);
+		let tail: SmcCapList = loadSmcCapList(slice);
 		return {
   			kind: 'SmcCapList_cap_list_next',
-			head: loadSmcCapability(slice),
-			tail: loadSmcCapList(slice)
+			head: head,
+			tail: tail
   		};
   	};
 	throw new Error('');
@@ -7190,29 +8790,30 @@ export type SmcCapability_cap_name = {
 	name: Text;
   };
 export function loadSmcCapability(slice: Slice): SmcCapability {
-  	if ((slice.preloadUint(4) == 0b5371)) {
-  		slice.loadUint(4);
+  	if ((slice.preloadUint(16) == 0x5371)) {
+  		slice.loadUint(16);
 		return {
   			kind: 'SmcCapability_cap_method_seqno'
   		};
   	};
-	if ((slice.preloadUint(4) == 0b71f4)) {
-  		slice.loadUint(4);
+	if ((slice.preloadUint(16) == 0x71f4)) {
+  		slice.loadUint(16);
 		return {
   			kind: 'SmcCapability_cap_method_pubkey'
   		};
   	};
-	if ((slice.preloadUint(4) == 0b2177)) {
-  		slice.loadUint(4);
+	if ((slice.preloadUint(16) == 0x2177)) {
+  		slice.loadUint(16);
 		return {
   			kind: 'SmcCapability_cap_is_wallet'
   		};
   	};
-	if ((slice.preloadUint(2) == 0bff)) {
-  		slice.loadUint(2);
+	if ((slice.preloadUint(8) == 0xff)) {
+  		slice.loadUint(8);
+		let name: Text = loadText(slice);
 		return {
   			kind: 'SmcCapability_cap_name',
-			name: loadText(slice)
+			name: name
   		};
   	};
 	throw new Error('');
@@ -7220,22 +8821,22 @@ export function loadSmcCapability(slice: Slice): SmcCapability {
 export function storeSmcCapability(smcCapability: SmcCapability): (builder: Builder) => void {
   	if ((smcCapability.kind == 'SmcCapability_cap_method_seqno')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b5371, 4);
+  			builder.storeUint(0x5371, 16);
   		};
   	};
 	if ((smcCapability.kind == 'SmcCapability_cap_method_pubkey')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b71f4, 4);
+  			builder.storeUint(0x71f4, 16);
   		};
   	};
 	if ((smcCapability.kind == 'SmcCapability_cap_is_wallet')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b2177, 4);
+  			builder.storeUint(0x2177, 16);
   		};
   	};
 	if ((smcCapability.kind == 'SmcCapability_cap_name')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bff, 2);
+  			builder.storeUint(0xff, 8);
 			storeText(smcCapability.name)(builder);
   		};
   	};
@@ -7253,28 +8854,26 @@ export type ChanConfig = {
 	min_A_extra: Grams;
   };
 export function loadChanConfig(slice: Slice): ChanConfig {
-  	let init_timeout: number;
-	(init_timeout = slice.loadUint(32));
-	let close_timeout: number;
-	(close_timeout = slice.loadUint(32));
-	let a_key: BitString;
-	(a_key = slice.loadBits(256));
-	let b_key: BitString;
-	(b_key = slice.loadBits(256));
+  	let init_timeout: number = slice.loadUint(32);
+	let close_timeout: number = slice.loadUint(32);
+	let a_key: BitString = slice.loadBits(256);
+	let b_key: BitString = slice.loadBits(256);
 	let slice1 = slice.loadRef().beginParse();
+	let a_addr: MsgAddressInt = loadMsgAddressInt(slice1);
 	let slice2 = slice.loadRef().beginParse();
-	let channel_id: number;
-	(channel_id = slice.loadUint(64));
+	let b_addr: MsgAddressInt = loadMsgAddressInt(slice2);
+	let channel_id: number = slice.loadUint(64);
+	let min_A_extra: Grams = loadGrams(slice);
 	return {
   		kind: 'ChanConfig',
 		init_timeout: init_timeout,
 		close_timeout: close_timeout,
 		a_key: a_key,
 		b_key: b_key,
-		a_addr: loadMsgAddressInt(slice1),
-		b_addr: loadMsgAddressInt(slice2),
+		a_addr: a_addr,
+		b_addr: b_addr,
 		channel_id: channel_id,
-		min_A_extra: loadGrams(slice)
+		min_A_extra: min_A_extra
   	};
   }
 export function storeChanConfig(chanConfig: ChanConfig): (builder: Builder) => void {
@@ -7322,40 +8921,52 @@ export type ChanState_chan_state_payout = {
 export function loadChanState(slice: Slice): ChanState {
   	if ((slice.preloadUint(3) == 0b000)) {
   		slice.loadUint(3);
-		let expire_at: number;
-		(expire_at = slice.loadUint(32));
+		let signed_A: Bool = loadBool(slice);
+		let signed_B: Bool = loadBool(slice);
+		let min_A: Grams = loadGrams(slice);
+		let min_B: Grams = loadGrams(slice);
+		let expire_at: number = slice.loadUint(32);
+		let A: Grams = loadGrams(slice);
+		let B: Grams = loadGrams(slice);
 		return {
   			kind: 'ChanState_chan_state_init',
-			signed_A: loadBool(slice),
-			signed_B: loadBool(slice),
-			min_A: loadGrams(slice),
-			min_B: loadGrams(slice),
+			signed_A: signed_A,
+			signed_B: signed_B,
+			min_A: min_A,
+			min_B: min_B,
 			expire_at: expire_at,
-			A: loadGrams(slice),
-			B: loadGrams(slice)
+			A: A,
+			B: B
   		};
   	};
 	if ((slice.preloadUint(3) == 0b001)) {
   		slice.loadUint(3);
-		let expire_at: number;
-		(expire_at = slice.loadUint(32));
+		let signed_A: Bool = loadBool(slice);
+		let signed_B: Bool = loadBool(slice);
+		let promise_A: Grams = loadGrams(slice);
+		let promise_B: Grams = loadGrams(slice);
+		let expire_at: number = slice.loadUint(32);
+		let A: Grams = loadGrams(slice);
+		let B: Grams = loadGrams(slice);
 		return {
   			kind: 'ChanState_chan_state_close',
-			signed_A: loadBool(slice),
-			signed_B: loadBool(slice),
-			promise_A: loadGrams(slice),
-			promise_B: loadGrams(slice),
+			signed_A: signed_A,
+			signed_B: signed_B,
+			promise_A: promise_A,
+			promise_B: promise_B,
 			expire_at: expire_at,
-			A: loadGrams(slice),
-			B: loadGrams(slice)
+			A: A,
+			B: B
   		};
   	};
 	if ((slice.preloadUint(3) == 0b010)) {
   		slice.loadUint(3);
+		let A: Grams = loadGrams(slice);
+		let B: Grams = loadGrams(slice);
 		return {
   			kind: 'ChanState_chan_state_payout',
-			A: loadGrams(slice),
-			B: loadGrams(slice)
+			A: A,
+			B: B
   		};
   	};
 	throw new Error('');
@@ -7401,13 +9012,14 @@ export type ChanPromise = {
 	promise_B: Grams;
   };
 export function loadChanPromise(slice: Slice): ChanPromise {
-  	let channel_id: number;
-	(channel_id = slice.loadUint(64));
+  	let channel_id: number = slice.loadUint(64);
+	let promise_A: Grams = loadGrams(slice);
+	let promise_B: Grams = loadGrams(slice);
 	return {
   		kind: 'ChanPromise',
 		channel_id: channel_id,
-		promise_A: loadGrams(slice),
-		promise_B: loadGrams(slice)
+		promise_A: promise_A,
+		promise_B: promise_B
   	};
   }
 export function storeChanPromise(chanPromise: ChanPromise): (builder: Builder) => void {
@@ -7419,19 +9031,30 @@ export function storeChanPromise(chanPromise: ChanPromise): (builder: Builder) =
   }
 export type ChanSignedPromise = {
   	kind: 'ChanSignedPromise';
-	sig: Maybe;
+	sig: Maybe<BitString>;
 	promise: ChanPromise;
   };
 export function loadChanSignedPromise(slice: Slice): ChanSignedPromise {
-  	return {
+  	let sig: Maybe<BitString> = loadMaybe<BitString>(slice, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return slice1.loadBits(512);
+  	});
+	let promise: ChanPromise = loadChanPromise(slice);
+	return {
   		kind: 'ChanSignedPromise',
-		sig: loadMaybe(slice),
-		promise: loadChanPromise(slice)
+		sig: sig,
+		promise: promise
   	};
   }
 export function storeChanSignedPromise(chanSignedPromise: ChanSignedPromise): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeMaybe(chanSignedPromise.sig)(builder);
+  		storeMaybe<BitString>(chanSignedPromise.sig, (arg: BitString) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				cell1.storeBits(arg)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
 		storeChanPromise(chanSignedPromise.promise)(builder);
   	};
   }
@@ -7457,36 +9080,42 @@ export type ChanMsg_chan_msg_payout = {
   	kind: 'ChanMsg_chan_msg_payout';
   };
 export function loadChanMsg(slice: Slice): ChanMsg {
-  	if ((slice.preloadUint(8) == 0b27317822)) {
-  		slice.loadUint(8);
-		let channel_id: number;
-		(channel_id = slice.loadUint(64));
+  	if ((slice.preloadUint(32) == 0x27317822)) {
+  		slice.loadUint(32);
+		let inc_A: Grams = loadGrams(slice);
+		let inc_B: Grams = loadGrams(slice);
+		let min_A: Grams = loadGrams(slice);
+		let min_B: Grams = loadGrams(slice);
+		let channel_id: number = slice.loadUint(64);
 		return {
   			kind: 'ChanMsg_chan_msg_init',
-			inc_A: loadGrams(slice),
-			inc_B: loadGrams(slice),
-			min_A: loadGrams(slice),
-			min_B: loadGrams(slice),
+			inc_A: inc_A,
+			inc_B: inc_B,
+			min_A: min_A,
+			min_B: min_B,
 			channel_id: channel_id
   		};
   	};
-	if ((slice.preloadUint(8) == 0bf28ae183)) {
-  		slice.loadUint(8);
+	if ((slice.preloadUint(32) == 0xf28ae183)) {
+  		slice.loadUint(32);
+		let extra_A: Grams = loadGrams(slice);
+		let extra_B: Grams = loadGrams(slice);
+		let promise: ChanSignedPromise = loadChanSignedPromise(slice);
 		return {
   			kind: 'ChanMsg_chan_msg_close',
-			extra_A: loadGrams(slice),
-			extra_B: loadGrams(slice),
-			promise: loadChanSignedPromise(slice)
+			extra_A: extra_A,
+			extra_B: extra_B,
+			promise: promise
   		};
   	};
-	if ((slice.preloadUint(8) == 0b43278a28)) {
-  		slice.loadUint(8);
+	if ((slice.preloadUint(32) == 0x43278a28)) {
+  		slice.loadUint(32);
 		return {
   			kind: 'ChanMsg_chan_msg_timeout'
   		};
   	};
-	if ((slice.preloadUint(8) == 0b37fe7810)) {
-  		slice.loadUint(8);
+	if ((slice.preloadUint(32) == 0x37fe7810)) {
+  		slice.loadUint(32);
 		return {
   			kind: 'ChanMsg_chan_msg_payout'
   		};
@@ -7496,7 +9125,7 @@ export function loadChanMsg(slice: Slice): ChanMsg {
 export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
   	if ((chanMsg.kind == 'ChanMsg_chan_msg_init')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b27317822, 8);
+  			builder.storeUint(0x27317822, 32);
 			storeGrams(chanMsg.inc_A)(builder);
 			storeGrams(chanMsg.inc_B)(builder);
 			storeGrams(chanMsg.min_A)(builder);
@@ -7506,7 +9135,7 @@ export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
   	};
 	if ((chanMsg.kind == 'ChanMsg_chan_msg_close')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0bf28ae183, 8);
+  			builder.storeUint(0xf28ae183, 32);
 			storeGrams(chanMsg.extra_A)(builder);
 			storeGrams(chanMsg.extra_B)(builder);
 			storeChanSignedPromise(chanMsg.promise)(builder);
@@ -7514,34 +9143,55 @@ export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
   	};
 	if ((chanMsg.kind == 'ChanMsg_chan_msg_timeout')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b43278a28, 8);
+  			builder.storeUint(0x43278a28, 32);
   		};
   	};
 	if ((chanMsg.kind == 'ChanMsg_chan_msg_payout')) {
   		return (builder: Builder) => {
-  			builder.storeUint(0b37fe7810, 8);
+  			builder.storeUint(0x37fe7810, 32);
   		};
   	};
 	throw new Error('');
   }
 export type ChanSignedMsg = {
   	kind: 'ChanSignedMsg';
-	sig_A: Maybe;
-	sig_B: Maybe;
+	sig_A: Maybe<BitString>;
+	sig_B: Maybe<BitString>;
 	msg: ChanMsg;
   };
 export function loadChanSignedMsg(slice: Slice): ChanSignedMsg {
-  	return {
+  	let sig_A: Maybe<BitString> = loadMaybe<BitString>(slice, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return slice1.loadBits(512);
+  	});
+	let sig_B: Maybe<BitString> = loadMaybe<BitString>(slice, (slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return slice1.loadBits(512);
+  	});
+	let msg: ChanMsg = loadChanMsg(slice);
+	return {
   		kind: 'ChanSignedMsg',
-		sig_A: loadMaybe(slice),
-		sig_B: loadMaybe(slice),
-		msg: loadChanMsg(slice)
+		sig_A: sig_A,
+		sig_B: sig_B,
+		msg: msg
   	};
   }
 export function storeChanSignedMsg(chanSignedMsg: ChanSignedMsg): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeMaybe(chanSignedMsg.sig_A)(builder);
-		storeMaybe(chanSignedMsg.sig_B)(builder);
+  		storeMaybe<BitString>(chanSignedMsg.sig_A, (arg: BitString) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				cell1.storeBits(arg)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
+		storeMaybe<BitString>(chanSignedMsg.sig_B, (arg: BitString) => {
+  			return (builder: Builder) => {
+  				let cell1 = beginCell()
+				cell1.storeBits(arg)
+				builder.storeRef(cell1);
+  			};
+  		})(builder);
 		storeChanMsg(chanSignedMsg.msg)(builder);
   	};
   }
@@ -7550,14 +9200,20 @@ export type ChanOp = {
 	msg: ChanSignedMsg;
   };
 export function loadChanOp(slice: Slice): ChanOp {
-  	return {
-  		kind: 'ChanOp',
-		msg: loadChanSignedMsg(slice)
+  	if ((slice.preloadUint(32) == 0x912838d1)) {
+  		slice.loadUint(32);
+		let msg: ChanSignedMsg = loadChanSignedMsg(slice);
+		return {
+  			kind: 'ChanOp',
+			msg: msg
+  		};
   	};
+	throw new Error('');
   }
 export function storeChanOp(chanOp: ChanOp): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		storeChanSignedMsg(chanOp.msg)(builder);
+  		builder.storeUint(0x912838d1, 32);
+		storeChanSignedMsg(chanOp.msg)(builder);
   	};
   }
 export type ChanData = {
@@ -7567,11 +9223,13 @@ export type ChanData = {
   };
 export function loadChanData(slice: Slice): ChanData {
   	let slice1 = slice.loadRef().beginParse();
+	let config: ChanConfig = loadChanConfig(slice1);
 	let slice2 = slice.loadRef().beginParse();
+	let state: ChanState = loadChanState(slice2);
 	return {
   		kind: 'ChanData',
-		config: loadChanConfig(slice1),
-		state: loadChanState(slice2)
+		config: config,
+		state: state
   	};
   }
 export function storeChanData(chanData: ChanData): (builder: Builder) => void {
