@@ -582,3 +582,7 @@ export function storeConditionalField(conditionalField: ConditionalField): (buil
 		}
 	};
 }
+
+if (!(flags <= 100)) {
+	throw new Error(`Variable flags = ${flags} doesn't follow implicit condition: { flags <= 100 }`)
+}

@@ -68,6 +68,7 @@ export type TLBConstructor = {
     name: string
     declaration: Declaration
     tag: TLBConstructorTag
+    constraints: Array<TLBMathExpr>
 }
 
 export type TLBType = {

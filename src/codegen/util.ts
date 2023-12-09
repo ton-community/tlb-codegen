@@ -260,23 +260,29 @@ export function fillParameterNames(tlbType: TLBType) {
     })
 }
 
-export function fillNegationExpressions(constructor: TLBConstructor) {
+export function fillConstraintsAndNegationVars(constructor: TLBConstructor) {
     constructor.declaration.fields.forEach(field => {
-        if (field instanceof FieldCurlyExprDef && field.expr instanceof CompareExpr && field.expr.op == '=') {
-            let myMathExpr = convertToMathExpr(field.expr);
-            let negatedVariable = getNegatedVariable(myMathExpr);
-            if (negatedVariable) {
-                myMathExpr = reorganizeExpression(myMathExpr, negatedVariable)
-                if (myMathExpr instanceof TLBBinaryOp) {
-                    myMathExpr = myMathExpr.right
-                }
-                let variable = constructor.variablesMap.get(negatedVariable)
-                if (variable) {
-                    variable.negated = true;
-                    variable.deriveExpr = myMathExpr;
+        if (field instanceof FieldCurlyExprDef && field.expr instanceof CompareExpr) {
+            if (field.expr.op == '=') {
+                let myMathExpr = convertToMathExpr(field.expr);
+                let negatedVariable = getNegatedVariable(myMathExpr);
+                if (negatedVariable) {
+                    myMathExpr = reorganizeExpression(myMathExpr, negatedVariable)
+                    if (myMathExpr instanceof TLBBinaryOp) {
+                        myMathExpr = myMathExpr.right
+                    }
+                    let variable = constructor.variablesMap.get(negatedVariable)
+                    if (variable) {
+                        variable.negated = true;
+                        variable.deriveExpr = myMathExpr;
+                    } else {
+                        throw new Error(`Variable ${negatedVariable} not defined`)
+                    }
                 } else {
-                    throw new Error(`Variable ${negatedVariable} not defined`)
+                    constructor.constraints.push(myMathExpr);
                 }
+            } else {
+                constructor.constraints.push(convertToMathExpr(field.expr));
             }
         }
     })
@@ -356,7 +362,7 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
         if (tlbType == undefined) {
             tlbType = { name: declaration.combinator.name, constructors: [] }
         }
-        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>(), tag: getConstructorTag(declaration.constructorDef.tag) });
+        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>(), tag: getConstructorTag(declaration.constructorDef.tag), constraints: [] });
         tlbCode.types.set(tlbType.name, tlbType);
     })
 
@@ -422,7 +428,7 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
                 constructor.parameters.push(parameter);
                 constructor.parametersMap.set(parameter.variable.name, parameter);
             });
-            fillNegationExpressions(constructor);
+            fillConstraintsAndNegationVars(constructor);
             calculateVariables(constructor);
         });
         checkConstructors(tlbType);

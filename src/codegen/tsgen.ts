@@ -142,6 +142,12 @@ export interface DeclareVariable extends ASTNode {
     typeName: TypeExpression | undefined
 }
 
+export interface UnaryOpExpression extends ASTNode {
+    type: "UnaryOpExpression",
+    unaryOperator: string
+    expr: Expression
+}
+
 export interface BinaryExpression extends ASTNode {
     type: "BinaryExpression",
     binarySign: string,
@@ -168,7 +174,7 @@ export interface MultiStatement extends ASTNode {
 export type TypeExpression = Identifier | TypeWithParameters | ArrowFunctionType | UnionTypeExpression;
 export type Statement = ReturnStatement | ExpressionStatement | IfStatement | MultiStatement | ForCycle;
 export type Literal = NumericLiteral | BinaryNumericLiteral | StringLiteral;
-export type Expression = Identifier | TypeExpression | Literal | ObjectExpression | FunctionCall | MemberExpression | ArrowFunctionExpression | BinaryExpression | ArrowFunctionType | TypeParametersExpression | DeclareVariable | TernaryExpression;
+export type Expression = Identifier | TypeExpression | Literal | ObjectExpression | FunctionCall | MemberExpression | ArrowFunctionExpression | BinaryExpression | ArrowFunctionType | TypeParametersExpression | DeclareVariable | TernaryExpression | UnaryOpExpression;
 export type GenDeclaration = ImportDeclaration | StructDeclaration | UnionTypeDeclaration | FunctionDeclaration;
 
 export type TheNode = Identifier | GenDeclaration | TypedIdentifier | Expression | ObjectProperty | Statement;
@@ -256,6 +262,10 @@ export function tExpressionStatement(expression: Expression): ExpressionStatemen
 
 export function tIfStatement(condition: Expression, body: Array<Statement>, elseBody?: Array<Statement>): IfStatement {
     return { type: "IfStatement", condition: condition, body: body, elseBody: elseBody }
+}
+
+export function tUnaryOpExpression(unaryOperator: string, expr: Expression): UnaryOpExpression {
+    return { type: "UnaryOpExpression", unaryOperator: unaryOperator, expr: expr };
 }
 
 export function tBinaryExpression(left: Expression, binarySign: string, right: Expression): BinaryExpression {
@@ -414,6 +424,10 @@ export function toCode(node: TheNode, printContext: PrintContext): string {
         result += `${currentTabs}for (${toCode(node.init, printContext)};${toCode(node.cond, printContext)};${toCode(node.inc, printContext)}) {
     ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
     ${currentTabs}}`
+    }
+
+    if (node.type == "UnaryOpExpression") {
+        result += `(${node.unaryOperator}${toCode(node.expr, printContext)})`
     }
 
     if (node.type == "BinaryExpression") {

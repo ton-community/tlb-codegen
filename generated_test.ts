@@ -1273,6 +1273,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
   			return slice.loadBits(1);
   		});
+		if ((!(n <= m))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
@@ -1445,5 +1448,24 @@ export function storeBitSelection(bitSelection: BitSelection): (builder: Builder
 		if ((bitSelection.b != undefined)) {
   			builder.storeUint(bitSelection.b, 32);
   		};
+  	};
+  }
+export type ImplicitCondition = {
+  	kind: 'ImplicitCondition';
+	flags: number;
+  };
+export function loadImplicitCondition(slice: Slice): ImplicitCondition {
+  	let flags: number = slice.loadUint(10);
+	if ((!(flags <= 100))) {
+  		throw new Error('');
+  	};
+	return {
+  		kind: 'ImplicitCondition',
+		flags: flags
+  	};
+  }
+export function storeImplicitCondition(implicitCondition: ImplicitCondition): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(implicitCondition.flags, 10);
   	};
   }
