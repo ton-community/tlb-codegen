@@ -1425,3 +1425,25 @@ export function storeConditionalField(conditionalField: ConditionalField): (buil
   		};
   	};
   }
+export type BitSelection = {
+  	kind: 'BitSelection';
+	a: number;
+	b: number | undefined;
+  };
+export function loadBitSelection(slice: Slice): BitSelection {
+  	let a: number = slice.loadUint(6);
+	let b: number | undefined = ((a & (1 << 2)) ? slice.loadUint(32) : undefined);
+	return {
+  		kind: 'BitSelection',
+		a: a,
+		b: b
+  	};
+  }
+export function storeBitSelection(bitSelection: BitSelection): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(bitSelection.a, 6);
+		if ((bitSelection.b != undefined)) {
+  			builder.storeUint(bitSelection.b, 32);
+  		};
+  	};
+  }

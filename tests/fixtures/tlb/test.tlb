@@ -88,3 +88,5 @@ hme_root$1 {n:#} {X:Type} root:^(Hashmap n X) = HashmapE n X;
 a$_ x:(HashmapE 8 uint16) = HashmapEUser;
 
 _ a:(## 1) b:a?(## 32) = ConditionalField;
+
+_ a:(## 6) b:(a . 2)?(## 32) = BitSelection;

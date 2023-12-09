@@ -223,6 +223,9 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       let conditionExpr: Expression;
       if (expr.left instanceof NameExpr) {
         conditionExpr = convertToAST(convertToMathExpr(expr.left), constructor, true)
+        if (expr.dotExpr != null) {
+          conditionExpr = tBinaryExpression(conditionExpr, '&', tBinaryExpression(tNumericLiteral(1), '<<', tNumericLiteral(expr.dotExpr)))
+        }
       } else { // TODO: handle other cases
         throw new Error('')
       }
