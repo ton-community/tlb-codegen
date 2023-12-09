@@ -52,15 +52,14 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         }
       } // TODO: handle other cases
     } else if (expr.name == '#<') {
-      if (expr.arg instanceof NumberExpr) {
-        result.argLoadExpr = result.argStoreExpr = tNumericLiteral(bitLen(expr.arg.num - 1));
+      if (expr.arg instanceof NumberExpr || expr.arg instanceof NameExpr) {
+        result.argLoadExpr = tFunctionCall(tIdentifier('bitLen'), [tBinaryExpression(convertToAST(convertToMathExpr(expr.arg), constructor, true), '-', tNumericLiteral(1))])
+        result.argStoreExpr = tFunctionCall(tIdentifier('bitLen'), [tBinaryExpression(convertToAST(convertToMathExpr(expr.arg), constructor, true, tIdentifier(variableCombinatorName)), '-', tNumericLiteral(1))])
       } // TODO: handle other cases
     } else if (expr.name == '#<=') {
-      if (expr.arg instanceof NumberExpr) {
-        result.argLoadExpr = result.argStoreExpr = tNumericLiteral(bitLen(expr.arg.num));
-      } else if (expr.arg instanceof NameExpr) {
-        result.argLoadExpr = tIdentifier(expr.arg.name)
-        result.argStoreExpr = tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(expr.arg.name));
+      if (expr.arg instanceof NumberExpr || expr.arg instanceof NameExpr) {
+        result.argLoadExpr = tFunctionCall(tIdentifier('bitLen'), [convertToAST(convertToMathExpr(expr.arg), constructor, true)]);
+        result.argStoreExpr = tFunctionCall(tIdentifier('bitLen'), [convertToAST(convertToMathExpr(expr.arg), constructor, true, tIdentifier(variableCombinatorName))]);
       } // TODO: handle other cases
     } 
   } else if (expr instanceof CombinatorExpr) {

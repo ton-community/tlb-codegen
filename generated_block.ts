@@ -2,6 +2,9 @@ import { Builder } from 'ton'
 import { Slice } from 'ton'
 import { beginCell } from 'ton'
 import { BitString } from 'ton'
+export function bitLen(n: number) {
+  	return n.toString(2).length;;
+  }
 export type Unit = {
   	kind: 'Unit';
   };
@@ -356,7 +359,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
-		let n: number = slice.loadUint(m);
+		let n: number = slice.loadUint(bitLen(m));
 		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
   			return slice.loadBits(1);
   		});
@@ -370,7 +373,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
 		let v: BitString = slice.loadBits(1);
-		let n: number = slice.loadUint(m);
+		let n: number = slice.loadUint(bitLen(m));
 		return {
   			kind: 'HmLabel_hml_same',
 			m: m,
@@ -396,7 +399,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b10, 2);
-			builder.storeUint(hmLabel.n, hmLabel.m);
+			builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
 			hmLabel.s.forEach((arg: BitString) => {
   				builder.storeBits(arg);
   			});
@@ -406,7 +409,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   		return (builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeBits(hmLabel.v);
-			builder.storeUint(hmLabel.n, hmLabel.m);
+			builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
   		};
   	};
 	throw new Error('');
@@ -1056,7 +1059,7 @@ export type Anycast = {
 	rewrite_pfx: BitString;
   };
 export function loadAnycast(slice: Slice): Anycast {
-  	let depth: number = slice.loadUint(5);
+  	let depth: number = slice.loadUint(bitLen(30));
 	let rewrite_pfx: BitString = slice.loadBits(depth);
 	if ((!(depth >= 1))) {
   		throw new Error('');
@@ -1069,7 +1072,7 @@ export function loadAnycast(slice: Slice): Anycast {
   }
 export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(anycast.depth, 5);
+  		builder.storeUint(anycast.depth, bitLen(30));
 		builder.storeBits(anycast.rewrite_pfx);
 		if ((!(anycast.depth >= 1))) {
   			throw new Error('');
@@ -1181,37 +1184,45 @@ export function storeMsgAddress(msgAddress: MsgAddress): (builder: Builder) => v
 export type VarUInteger = {
   	kind: 'VarUInteger';
 	n: number;
+	len: number;
 	value: number;
   };
 export function loadVarUInteger(slice: Slice, n: number): VarUInteger {
-  	let value: number = slice.loadUint((len * 8));
+  	let len: number = slice.loadUint(bitLen((n - 1)));
+	let value: number = slice.loadUint((len * 8));
 	return {
   		kind: 'VarUInteger',
 		n: n,
+		len: len,
 		value: value
   	};
   }
 export function storeVarUInteger(varUInteger: VarUInteger): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(varUInteger.value, (varUInteger.len * 8));
+  		builder.storeUint(varUInteger.len, bitLen((varUInteger.n - 1)));
+		builder.storeUint(varUInteger.value, (varUInteger.len * 8));
   	};
   }
 export type VarInteger = {
   	kind: 'VarInteger';
 	n: number;
+	len: number;
 	value: number;
   };
 export function loadVarInteger(slice: Slice, n: number): VarInteger {
-  	let value: number = slice.loadInt((len * 8));
+  	let len: number = slice.loadUint(bitLen((n - 1)));
+	let value: number = slice.loadInt((len * 8));
 	return {
   		kind: 'VarInteger',
 		n: n,
+		len: len,
 		value: value
   	};
   }
 export function storeVarInteger(varInteger: VarInteger): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeInt(varInteger.value, (varInteger.len * 8));
+  		builder.storeUint(varInteger.len, bitLen((varInteger.n - 1)));
+		builder.storeInt(varInteger.value, (varInteger.len * 8));
   	};
   }
 export type Grams = {
@@ -1706,7 +1717,7 @@ export type IntermediateAddress_interm_addr_ext = {
 export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
-		let use_dest_bits: number = slice.loadUint(7);
+		let use_dest_bits: number = slice.loadUint(bitLen(96));
 		return {
   			kind: 'IntermediateAddress_interm_addr_regular',
 			use_dest_bits: use_dest_bits
@@ -1738,7 +1749,7 @@ export function storeIntermediateAddress(intermediateAddress: IntermediateAddres
   	if ((intermediateAddress.kind == 'IntermediateAddress_interm_addr_regular')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b0, 1);
-			builder.storeUint(intermediateAddress.use_dest_bits, 7);
+			builder.storeUint(intermediateAddress.use_dest_bits, bitLen(96));
   		};
   	};
 	if ((intermediateAddress.kind == 'IntermediateAddress_interm_addr_simple')) {
@@ -2741,7 +2752,7 @@ export type DepthBalanceInfo = {
 	balance: CurrencyCollection;
   };
 export function loadDepthBalanceInfo(slice: Slice): DepthBalanceInfo {
-  	let split_depth: number = slice.loadUint(5);
+  	let split_depth: number = slice.loadUint(bitLen(30));
 	let balance: CurrencyCollection = loadCurrencyCollection(slice);
 	return {
   		kind: 'DepthBalanceInfo',
@@ -2751,7 +2762,7 @@ export function loadDepthBalanceInfo(slice: Slice): DepthBalanceInfo {
   }
 export function storeDepthBalanceInfo(depthBalanceInfo: DepthBalanceInfo): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(depthBalanceInfo.split_depth, 5);
+  		builder.storeUint(depthBalanceInfo.split_depth, bitLen(30));
 		storeCurrencyCollection(depthBalanceInfo.balance)(builder);
   	};
   }
@@ -4007,7 +4018,7 @@ export type ShardIdent = {
 export function loadShardIdent(slice: Slice): ShardIdent {
   	if ((slice.preloadUint(2) == 0b00)) {
   		slice.loadUint(2);
-		let shard_pfx_bits: number = slice.loadUint(6);
+		let shard_pfx_bits: number = slice.loadUint(bitLen(60));
 		let workchain_id: number = slice.loadInt(32);
 		let shard_prefix: number = slice.loadUint(64);
 		return {
@@ -4022,7 +4033,7 @@ export function loadShardIdent(slice: Slice): ShardIdent {
 export function storeShardIdent(shardIdent: ShardIdent): (builder: Builder) => void {
   	return (builder: Builder) => {
   		builder.storeUint(0b00, 2);
-		builder.storeUint(shardIdent.shard_pfx_bits, 6);
+		builder.storeUint(shardIdent.shard_pfx_bits, bitLen(60));
 		builder.storeInt(shardIdent.workchain_id, 32);
 		builder.storeUint(shardIdent.shard_prefix, 64);
   	};
@@ -8154,8 +8165,8 @@ export function loadVmCellSlice(slice: Slice): VmCellSlice {
 	let cell: Slice = slice1;
 	let st_bits: number = slice.loadUint(10);
 	let end_bits: number = slice.loadUint(10);
-	let st_ref: number = slice.loadUint(3);
-	let end_ref: number = slice.loadUint(3);
+	let st_ref: number = slice.loadUint(bitLen(4));
+	let end_ref: number = slice.loadUint(bitLen(4));
 	if ((!(st_bits <= end_bits))) {
   		throw new Error('');
   	};
@@ -8178,8 +8189,8 @@ export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) =
 		builder.storeRef(cell1);
 		builder.storeUint(vmCellSlice.st_bits, 10);
 		builder.storeUint(vmCellSlice.end_bits, 10);
-		builder.storeUint(vmCellSlice.st_ref, 3);
-		builder.storeUint(vmCellSlice.end_ref, 3);
+		builder.storeUint(vmCellSlice.st_ref, bitLen(4));
+		builder.storeUint(vmCellSlice.end_ref, bitLen(4));
 		if ((!(vmCellSlice.st_bits <= vmCellSlice.end_bits))) {
   			throw new Error('');
   		};

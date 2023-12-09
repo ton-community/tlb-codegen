@@ -121,10 +121,12 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(complexTypedField, loadComplexTypedField, storeComplexTypedField);
         let cellTypedField: CellTypedField = {'kind': 'CellTypedField', a:{'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: 10}}}
         checkSameOnStoreLoad(cellTypedField, loadCellTypedField, storeCellTypedField);
-        let lessThan: LessThan = {kind: 'LessThan', x: 3, y: 5} 
+        let lessThan: LessThan = {kind: 'LessThan', x: 3, y: 7} 
         checkSameOnStoreLoad(lessThan, loadLessThan, storeLessThan);
-        let lessThanIncorrect: LessThan = {kind: 'LessThan', x: 77, y: 5} 
-        checkThrowOnStoreLoad(lessThanIncorrect, loadLessThan, storeLessThan);
+        let lessThanIncorrectX: LessThan = {kind: 'LessThan', x: 4, y: 7} 
+        checkThrowOnStoreLoad(lessThanIncorrectX, loadLessThan, storeLessThan);
+        let lessThanIncorrectY: LessThan = {kind: 'LessThan', x: 3, y: 8} 
+        checkThrowOnStoreLoad(lessThanIncorrectY, loadLessThan, storeLessThan);
     })
 
     test('Combinators', () => {

@@ -16,6 +16,10 @@ export function generate(tree: Program) {
   jsCodeDeclarations.push(tImportDeclaration(tIdentifier('beginCell'), tStringLiteral('ton')))
   jsCodeDeclarations.push(tImportDeclaration(tIdentifier('BitString'), tStringLiteral('ton')))
 
+  jsCodeDeclarations.push(tFunctionDeclaration(tIdentifier('bitLen'), tTypeParametersExpression([]), null, [tTypedIdentifier(tIdentifier('n'), tIdentifier('number'))], [
+    tExpressionStatement(tIdentifier('return n.toString(2).length;'))
+  ]))
+
 
   let tlbCode: TLBCode = { types: new Map<string, TLBType>() }
 

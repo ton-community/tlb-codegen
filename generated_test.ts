@@ -2,6 +2,9 @@ import { Builder } from 'ton'
 import { Slice } from 'ton'
 import { beginCell } from 'ton'
 import { BitString } from 'ton'
+export function bitLen(n: number) {
+  	return n.toString(2).length;;
+  }
 export type Simple = {
   	kind: 'Simple';
 	a: number;
@@ -531,8 +534,8 @@ export type LessThan = {
 	y: number;
   };
 export function loadLessThan(slice: Slice): LessThan {
-  	let x: number = slice.loadUint(2);
-	let y: number = slice.loadUint(3);
+  	let x: number = slice.loadUint(bitLen((4 - 1)));
+	let y: number = slice.loadUint(bitLen(4));
 	return {
   		kind: 'LessThan',
 		x: x,
@@ -541,8 +544,8 @@ export function loadLessThan(slice: Slice): LessThan {
   }
 export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
   	return (builder: Builder) => {
-  		builder.storeUint(lessThan.x, 2);
-		builder.storeUint(lessThan.y, 3);
+  		builder.storeUint(lessThan.x, bitLen((4 - 1)));
+		builder.storeUint(lessThan.y, bitLen(4));
   	};
   }
 export type OneComb<A> = {
@@ -1286,7 +1289,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	};
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
-		let n: number = slice.loadUint(m);
+		let n: number = slice.loadUint(bitLen(m));
 		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
   			return slice.loadBits(1);
   		});
@@ -1300,7 +1303,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 	if ((slice.preloadUint(2) == 0b11)) {
   		slice.loadUint(2);
 		let v: BitString = slice.loadBits(1);
-		let n: number = slice.loadUint(m);
+		let n: number = slice.loadUint(bitLen(m));
 		return {
   			kind: 'HmLabel_hml_same',
 			m: m,
@@ -1326,7 +1329,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
   		return (builder: Builder) => {
   			builder.storeUint(0b10, 2);
-			builder.storeUint(hmLabel.n, hmLabel.m);
+			builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
 			hmLabel.s.forEach((arg: BitString) => {
   				builder.storeBits(arg);
   			});
@@ -1336,7 +1339,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   		return (builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeBits(hmLabel.v);
-			builder.storeUint(hmLabel.n, hmLabel.m);
+			builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
   		};
   	};
 	throw new Error('');
