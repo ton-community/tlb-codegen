@@ -1782,7 +1782,9 @@ export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
 		let next_addr: IntermediateAddress = loadIntermediateAddress(slice);
 		let fwd_fee_remaining: Grams = loadGrams(slice);
 		let slice1 = slice.loadRef().beginParse();
-		let msg: Message<Slice> = loadMessage<Slice>(slice1, slice1);
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, (slice: Slice) => {
+  			return slice;
+  		});
 		return {
   			kind: 'MsgEnvelope',
 			cur_addr: cur_addr,
@@ -1856,7 +1858,9 @@ export function loadInMsg(slice: Slice): InMsg {
   	if ((slice.preloadUint(3) == 0b000)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
-		let msg: Message<Slice> = loadMessage<Slice>(slice1, slice1);
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, (slice: Slice) => {
+  			return slice;
+  		});
 		let slice2 = slice.loadRef().beginParse();
 		let transaction: Transaction = loadTransaction(slice2);
 		return {
@@ -1868,7 +1872,9 @@ export function loadInMsg(slice: Slice): InMsg {
 	if ((slice.preloadUint(3) == 0b010)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
-		let msg: Message<Slice> = loadMessage<Slice>(slice1, slice1);
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, (slice: Slice) => {
+  			return slice;
+  		});
 		let slice2 = slice.loadRef().beginParse();
 		let transaction: Transaction = loadTransaction(slice2);
 		let ihr_fee: Grams = loadGrams(slice);
@@ -2132,7 +2138,9 @@ export function loadOutMsg(slice: Slice): OutMsg {
   	if ((slice.preloadUint(3) == 0b000)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
-		let msg: Message<Slice> = loadMessage<Slice>(slice1, slice1);
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, (slice: Slice) => {
+  			return slice;
+  		});
 		let slice2 = slice.loadRef().beginParse();
 		let transaction: Transaction = loadTransaction(slice2);
 		return {
@@ -2809,11 +2817,15 @@ export function loadTransaction(slice: Slice): Transaction {
 		let slice1 = slice.loadRef().beginParse();
 		let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, (slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
-			return loadMessage<Slice>(slice1, slice1);
+			return loadMessage<Slice>(slice1, (slice: Slice) => {
+  				return slice;
+  			});
   		});
 		let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, (slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
-			return loadMessage<Slice>(slice1, slice1);
+			return loadMessage<Slice>(slice1, (slice: Slice) => {
+  				return slice;
+  			});
   		});
 		let total_fees: CurrencyCollection = loadCurrencyCollection(slice);
 		let slice2 = slice.loadRef().beginParse();
@@ -3858,7 +3870,9 @@ export function loadOutAction(slice: Slice): OutAction {
   		slice.loadUint(32);
 		let mode: number = slice.loadUint(8);
 		let slice1 = slice.loadRef().beginParse();
-		let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, slice1);
+		let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, (slice: Slice) => {
+  			return slice;
+  		});
 		return {
   			kind: 'OutAction_action_send_msg',
 			mode: mode,

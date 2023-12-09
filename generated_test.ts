@@ -1585,3 +1585,28 @@ export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: Pa
   	};
 	throw new Error('');
   }
+export type RefCombinatorAny = {
+  	kind: 'RefCombinatorAny';
+	msg: Maybe<Slice>;
+  };
+export function loadRefCombinatorAny(slice: Slice): RefCombinatorAny {
+  	let slice1 = slice.loadRef().beginParse();
+	let msg: Maybe<Slice> = loadMaybe<Slice>(slice1, (slice: Slice) => {
+  		return slice;
+  	});
+	return {
+  		kind: 'RefCombinatorAny',
+		msg: msg
+  	};
+  }
+export function storeRefCombinatorAny(refCombinatorAny: RefCombinatorAny): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		let cell1 = beginCell();
+		storeMaybe<Slice>(refCombinatorAny.msg, (arg: Slice) => {
+  			return (builder: Builder) => {
+  				cell1.storeSlice(arg);
+  			};
+  		})(cell1);
+		builder.storeRef(cell1);
+  	};
+  }

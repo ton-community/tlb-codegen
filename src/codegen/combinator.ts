@@ -253,6 +253,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     result.loadExpr = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + exprForParam.fieldLoadStoreSuffix)), [exprForParam.argLoadExpr]);
     if (exprForParam.paramType == 'Slice') {
       result.loadExpr = tIdentifier(currentSlice)
+      result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [tReturnStatement(tIdentifier('slice'))])
     }
     result.typeParamExpr = tIdentifier(exprForParam.paramType);
     result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + exprForParam.fieldLoadStoreSuffix)), insideStoreParameters));
