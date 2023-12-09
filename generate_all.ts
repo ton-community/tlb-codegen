@@ -22,6 +22,6 @@ function generateCode(filename: string) {
     fs.writeFile('generated_' + filename + '.ts', generate(tree), () => { });
 }
 
-generateCode('test')
 // generateCode('my')
-// generateCode('block')
+generateCode('block')
+generateCode('test')

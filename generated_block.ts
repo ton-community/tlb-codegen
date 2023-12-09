@@ -343,6 +343,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
   			return slice.loadBits(1);
   		});
+		if ((!(n <= m))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'HmLabel_hml_short',
 			m: m,
@@ -385,6 +388,9 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 			hmLabel.s.forEach((arg: BitString) => {
   				builder.storeBits(arg);
   			});
+			if ((!(hmLabel.n <= hmLabel.m))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
@@ -1052,6 +1058,9 @@ export type Anycast = {
 export function loadAnycast(slice: Slice): Anycast {
   	let depth: number = slice.loadUint(5);
 	let rewrite_pfx: BitString = slice.loadBits(depth);
+	if ((!(depth >= 1))) {
+  		throw new Error('');
+  	};
 	return {
   		kind: 'Anycast',
 		depth: depth,
@@ -1062,6 +1071,9 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
   	return (builder: Builder) => {
   		builder.storeUint(anycast.depth, 5);
 		builder.storeBits(anycast.rewrite_pfx);
+		if ((!(anycast.depth >= 1))) {
+  			throw new Error('');
+  		};
   	};
   }
 export type MsgAddressInt = MsgAddressInt_addr_std | MsgAddressInt_addr_var;
@@ -3865,6 +3877,9 @@ export function loadOutAction(slice: Slice): OutAction {
   		slice.loadUint(32);
 		let mode: number = slice.loadUint(7);
 		let libref: LibRef = loadLibRef(slice);
+		if ((!(mode <= 2))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'OutAction_action_change_library',
 			mode: mode,
@@ -3907,6 +3922,9 @@ export function storeOutAction(outAction: OutAction): (builder: Builder) => void
   			builder.storeUint(0x26fa1dd4, 32);
 			builder.storeUint(outAction.mode, 7);
 			storeLibRef(outAction.libref)(builder);
+			if ((!(outAction.mode <= 2))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	throw new Error('');
@@ -4322,6 +4340,15 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
   			let slice1 = slice.loadRef().beginParse();
 			return loadBlkPrevInfo(slice1, 0);
   		} : undefined);
+		if ((!(flags <= 1))) {
+  			throw new Error('');
+  		};
+		if ((!(vert_seq_no >= vert_seqno_incr))) {
+  			throw new Error('');
+  		};
+		if ((!((prev_seq_no + 1) = seq_no))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'BlockInfo',
 			version: version,
@@ -4390,6 +4417,15 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
   			let cell1 = beginCell()
 			storeBlkPrevInfo(arg)(cell1)
 			builder.storeRef(cell1);
+  		};
+		if ((!(blockInfo.flags <= 1))) {
+  			throw new Error('');
+  		};
+		if ((!(blockInfo.vert_seq_no >= blockInfo.vert_seqno_incr))) {
+  			throw new Error('');
+  		};
+		if ((!((blockInfo.prev_seq_no + 1) = blockInfo.seq_no))) {
+  			throw new Error('');
   		};
   	};
   }
@@ -4784,6 +4820,9 @@ export function loadShardDescr(slice: Slice): ShardDescr {
 		let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice);
 		let fees_collected: CurrencyCollection = loadCurrencyCollection(slice);
 		let funds_created: CurrencyCollection = loadCurrencyCollection(slice);
+		if ((!(flags = 0))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ShardDescr_shard_descr',
 			seq_no: seq_no,
@@ -4829,6 +4868,9 @@ export function loadShardDescr(slice: Slice): ShardDescr {
 		let slice1 = slice.loadRef().beginParse();
 		let fees_collected: CurrencyCollection = loadCurrencyCollection(slice1);
 		let funds_created: CurrencyCollection = loadCurrencyCollection(slice1);
+		if ((!(flags = 0))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ShardDescr_shard_descr_new',
 			seq_no: seq_no,
@@ -4877,6 +4919,9 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
 			storeFutureSplitMerge(shardDescr.split_merge_at)(builder);
 			storeCurrencyCollection(shardDescr.fees_collected)(builder);
 			storeCurrencyCollection(shardDescr.funds_created)(builder);
+			if ((!(shardDescr.flags = 0))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((shardDescr.kind == 'ShardDescr_shard_descr_new')) {
@@ -4903,6 +4948,9 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
 			storeCurrencyCollection(shardDescr.fees_collected)(cell1);
 			storeCurrencyCollection(shardDescr.funds_created)(cell1);
 			builder.storeRef(cell1);
+			if ((!(shardDescr.flags = 0))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	throw new Error('');
@@ -5631,6 +5679,12 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
 		let utime_until: number = slice.loadUint(32);
 		let main: number = slice.loadUint(16);
 		let list: Hashmap<ValidatorDescr> = loadHashmap<ValidatorDescr>(slice, 16, loadValidatorDescr);
+		if ((!(main <= total))) {
+  			throw new Error('');
+  		};
+		if ((!(main >= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ValidatorSet_validators',
 			utime_since: utime_since,
@@ -5647,6 +5701,12 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
 		let main: number = slice.loadUint(16);
 		let total_weight: number = slice.loadUint(64);
 		let list: HashmapE<ValidatorDescr> = loadHashmapE<ValidatorDescr>(slice, 16, loadValidatorDescr);
+		if ((!(main <= total))) {
+  			throw new Error('');
+  		};
+		if ((!(main >= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ValidatorSet_validators_ext',
 			utime_since: utime_since,
@@ -5667,6 +5727,12 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 			builder.storeUint(validatorSet.utime_until, 32);
 			builder.storeUint(validatorSet.main, 16);
 			storeHashmap<ValidatorDescr>(validatorSet.list, storeValidatorDescr)(builder);
+			if ((!(validatorSet.main <= validatorSet.total))) {
+  				throw new Error('');
+  			};
+			if ((!(validatorSet.main >= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((validatorSet.kind == 'ValidatorSet_validators_ext')) {
@@ -5678,6 +5744,12 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 			builder.storeUint(validatorSet.main, 16);
 			builder.storeUint(validatorSet.total_weight, 64);
 			storeHashmapE<ValidatorDescr>(validatorSet.list, storeValidatorDescr)(builder);
+			if ((!(validatorSet.main <= validatorSet.total))) {
+  				throw new Error('');
+  			};
+			if ((!(validatorSet.main >= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	throw new Error('');
@@ -5936,6 +6008,15 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   		let max_validators: number = slice.loadUint(16);
 		let max_main_validators: number = slice.loadUint(16);
 		let min_validators: number = slice.loadUint(16);
+		if ((!(max_validators >= max_main_validators))) {
+  			throw new Error('');
+  		};
+		if ((!(max_main_validators >= min_validators))) {
+  			throw new Error('');
+  		};
+		if ((!(min_validators >= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ConfigParam__',
 			max_validators: max_validators,
@@ -6162,6 +6243,15 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   			builder.storeUint(configParam.max_validators, 16);
 			builder.storeUint(configParam.max_main_validators, 16);
 			builder.storeUint(configParam.min_validators, 16);
+			if ((!(configParam.max_validators >= configParam.max_main_validators))) {
+  				throw new Error('');
+  			};
+			if ((!(configParam.max_main_validators >= configParam.min_validators))) {
+  				throw new Error('');
+  			};
+			if ((!(configParam.min_validators >= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((configParam.kind == 'ConfigParam__')) {
@@ -6514,6 +6604,21 @@ export function loadWorkchainFormat(slice: Slice, arg0: number): WorkchainFormat
 		let max_addr_len: number = slice.loadUint(12);
 		let addr_len_step: number = slice.loadUint(12);
 		let workchain_type_id: number = slice.loadUint(32);
+		if ((!(min_addr_len >= 64))) {
+  			throw new Error('');
+  		};
+		if ((!(min_addr_len <= max_addr_len))) {
+  			throw new Error('');
+  		};
+		if ((!(max_addr_len <= 1023))) {
+  			throw new Error('');
+  		};
+		if ((!(addr_len_step <= 1023))) {
+  			throw new Error('');
+  		};
+		if ((!(workchain_type_id >= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'WorkchainFormat_wfmt_ext',
 			min_addr_len: min_addr_len,
@@ -6539,6 +6644,21 @@ export function storeWorkchainFormat(workchainFormat: WorkchainFormat): (builder
 			builder.storeUint(workchainFormat.max_addr_len, 12);
 			builder.storeUint(workchainFormat.addr_len_step, 12);
 			builder.storeUint(workchainFormat.workchain_type_id, 32);
+			if ((!(workchainFormat.min_addr_len >= 64))) {
+  				throw new Error('');
+  			};
+			if ((!(workchainFormat.min_addr_len <= workchainFormat.max_addr_len))) {
+  				throw new Error('');
+  			};
+			if ((!(workchainFormat.max_addr_len <= 1023))) {
+  				throw new Error('');
+  			};
+			if ((!(workchainFormat.addr_len_step <= 1023))) {
+  				throw new Error('');
+  			};
+			if ((!(workchainFormat.workchain_type_id >= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	throw new Error('');
@@ -6573,6 +6693,12 @@ export function loadWorkchainDescr(slice: Slice): WorkchainDescr {
 		let zerostate_file_hash: BitString = slice.loadBits(256);
 		let version: number = slice.loadUint(32);
 		let format: WorkchainFormat = loadWorkchainFormat(slice, basic);
+		if ((!(actual_min_split <= min_split))) {
+  			throw new Error('');
+  		};
+		if ((!(flags = 0))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'WorkchainDescr',
 			enabled_since: enabled_since,
@@ -6606,6 +6732,12 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
 		builder.storeBits(workchainDescr.zerostate_file_hash);
 		builder.storeUint(workchainDescr.version, 32);
 		storeWorkchainFormat(workchainDescr.format)(builder);
+		if ((!(workchainDescr.actual_min_split <= workchainDescr.min_split))) {
+  			throw new Error('');
+  		};
+		if ((!(workchainDescr.flags = 0))) {
+  			throw new Error('');
+  		};
   	};
   }
 export type ComplaintPricing = {
@@ -6824,6 +6956,12 @@ export function loadParamLimits(slice: Slice): ParamLimits {
 		let underload: number = slice.loadUint(32);
 		let soft_limit: number = slice.loadUint(32);
 		let hard_limit: number = slice.loadUint(32);
+		if ((!(underload <= soft_limit))) {
+  			throw new Error('');
+  		};
+		if ((!(soft_limit <= hard_limit))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ParamLimits',
 			underload: underload,
@@ -6839,6 +6977,12 @@ export function storeParamLimits(paramLimits: ParamLimits): (builder: Builder) =
 		builder.storeUint(paramLimits.underload, 32);
 		builder.storeUint(paramLimits.soft_limit, 32);
 		builder.storeUint(paramLimits.hard_limit, 32);
+		if ((!(paramLimits.underload <= paramLimits.soft_limit))) {
+  			throw new Error('');
+  		};
+		if ((!(paramLimits.soft_limit <= paramLimits.hard_limit))) {
+  			throw new Error('');
+  		};
   	};
   }
 export type BlockLimits = {
@@ -6951,6 +7095,9 @@ export function loadCatchainConfig(slice: Slice): CatchainConfig {
 		let shard_catchain_lifetime: number = slice.loadUint(32);
 		let shard_validators_lifetime: number = slice.loadUint(32);
 		let shard_validators_num: number = slice.loadUint(32);
+		if ((!(flags = 0))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'CatchainConfig_catchain_config_new',
 			flags: flags,
@@ -6982,6 +7129,9 @@ export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: B
 			builder.storeUint(catchainConfig.shard_catchain_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_validators_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_validators_num, 32);
+			if ((!(catchainConfig.flags = 0))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	throw new Error('');
@@ -7051,6 +7201,9 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 		let catchain_max_deps: number = slice.loadUint(32);
 		let max_block_bytes: number = slice.loadUint(32);
 		let max_collated_bytes: number = slice.loadUint(32);
+		if ((!(round_candidates >= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ConsensusConfig_consensus_config',
 			round_candidates: round_candidates,
@@ -7075,6 +7228,12 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 		let catchain_max_deps: number = slice.loadUint(32);
 		let max_block_bytes: number = slice.loadUint(32);
 		let max_collated_bytes: number = slice.loadUint(32);
+		if ((!(flags = 0))) {
+  			throw new Error('');
+  		};
+		if ((!(round_candidates >= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ConsensusConfig_consensus_config_new',
 			flags: flags,
@@ -7102,6 +7261,12 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 		let max_block_bytes: number = slice.loadUint(32);
 		let max_collated_bytes: number = slice.loadUint(32);
 		let proto_version: number = slice.loadUint(16);
+		if ((!(flags = 0))) {
+  			throw new Error('');
+  		};
+		if ((!(round_candidates >= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ConsensusConfig_consensus_config_v3',
 			flags: flags,
@@ -7131,6 +7296,12 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 		let max_collated_bytes: number = slice.loadUint(32);
 		let proto_version: number = slice.loadUint(16);
 		let catchain_max_blocks_coeff: number = slice.loadUint(32);
+		if ((!(flags = 0))) {
+  			throw new Error('');
+  		};
+		if ((!(round_candidates >= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'ConsensusConfig_consensus_config_v4',
 			flags: flags,
@@ -7161,6 +7332,9 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			builder.storeUint(consensusConfig.catchain_max_deps, 32);
 			builder.storeUint(consensusConfig.max_block_bytes, 32);
 			builder.storeUint(consensusConfig.max_collated_bytes, 32);
+			if ((!(consensusConfig.round_candidates >= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_new')) {
@@ -7176,6 +7350,12 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			builder.storeUint(consensusConfig.catchain_max_deps, 32);
 			builder.storeUint(consensusConfig.max_block_bytes, 32);
 			builder.storeUint(consensusConfig.max_collated_bytes, 32);
+			if ((!(consensusConfig.flags = 0))) {
+  				throw new Error('');
+  			};
+			if ((!(consensusConfig.round_candidates >= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_v3')) {
@@ -7192,6 +7372,12 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			builder.storeUint(consensusConfig.max_block_bytes, 32);
 			builder.storeUint(consensusConfig.max_collated_bytes, 32);
 			builder.storeUint(consensusConfig.proto_version, 16);
+			if ((!(consensusConfig.flags = 0))) {
+  				throw new Error('');
+  			};
+			if ((!(consensusConfig.round_candidates >= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_v4')) {
@@ -7209,6 +7395,12 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			builder.storeUint(consensusConfig.max_collated_bytes, 32);
 			builder.storeUint(consensusConfig.proto_version, 16);
 			builder.storeUint(consensusConfig.catchain_max_blocks_coeff, 32);
+			if ((!(consensusConfig.flags = 0))) {
+  				throw new Error('');
+  			};
+			if ((!(consensusConfig.round_candidates >= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	throw new Error('');
@@ -7528,6 +7720,12 @@ export function loadTopBlockDescr(slice: Slice): TopBlockDescr {
   		});
 		let len: number = slice.loadUint(8);
 		let chain: ProofChain = loadProofChain(slice, len);
+		if ((!(len >= 1))) {
+  			throw new Error('');
+  		};
+		if ((!(len <= 8))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'TopBlockDescr',
 			proof_for: proof_for,
@@ -7551,6 +7749,12 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
   		})(builder);
 		builder.storeUint(topBlockDescr.len, 8);
 		storeProofChain(topBlockDescr.chain)(builder);
+		if ((!(topBlockDescr.len >= 1))) {
+  			throw new Error('');
+  		};
+		if ((!(topBlockDescr.len <= 8))) {
+  			throw new Error('');
+  		};
   	};
   }
 export type TopBlockDescrSet = {
@@ -7952,6 +8156,12 @@ export function loadVmCellSlice(slice: Slice): VmCellSlice {
 	let end_bits: number = slice.loadUint(10);
 	let st_ref: number = slice.loadUint(3);
 	let end_ref: number = slice.loadUint(3);
+	if ((!(st_bits <= end_bits))) {
+  		throw new Error('');
+  	};
+	if ((!(st_ref <= end_ref))) {
+  		throw new Error('');
+  	};
 	return {
   		kind: 'VmCellSlice',
 		cell: cell,
@@ -7970,6 +8180,12 @@ export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) =
 		builder.storeUint(vmCellSlice.end_bits, 10);
 		builder.storeUint(vmCellSlice.st_ref, 3);
 		builder.storeUint(vmCellSlice.end_ref, 3);
+		if ((!(vmCellSlice.st_bits <= vmCellSlice.end_bits))) {
+  			throw new Error('');
+  		};
+		if ((!(vmCellSlice.st_ref <= vmCellSlice.end_ref))) {
+  			throw new Error('');
+  		};
   	};
   }
 export type VmTupleRef = VmTupleRef_vm_tupref_nil | VmTupleRef_vm_tupref_single | VmTupleRef_vm_tupref_any;
@@ -8679,6 +8895,9 @@ export function loadDNSRecord(slice: Slice): DNSRecord {
 		let adnl_addr: BitString = slice.loadBits(256);
 		let flags: number = slice.loadUint(8);
 		let proto_list: ProtoList | undefined = ((flags & (1 << 0)) ? loadProtoList(slice) : undefined);
+		if ((!(flags <= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'DNSRecord_dns_adnl_address',
 			adnl_addr: adnl_addr,
@@ -8691,6 +8910,9 @@ export function loadDNSRecord(slice: Slice): DNSRecord {
 		let smc_addr: MsgAddressInt = loadMsgAddressInt(slice);
 		let flags: number = slice.loadUint(8);
 		let cap_list: SmcCapList | undefined = ((flags & (1 << 0)) ? loadSmcCapList(slice) : undefined);
+		if ((!(flags <= 1))) {
+  			throw new Error('');
+  		};
 		return {
   			kind: 'DNSRecord_dns_smc_address',
 			smc_addr: smc_addr,
@@ -8721,6 +8943,9 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
 			if ((dNSRecord.proto_list != undefined)) {
   				storeProtoList(dNSRecord.proto_list)(builder);
   			};
+			if ((!(dNSRecord.flags <= 1))) {
+  				throw new Error('');
+  			};
   		};
   	};
 	if ((dNSRecord.kind == 'DNSRecord_dns_smc_address')) {
@@ -8730,6 +8955,9 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
 			builder.storeUint(dNSRecord.flags, 8);
 			if ((dNSRecord.cap_list != undefined)) {
   				storeSmcCapList(dNSRecord.cap_list)(builder);
+  			};
+			if ((!(dNSRecord.flags <= 1))) {
+  				throw new Error('');
   			};
   		};
   	};
