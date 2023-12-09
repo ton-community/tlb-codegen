@@ -8,6 +8,7 @@ import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName, s
 type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined
   loadExpr: Expression | undefined
+  loadFunctionExpr: Expression | undefined
   storeExpr: Statement | undefined
   negatedVariablesLoads: Array<{name: string, expression: Expression}>
 }
@@ -26,7 +27,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     theSlice = currentSlice;
     theCell = currentCell;
   }
-  let result: FieldInfoType = { typeParamExpr: undefined, loadExpr: undefined, storeExpr: undefined, negatedVariablesLoads: [] };
+  let result: FieldInfoType = { typeParamExpr: undefined, loadExpr: undefined, loadFunctionExpr: undefined, storeExpr: undefined, negatedVariablesLoads: [] };
 
   let exprForParam: ExprForParam | undefined;
 
@@ -110,11 +111,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         if (subExprInfo.typeParamExpr) {
           typeExpression.typeParameters.push(subExprInfo.typeParamExpr);
         }
-        if (subExprInfo.loadExpr) {
-          if (subExprInfo.loadExpr.type == 'FunctionCall') {
-            subExprInfo.loadExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [tReturnStatement(subExprInfo.loadExpr)])
-          }
-          loadFunctionsArray.push(subExprInfo.loadExpr);
+        if (subExprInfo.loadFunctionExpr) {
+          loadFunctionsArray.push(subExprInfo.loadFunctionExpr);
         }
         if (subExprInfo.storeExpr && subExprInfo.typeParamExpr) {
             if (subExprInfo.storeExpr.type == 'ExpressionStatement' && subExprInfo.storeExpr.expression.type == 'FunctionCall' || subExprInfo.storeExpr.type == 'MultiStatement') {
@@ -259,6 +257,15 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     result.typeParamExpr = tIdentifier(exprForParam.paramType);
     result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('store' + exprForParam.fieldLoadStoreSuffix)), insideStoreParameters));
   }
+
+  if (result.loadExpr && !result.loadFunctionExpr) {
+    if (result.loadExpr.type == 'FunctionCall') {
+      result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [tReturnStatement(result.loadExpr)])
+    } else {
+      result.loadFunctionExpr = result.loadExpr
+    }
+  }
+
 
   return result;
 }
