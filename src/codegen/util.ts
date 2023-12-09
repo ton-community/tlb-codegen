@@ -356,6 +356,19 @@ export function getConstructorTag(tag: string | null): TLBConstructorTag {
     throw new Error('Unknown tag' + tag);
   }
 
+function fixNaming(tlbType: TLBType) {
+    let constructorNames: Set<string> = new Set<string>();
+    for (let i = 0; i < tlbType.constructors.length; i++) {
+        let current = tlbType.constructors[i];
+        if (current) {
+            while (constructorNames.has(current.name)) {
+                current.name += i.toString();
+            }
+            constructorNames.add(current.name); 
+        }  
+    }
+}
+
 export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
     declarations.forEach(declaration => {
         let tlbType: TLBType | undefined = tlbCode.types.get(declaration.combinator.name);
@@ -433,5 +446,6 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
         });
         checkConstructors(tlbType);
         fillParameterNames(tlbType);
+        fixNaming(tlbType);
     });
 }

@@ -1475,3 +1475,58 @@ export function storeImplicitCondition(implicitCondition: ImplicitCondition): (b
   		};
   	};
   }
+export type MultipleEmptyConstructor = MultipleEmptyConstructor__ | MultipleEmptyConstructor__1 | MultipleEmptyConstructor_a;
+export type MultipleEmptyConstructor__ = {
+  	kind: 'MultipleEmptyConstructor__';
+	a: number;
+  };
+export type MultipleEmptyConstructor__1 = {
+  	kind: 'MultipleEmptyConstructor__1';
+	b: number;
+  };
+export type MultipleEmptyConstructor_a = {
+  	kind: 'MultipleEmptyConstructor_a';
+	x: number;
+  };
+export function loadMultipleEmptyConstructor(slice: Slice, arg0: number): MultipleEmptyConstructor {
+  	if ((arg0 == 0)) {
+  		let a: number = slice.loadUint(32);
+		return {
+  			kind: 'MultipleEmptyConstructor__',
+			a: a
+  		};
+  	};
+	if ((arg0 == 1)) {
+  		let b: number = slice.loadUint(5);
+		return {
+  			kind: 'MultipleEmptyConstructor__1',
+			b: b
+  		};
+  	};
+	if ((arg0 == 2)) {
+  		let x: number = slice.loadUint(6);
+		return {
+  			kind: 'MultipleEmptyConstructor_a',
+			x: x
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeMultipleEmptyConstructor(multipleEmptyConstructor: MultipleEmptyConstructor): (builder: Builder) => void {
+  	if ((multipleEmptyConstructor.kind == 'MultipleEmptyConstructor__')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(multipleEmptyConstructor.a, 32);
+  		};
+  	};
+	if ((multipleEmptyConstructor.kind == 'MultipleEmptyConstructor__1')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(multipleEmptyConstructor.b, 5);
+  		};
+  	};
+	if ((multipleEmptyConstructor.kind == 'MultipleEmptyConstructor_a')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(multipleEmptyConstructor.x, 6);
+  		};
+  	};
+	throw new Error('');
+  }

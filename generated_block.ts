@@ -1139,13 +1139,13 @@ export function storeMsgAddressInt(msgAddressInt: MsgAddressInt): (builder: Buil
   	};
 	throw new Error('');
   }
-export type MsgAddress = MsgAddress__ | MsgAddress__;
+export type MsgAddress = MsgAddress__ | MsgAddress__1;
 export type MsgAddress__ = {
   	kind: 'MsgAddress__';
 	_: MsgAddressInt;
   };
-export type MsgAddress__ = {
-  	kind: 'MsgAddress__';
+export type MsgAddress__1 = {
+  	kind: 'MsgAddress__1';
 	_: MsgAddressExt;
   };
 export function loadMsgAddress(slice: Slice): MsgAddress {
@@ -1159,7 +1159,7 @@ export function loadMsgAddress(slice: Slice): MsgAddress {
 	if (true) {
   		let _: MsgAddressExt = loadMsgAddressExt(slice);
 		return {
-  			kind: 'MsgAddress__',
+  			kind: 'MsgAddress__1',
 			_: _
   		};
   	};
@@ -1171,7 +1171,7 @@ export function storeMsgAddress(msgAddress: MsgAddress): (builder: Builder) => v
   			storeMsgAddressInt(msgAddress._)(builder);
   		};
   	};
-	if ((msgAddress.kind == 'MsgAddress__')) {
+	if ((msgAddress.kind == 'MsgAddress__1')) {
   		return (builder: Builder) => {
   			storeMsgAddressExt(msgAddress._)(builder);
   		};
@@ -5754,82 +5754,82 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
   	};
 	throw new Error('');
   }
-export type ConfigParam = ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam_config_mc_gas_prices | ConfigParam_config_gas_prices | ConfigParam_config_mc_block_limits | ConfigParam_config_block_limits | ConfigParam_config_mc_fwd_prices | ConfigParam_config_fwd_prices | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__ | ConfigParam__;
+export type ConfigParam = ConfigParam__ | ConfigParam__1 | ConfigParam__2 | ConfigParam__3 | ConfigParam__4 | ConfigParam__5 | ConfigParam__6 | ConfigParam__7 | ConfigParam__8 | ConfigParam__9 | ConfigParam__10 | ConfigParam__11 | ConfigParam__12 | ConfigParam__13 | ConfigParam__14 | ConfigParam__15 | ConfigParam__16 | ConfigParam__17 | ConfigParam_config_mc_gas_prices | ConfigParam_config_gas_prices | ConfigParam_config_mc_block_limits | ConfigParam_config_block_limits | ConfigParam_config_mc_fwd_prices | ConfigParam_config_fwd_prices | ConfigParam__24 | ConfigParam__25 | ConfigParam__26 | ConfigParam__27 | ConfigParam__28 | ConfigParam__29 | ConfigParam__30 | ConfigParam__31 | ConfigParam__32 | ConfigParam__33 | ConfigParam__34 | ConfigParam__35 | ConfigParam__36 | ConfigParam__37;
 export type ConfigParam__ = {
   	kind: 'ConfigParam__';
 	config_addr: BitString;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__1 = {
+  	kind: 'ConfigParam__1';
 	elector_addr: BitString;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__2 = {
+  	kind: 'ConfigParam__2';
 	minter_addr: BitString;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__3 = {
+  	kind: 'ConfigParam__3';
 	fee_collector_addr: BitString;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__4 = {
+  	kind: 'ConfigParam__4';
 	dns_root_addr: BitString;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__5 = {
+  	kind: 'ConfigParam__5';
 	mint_new_price: Grams;
 	mint_add_price: Grams;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__6 = {
+  	kind: 'ConfigParam__6';
 	to_mint: ExtraCurrencyCollection;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__7 = {
+  	kind: 'ConfigParam__7';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__8 = {
+  	kind: 'ConfigParam__8';
 	mandatory_params: Hashmap<True>;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__9 = {
+  	kind: 'ConfigParam__9';
 	critical_params: Hashmap<True>;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__10 = {
+  	kind: 'ConfigParam__10';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__11 = {
+  	kind: 'ConfigParam__11';
 	workchains: HashmapE<WorkchainDescr>;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__12 = {
+  	kind: 'ConfigParam__12';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__13 = {
+  	kind: 'ConfigParam__13';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__14 = {
+  	kind: 'ConfigParam__14';
 	validators_elected_for: number;
 	elections_start_before: number;
 	elections_end_before: number;
 	stake_held_for: number;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__15 = {
+  	kind: 'ConfigParam__15';
 	max_validators: number;
 	max_main_validators: number;
 	min_validators: number;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__16 = {
+  	kind: 'ConfigParam__16';
 	min_stake: Grams;
 	max_stake: Grams;
 	min_total_stake: Grams;
 	max_stake_factor: number;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__17 = {
+  	kind: 'ConfigParam__17';
   };
 export type ConfigParam_config_mc_gas_prices = {
   	kind: 'ConfigParam_config_mc_gas_prices';
@@ -5849,54 +5849,54 @@ export type ConfigParam_config_mc_fwd_prices = {
 export type ConfigParam_config_fwd_prices = {
   	kind: 'ConfigParam_config_fwd_prices';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__24 = {
+  	kind: 'ConfigParam__24';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__25 = {
+  	kind: 'ConfigParam__25';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__26 = {
+  	kind: 'ConfigParam__26';
 	fundamental_smc_addr: HashmapE<True>;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__27 = {
+  	kind: 'ConfigParam__27';
 	prev_validators: ValidatorSet;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__28 = {
+  	kind: 'ConfigParam__28';
 	prev_temp_validators: ValidatorSet;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__29 = {
+  	kind: 'ConfigParam__29';
 	cur_validators: ValidatorSet;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__30 = {
+  	kind: 'ConfigParam__30';
 	cur_temp_validators: ValidatorSet;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__31 = {
+  	kind: 'ConfigParam__31';
 	next_validators: ValidatorSet;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__32 = {
+  	kind: 'ConfigParam__32';
 	next_temp_validators: ValidatorSet;
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__33 = {
+  	kind: 'ConfigParam__33';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__34 = {
+  	kind: 'ConfigParam__34';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__35 = {
+  	kind: 'ConfigParam__35';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__36 = {
+  	kind: 'ConfigParam__36';
   };
-export type ConfigParam__ = {
-  	kind: 'ConfigParam__';
+export type ConfigParam__37 = {
+  	kind: 'ConfigParam__37';
   };
 export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   	if ((arg0 == 0)) {
@@ -5909,28 +5909,28 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 	if ((arg0 == 1)) {
   		let elector_addr: BitString = slice.loadBits(256);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__1',
 			elector_addr: elector_addr
   		};
   	};
 	if ((arg0 == 2)) {
   		let minter_addr: BitString = slice.loadBits(256);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__2',
 			minter_addr: minter_addr
   		};
   	};
 	if ((arg0 == 3)) {
   		let fee_collector_addr: BitString = slice.loadBits(256);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__3',
 			fee_collector_addr: fee_collector_addr
   		};
   	};
 	if ((arg0 == 4)) {
   		let dns_root_addr: BitString = slice.loadBits(256);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__4',
 			dns_root_addr: dns_root_addr
   		};
   	};
@@ -5938,7 +5938,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   		let mint_new_price: Grams = loadGrams(slice);
 		let mint_add_price: Grams = loadGrams(slice);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__5',
 			mint_new_price: mint_new_price,
 			mint_add_price: mint_add_price
   		};
@@ -5946,49 +5946,49 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 	if ((arg0 == 7)) {
   		let to_mint: ExtraCurrencyCollection = loadExtraCurrencyCollection(slice);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__6',
 			to_mint: to_mint
   		};
   	};
 	if ((arg0 == 8)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__7'
   		};
   	};
 	if ((arg0 == 9)) {
   		let mandatory_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__8',
 			mandatory_params: mandatory_params
   		};
   	};
 	if ((arg0 == 10)) {
   		let critical_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__9',
 			critical_params: critical_params
   		};
   	};
 	if ((arg0 == 11)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__10'
   		};
   	};
 	if ((arg0 == 12)) {
   		let workchains: HashmapE<WorkchainDescr> = loadHashmapE<WorkchainDescr>(slice, 32, loadWorkchainDescr);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__11',
 			workchains: workchains
   		};
   	};
 	if ((arg0 == 13)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__12'
   		};
   	};
 	if ((arg0 == 14)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__13'
   		};
   	};
 	if ((arg0 == 15)) {
@@ -5997,7 +5997,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 		let elections_end_before: number = slice.loadUint(32);
 		let stake_held_for: number = slice.loadUint(32);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__14',
 			validators_elected_for: validators_elected_for,
 			elections_start_before: elections_start_before,
 			elections_end_before: elections_end_before,
@@ -6018,7 +6018,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   			throw new Error('');
   		};
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__15',
 			max_validators: max_validators,
 			max_main_validators: max_main_validators,
 			min_validators: min_validators
@@ -6030,7 +6030,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 		let min_total_stake: Grams = loadGrams(slice);
 		let max_stake_factor: number = slice.loadUint(32);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__16',
 			min_stake: min_stake,
 			max_stake: max_stake,
 			min_total_stake: min_total_stake,
@@ -6039,7 +6039,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   	};
 	if ((arg0 == 18)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__17'
   		};
   	};
 	if ((arg0 == 20)) {
@@ -6074,86 +6074,86 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   	};
 	if ((arg0 == 28)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__24'
   		};
   	};
 	if ((arg0 == 29)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__25'
   		};
   	};
 	if ((arg0 == 31)) {
   		let fundamental_smc_addr: HashmapE<True> = loadHashmapE<True>(slice, 256, loadTrue);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__26',
 			fundamental_smc_addr: fundamental_smc_addr
   		};
   	};
 	if ((arg0 == 32)) {
   		let prev_validators: ValidatorSet = loadValidatorSet(slice);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__27',
 			prev_validators: prev_validators
   		};
   	};
 	if ((arg0 == 33)) {
   		let prev_temp_validators: ValidatorSet = loadValidatorSet(slice);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__28',
 			prev_temp_validators: prev_temp_validators
   		};
   	};
 	if ((arg0 == 34)) {
   		let cur_validators: ValidatorSet = loadValidatorSet(slice);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__29',
 			cur_validators: cur_validators
   		};
   	};
 	if ((arg0 == 35)) {
   		let cur_temp_validators: ValidatorSet = loadValidatorSet(slice);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__30',
 			cur_temp_validators: cur_temp_validators
   		};
   	};
 	if ((arg0 == 36)) {
   		let next_validators: ValidatorSet = loadValidatorSet(slice);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__31',
 			next_validators: next_validators
   		};
   	};
 	if ((arg0 == 37)) {
   		let next_temp_validators: ValidatorSet = loadValidatorSet(slice);
 		return {
-  			kind: 'ConfigParam__',
+  			kind: 'ConfigParam__32',
 			next_temp_validators: next_temp_validators
   		};
   	};
 	if ((arg0 == 39)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__33'
   		};
   	};
 	if ((arg0 == 40)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__34'
   		};
   	};
 	if ((arg0 == 71)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__35'
   		};
   	};
 	if ((arg0 == 72)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__36'
   		};
   	};
 	if ((arg0 == 73)) {
   		return {
-  			kind: 'ConfigParam__'
+  			kind: 'ConfigParam__37'
   		};
   	};
 	throw new Error('');
@@ -6164,73 +6164,73 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   			builder.storeBits(configParam.config_addr);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__1')) {
   		return (builder: Builder) => {
   			builder.storeBits(configParam.elector_addr);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__2')) {
   		return (builder: Builder) => {
   			builder.storeBits(configParam.minter_addr);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__3')) {
   		return (builder: Builder) => {
   			builder.storeBits(configParam.fee_collector_addr);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__4')) {
   		return (builder: Builder) => {
   			builder.storeBits(configParam.dns_root_addr);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__5')) {
   		return (builder: Builder) => {
   			storeGrams(configParam.mint_new_price)(builder);
 			storeGrams(configParam.mint_add_price)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__6')) {
   		return (builder: Builder) => {
   			storeExtraCurrencyCollection(configParam.to_mint)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__7')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__8')) {
   		return (builder: Builder) => {
   			storeHashmap<True>(configParam.mandatory_params, storeTrue)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__9')) {
   		return (builder: Builder) => {
   			storeHashmap<True>(configParam.critical_params, storeTrue)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__10')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__11')) {
   		return (builder: Builder) => {
   			storeHashmapE<WorkchainDescr>(configParam.workchains, storeWorkchainDescr)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__12')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__13')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__14')) {
   		return (builder: Builder) => {
   			builder.storeUint(configParam.validators_elected_for, 32);
 			builder.storeUint(configParam.elections_start_before, 32);
@@ -6238,7 +6238,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
 			builder.storeUint(configParam.stake_held_for, 32);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__15')) {
   		return (builder: Builder) => {
   			builder.storeUint(configParam.max_validators, 16);
 			builder.storeUint(configParam.max_main_validators, 16);
@@ -6254,7 +6254,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   			};
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__16')) {
   		return (builder: Builder) => {
   			storeGrams(configParam.min_stake)(builder);
 			storeGrams(configParam.max_stake)(builder);
@@ -6262,7 +6262,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
 			builder.storeUint(configParam.max_stake_factor, 32);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__17')) {
   		return (builder: Builder) => {
   
   		};
@@ -6297,72 +6297,72 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__24')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__25')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__26')) {
   		return (builder: Builder) => {
   			storeHashmapE<True>(configParam.fundamental_smc_addr, storeTrue)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__27')) {
   		return (builder: Builder) => {
   			storeValidatorSet(configParam.prev_validators)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__28')) {
   		return (builder: Builder) => {
   			storeValidatorSet(configParam.prev_temp_validators)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__29')) {
   		return (builder: Builder) => {
   			storeValidatorSet(configParam.cur_validators)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__30')) {
   		return (builder: Builder) => {
   			storeValidatorSet(configParam.cur_temp_validators)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__31')) {
   		return (builder: Builder) => {
   			storeValidatorSet(configParam.next_validators)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__32')) {
   		return (builder: Builder) => {
   			storeValidatorSet(configParam.next_temp_validators)(builder);
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__33')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__34')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__35')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__36')) {
   		return (builder: Builder) => {
   
   		};
   	};
-	if ((configParam.kind == 'ConfigParam__')) {
+	if ((configParam.kind == 'ConfigParam__37')) {
   		return (builder: Builder) => {
   
   		};

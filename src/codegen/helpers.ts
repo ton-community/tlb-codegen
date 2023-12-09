@@ -22,7 +22,7 @@ export function simpleCycle(varName: string, finish: Expression) : Statement {
 
 export function getSubStructName(tlbType: TLBType, constructor: TLBConstructor): string {
   if (tlbType.constructors.length > 1) {
-    return tlbType.name + '_' + constructor.declaration.constructorDef.name;
+    return tlbType.name + '_' + constructor.name;
   } else {
     return tlbType.name;
   }

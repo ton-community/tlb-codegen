@@ -92,3 +92,7 @@ _ a:(## 1) b:a?(## 32) = ConditionalField;
 _ a:(## 6) b:(a . 2)?(## 32) = BitSelection;
 
 _ flags:(## 10) { flags <= 100 } = ImplicitCondition;
+
+_ a:# = MultipleEmptyConstructor 0;
+_ b:(## 5) = MultipleEmptyConstructor 1;
+a$_ x:(## 6) = MultipleEmptyConstructor 2; 
