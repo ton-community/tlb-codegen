@@ -62,10 +62,15 @@ export interface StructDeclaration extends ASTNode {
     typeParametersExpression: TypeParametersExpression
 }
 
+export interface UnionTypeExpression extends ASTNode {
+    type: "UnionTypeExpression",
+    unionMembers: Array<TypeExpression>
+}
+
 export interface UnionTypeDeclaration extends ASTNode {
     type: "UnionTypeDeclaration",
     name: TypeExpression,
-    unionMembers: Array<TypeExpression>
+    union: UnionTypeExpression
 }
 
 export interface ObjectProperty extends ASTNode {
@@ -149,7 +154,7 @@ export interface MultiStatement extends ASTNode {
     statements: Array<Statement>
 }
 
-export type TypeExpression = Identifier | TypeWithParameters | ArrowFunctionType;
+export type TypeExpression = Identifier | TypeWithParameters | ArrowFunctionType | UnionTypeExpression;
 export type Statement = ReturnStatement | ExpressionStatement | IfStatement | MultiStatement | ForCycle;
 export type Literal = NumericLiteral | BinaryNumericLiteral | StringLiteral;
 export type Expression = Identifier | TypeExpression | Literal | ObjectExpression | FunctionCall | MemberExpression | ArrowFunctionExpression | BinaryExpression | ArrowFunctionType | TypeParametersExpression | DeclareVariable;
@@ -222,12 +227,16 @@ export function tTypeParametersExpression(typeParameters: Array<TypeExpression>)
     return { type: "TypeParametersExpression", typeParameters: typeParameters }
 }
 
+export function tUnionTypeExpression(unionMembers: Array<TypeExpression>): UnionTypeExpression {
+    return { type: "UnionTypeExpression", unionMembers: unionMembers };
+}
+
 export function tArrowFunctionExpression(parameters: Array<TypedIdentifier>, body: Array<Statement>): ArrowFunctionExpression {
     return { type: "ArrowFunctionExpression", parameters: parameters, body: body }
 }
 
-export function tUnionTypeDeclaration(name: TypeExpression, unionMembers: Array<TypeExpression>): UnionTypeDeclaration {
-    return { type: "UnionTypeDeclaration", name: name, unionMembers: unionMembers }
+export function tUnionTypeDeclaration(name: TypeExpression, union: UnionTypeExpression): UnionTypeDeclaration {
+    return { type: "UnionTypeDeclaration", name: name, union: union }
 }
 
 export function tExpressionStatement(expression: Expression): ExpressionStatement {
@@ -365,7 +374,11 @@ export function toCode(node: TheNode, printContext: PrintContext): string {
     }
 
     if (node.type == "UnionTypeDeclaration") {
-        result += currentTabs + `export type ${toCode(node.name, printContext)} = ${toCodeArray(node.unionMembers, ' | ', '', printContext, '')};`
+        result += currentTabs + `export type ${toCode(node.name, printContext)} = ${toCode(node.union, printContext)};`
+    }
+
+    if (node.type == "UnionTypeExpression") {
+        return `${toCodeArray(node.unionMembers, ' | ', '', printContext, '')}`
     }
 
     if (node.type == "FunctionCall") {
