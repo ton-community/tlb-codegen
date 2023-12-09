@@ -4283,7 +4283,10 @@ export type BlockInfo = {
 	gen_catchain_seqno: number;
 	min_ref_mc_seqno: number;
 	prev_key_block_seqno: number;
+	gen_software: GlobalVersion | undefined;
+	master_ref: BlkMasterInfo | undefined;
 	prev_ref: BlkPrevInfo;
+	prev_vert_ref: BlkPrevInfo | undefined;
   };
 export function loadBlockInfo(slice: Slice): BlockInfo {
   	if ((slice.preloadUint(32) == 0x9bc7a987)) {
@@ -4308,8 +4311,17 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
 		let gen_catchain_seqno: number = slice.loadUint(32);
 		let min_ref_mc_seqno: number = slice.loadUint(32);
 		let prev_key_block_seqno: number = slice.loadUint(32);
+		let gen_software: GlobalVersion | undefined = ((flags & (1 << 0)) ? loadGlobalVersion(slice) : undefined);
+		let master_ref: BlkMasterInfo | undefined = (not_master ? (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadBlkMasterInfo(slice1);
+  		} : undefined);
 		let slice1 = slice.loadRef().beginParse();
 		let prev_ref: BlkPrevInfo = loadBlkPrevInfo(slice1, after_merge);
+		let prev_vert_ref: BlkPrevInfo | undefined = (vert_seqno_incr ? (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadBlkPrevInfo(slice1, 0);
+  		} : undefined);
 		return {
   			kind: 'BlockInfo',
 			version: version,
@@ -4332,7 +4344,10 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
 			gen_catchain_seqno: gen_catchain_seqno,
 			min_ref_mc_seqno: min_ref_mc_seqno,
 			prev_key_block_seqno: prev_key_block_seqno,
-			prev_ref: prev_ref
+			gen_software: gen_software,
+			master_ref: master_ref,
+			prev_ref: prev_ref,
+			prev_vert_ref: prev_vert_ref
   		};
   	};
 	throw new Error('');
@@ -4360,9 +4375,22 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
 		builder.storeUint(blockInfo.gen_catchain_seqno, 32);
 		builder.storeUint(blockInfo.min_ref_mc_seqno, 32);
 		builder.storeUint(blockInfo.prev_key_block_seqno, 32);
+		if ((blockInfo.gen_software != undefined)) {
+  			storeGlobalVersion(blockInfo.gen_software)(builder);
+  		};
+		if ((blockInfo.master_ref != undefined)) {
+  			let cell1 = beginCell()
+			storeBlkMasterInfo(arg)(cell1)
+			builder.storeRef(cell1);
+  		};
 		let cell1 = beginCell();
 		storeBlkPrevInfo(blockInfo.prev_ref)(cell1);
 		builder.storeRef(cell1);
+		if ((blockInfo.prev_vert_ref != undefined)) {
+  			let cell1 = beginCell()
+			storeBlkPrevInfo(arg)(cell1)
+			builder.storeRef(cell1);
+  		};
   	};
   }
 export type BlkPrevInfo = BlkPrevInfo_prev_blk_info | BlkPrevInfo_prev_blks_info;
@@ -5226,6 +5254,7 @@ export type McStateExtra = {
 	prev_blocks: OldMcBlocksInfo;
 	after_key_block: Bool;
 	last_key_block: Maybe<ExtBlkRef>;
+	block_create_stats: BlockCreateStats | undefined;
 	global_balance: CurrencyCollection;
   };
 export function loadMcStateExtra(slice: Slice): McStateExtra {
@@ -5239,6 +5268,7 @@ export function loadMcStateExtra(slice: Slice): McStateExtra {
 		let prev_blocks: OldMcBlocksInfo = loadOldMcBlocksInfo(slice1);
 		let after_key_block: Bool = loadBool(slice1);
 		let last_key_block: Maybe<ExtBlkRef> = loadMaybe<ExtBlkRef>(slice1, loadExtBlkRef);
+		let block_create_stats: BlockCreateStats | undefined = ((flags & (1 << 0)) ? loadBlockCreateStats(slice1) : undefined);
 		let global_balance: CurrencyCollection = loadCurrencyCollection(slice);
 		return {
   			kind: 'McStateExtra',
@@ -5249,6 +5279,7 @@ export function loadMcStateExtra(slice: Slice): McStateExtra {
 			prev_blocks: prev_blocks,
 			after_key_block: after_key_block,
 			last_key_block: last_key_block,
+			block_create_stats: block_create_stats,
 			global_balance: global_balance
   		};
   	};
@@ -5265,6 +5296,9 @@ export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder
 		storeOldMcBlocksInfo(mcStateExtra.prev_blocks)(cell1);
 		storeBool(mcStateExtra.after_key_block)(cell1);
 		storeMaybe<ExtBlkRef>(mcStateExtra.last_key_block, storeExtBlkRef)(cell1);
+		if ((mcStateExtra.block_create_stats != undefined)) {
+  			storeBlockCreateStats(mcStateExtra.block_create_stats)(cell1);
+  		};
 		builder.storeRef(cell1);
 		storeCurrencyCollection(mcStateExtra.global_balance)(builder);
   	};
@@ -5458,6 +5492,7 @@ export type McBlockExtra = {
 	prev_blk_signatures: HashmapE<CryptoSignaturePair>;
 	recover_create_msg: Maybe<InMsg>;
 	mint_msg: Maybe<InMsg>;
+	config: ConfigParams | undefined;
   };
 export function loadMcBlockExtra(slice: Slice): McBlockExtra {
   	if ((slice.preloadUint(16) == 0xcca5)) {
@@ -5475,6 +5510,7 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
   			let slice1 = slice.loadRef().beginParse();
 			return loadInMsg(slice1);
   		});
+		let config: ConfigParams | undefined = (key_block ? loadConfigParams(slice) : undefined);
 		return {
   			kind: 'McBlockExtra',
 			key_block: key_block,
@@ -5482,7 +5518,8 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
 			shard_fees: shard_fees,
 			prev_blk_signatures: prev_blk_signatures,
 			recover_create_msg: recover_create_msg,
-			mint_msg: mint_msg
+			mint_msg: mint_msg,
+			config: config
   		};
   	};
 	throw new Error('');
@@ -5510,6 +5547,9 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
   			};
   		})(cell1);
 		builder.storeRef(cell1);
+		if ((mcBlockExtra.config != undefined)) {
+  			storeConfigParams(mcBlockExtra.config)(builder);
+  		};
   	};
   }
 export type ValidatorDescr = ValidatorDescr_validator | ValidatorDescr_validator_addr;
@@ -7427,6 +7467,7 @@ export type ProofChain_chain_link = {
   	kind: 'ProofChain_chain_link';
 	n: number;
 	root: Slice;
+	prev: ProofChain | undefined;
   };
 export function loadProofChain(slice: Slice, arg0: number): ProofChain {
   	if ((arg0 == 0)) {
@@ -7437,10 +7478,15 @@ export function loadProofChain(slice: Slice, arg0: number): ProofChain {
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
 		let root: Slice = slice1;
+		let prev: ProofChain | undefined = ((arg0 - 1) ? (slice: Slice) => {
+  			let slice1 = slice.loadRef().beginParse();
+			return loadProofChain(slice1, (arg0 - 1));
+  		} : undefined);
 		return {
   			kind: 'ProofChain_chain_link',
 			n: (arg0 - 1),
-			root: root
+			root: root,
+			prev: prev
   		};
   	};
 	throw new Error('');
@@ -7456,6 +7502,11 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
   			let cell1 = beginCell();
 			cell1.storeSlice(proofChain.root);
 			builder.storeRef(cell1);
+			if ((proofChain.prev != undefined)) {
+  				let cell1 = beginCell()
+				storeProofChain(arg)(cell1)
+				builder.storeRef(cell1);
+  			};
   		};
   	};
 	throw new Error('');
@@ -8598,11 +8649,13 @@ export type DNSRecord_dns_adnl_address = {
   	kind: 'DNSRecord_dns_adnl_address';
 	adnl_addr: BitString;
 	flags: number;
+	proto_list: ProtoList | undefined;
   };
 export type DNSRecord_dns_smc_address = {
   	kind: 'DNSRecord_dns_smc_address';
 	smc_addr: MsgAddressInt;
 	flags: number;
+	cap_list: SmcCapList | undefined;
   };
 export function loadDNSRecord(slice: Slice): DNSRecord {
   	if ((slice.preloadUint(16) == 0x1eda)) {
@@ -8625,20 +8678,24 @@ export function loadDNSRecord(slice: Slice): DNSRecord {
   		slice.loadUint(16);
 		let adnl_addr: BitString = slice.loadBits(256);
 		let flags: number = slice.loadUint(8);
+		let proto_list: ProtoList | undefined = ((flags & (1 << 0)) ? loadProtoList(slice) : undefined);
 		return {
   			kind: 'DNSRecord_dns_adnl_address',
 			adnl_addr: adnl_addr,
-			flags: flags
+			flags: flags,
+			proto_list: proto_list
   		};
   	};
 	if ((slice.preloadUint(16) == 0x9fd3)) {
   		slice.loadUint(16);
 		let smc_addr: MsgAddressInt = loadMsgAddressInt(slice);
 		let flags: number = slice.loadUint(8);
+		let cap_list: SmcCapList | undefined = ((flags & (1 << 0)) ? loadSmcCapList(slice) : undefined);
 		return {
   			kind: 'DNSRecord_dns_smc_address',
 			smc_addr: smc_addr,
-			flags: flags
+			flags: flags,
+			cap_list: cap_list
   		};
   	};
 	throw new Error('');
@@ -8661,6 +8718,9 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
   			builder.storeUint(0xad01, 16);
 			builder.storeBits(dNSRecord.adnl_addr);
 			builder.storeUint(dNSRecord.flags, 8);
+			if ((dNSRecord.proto_list != undefined)) {
+  				storeProtoList(dNSRecord.proto_list)(builder);
+  			};
   		};
   	};
 	if ((dNSRecord.kind == 'DNSRecord_dns_smc_address')) {
@@ -8668,6 +8728,9 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
   			builder.storeUint(0x9fd3, 16);
 			storeMsgAddressInt(dNSRecord.smc_addr)(builder);
 			builder.storeUint(dNSRecord.flags, 8);
+			if ((dNSRecord.cap_list != undefined)) {
+  				storeSmcCapList(dNSRecord.cap_list)(builder);
+  			};
   		};
   	};
 	throw new Error('');
