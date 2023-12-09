@@ -148,6 +148,17 @@ export interface BinaryExpression extends ASTNode {
     left: Expression,
     right: Expression
 }
+   
+export interface TernaryExpression extends ASTNode {
+    type: "TernaryExpression",
+    condition: Expression,
+    body: Expression,
+    elseBody: Expression
+}
+
+export function tTernaryExpression(condition: Expression, body: Expression, elseBody: Expression): TernaryExpression {
+    return { type: "TernaryExpression", condition: condition, body: body, elseBody: elseBody };
+}
 
 export interface MultiStatement extends ASTNode {
     type: "MultiStatement",
@@ -157,7 +168,7 @@ export interface MultiStatement extends ASTNode {
 export type TypeExpression = Identifier | TypeWithParameters | ArrowFunctionType | UnionTypeExpression;
 export type Statement = ReturnStatement | ExpressionStatement | IfStatement | MultiStatement | ForCycle;
 export type Literal = NumericLiteral | BinaryNumericLiteral | StringLiteral;
-export type Expression = Identifier | TypeExpression | Literal | ObjectExpression | FunctionCall | MemberExpression | ArrowFunctionExpression | BinaryExpression | ArrowFunctionType | TypeParametersExpression | DeclareVariable;
+export type Expression = Identifier | TypeExpression | Literal | ObjectExpression | FunctionCall | MemberExpression | ArrowFunctionExpression | BinaryExpression | ArrowFunctionType | TypeParametersExpression | DeclareVariable | TernaryExpression;
 export type GenDeclaration = ImportDeclaration | StructDeclaration | UnionTypeDeclaration | FunctionDeclaration;
 
 export type TheNode = Identifier | GenDeclaration | TypedIdentifier | Expression | ObjectProperty | Statement;
@@ -407,6 +418,10 @@ export function toCode(node: TheNode, printContext: PrintContext): string {
 
     if (node.type == "BinaryExpression") {
         result += `(${toCode(node.left, printContext)} ${node.binarySign} ${toCode(node.right, printContext)})`
+    }
+
+    if (node.type == "TernaryExpression") {
+        result += `(${toCode(node.condition, printContext)} ? ${toCode(node.body, printContext)} : ${toCode(node.elseBody, printContext)})`
     }
 
     return result;
