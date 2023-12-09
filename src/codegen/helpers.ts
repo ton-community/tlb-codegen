@@ -6,6 +6,40 @@ import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSl
 import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
 
+export function isBadVarName(name: string): boolean {
+  let tsReserved = [
+    'abstract',	'arguments',	'await',	'boolean',
+    'break',	'byte',	'case',	'catch',
+    'char',	'class',	'const',	'continue',
+    'debugger',	'default',	'delete',	'do',
+    'double',	'else',	'enum',	'eval',
+    'export',	'extends', 'false',	'final',
+    'finally',	'float',	'for',	'function',
+    'goto',	'if',	'implements',	'import',
+    'in',	'instanceof',	'int',	'interface',
+    'let',	'long',	'native',	'new',
+    'null',	'package',	'private',	'protected',
+    'public',	'return',	'short',	'static',
+    'super',	'switch',	'synchronized',	'this',
+    'throw', 'throws',	'transient',	'true',
+    'try',	'typeof',	'var',	'void',
+    'volatile',	'while',	'with',	'yield'
+  ]
+  if (tsReserved.includes(name)) {
+    return true;
+  }
+  if (name.startsWith('slice')) {
+    return true;
+  }
+  if (name.startsWith('cell')) {
+    return true;
+  }
+  if (name == 'builder') {
+    return true;
+  }
+  return false;
+}
+
 export function sliceLoad(slicePrefix: number[], currentSlice: string) {
   return tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')),
     tFunctionCall(tMemberExpression(
