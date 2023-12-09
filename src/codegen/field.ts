@@ -36,7 +36,6 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
   }
 
   if (field instanceof FieldNamedDef) {
-    // console.log(field)
     if (field.expr instanceof CellRefExpr) {
       slicePrefix[slicePrefix.length - 1]++;
       slicePrefix.push(0)

@@ -206,7 +206,6 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         if (subExprInfo.typeParamExpr) {
           result.typeParamExpr = tTypeWithParameters(tIdentifier('Array'), tTypeParametersExpression([subExprInfo.typeParamExpr]));
         }
-        console.log(result)
       } else {
         throw new Error('')
       }

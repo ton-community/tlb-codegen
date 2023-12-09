@@ -6,9 +6,9 @@ import { parse } from '../src'
 import { ast } from '../src'
 import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
-import { BitString, Slice } from 'ton'
+import { BitString, Slice, Builder } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag, TupleCheck, loadTupleCheck, storeTupleCheck } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag, TupleCheck, loadTupleCheck, storeTupleCheck, HashmapE, loadHashmapE, storeHashmapE, HashmapEUser, loadHashmapEUser, storeHashmapEUser } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -63,6 +63,18 @@ function checkDifferOnStoreLoad(expected: any, load: any, store: any) {
     store(expected)(cell);
     let actual = load(cell.endCell().beginParse())
     expect(deepEqual(expected, actual)).toBeFalsy()
+}
+
+function getBitStringOne(bit: boolean): BitString {
+    return beginCell().storeBit(bit).endCell().beginParse().loadBits(1);
+}
+
+function getBitStringArray(bitString: string) {
+    let result: BitString[] = [];
+    for (let i = 0; i < bitString.length; i++) {
+        result.push(getBitStringOne(bitString[i] == '0'))
+    }
+    return result;
 }
 
 function checkThrowOnStoreLoad(expected: any, load: any, store: any, expectCell?: any) {
@@ -132,6 +144,97 @@ describe('Generating tlb code', () => {
 
         let tupleCheck: TupleCheck = {kind: 'TupleCheck', s: [5, 6, 7]}
         checkSameOnStoreLoad(tupleCheck, loadTupleCheck, storeTupleCheck);
+    })
+
+    test('Hashmap', () => {
+        expect.hasAssertions()
+
+        let hashmapEUser: HashmapEUser = {
+            kind: 'HashmapEUser', 
+            x: {
+                kind: 'HashmapE_hme_root', 
+                n: 8, 
+                root: {
+                    kind: 'Hashmap', 
+                    l:0, m: 8, n: 8, 
+                    label: {
+                        kind: 'HmLabel_hml_short', 
+                        n: 0, m: 8, 
+                        len: {kind: 'Unary_unary_zero'}, 
+                        s: []
+                    },
+                    node: {
+                        kind: 'HashmapNode_hmn_fork',
+                        n: 7,
+                        left: {
+                            kind: 'Hashmap',
+                            n: 7,
+                            m: 5,
+                            l: 2,
+                            label: {
+                                kind: 'HmLabel_hml_long',
+                                m: 7,
+                                n: 2,
+                                s: getBitStringArray('00')
+                            },
+                            node: {
+                                kind: 'HashmapNode_hmn_fork',
+                                n: 4,
+                                left: {
+                                    kind: 'Hashmap',
+                                    n: 4,
+                                    m: 0,
+                                    l: 4,
+                                    label: {
+                                        kind: 'HmLabel_hml_long',
+                                        m: 4,
+                                        n: 4,
+                                        s: getBitStringArray('0001')
+                                    },
+                                    node: {
+                                        kind: 'HashmapNode_hmn_leaf',
+                                        value: 777
+                                    }
+                                },
+                                right: {
+                                    kind: 'Hashmap',
+                                    n: 4,
+                                    m: 0,
+                                    l: 4,
+                                    label: {
+                                        kind: 'HmLabel_hml_long',
+                                        m: 4,
+                                        n: 4,
+                                        s: getBitStringArray('0001')
+                                    },
+                                    node: {
+                                        kind: 'HashmapNode_hmn_leaf',
+                                        value: 111
+                                    }
+                                }
+                            }
+                        },
+                        right: {
+                            kind: 'Hashmap',
+                            n: 7,
+                            m: 0,
+                            l: 7,
+                            label: {
+                                kind: 'HmLabel_hml_long',
+                                m: 7,
+                                n: 7,
+                                s: getBitStringArray('0000000')
+                            },
+                            node: {
+                                kind: 'HashmapNode_hmn_leaf',
+                                value: 777
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        checkSameOnStoreLoad(hashmapEUser, loadHashmapEUser, storeHashmapEUser);
     })
 
     test('Constructor Tags', () => {

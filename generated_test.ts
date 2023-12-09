@@ -1142,3 +1142,264 @@ export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => v
   		});
   	};
   }
+export function hashmap_get_l(label: HmLabel): number {
+  	if ((label.kind == 'HmLabel_hml_short')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_long')) {
+  		let n = label.n;
+		return n;
+  	};
+	if ((label.kind == 'HmLabel_hml_same')) {
+  		let n = label.n;
+		return n;
+  	};
+	throw new Error('');
+  }
+export type Hashmap<X> = {
+  	kind: 'Hashmap';
+	n: number;
+	l: number;
+	m: number;
+	label: HmLabel;
+	node: HashmapNode<X>;
+  };
+export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
+  	let label: HmLabel = loadHmLabel(slice, n);
+	let l = hashmap_get_l(label);
+	let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
+	return {
+  		kind: 'Hashmap',
+		m: (n - l),
+		n: n,
+		label: label,
+		l: l,
+		node: node
+  	};
+  }
+export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeHmLabel(hashmap.label)(builder);
+		storeHashmapNode<X>(hashmap.node, storeX)(builder);
+  	};
+  }
+export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
+export type HashmapNode_hmn_leaf<X> = {
+  	kind: 'HashmapNode_hmn_leaf';
+	value: X;
+  };
+export type HashmapNode_hmn_fork<X> = {
+  	kind: 'HashmapNode_hmn_fork';
+	n: number;
+	left: Hashmap<X>;
+	right: Hashmap<X>;
+  };
+export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): HashmapNode<X> {
+  	if ((arg0 == 0)) {
+  		let value: X = loadX(slice);
+		return {
+  			kind: 'HashmapNode_hmn_leaf',
+			value: value
+  		};
+  	};
+	if (true) {
+  		let slice1 = slice.loadRef().beginParse();
+		let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX);
+		let slice2 = slice.loadRef().beginParse();
+		let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX);
+		return {
+  			kind: 'HashmapNode_hmn_fork',
+			n: (arg0 - 1),
+			left: left,
+			right: right
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+  	if ((hashmapNode.kind == 'HashmapNode_hmn_leaf')) {
+  		return (builder: Builder) => {
+  			storeX(hashmapNode.value)(builder);
+  		};
+  	};
+	if ((hashmapNode.kind == 'HashmapNode_hmn_fork')) {
+  		return (builder: Builder) => {
+  			let cell1 = beginCell();
+			storeHashmap<X>(hashmapNode.left, storeX)(cell1);
+			builder.storeRef(cell1);
+			let cell2 = beginCell();
+			storeHashmap<X>(hashmapNode.right, storeX)(cell2);
+			builder.storeRef(cell2);
+  		};
+  	};
+	throw new Error('');
+  }
+export function hmLabel_hml_short_get_n(len: Unary): number {
+  	if ((len.kind == 'Unary_unary_zero')) {
+  		return 0;
+  	};
+	if ((len.kind == 'Unary_unary_succ')) {
+  		let n = len.n;
+		return (n + 1);
+  	};
+	throw new Error('');
+  }
+export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
+export type HmLabel_hml_short = {
+  	kind: 'HmLabel_hml_short';
+	m: number;
+	n: number;
+	len: Unary;
+	s: Array<BitString>;
+  };
+export type HmLabel_hml_long = {
+  	kind: 'HmLabel_hml_long';
+	m: number;
+	n: number;
+	s: Array<BitString>;
+  };
+export type HmLabel_hml_same = {
+  	kind: 'HmLabel_hml_same';
+	m: number;
+	v: BitString;
+	n: number;
+  };
+export function loadHmLabel(slice: Slice, m: number): HmLabel {
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		let len: Unary = loadUnary(slice);
+		let n = hmLabel_hml_short_get_n(len);
+		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
+  			return slice.loadBits(1);
+  		});
+		return {
+  			kind: 'HmLabel_hml_short',
+			m: m,
+			len: len,
+			n: n,
+			s: s
+  		};
+  	};
+	if ((slice.preloadUint(2) == 0b10)) {
+  		slice.loadUint(2);
+		let n: number = slice.loadUint(m);
+		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
+  			return slice.loadBits(1);
+  		});
+		return {
+  			kind: 'HmLabel_hml_long',
+			m: m,
+			n: n,
+			s: s
+  		};
+  	};
+	if ((slice.preloadUint(2) == 0b11)) {
+  		slice.loadUint(2);
+		let v: BitString = slice.loadBits(1);
+		let n: number = slice.loadUint(m);
+		return {
+  			kind: 'HmLabel_hml_same',
+			m: m,
+			v: v,
+			n: n
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
+  	if ((hmLabel.kind == 'HmLabel_hml_short')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+			storeUnary(hmLabel.len)(builder);
+			hmLabel.s.forEach((arg: BitString) => {
+  				builder.storeBits(arg);
+  			});
+  		};
+  	};
+	if ((hmLabel.kind == 'HmLabel_hml_long')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b10, 2);
+			builder.storeUint(hmLabel.n, hmLabel.m);
+			hmLabel.s.forEach((arg: BitString) => {
+  				builder.storeBits(arg);
+  			});
+  		};
+  	};
+	if ((hmLabel.kind == 'HmLabel_hml_same')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b11, 2);
+			builder.storeBits(hmLabel.v);
+			builder.storeUint(hmLabel.n, hmLabel.m);
+  		};
+  	};
+	throw new Error('');
+  }
+export type HashmapE<X> = HashmapE_hme_empty<X> | HashmapE_hme_root<X>;
+export type HashmapE_hme_empty<X> = {
+  	kind: 'HashmapE_hme_empty';
+	n: number;
+  };
+export type HashmapE_hme_root<X> = {
+  	kind: 'HashmapE_hme_root';
+	n: number;
+	root: Hashmap<X>;
+  };
+export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapE<X> {
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'HashmapE_hme_empty',
+			n: n
+  		};
+  	};
+	if ((slice.preloadUint(1) == 0b1)) {
+  		slice.loadUint(1);
+		let slice1 = slice.loadRef().beginParse();
+		let root: Hashmap<X> = loadHashmap<X>(slice1, n, loadX);
+		return {
+  			kind: 'HashmapE_hme_root',
+			n: n,
+			root: root
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+  	if ((hashmapE.kind == 'HashmapE_hme_empty')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+  		};
+  	};
+	if ((hashmapE.kind == 'HashmapE_hme_root')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+			let cell1 = beginCell();
+			storeHashmap<X>(hashmapE.root, storeX)(cell1);
+			builder.storeRef(cell1);
+  		};
+  	};
+	throw new Error('');
+  }
+export type HashmapEUser = {
+  	kind: 'HashmapEUser';
+	x: HashmapE<number>;
+  };
+export function loadHashmapEUser(slice: Slice): HashmapEUser {
+  	let x: HashmapE<number> = loadHashmapE<number>(slice, 8, (slice: Slice) => {
+  		return slice.loadUint(16);
+  	});
+	return {
+  		kind: 'HashmapEUser',
+		x: x
+  	};
+  }
+export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		storeHashmapE<number>(hashmapEUser.x, (arg: number) => {
+  			return (builder: Builder) => {
+  				builder.storeUint(arg, 16);
+  			};
+  		})(builder);
+  	};
+  }
