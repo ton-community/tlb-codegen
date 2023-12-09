@@ -747,13 +747,13 @@ export type VarHashmapNode_vhmn_cont<X> = {
 	child: VarHashmap<X>;
 	value: X;
   };
-export function loadVarHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): VarHashmapNode<X> {
+export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): VarHashmapNode<X> {
   	if ((slice.preloadUint(2) == 0b00)) {
   		slice.loadUint(2);
 		let value: X = loadX(slice);
 		return {
   			kind: 'VarHashmapNode_vhmn_leaf',
-			n: n,
+			n: arg0,
 			value: value
   		};
   	};
@@ -919,13 +919,13 @@ export type PfxHashmapNode_phmn_fork<X> = {
 	left: PfxHashmap<X>;
 	right: PfxHashmap<X>;
   };
-export function loadPfxHashmapNode<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): PfxHashmapNode<X> {
+export function loadPfxHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): PfxHashmapNode<X> {
   	if ((slice.preloadUint(1) == 0b0)) {
   		slice.loadUint(1);
 		let value: X = loadX(slice);
 		return {
   			kind: 'PfxHashmapNode_phmn_leaf',
-			n: n,
+			n: arg0,
 			value: value
   		};
   	};
@@ -8346,7 +8346,7 @@ export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
 			tos: tos
   		};
   	};
-	if ((n == 0)) {
+	if ((arg0 == 0)) {
   		return {
   			kind: 'VmStackList_vm_stk_nil'
   		};
@@ -8775,7 +8775,7 @@ export function loadTextChunkRef(slice: Slice, arg0: number): TextChunkRef {
 			ref: ref
   		};
   	};
-	if ((n == 0)) {
+	if ((arg0 == 0)) {
   		return {
   			kind: 'TextChunkRef_chunk_ref_empty'
   		};
@@ -8821,7 +8821,7 @@ export function loadTextChunks(slice: Slice, arg0: number): TextChunks {
 			next: next
   		};
   	};
-	if ((n == 0)) {
+	if ((arg0 == 0)) {
   		return {
   			kind: 'TextChunks_text_chunk_empty'
   		};

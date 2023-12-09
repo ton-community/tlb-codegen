@@ -233,10 +233,11 @@ export function fillParameterNames(tlbType: TLBType) {
                 if (parameterName != undefined) {
                     parameterNames[i] = parameterName;
                 }
-                let argName = constructor.parameters[i]?.argName
-                if (argName) {
-                    argNames[i] = argName
-                }
+                
+            }
+            let argName = constructor.parameters[i]?.argName
+            if (argName) {
+                argNames[i] = argName
             }
         }
     });
@@ -255,6 +256,10 @@ export function fillParameterNames(tlbType: TLBType) {
             let parameter = constructor.parameters[i]
             if (argName != undefined && parameter != undefined) {
                 parameter.argName = argName;
+                if (parameter.paramExpr instanceof TLBVarExpr) {
+                    parameter.variable.deriveExpr = new TLBVarExpr(parameter.argName)
+                    parameter.paramExpr = parameter.variable.deriveExpr
+                }
             }
         }
     })

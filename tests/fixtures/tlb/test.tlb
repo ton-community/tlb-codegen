@@ -98,3 +98,6 @@ _ b:(## 5) = MultipleEmptyConstructor 1;
 a$_ x:(## 6) = MultipleEmptyConstructor 2; 
 
 true$_ = True;
+
+a$0 {n:#} = ParamNamedArgInSecondConstr n;
+b$1 {n:#} = ParamNamedArgInSecondConstr (n + 1);

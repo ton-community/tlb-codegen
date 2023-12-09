@@ -1546,3 +1546,42 @@ export function storeTrue(true0: True): (builder: Builder) => void {
   
   	};
   }
+export type ParamNamedArgInSecondConstr = ParamNamedArgInSecondConstr_a | ParamNamedArgInSecondConstr_b;
+export type ParamNamedArgInSecondConstr_a = {
+  	kind: 'ParamNamedArgInSecondConstr_a';
+	n: number;
+  };
+export type ParamNamedArgInSecondConstr_b = {
+  	kind: 'ParamNamedArgInSecondConstr_b';
+	n: number;
+  };
+export function loadParamNamedArgInSecondConstr(slice: Slice, arg0: number): ParamNamedArgInSecondConstr {
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'ParamNamedArgInSecondConstr_a',
+			n: arg0
+  		};
+  	};
+	if ((slice.preloadUint(1) == 0b1)) {
+  		slice.loadUint(1);
+		return {
+  			kind: 'ParamNamedArgInSecondConstr_b',
+			n: (arg0 - 1)
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: ParamNamedArgInSecondConstr): (builder: Builder) => void {
+  	if ((paramNamedArgInSecondConstr.kind == 'ParamNamedArgInSecondConstr_a')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+  		};
+  	};
+	if ((paramNamedArgInSecondConstr.kind == 'ParamNamedArgInSecondConstr_b')) {
+  		return (builder: Builder) => {
+  			builder.storeUint(0b1, 1);
+  		};
+  	};
+	throw new Error('');
+  }
