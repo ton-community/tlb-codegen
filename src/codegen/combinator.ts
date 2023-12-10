@@ -10,6 +10,7 @@ type FieldInfoType = {
   loadExpr: Expression | undefined
   loadFunctionExpr: Expression | undefined
   storeExpr: Statement | undefined
+  storeFunctionExpr: Statement | undefined
   negatedVariablesLoads: Array<{name: string, expression: Expression}>
 }
 
@@ -27,7 +28,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     theSlice = currentSlice;
     theCell = currentCell;
   }
-  let result: FieldInfoType = { typeParamExpr: undefined, loadExpr: undefined, loadFunctionExpr: undefined, storeExpr: undefined, negatedVariablesLoads: [] };
+  let result: FieldInfoType = { typeParamExpr: undefined, loadExpr: undefined, loadFunctionExpr: undefined, storeExpr: undefined, storeFunctionExpr: undefined, negatedVariablesLoads: [] };
 
   let exprForParam: ExprForParam | undefined;
 
@@ -114,12 +115,12 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         if (subExprInfo.loadFunctionExpr) {
           loadFunctionsArray.push(subExprInfo.loadFunctionExpr);
         }
-        if (subExprInfo.storeExpr && subExprInfo.typeParamExpr) {
-            if (subExprInfo.storeExpr.type == 'ExpressionStatement' && subExprInfo.storeExpr.expression.type == 'FunctionCall' || subExprInfo.storeExpr.type == 'MultiStatement') {
-              subExprInfo.storeExpr = tExpressionStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [subExprInfo.storeExpr]))]))
+        if (subExprInfo.storeFunctionExpr && subExprInfo.typeParamExpr) {
+            if (subExprInfo.storeFunctionExpr.type == 'ExpressionStatement' && subExprInfo.storeFunctionExpr.expression.type == 'FunctionCall' || subExprInfo.storeFunctionExpr.type == 'MultiStatement') {
+              subExprInfo.storeFunctionExpr = tExpressionStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [subExprInfo.storeFunctionExpr]))]))
             }
-            if (subExprInfo.storeExpr.type == 'ExpressionStatement') {
-              storeFunctionsArray.push(subExprInfo.storeExpr.expression); 
+            if (subExprInfo.storeFunctionExpr.type == 'ExpressionStatement') {
+              storeFunctionsArray.push(subExprInfo.storeFunctionExpr.expression); 
             }
         }
         result.negatedVariablesLoads = result.negatedVariablesLoads.concat(subExprInfo.negatedVariablesLoads);
@@ -266,6 +267,10 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     } else {
       result.loadFunctionExpr = result.loadExpr
     }
+  }
+
+  if (result.storeExpr && !result.storeFunctionExpr) {
+    result.storeFunctionExpr = result.storeExpr;
   }
 
 
