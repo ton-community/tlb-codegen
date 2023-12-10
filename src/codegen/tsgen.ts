@@ -337,9 +337,9 @@ export function toCode(node: TheNode, printContext: PrintContext): string {
     }
 
     if (node.type == "ArrowFunctionExpression") {
-        result += `(${toCodeArray(node.parameters, ', ', '', printContext, '')}) => {
+        result += `((${toCodeArray(node.parameters, ', ', '', printContext, '')}) => {
   ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-  ${currentTabs}}`
+  ${currentTabs}})`
     }
 
     if (node.type == "ArrowFunctionType") {

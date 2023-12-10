@@ -187,7 +187,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       result.typeParamExpr = subExprInfo.typeParamExpr;
       result.storeExpr = subExprInfo.storeExpr;
       result.negatedVariablesLoads = subExprInfo.negatedVariablesLoads;
-      result.loadExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [sliceLoad([1, 0], 'slice'), tReturnStatement(subExprInfo.loadExpr)])
+      result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [sliceLoad([1, 0], 'slice'), tReturnStatement(subExprInfo.loadExpr)])
+      result.loadExpr = tFunctionCall(result.loadFunctionExpr, [tIdentifier(theSlice)])
     }
     if (subExprInfo.storeExpr) {
       result.storeExpr = tMultiStatement([

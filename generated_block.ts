@@ -14,9 +14,9 @@ export function loadUnit(slice: Slice): Unit {
   	};
   }
 export function storeUnit(unit: Unit): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type True = {
   	kind: 'True';
@@ -27,9 +27,9 @@ export function loadTrue(slice: Slice): True {
   	};
   }
 export function storeTrue(true0: True): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type Bool = Bool_bool_false | Bool_bool_true;
 export type Bool_bool_false = {
@@ -55,14 +55,14 @@ export function loadBool(slice: Slice): Bool {
   }
 export function storeBool(bool: Bool): (builder: Builder) => void {
   	if ((bool.kind == 'Bool_bool_false')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((bool.kind == 'Bool_bool_true')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -79,9 +79,9 @@ export function loadBoolFalse(slice: Slice): BoolFalse {
 	throw new Error('');
   }
 export function storeBoolFalse(boolFalse: BoolFalse): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0b0, 1);
-  	};
+  	});
   }
 export type BoolTrue = {
   	kind: 'BoolTrue';
@@ -96,9 +96,9 @@ export function loadBoolTrue(slice: Slice): BoolTrue {
 	throw new Error('');
   }
 export function storeBoolTrue(boolTrue: BoolTrue): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0b1, 1);
-  	};
+  	});
   }
 export type Maybe<X> = Maybe_nothing<X> | Maybe_just<X>;
 export type Maybe_nothing<X> = {
@@ -127,15 +127,15 @@ export function loadMaybe<X>(slice: Slice, loadX: (slice: Slice) => X): Maybe<X>
   }
 export function storeMaybe<X>(maybe: Maybe<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((maybe.kind == 'Maybe_nothing')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((maybe.kind == 'Maybe_just')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeX(maybe.value)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -169,16 +169,16 @@ export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY:
   }
 export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((either.kind == 'Either_left')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeX(either.value)(builder);
-  		};
+  		});
   	};
 	if ((either.kind == 'Either_right')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeY(either.value)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -197,10 +197,10 @@ export function loadBoth<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (
   	};
   }
 export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeX(both.first)(builder);
 		storeY(both.second)(builder);
-  	};
+  	});
   }
 export type Bit = {
   	kind: 'Bit';
@@ -211,9 +211,9 @@ export function loadBit(slice: Slice): Bit {
   	};
   }
 export function storeBit(bit: Bit): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export function hashmap_get_l(label: HmLabel): number {
   	if ((label.kind == 'HmLabel_hml_short')) {
@@ -252,10 +252,10 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
   	};
   }
 export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeHmLabel(hashmap.label)(builder);
 		storeHashmapNode<X>(hashmap.node, storeX)(builder);
-  	};
+  	});
   }
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 export type HashmapNode_hmn_leaf<X> = {
@@ -292,19 +292,19 @@ export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Sl
   }
 export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((hashmapNode.kind == 'HashmapNode_hmn_leaf')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeX(hashmapNode.value)(builder);
-  		};
+  		});
   	};
 	if ((hashmapNode.kind == 'HashmapNode_hmn_fork')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeHashmap<X>(hashmapNode.left, storeX)(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeHashmap<X>(hashmapNode.right, storeX)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -343,9 +343,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
 		let n = hmLabel_hml_short_get_n(len);
-		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
+		let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
   			return slice.loadBits(1);
-  		});
+  		}));
 		if ((!(n <= m))) {
   			throw new Error('');
   		};
@@ -360,9 +360,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 	if ((slice.preloadUint(2) == 0b10)) {
   		slice.loadUint(2);
 		let n: number = slice.loadUint(bitLen(m));
-		let s: Array<BitString> = Array.from(Array(n).keys()).map((arg: number) => {
+		let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
   			return slice.loadBits(1);
-  		});
+  		}));
 		return {
   			kind: 'HmLabel_hml_long',
 			m: m,
@@ -385,32 +385,32 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
   }
 export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   	if ((hmLabel.kind == 'HmLabel_hml_short')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeUnary(hmLabel.len)(builder);
-			hmLabel.s.forEach((arg: BitString) => {
+			hmLabel.s.forEach(((arg: BitString) => {
   				builder.storeBits(arg);
-  			});
+  			}));
 			if ((!(hmLabel.n <= hmLabel.m))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_long')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10, 2);
 			builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
-			hmLabel.s.forEach((arg: BitString) => {
+			hmLabel.s.forEach(((arg: BitString) => {
   				builder.storeBits(arg);
-  			});
-  		};
+  			}));
+  		});
   	};
 	if ((hmLabel.kind == 'HmLabel_hml_same')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeBits(hmLabel.v);
 			builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -454,15 +454,15 @@ export function loadUnary(slice: Slice): Unary {
   }
 export function storeUnary(unary: Unary): (builder: Builder) => void {
   	if ((unary.kind == 'Unary_unary_zero')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((unary.kind == 'Unary_unary_succ')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeUnary(unary.x)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -498,17 +498,17 @@ export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) =
   }
 export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((hashmapE.kind == 'HashmapE_hme_empty')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((hashmapE.kind == 'HashmapE_hme_root')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			let cell1 = beginCell();
 			storeHashmap<X>(hashmapE.root, storeX)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -526,9 +526,9 @@ export function loadBitstringSet(slice: Slice, n: number): BitstringSet {
   	};
   }
 export function storeBitstringSet(bitstringSet: BitstringSet): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeHashmap<True>(bitstringSet._, storeTrue)(builder);
-  	};
+  	});
   }
 export function hashmapAug_get_l(label: HmLabel): number {
   	if ((label.kind == 'HmLabel_hml_short')) {
@@ -567,10 +567,10 @@ export function loadHashmapAug<X,Y>(slice: Slice, n: number, loadX: (slice: Slic
   	};
   }
 export function storeHashmapAug<X,Y>(hashmapAug: HashmapAug<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeHmLabel(hashmapAug.label)(builder);
 		storeHashmapAugNode<X,Y>(hashmapAug.node, storeX, storeY)(builder);
-  	};
+  	});
   }
 export type HashmapAugNode<X,Y> = HashmapAugNode_ahmn_leaf<X,Y> | HashmapAugNode_ahmn_fork<X,Y>;
 export type HashmapAugNode_ahmn_leaf<X,Y> = {
@@ -613,13 +613,13 @@ export function loadHashmapAugNode<X,Y>(slice: Slice, arg0: number, loadX: (slic
   }
 export function storeHashmapAugNode<X,Y>(hashmapAugNode: HashmapAugNode<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((hashmapAugNode.kind == 'HashmapAugNode_ahmn_leaf')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeY(hashmapAugNode.extra)(builder);
 			storeX(hashmapAugNode.value)(builder);
-  		};
+  		});
   	};
 	if ((hashmapAugNode.kind == 'HashmapAugNode_ahmn_fork')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeHashmapAug<X,Y>(hashmapAugNode.left, storeX, storeY)(cell1);
 			builder.storeRef(cell1);
@@ -627,7 +627,7 @@ export function storeHashmapAugNode<X,Y>(hashmapAugNode: HashmapAugNode<X,Y>, st
 			storeHashmapAug<X,Y>(hashmapAugNode.right, storeX, storeY)(cell2);
 			builder.storeRef(cell2);
 			storeY(hashmapAugNode.extra)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -669,19 +669,19 @@ export function loadHashmapAugE<X,Y>(slice: Slice, n: number, loadX: (slice: Sli
   }
 export function storeHashmapAugE<X,Y>(hashmapAugE: HashmapAugE<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((hashmapAugE.kind == 'HashmapAugE_ahme_empty')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeY(hashmapAugE.extra)(builder);
-  		};
+  		});
   	};
 	if ((hashmapAugE.kind == 'HashmapAugE_ahme_root')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			let cell1 = beginCell();
 			storeHashmapAug<X,Y>(hashmapAugE.root, storeX, storeY)(cell1);
 			builder.storeRef(cell1);
 			storeY(hashmapAugE.extra)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -722,10 +722,10 @@ export function loadVarHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice)
   	};
   }
 export function storeVarHashmap<X>(varHashmap: VarHashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeHmLabel(varHashmap.label)(builder);
 		storeVarHashmapNode<X>(varHashmap.node, storeX)(builder);
-  	};
+  	});
   }
 export type VarHashmapNode<X> = VarHashmapNode_vhmn_leaf<X> | VarHashmapNode_vhmn_fork<X> | VarHashmapNode_vhmn_cont<X>;
 export type VarHashmapNode_vhmn_leaf<X> = {
@@ -790,13 +790,13 @@ export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice:
   }
 export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((varHashmapNode.kind == 'VarHashmapNode_vhmn_leaf')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b00, 2);
 			storeX(varHashmapNode.value)(builder);
-  		};
+  		});
   	};
 	if ((varHashmapNode.kind == 'VarHashmapNode_vhmn_fork')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b01, 2);
 			let cell1 = beginCell();
 			storeVarHashmap<X>(varHashmapNode.left, storeX)(cell1);
@@ -805,17 +805,17 @@ export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX
 			storeVarHashmap<X>(varHashmapNode.right, storeX)(cell2);
 			builder.storeRef(cell2);
 			storeMaybe<X>(varHashmapNode.value, storeX)(builder);
-  		};
+  		});
   	};
 	if ((varHashmapNode.kind == 'VarHashmapNode_vhmn_cont')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			builder.storeBits(varHashmapNode.branch);
 			let cell1 = beginCell();
 			storeVarHashmap<X>(varHashmapNode.child, storeX)(cell1);
 			builder.storeRef(cell1);
 			storeX(varHashmapNode.value)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -851,17 +851,17 @@ export function loadVarHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice
   }
 export function storeVarHashmapE<X>(varHashmapE: VarHashmapE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((varHashmapE.kind == 'VarHashmapE_vhme_empty')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((varHashmapE.kind == 'VarHashmapE_vhme_root')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			let cell1 = beginCell();
 			storeVarHashmap<X>(varHashmapE.root, storeX)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -902,10 +902,10 @@ export function loadPfxHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice)
   	};
   }
 export function storePfxHashmap<X>(pfxHashmap: PfxHashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeHmLabel(pfxHashmap.label)(builder);
 		storePfxHashmapNode<X>(pfxHashmap.node, storeX)(builder);
-  	};
+  	});
   }
 export type PfxHashmapNode<X> = PfxHashmapNode_phmn_leaf<X> | PfxHashmapNode_phmn_fork<X>;
 export type PfxHashmapNode_phmn_leaf<X> = {
@@ -946,13 +946,13 @@ export function loadPfxHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice:
   }
 export function storePfxHashmapNode<X>(pfxHashmapNode: PfxHashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((pfxHashmapNode.kind == 'PfxHashmapNode_phmn_leaf')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeX(pfxHashmapNode.value)(builder);
-  		};
+  		});
   	};
 	if ((pfxHashmapNode.kind == 'PfxHashmapNode_phmn_fork')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			let cell1 = beginCell();
 			storePfxHashmap<X>(pfxHashmapNode.left, storeX)(cell1);
@@ -960,7 +960,7 @@ export function storePfxHashmapNode<X>(pfxHashmapNode: PfxHashmapNode<X>, storeX
 			let cell2 = beginCell();
 			storePfxHashmap<X>(pfxHashmapNode.right, storeX)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -996,17 +996,17 @@ export function loadPfxHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice
   }
 export function storePfxHashmapE<X>(pfxHashmapE: PfxHashmapE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((pfxHashmapE.kind == 'PfxHashmapE_phme_empty')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((pfxHashmapE.kind == 'PfxHashmapE_phme_root')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			let cell1 = beginCell();
 			storePfxHashmap<X>(pfxHashmapE.root, storeX)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -1040,16 +1040,16 @@ export function loadMsgAddressExt(slice: Slice): MsgAddressExt {
   }
 export function storeMsgAddressExt(msgAddressExt: MsgAddressExt): (builder: Builder) => void {
   	if ((msgAddressExt.kind == 'MsgAddressExt_addr_none')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b00, 2);
-  		};
+  		});
   	};
 	if ((msgAddressExt.kind == 'MsgAddressExt_addr_extern')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b01, 2);
 			builder.storeUint(msgAddressExt.len, 9);
 			builder.storeBits(msgAddressExt.external_address);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -1071,13 +1071,13 @@ export function loadAnycast(slice: Slice): Anycast {
   	};
   }
 export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(anycast.depth, bitLen(30));
 		builder.storeBits(anycast.rewrite_pfx);
 		if ((!(anycast.depth >= 1))) {
   			throw new Error('');
   		};
-  	};
+  	});
   }
 export type MsgAddressInt = MsgAddressInt_addr_std | MsgAddressInt_addr_var;
 export type MsgAddressInt_addr_std = {
@@ -1124,21 +1124,21 @@ export function loadMsgAddressInt(slice: Slice): MsgAddressInt {
   }
 export function storeMsgAddressInt(msgAddressInt: MsgAddressInt): (builder: Builder) => void {
   	if ((msgAddressInt.kind == 'MsgAddressInt_addr_std')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10, 2);
 			storeMaybe<Anycast>(msgAddressInt.anycast, storeAnycast)(builder);
 			builder.storeInt(msgAddressInt.workchain_id, 8);
 			builder.storeBits(msgAddressInt.address);
-  		};
+  		});
   	};
 	if ((msgAddressInt.kind == 'MsgAddressInt_addr_var')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			storeMaybe<Anycast>(msgAddressInt.anycast, storeAnycast)(builder);
 			builder.storeUint(msgAddressInt.addr_len, 9);
 			builder.storeInt(msgAddressInt.workchain_id, 32);
 			builder.storeBits(msgAddressInt.address);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -1170,14 +1170,14 @@ export function loadMsgAddress(slice: Slice): MsgAddress {
   }
 export function storeMsgAddress(msgAddress: MsgAddress): (builder: Builder) => void {
   	if ((msgAddress.kind == 'MsgAddress__')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeMsgAddressInt(msgAddress._)(builder);
-  		};
+  		});
   	};
 	if ((msgAddress.kind == 'MsgAddress__1')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeMsgAddressExt(msgAddress._)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -1198,10 +1198,10 @@ export function loadVarUInteger(slice: Slice, n: number): VarUInteger {
   	};
   }
 export function storeVarUInteger(varUInteger: VarUInteger): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(varUInteger.len, bitLen((varUInteger.n - 1)));
 		builder.storeUint(varUInteger.value, (varUInteger.len * 8));
-  	};
+  	});
   }
 export type VarInteger = {
   	kind: 'VarInteger';
@@ -1220,10 +1220,10 @@ export function loadVarInteger(slice: Slice, n: number): VarInteger {
   	};
   }
 export function storeVarInteger(varInteger: VarInteger): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(varInteger.len, bitLen((varInteger.n - 1)));
 		builder.storeInt(varInteger.value, (varInteger.len * 8));
-  	};
+  	});
   }
 export type Grams = {
   	kind: 'Grams';
@@ -1237,31 +1237,31 @@ export function loadGrams(slice: Slice): Grams {
   	};
   }
 export function storeGrams(grams: Grams): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeVarUInteger(grams.amount)(builder);
-  	};
+  	});
   }
 export type ExtraCurrencyCollection = {
   	kind: 'ExtraCurrencyCollection';
 	dict: HashmapE<VarUInteger>;
   };
 export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollection {
-  	let dict: HashmapE<VarUInteger> = loadHashmapE<VarUInteger>(slice, 32, (slice: Slice) => {
+  	let dict: HashmapE<VarUInteger> = loadHashmapE<VarUInteger>(slice, 32, ((slice: Slice) => {
   		return loadVarUInteger(slice, 32);
-  	});
+  	}));
 	return {
   		kind: 'ExtraCurrencyCollection',
 		dict: dict
   	};
   }
 export function storeExtraCurrencyCollection(extraCurrencyCollection: ExtraCurrencyCollection): (builder: Builder) => void {
-  	return (builder: Builder) => {
-  		storeHashmapE<VarUInteger>(extraCurrencyCollection.dict, (arg: VarUInteger) => {
-  			return (builder: Builder) => {
+  	return ((builder: Builder) => {
+  		storeHashmapE<VarUInteger>(extraCurrencyCollection.dict, ((arg: VarUInteger) => {
+  			return ((builder: Builder) => {
   				storeVarUInteger(arg)(builder);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type CurrencyCollection = {
   	kind: 'CurrencyCollection';
@@ -1278,10 +1278,10 @@ export function loadCurrencyCollection(slice: Slice): CurrencyCollection {
   	};
   }
 export function storeCurrencyCollection(currencyCollection: CurrencyCollection): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeGrams(currencyCollection.grams)(builder);
 		storeExtraCurrencyCollection(currencyCollection.other)(builder);
-  	};
+  	});
   }
 export type CommonMsgInfo = CommonMsgInfo_int_msg_info | CommonMsgInfo_ext_in_msg_info | CommonMsgInfo_ext_out_msg_info;
 export type CommonMsgInfo_int_msg_info = {
@@ -1367,7 +1367,7 @@ export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
   }
 export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Builder) => void {
   	if ((commonMsgInfo.kind == 'CommonMsgInfo_int_msg_info')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeBool(commonMsgInfo.ihr_disabled)(builder);
 			storeBool(commonMsgInfo.bounce)(builder);
@@ -1379,24 +1379,24 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
 			storeGrams(commonMsgInfo.fwd_fee)(builder);
 			builder.storeUint(commonMsgInfo.created_lt, 64);
 			builder.storeUint(commonMsgInfo.created_at, 32);
-  		};
+  		});
   	};
 	if ((commonMsgInfo.kind == 'CommonMsgInfo_ext_in_msg_info')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10, 2);
 			storeMsgAddressExt(commonMsgInfo.src)(builder);
 			storeMsgAddressInt(commonMsgInfo.dest)(builder);
 			storeGrams(commonMsgInfo.import_fee)(builder);
-  		};
+  		});
   	};
 	if ((commonMsgInfo.kind == 'CommonMsgInfo_ext_out_msg_info')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			storeMsgAddressInt(commonMsgInfo.src)(builder);
 			storeMsgAddressExt(commonMsgInfo.dest)(builder);
 			builder.storeUint(commonMsgInfo.created_lt, 64);
 			builder.storeUint(commonMsgInfo.created_at, 32);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -1466,7 +1466,7 @@ export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
   }
 export function storeCommonMsgInfoRelaxed(commonMsgInfoRelaxed: CommonMsgInfoRelaxed): (builder: Builder) => void {
   	if ((commonMsgInfoRelaxed.kind == 'CommonMsgInfoRelaxed_int_msg_info')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeBool(commonMsgInfoRelaxed.ihr_disabled)(builder);
 			storeBool(commonMsgInfoRelaxed.bounce)(builder);
@@ -1478,16 +1478,16 @@ export function storeCommonMsgInfoRelaxed(commonMsgInfoRelaxed: CommonMsgInfoRel
 			storeGrams(commonMsgInfoRelaxed.fwd_fee)(builder);
 			builder.storeUint(commonMsgInfoRelaxed.created_lt, 64);
 			builder.storeUint(commonMsgInfoRelaxed.created_at, 32);
-  		};
+  		});
   	};
 	if ((commonMsgInfoRelaxed.kind == 'CommonMsgInfoRelaxed_ext_out_msg_info')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			storeMsgAddress(commonMsgInfoRelaxed.src)(builder);
 			storeMsgAddressExt(commonMsgInfoRelaxed.dest)(builder);
 			builder.storeUint(commonMsgInfoRelaxed.created_lt, 64);
 			builder.storeUint(commonMsgInfoRelaxed.created_at, 32);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -1506,10 +1506,10 @@ export function loadTickTock(slice: Slice): TickTock {
   	};
   }
 export function storeTickTock(tickTock: TickTock): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeBool(tickTock.tick)(builder);
 		storeBool(tickTock.tock)(builder);
-  	};
+  	});
   }
 export type StateInit = {
   	kind: 'StateInit';
@@ -1520,18 +1520,18 @@ export type StateInit = {
 	library: HashmapE<SimpleLib>;
   };
 export function loadStateInit(slice: Slice): StateInit {
-  	let split_depth: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+  	let split_depth: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
   		return slice.loadUint(5);
-  	});
+  	}));
 	let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock);
-	let code: Maybe<Slice> = loadMaybe<Slice>(slice, (slice: Slice) => {
+	let code: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return slice1;
-  	});
-	let data: Maybe<Slice> = loadMaybe<Slice>(slice, (slice: Slice) => {
+  	}));
+	let data: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return slice1;
-  	});
+  	}));
 	let library: HashmapE<SimpleLib> = loadHashmapE<SimpleLib>(slice, 256, loadSimpleLib);
 	return {
   		kind: 'StateInit',
@@ -1543,29 +1543,29 @@ export function loadStateInit(slice: Slice): StateInit {
   	};
   }
 export function storeStateInit(stateInit: StateInit): (builder: Builder) => void {
-  	return (builder: Builder) => {
-  		storeMaybe<number>(stateInit.split_depth, (arg: number) => {
-  			return (builder: Builder) => {
+  	return ((builder: Builder) => {
+  		storeMaybe<number>(stateInit.split_depth, ((arg: number) => {
+  			return ((builder: Builder) => {
   				builder.storeUint(arg, 5);
-  			};
-  		})(builder);
+  			});
+  		}))(builder);
 		storeMaybe<TickTock>(stateInit.special, storeTickTock)(builder);
-		storeMaybe<Slice>(stateInit.code, (arg: Slice) => {
-  			return (builder: Builder) => {
+		storeMaybe<Slice>(stateInit.code, ((arg: Slice) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				cell1.storeSlice(arg)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-		storeMaybe<Slice>(stateInit.data, (arg: Slice) => {
-  			return (builder: Builder) => {
+  			});
+  		}))(builder);
+		storeMaybe<Slice>(stateInit.data, ((arg: Slice) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				cell1.storeSlice(arg)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
+  			});
+  		}))(builder);
 		storeHashmapE<SimpleLib>(stateInit.library, storeSimpleLib)(builder);
-  	};
+  	});
   }
 export type SimpleLib = {
   	kind: 'SimpleLib';
@@ -1583,12 +1583,12 @@ export function loadSimpleLib(slice: Slice): SimpleLib {
   	};
   }
 export function storeSimpleLib(simpleLib: SimpleLib): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeBool(simpleLib.public)(builder);
 		let cell1 = beginCell();
 		cell1.storeSlice(simpleLib.root);
 		builder.storeRef(cell1);
-  	};
+  	});
   }
 export type Message<X> = {
   	kind: 'Message';
@@ -1598,16 +1598,16 @@ export type Message<X> = {
   };
 export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X): Message<X> {
   	let info: CommonMsgInfo = loadCommonMsgInfo(slice);
-	let init: Maybe<Either<StateInit,StateInit>> = loadMaybe<Either<StateInit,StateInit>>(slice, (slice: Slice) => {
-  		return loadEither<StateInit,StateInit>(slice, loadStateInit, (slice: Slice) => {
+	let init: Maybe<Either<StateInit,StateInit>> = loadMaybe<Either<StateInit,StateInit>>(slice, ((slice: Slice) => {
+  		return loadEither<StateInit,StateInit>(slice, loadStateInit, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadStateInit(slice1);
-  		});
-  	});
-	let body: Either<X,X> = loadEither<X,X>(slice, loadX, (slice: Slice) => {
+  		}));
+  	}));
+	let body: Either<X,X> = loadEither<X,X>(slice, loadX, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return loadX(slice1);
-  	});
+  	}));
 	return {
   		kind: 'Message',
 		info: info,
@@ -1616,27 +1616,27 @@ export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X): Messag
   	};
   }
 export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeCommonMsgInfo(message.info)(builder);
-		storeMaybe<Either<StateInit,StateInit>>(message.init, (arg: Either<StateInit,StateInit>) => {
-  			return (builder: Builder) => {
-  				storeEither<StateInit,StateInit>(arg, storeStateInit, (arg: StateInit) => {
-  					return (builder: Builder) => {
+		storeMaybe<Either<StateInit,StateInit>>(message.init, ((arg: Either<StateInit,StateInit>) => {
+  			return ((builder: Builder) => {
+  				storeEither<StateInit,StateInit>(arg, storeStateInit, ((arg: StateInit) => {
+  					return ((builder: Builder) => {
   						let cell1 = beginCell()
 						storeStateInit(arg)(cell1)
 						builder.storeRef(cell1);
-  					};
-  				})(builder);
-  			};
-  		})(builder);
-		storeEither<X,X>(message.body, storeX, (arg: X) => {
-  			return (builder: Builder) => {
+  					});
+  				}))(builder);
+  			});
+  		}))(builder);
+		storeEither<X,X>(message.body, storeX, ((arg: X) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeX(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type MessageRelaxed<X> = {
   	kind: 'MessageRelaxed';
@@ -1646,16 +1646,16 @@ export type MessageRelaxed<X> = {
   };
 export function loadMessageRelaxed<X>(slice: Slice, loadX: (slice: Slice) => X): MessageRelaxed<X> {
   	let info: CommonMsgInfoRelaxed = loadCommonMsgInfoRelaxed(slice);
-	let init: Maybe<Either<StateInit,StateInit>> = loadMaybe<Either<StateInit,StateInit>>(slice, (slice: Slice) => {
-  		return loadEither<StateInit,StateInit>(slice, loadStateInit, (slice: Slice) => {
+	let init: Maybe<Either<StateInit,StateInit>> = loadMaybe<Either<StateInit,StateInit>>(slice, ((slice: Slice) => {
+  		return loadEither<StateInit,StateInit>(slice, loadStateInit, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadStateInit(slice1);
-  		});
-  	});
-	let body: Either<X,X> = loadEither<X,X>(slice, loadX, (slice: Slice) => {
+  		}));
+  	}));
+	let body: Either<X,X> = loadEither<X,X>(slice, loadX, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return loadX(slice1);
-  	});
+  	}));
 	return {
   		kind: 'MessageRelaxed',
 		info: info,
@@ -1664,27 +1664,27 @@ export function loadMessageRelaxed<X>(slice: Slice, loadX: (slice: Slice) => X):
   	};
   }
 export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeCommonMsgInfoRelaxed(messageRelaxed.info)(builder);
-		storeMaybe<Either<StateInit,StateInit>>(messageRelaxed.init, (arg: Either<StateInit,StateInit>) => {
-  			return (builder: Builder) => {
-  				storeEither<StateInit,StateInit>(arg, storeStateInit, (arg: StateInit) => {
-  					return (builder: Builder) => {
+		storeMaybe<Either<StateInit,StateInit>>(messageRelaxed.init, ((arg: Either<StateInit,StateInit>) => {
+  			return ((builder: Builder) => {
+  				storeEither<StateInit,StateInit>(arg, storeStateInit, ((arg: StateInit) => {
+  					return ((builder: Builder) => {
   						let cell1 = beginCell()
 						storeStateInit(arg)(cell1)
 						builder.storeRef(cell1);
-  					};
-  				})(builder);
-  			};
-  		})(builder);
-		storeEither<X,X>(messageRelaxed.body, storeX, (arg: X) => {
-  			return (builder: Builder) => {
+  					});
+  				}))(builder);
+  			});
+  		}))(builder);
+		storeEither<X,X>(messageRelaxed.body, storeX, ((arg: X) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeX(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type MessageAny = {
   	kind: 'MessageAny';
@@ -1695,9 +1695,9 @@ export function loadMessageAny(slice: Slice): MessageAny {
   	};
   }
 export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type IntermediateAddress = IntermediateAddress_interm_addr_regular | IntermediateAddress_interm_addr_simple | IntermediateAddress_interm_addr_ext;
 export type IntermediateAddress_interm_addr_regular = {
@@ -1747,24 +1747,24 @@ export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
   }
 export function storeIntermediateAddress(intermediateAddress: IntermediateAddress): (builder: Builder) => void {
   	if ((intermediateAddress.kind == 'IntermediateAddress_interm_addr_regular')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			builder.storeUint(intermediateAddress.use_dest_bits, bitLen(96));
-  		};
+  		});
   	};
 	if ((intermediateAddress.kind == 'IntermediateAddress_interm_addr_simple')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10, 2);
 			builder.storeInt(intermediateAddress.workchain_id, 8);
 			builder.storeUint(intermediateAddress.addr_pfx, 64);
-  		};
+  		});
   	};
 	if ((intermediateAddress.kind == 'IntermediateAddress_interm_addr_ext')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeInt(intermediateAddress.workchain_id, 32);
 			builder.storeUint(intermediateAddress.addr_pfx, 64);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -1782,9 +1782,9 @@ export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
 		let next_addr: IntermediateAddress = loadIntermediateAddress(slice);
 		let fwd_fee_remaining: Grams = loadGrams(slice);
 		let slice1 = slice.loadRef().beginParse();
-		let msg: Message<Slice> = loadMessage<Slice>(slice1, (slice: Slice) => {
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
   			return slice;
-  		});
+  		}));
 		return {
   			kind: 'MsgEnvelope',
 			cur_addr: cur_addr,
@@ -1796,19 +1796,19 @@ export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
 	throw new Error('');
   }
 export function storeMsgEnvelope(msgEnvelope: MsgEnvelope): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x4, 4);
 		storeIntermediateAddress(msgEnvelope.cur_addr)(builder);
 		storeIntermediateAddress(msgEnvelope.next_addr)(builder);
 		storeGrams(msgEnvelope.fwd_fee_remaining)(builder);
 		let cell1 = beginCell();
-		storeMessage<Slice>(msgEnvelope.msg, (arg: Slice) => {
-  			return (builder: Builder) => {
+		storeMessage<Slice>(msgEnvelope.msg, ((arg: Slice) => {
+  			return ((builder: Builder) => {
   				cell1.storeSlice(arg);
-  			};
-  		})(cell1);
+  			});
+  		}))(cell1);
 		builder.storeRef(cell1);
-  	};
+  	});
   }
 export type InMsg = InMsg_msg_import_ext | InMsg_msg_import_ihr | InMsg_msg_import_imm | InMsg_msg_import_fin | InMsg_msg_import_tr | InMsg_msg_discard_fin | InMsg_msg_discard_tr;
 export type InMsg_msg_import_ext = {
@@ -1858,9 +1858,9 @@ export function loadInMsg(slice: Slice): InMsg {
   	if ((slice.preloadUint(3) == 0b000)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
-		let msg: Message<Slice> = loadMessage<Slice>(slice1, (slice: Slice) => {
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
   			return slice;
-  		});
+  		}));
 		let slice2 = slice.loadRef().beginParse();
 		let transaction: Transaction = loadTransaction(slice2);
 		return {
@@ -1872,9 +1872,9 @@ export function loadInMsg(slice: Slice): InMsg {
 	if ((slice.preloadUint(3) == 0b010)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
-		let msg: Message<Slice> = loadMessage<Slice>(slice1, (slice: Slice) => {
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
   			return slice;
-  		});
+  		}));
 		let slice2 = slice.loadRef().beginParse();
 		let transaction: Transaction = loadTransaction(slice2);
 		let ihr_fee: Grams = loadGrams(slice);
@@ -1963,29 +1963,29 @@ export function loadInMsg(slice: Slice): InMsg {
   }
 export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
   	if ((inMsg.kind == 'InMsg_msg_import_ext')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b000, 3);
 			let cell1 = beginCell();
-			storeMessage<Slice>(inMsg.msg, (arg: Slice) => {
-  				return (builder: Builder) => {
+			storeMessage<Slice>(inMsg.msg, ((arg: Slice) => {
+  				return ((builder: Builder) => {
   					cell1.storeSlice(arg);
-  				};
-  			})(cell1);
+  				});
+  			}))(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeTransaction(inMsg.transaction)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	if ((inMsg.kind == 'InMsg_msg_import_ihr')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b010, 3);
 			let cell1 = beginCell();
-			storeMessage<Slice>(inMsg.msg, (arg: Slice) => {
-  				return (builder: Builder) => {
+			storeMessage<Slice>(inMsg.msg, ((arg: Slice) => {
+  				return ((builder: Builder) => {
   					cell1.storeSlice(arg);
-  				};
-  			})(cell1);
+  				});
+  			}))(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeTransaction(inMsg.transaction)(cell2);
@@ -1994,10 +1994,10 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
 			let cell3 = beginCell();
 			cell3.storeSlice(inMsg.proof_created);
 			builder.storeRef(cell3);
-  		};
+  		});
   	};
 	if ((inMsg.kind == 'InMsg_msg_import_imm')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b011, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(inMsg.in_msg)(cell1);
@@ -2006,10 +2006,10 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
 			storeTransaction(inMsg.transaction)(cell2);
 			builder.storeRef(cell2);
 			storeGrams(inMsg.fwd_fee)(builder);
-  		};
+  		});
   	};
 	if ((inMsg.kind == 'InMsg_msg_import_fin')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b100, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(inMsg.in_msg)(cell1);
@@ -2018,10 +2018,10 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
 			storeTransaction(inMsg.transaction)(cell2);
 			builder.storeRef(cell2);
 			storeGrams(inMsg.fwd_fee)(builder);
-  		};
+  		});
   	};
 	if ((inMsg.kind == 'InMsg_msg_import_tr')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b101, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(inMsg.in_msg)(cell1);
@@ -2030,20 +2030,20 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
 			storeMsgEnvelope(inMsg.out_msg)(cell2);
 			builder.storeRef(cell2);
 			storeGrams(inMsg.transit_fee)(builder);
-  		};
+  		});
   	};
 	if ((inMsg.kind == 'InMsg_msg_discard_fin')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b110, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(inMsg.in_msg)(cell1);
 			builder.storeRef(cell1);
 			builder.storeUint(inMsg.transaction_id, 64);
 			storeGrams(inMsg.fwd_fee)(builder);
-  		};
+  		});
   	};
 	if ((inMsg.kind == 'InMsg_msg_discard_tr')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b111, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(inMsg.in_msg)(cell1);
@@ -2053,7 +2053,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
 			let cell2 = beginCell();
 			cell2.storeSlice(inMsg.proof_delivered);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -2072,10 +2072,10 @@ export function loadImportFees(slice: Slice): ImportFees {
   	};
   }
 export function storeImportFees(importFees: ImportFees): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeGrams(importFees.fees_collected)(builder);
 		storeCurrencyCollection(importFees.value_imported)(builder);
-  	};
+  	});
   }
 export type InMsgDescr = {
   	kind: 'InMsgDescr';
@@ -2086,9 +2086,9 @@ export function loadInMsgDescr(slice: Slice): InMsgDescr {
   	};
   }
 export function storeInMsgDescr(inMsgDescr: InMsgDescr): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type OutMsg = OutMsg_msg_export_ext | OutMsg_msg_export_imm | OutMsg_msg_export_new | OutMsg_msg_export_tr | OutMsg_msg_export_deq | OutMsg_msg_export_deq_short | OutMsg_msg_export_tr_req | OutMsg_msg_export_deq_imm;
 export type OutMsg_msg_export_ext = {
@@ -2138,9 +2138,9 @@ export function loadOutMsg(slice: Slice): OutMsg {
   	if ((slice.preloadUint(3) == 0b000)) {
   		slice.loadUint(3);
 		let slice1 = slice.loadRef().beginParse();
-		let msg: Message<Slice> = loadMessage<Slice>(slice1, (slice: Slice) => {
+		let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
   			return slice;
-  		});
+  		}));
 		let slice2 = slice.loadRef().beginParse();
 		let transaction: Transaction = loadTransaction(slice2);
 		return {
@@ -2241,22 +2241,22 @@ export function loadOutMsg(slice: Slice): OutMsg {
   }
 export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
   	if ((outMsg.kind == 'OutMsg_msg_export_ext')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b000, 3);
 			let cell1 = beginCell();
-			storeMessage<Slice>(outMsg.msg, (arg: Slice) => {
-  				return (builder: Builder) => {
+			storeMessage<Slice>(outMsg.msg, ((arg: Slice) => {
+  				return ((builder: Builder) => {
   					cell1.storeSlice(arg);
-  				};
-  			})(cell1);
+  				});
+  			}))(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeTransaction(outMsg.transaction)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	if ((outMsg.kind == 'OutMsg_msg_export_imm')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b010, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(outMsg.out_msg)(cell1);
@@ -2267,10 +2267,10 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
 			let cell3 = beginCell();
 			storeInMsg(outMsg.reimport)(cell3);
 			builder.storeRef(cell3);
-  		};
+  		});
   	};
 	if ((outMsg.kind == 'OutMsg_msg_export_new')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b001, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(outMsg.out_msg)(cell1);
@@ -2278,10 +2278,10 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
 			let cell2 = beginCell();
 			storeTransaction(outMsg.transaction)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	if ((outMsg.kind == 'OutMsg_msg_export_tr')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b011, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(outMsg.out_msg)(cell1);
@@ -2289,28 +2289,28 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
 			let cell2 = beginCell();
 			storeInMsg(outMsg.imported)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	if ((outMsg.kind == 'OutMsg_msg_export_deq')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1100, 4);
 			let cell1 = beginCell();
 			storeMsgEnvelope(outMsg.out_msg)(cell1);
 			builder.storeRef(cell1);
 			builder.storeUint(outMsg.import_block_lt, 63);
-  		};
+  		});
   	};
 	if ((outMsg.kind == 'OutMsg_msg_export_deq_short')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1101, 4);
 			builder.storeBits(outMsg.msg_env_hash);
 			builder.storeInt(outMsg.next_workchain, 32);
 			builder.storeUint(outMsg.next_addr_pfx, 64);
 			builder.storeUint(outMsg.import_block_lt, 64);
-  		};
+  		});
   	};
 	if ((outMsg.kind == 'OutMsg_msg_export_tr_req')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b111, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(outMsg.out_msg)(cell1);
@@ -2318,10 +2318,10 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
 			let cell2 = beginCell();
 			storeInMsg(outMsg.imported)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	if ((outMsg.kind == 'OutMsg_msg_export_deq_imm')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b100, 3);
 			let cell1 = beginCell();
 			storeMsgEnvelope(outMsg.out_msg)(cell1);
@@ -2329,7 +2329,7 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
 			let cell2 = beginCell();
 			storeInMsg(outMsg.reimport)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -2349,12 +2349,12 @@ export function loadEnqueuedMsg(slice: Slice): EnqueuedMsg {
   	};
   }
 export function storeEnqueuedMsg(enqueuedMsg: EnqueuedMsg): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(enqueuedMsg.enqueued_lt, 64);
 		let cell1 = beginCell();
 		storeMsgEnvelope(enqueuedMsg.out_msg)(cell1);
 		builder.storeRef(cell1);
-  	};
+  	});
   }
 export type OutMsgDescr = {
   	kind: 'OutMsgDescr';
@@ -2365,9 +2365,9 @@ export function loadOutMsgDescr(slice: Slice): OutMsgDescr {
   	};
   }
 export function storeOutMsgDescr(outMsgDescr: OutMsgDescr): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type OutMsgQueue = {
   	kind: 'OutMsgQueue';
@@ -2378,9 +2378,9 @@ export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
   	};
   }
 export function storeOutMsgQueue(outMsgQueue: OutMsgQueue): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type ProcessedUpto = {
   	kind: 'ProcessedUpto';
@@ -2397,10 +2397,10 @@ export function loadProcessedUpto(slice: Slice): ProcessedUpto {
   	};
   }
 export function storeProcessedUpto(processedUpto: ProcessedUpto): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(processedUpto.last_msg_lt, 64);
 		builder.storeBits(processedUpto.last_msg_hash);
-  	};
+  	});
   }
 export type ProcessedInfo = {
   	kind: 'ProcessedInfo';
@@ -2411,9 +2411,9 @@ export function loadProcessedInfo(slice: Slice): ProcessedInfo {
   	};
   }
 export function storeProcessedInfo(processedInfo: ProcessedInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type IhrPendingSince = {
   	kind: 'IhrPendingSince';
@@ -2427,9 +2427,9 @@ export function loadIhrPendingSince(slice: Slice): IhrPendingSince {
   	};
   }
 export function storeIhrPendingSince(ihrPendingSince: IhrPendingSince): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(ihrPendingSince.import_lt, 64);
-  	};
+  	});
   }
 export type IhrPendingInfo = {
   	kind: 'IhrPendingInfo';
@@ -2440,9 +2440,9 @@ export function loadIhrPendingInfo(slice: Slice): IhrPendingInfo {
   	};
   }
 export function storeIhrPendingInfo(ihrPendingInfo: IhrPendingInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type OutMsgQueueInfo = {
   	kind: 'OutMsgQueueInfo';
@@ -2462,11 +2462,11 @@ export function loadOutMsgQueueInfo(slice: Slice): OutMsgQueueInfo {
   	};
   }
 export function storeOutMsgQueueInfo(outMsgQueueInfo: OutMsgQueueInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeOutMsgQueue(outMsgQueueInfo.out_queue)(builder);
 		storeProcessedInfo(outMsgQueueInfo.proc_info)(builder);
 		storeIhrPendingInfo(outMsgQueueInfo.ihr_pending)(builder);
-  	};
+  	});
   }
 export type StorageUsed = {
   	kind: 'StorageUsed';
@@ -2486,11 +2486,11 @@ export function loadStorageUsed(slice: Slice): StorageUsed {
   	};
   }
 export function storeStorageUsed(storageUsed: StorageUsed): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeVarUInteger(storageUsed.cells)(builder);
 		storeVarUInteger(storageUsed.bits)(builder);
 		storeVarUInteger(storageUsed.public_cells)(builder);
-  	};
+  	});
   }
 export type StorageUsedShort = {
   	kind: 'StorageUsedShort';
@@ -2507,10 +2507,10 @@ export function loadStorageUsedShort(slice: Slice): StorageUsedShort {
   	};
   }
 export function storeStorageUsedShort(storageUsedShort: StorageUsedShort): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeVarUInteger(storageUsedShort.cells)(builder);
 		storeVarUInteger(storageUsedShort.bits)(builder);
-  	};
+  	});
   }
 export type StorageInfo = {
   	kind: 'StorageInfo';
@@ -2530,11 +2530,11 @@ export function loadStorageInfo(slice: Slice): StorageInfo {
   	};
   }
 export function storeStorageInfo(storageInfo: StorageInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeStorageUsed(storageInfo.used)(builder);
 		builder.storeUint(storageInfo.last_paid, 32);
 		storeMaybe<Grams>(storageInfo.due_payment, storeGrams)(builder);
-  	};
+  	});
   }
 export type Account = Account_account_none | Account_account;
 export type Account_account_none = {
@@ -2569,17 +2569,17 @@ export function loadAccount(slice: Slice): Account {
   }
 export function storeAccount(account: Account): (builder: Builder) => void {
   	if ((account.kind == 'Account_account_none')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((account.kind == 'Account_account')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeMsgAddressInt(account.addr)(builder);
 			storeStorageInfo(account.storage_stat)(builder);
 			storeAccountStorage(account.storage)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -2601,11 +2601,11 @@ export function loadAccountStorage(slice: Slice): AccountStorage {
   	};
   }
 export function storeAccountStorage(accountStorage: AccountStorage): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(accountStorage.last_trans_lt, 64);
 		storeCurrencyCollection(accountStorage.balance)(builder);
 		storeAccountState(accountStorage.state)(builder);
-  	};
+  	});
   }
 export type AccountState = AccountState_account_uninit | AccountState_account_active | AccountState_account_frozen;
 export type AccountState_account_uninit = {
@@ -2646,21 +2646,21 @@ export function loadAccountState(slice: Slice): AccountState {
   }
 export function storeAccountState(accountState: AccountState): (builder: Builder) => void {
   	if ((accountState.kind == 'AccountState_account_uninit')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b00, 2);
-  		};
+  		});
   	};
 	if ((accountState.kind == 'AccountState_account_active')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeStateInit(accountState._)(builder);
-  		};
+  		});
   	};
 	if ((accountState.kind == 'AccountState_account_frozen')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b01, 2);
 			builder.storeBits(accountState.state_hash);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -2706,24 +2706,24 @@ export function loadAccountStatus(slice: Slice): AccountStatus {
   }
 export function storeAccountStatus(accountStatus: AccountStatus): (builder: Builder) => void {
   	if ((accountStatus.kind == 'AccountStatus_acc_state_uninit')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b00, 2);
-  		};
+  		});
   	};
 	if ((accountStatus.kind == 'AccountStatus_acc_state_frozen')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b01, 2);
-  		};
+  		});
   	};
 	if ((accountStatus.kind == 'AccountStatus_acc_state_active')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10, 2);
-  		};
+  		});
   	};
 	if ((accountStatus.kind == 'AccountStatus_acc_state_nonexist')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b11, 2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -2746,13 +2746,13 @@ export function loadShardAccount(slice: Slice): ShardAccount {
   	};
   }
 export function storeShardAccount(shardAccount: ShardAccount): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		let cell1 = beginCell();
 		storeAccount(shardAccount.account)(cell1);
 		builder.storeRef(cell1);
 		builder.storeBits(shardAccount.last_trans_hash);
 		builder.storeUint(shardAccount.last_trans_lt, 64);
-  	};
+  	});
   }
 export type DepthBalanceInfo = {
   	kind: 'DepthBalanceInfo';
@@ -2769,10 +2769,10 @@ export function loadDepthBalanceInfo(slice: Slice): DepthBalanceInfo {
   	};
   }
 export function storeDepthBalanceInfo(depthBalanceInfo: DepthBalanceInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(depthBalanceInfo.split_depth, bitLen(30));
 		storeCurrencyCollection(depthBalanceInfo.balance)(builder);
-  	};
+  	});
   }
 export type ShardAccounts = {
   	kind: 'ShardAccounts';
@@ -2783,9 +2783,9 @@ export function loadShardAccounts(slice: Slice): ShardAccounts {
   	};
   }
 export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type Transaction = {
   	kind: 'Transaction';
@@ -2815,18 +2815,18 @@ export function loadTransaction(slice: Slice): Transaction {
 		let orig_status: AccountStatus = loadAccountStatus(slice);
 		let end_status: AccountStatus = loadAccountStatus(slice);
 		let slice1 = slice.loadRef().beginParse();
-		let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, (slice: Slice) => {
+		let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
-			return loadMessage<Slice>(slice1, (slice: Slice) => {
+			return loadMessage<Slice>(slice1, ((slice: Slice) => {
   				return slice;
-  			});
-  		});
-		let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, (slice: Slice) => {
+  			}));
+  		}));
+		let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
-			return loadMessage<Slice>(slice1, (slice: Slice) => {
+			return loadMessage<Slice>(slice1, ((slice: Slice) => {
   				return slice;
-  			});
-  		});
+  			}));
+  		}));
 		let total_fees: CurrencyCollection = loadCurrencyCollection(slice);
 		let slice2 = slice.loadRef().beginParse();
 		let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount);
@@ -2852,7 +2852,7 @@ export function loadTransaction(slice: Slice): Transaction {
 	throw new Error('');
   }
 export function storeTransaction(transaction: Transaction): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0b0111, 4);
 		builder.storeBits(transaction.account_addr);
 		builder.storeUint(transaction.lt, 64);
@@ -2863,28 +2863,28 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
 		storeAccountStatus(transaction.orig_status)(builder);
 		storeAccountStatus(transaction.end_status)(builder);
 		let cell1 = beginCell();
-		storeMaybe<Message<Slice>>(transaction.in_msg, (arg: Message<Slice>) => {
-  			return (builder: Builder) => {
+		storeMaybe<Message<Slice>>(transaction.in_msg, ((arg: Message<Slice>) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
-				storeMessage<Slice>(arg, (arg: Slice) => {
-  					return (builder: Builder) => {
+				storeMessage<Slice>(arg, ((arg: Slice) => {
+  					return ((builder: Builder) => {
   						cell1.storeSlice(arg);
-  					};
-  				})(cell1)
+  					});
+  				}))(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(cell1);
-		storeHashmapE<Message<Slice>>(transaction.out_msgs, (arg: Message<Slice>) => {
-  			return (builder: Builder) => {
+  			});
+  		}))(cell1);
+		storeHashmapE<Message<Slice>>(transaction.out_msgs, ((arg: Message<Slice>) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
-				storeMessage<Slice>(arg, (arg: Slice) => {
-  					return (builder: Builder) => {
+				storeMessage<Slice>(arg, ((arg: Slice) => {
+  					return ((builder: Builder) => {
   						cell1.storeSlice(arg);
-  					};
-  				})(cell1)
+  					});
+  				}))(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(cell1);
+  			});
+  		}))(cell1);
 		builder.storeRef(cell1);
 		storeCurrencyCollection(transaction.total_fees)(builder);
 		let cell2 = beginCell();
@@ -2893,7 +2893,7 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
 		let cell3 = beginCell();
 		storeTransactionDescr(transaction.description)(cell3);
 		builder.storeRef(cell3);
-  	};
+  	});
   }
 export type MERKLE_UPDATE<X> = {
   	kind: 'MERKLE_UPDATE';
@@ -2922,7 +2922,7 @@ export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): 
 	throw new Error('');
   }
 export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x02, 8);
 		builder.storeBits(mERKLE_UPDATE.old_hash);
 		builder.storeBits(mERKLE_UPDATE.new_hash);
@@ -2932,7 +2932,7 @@ export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (
 		let cell2 = beginCell();
 		storeX(mERKLE_UPDATE.new)(cell2);
 		builder.storeRef(cell2);
-  	};
+  	});
   }
 export type HASH_UPDATE<X> = {
   	kind: 'HASH_UPDATE';
@@ -2953,11 +2953,11 @@ export function loadHASH_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): HA
 	throw new Error('');
   }
 export function storeHASH_UPDATE<X>(hASH_UPDATE: HASH_UPDATE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x72, 8);
 		builder.storeBits(hASH_UPDATE.old_hash);
 		builder.storeBits(hASH_UPDATE.new_hash);
-  	};
+  	});
   }
 export type MERKLE_PROOF<X> = {
   	kind: 'MERKLE_PROOF';
@@ -2982,14 +2982,14 @@ export function loadMERKLE_PROOF<X>(slice: Slice, loadX: (slice: Slice) => X): M
 	throw new Error('');
   }
 export function storeMERKLE_PROOF<X>(mERKLE_PROOF: MERKLE_PROOF<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x03, 8);
 		builder.storeBits(mERKLE_PROOF.virtual_hash);
 		builder.storeUint(mERKLE_PROOF.depth, 16);
 		let cell1 = beginCell();
 		storeX(mERKLE_PROOF.virtual_root)(cell1);
 		builder.storeRef(cell1);
-  	};
+  	});
   }
 export type AccountBlock = {
   	kind: 'AccountBlock';
@@ -3001,10 +3001,10 @@ export function loadAccountBlock(slice: Slice): AccountBlock {
   	if ((slice.preloadUint(4) == 0x5)) {
   		slice.loadUint(4);
 		let account_addr: BitString = slice.loadBits(256);
-		let transactions: HashmapAug<Transaction,CurrencyCollection> = loadHashmapAug<Transaction,CurrencyCollection>(slice, 64, (slice: Slice) => {
+		let transactions: HashmapAug<Transaction,CurrencyCollection> = loadHashmapAug<Transaction,CurrencyCollection>(slice, 64, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadTransaction(slice1);
-  		}, loadCurrencyCollection);
+  		}), loadCurrencyCollection);
 		let slice1 = slice.loadRef().beginParse();
 		let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice1, loadAccount);
 		return {
@@ -3017,20 +3017,20 @@ export function loadAccountBlock(slice: Slice): AccountBlock {
 	throw new Error('');
   }
 export function storeAccountBlock(accountBlock: AccountBlock): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x5, 4);
 		builder.storeBits(accountBlock.account_addr);
-		storeHashmapAug<Transaction,CurrencyCollection>(accountBlock.transactions, (arg: Transaction) => {
-  			return (builder: Builder) => {
+		storeHashmapAug<Transaction,CurrencyCollection>(accountBlock.transactions, ((arg: Transaction) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeTransaction(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		}, storeCurrencyCollection)(builder);
+  			});
+  		}), storeCurrencyCollection)(builder);
 		let cell1 = beginCell();
 		storeHASH_UPDATE<Account>(accountBlock.state_update, storeAccount)(cell1);
 		builder.storeRef(cell1);
-  	};
+  	});
   }
 export type ShardAccountBlocks = {
   	kind: 'ShardAccountBlocks';
@@ -3041,9 +3041,9 @@ export function loadShardAccountBlocks(slice: Slice): ShardAccountBlocks {
   	};
   }
 export function storeShardAccountBlocks(shardAccountBlocks: ShardAccountBlocks): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type TrStoragePhase = {
   	kind: 'TrStoragePhase';
@@ -3063,11 +3063,11 @@ export function loadTrStoragePhase(slice: Slice): TrStoragePhase {
   	};
   }
 export function storeTrStoragePhase(trStoragePhase: TrStoragePhase): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeGrams(trStoragePhase.storage_fees_collected)(builder);
 		storeMaybe<Grams>(trStoragePhase.storage_fees_due, storeGrams)(builder);
 		storeAccStatusChange(trStoragePhase.status_change)(builder);
-  	};
+  	});
   }
 export type AccStatusChange = AccStatusChange_acst_unchanged | AccStatusChange_acst_frozen | AccStatusChange_acst_deleted;
 export type AccStatusChange_acst_unchanged = {
@@ -3102,19 +3102,19 @@ export function loadAccStatusChange(slice: Slice): AccStatusChange {
   }
 export function storeAccStatusChange(accStatusChange: AccStatusChange): (builder: Builder) => void {
   	if ((accStatusChange.kind == 'AccStatusChange_acst_unchanged')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((accStatusChange.kind == 'AccStatusChange_acst_frozen')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10, 2);
-  		};
+  		});
   	};
 	if ((accStatusChange.kind == 'AccStatusChange_acst_deleted')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b11, 2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -3133,10 +3133,10 @@ export function loadTrCreditPhase(slice: Slice): TrCreditPhase {
   	};
   }
 export function storeTrCreditPhase(trCreditPhase: TrCreditPhase): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeMaybe<Grams>(trCreditPhase.due_fees_collected, storeGrams)(builder);
 		storeCurrencyCollection(trCreditPhase.credit)(builder);
-  	};
+  	});
   }
 export type TrComputePhase = TrComputePhase_tr_phase_compute_skipped | TrComputePhase_tr_phase_compute_vm;
 export type TrComputePhase_tr_phase_compute_skipped = {
@@ -3177,14 +3177,14 @@ export function loadTrComputePhase(slice: Slice): TrComputePhase {
 		let slice1 = slice.loadRef().beginParse();
 		let gas_used: VarUInteger = loadVarUInteger(slice1, 7);
 		let gas_limit: VarUInteger = loadVarUInteger(slice1, 7);
-		let gas_credit: Maybe<VarUInteger> = loadMaybe<VarUInteger>(slice1, (slice: Slice) => {
+		let gas_credit: Maybe<VarUInteger> = loadMaybe<VarUInteger>(slice1, ((slice: Slice) => {
   			return loadVarUInteger(slice, 3);
-  		});
+  		}));
 		let mode: number = slice1.loadInt(8);
 		let exit_code: number = slice1.loadInt(32);
-		let exit_arg: Maybe<number> = loadMaybe<number>(slice1, (slice: Slice) => {
+		let exit_arg: Maybe<number> = loadMaybe<number>(slice1, ((slice: Slice) => {
   			return slice1.loadInt(32);
-  		});
+  		}));
 		let vm_steps: number = slice1.loadUint(32);
 		let vm_init_state_hash: BitString = slice1.loadBits(256);
 		let vm_final_state_hash: BitString = slice1.loadBits(256);
@@ -3209,13 +3209,13 @@ export function loadTrComputePhase(slice: Slice): TrComputePhase {
   }
 export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: Builder) => void {
   	if ((trComputePhase.kind == 'TrComputePhase_tr_phase_compute_skipped')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeComputeSkipReason(trComputePhase.reason)(builder);
-  		};
+  		});
   	};
 	if ((trComputePhase.kind == 'TrComputePhase_tr_phase_compute_vm')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeBool(trComputePhase.success)(builder);
 			storeBool(trComputePhase.msg_state_used)(builder);
@@ -3224,23 +3224,23 @@ export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: B
 			let cell1 = beginCell();
 			storeVarUInteger(trComputePhase.gas_used)(cell1);
 			storeVarUInteger(trComputePhase.gas_limit)(cell1);
-			storeMaybe<VarUInteger>(trComputePhase.gas_credit, (arg: VarUInteger) => {
-  				return (builder: Builder) => {
+			storeMaybe<VarUInteger>(trComputePhase.gas_credit, ((arg: VarUInteger) => {
+  				return ((builder: Builder) => {
   					storeVarUInteger(arg)(builder);
-  				};
-  			})(cell1);
+  				});
+  			}))(cell1);
 			cell1.storeInt(trComputePhase.mode, 8);
 			cell1.storeInt(trComputePhase.exit_code, 32);
-			storeMaybe<number>(trComputePhase.exit_arg, (arg: number) => {
-  				return (builder: Builder) => {
+			storeMaybe<number>(trComputePhase.exit_arg, ((arg: number) => {
+  				return ((builder: Builder) => {
   					cell1.storeInt(arg, 32);
-  				};
-  			})(cell1);
+  				});
+  			}))(cell1);
 			cell1.storeUint(trComputePhase.vm_steps, 32);
 			cell1.storeBits(trComputePhase.vm_init_state_hash);
 			cell1.storeBits(trComputePhase.vm_final_state_hash);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -3277,19 +3277,19 @@ export function loadComputeSkipReason(slice: Slice): ComputeSkipReason {
   }
 export function storeComputeSkipReason(computeSkipReason: ComputeSkipReason): (builder: Builder) => void {
   	if ((computeSkipReason.kind == 'ComputeSkipReason_cskip_no_state')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b00, 2);
-  		};
+  		});
   	};
 	if ((computeSkipReason.kind == 'ComputeSkipReason_cskip_bad_state')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b01, 2);
-  		};
+  		});
   	};
 	if ((computeSkipReason.kind == 'ComputeSkipReason_cskip_no_gas')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10, 2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -3318,9 +3318,9 @@ export function loadTrActionPhase(slice: Slice): TrActionPhase {
 	let total_fwd_fees: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
 	let total_action_fees: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
 	let result_code: number = slice.loadInt(32);
-	let result_arg: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+	let result_arg: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
   		return slice.loadInt(32);
-  	});
+  	}));
 	let tot_actions: number = slice.loadUint(16);
 	let spec_actions: number = slice.loadUint(16);
 	let skipped_actions: number = slice.loadUint(16);
@@ -3346,7 +3346,7 @@ export function loadTrActionPhase(slice: Slice): TrActionPhase {
   	};
   }
 export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeBool(trActionPhase.success)(builder);
 		storeBool(trActionPhase.valid)(builder);
 		storeBool(trActionPhase.no_funds)(builder);
@@ -3354,18 +3354,18 @@ export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Buil
 		storeMaybe<Grams>(trActionPhase.total_fwd_fees, storeGrams)(builder);
 		storeMaybe<Grams>(trActionPhase.total_action_fees, storeGrams)(builder);
 		builder.storeInt(trActionPhase.result_code, 32);
-		storeMaybe<number>(trActionPhase.result_arg, (arg: number) => {
-  			return (builder: Builder) => {
+		storeMaybe<number>(trActionPhase.result_arg, ((arg: number) => {
+  			return ((builder: Builder) => {
   				builder.storeInt(arg, 32);
-  			};
-  		})(builder);
+  			});
+  		}))(builder);
 		builder.storeUint(trActionPhase.tot_actions, 16);
 		builder.storeUint(trActionPhase.spec_actions, 16);
 		builder.storeUint(trActionPhase.skipped_actions, 16);
 		builder.storeUint(trActionPhase.msgs_created, 16);
 		builder.storeBits(trActionPhase.action_list_hash);
 		storeStorageUsedShort(trActionPhase.tot_msg_size)(builder);
-  	};
+  	});
   }
 export type TrBouncePhase = TrBouncePhase_tr_phase_bounce_negfunds | TrBouncePhase_tr_phase_bounce_nofunds | TrBouncePhase_tr_phase_bounce_ok;
 export type TrBouncePhase_tr_phase_bounce_negfunds = {
@@ -3415,24 +3415,24 @@ export function loadTrBouncePhase(slice: Slice): TrBouncePhase {
   }
 export function storeTrBouncePhase(trBouncePhase: TrBouncePhase): (builder: Builder) => void {
   	if ((trBouncePhase.kind == 'TrBouncePhase_tr_phase_bounce_negfunds')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b00, 2);
-  		};
+  		});
   	};
 	if ((trBouncePhase.kind == 'TrBouncePhase_tr_phase_bounce_nofunds')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b01, 2);
 			storeStorageUsedShort(trBouncePhase.msg_size)(builder);
 			storeGrams(trBouncePhase.req_fwd_fees)(builder);
-  		};
+  		});
   	};
 	if ((trBouncePhase.kind == 'TrBouncePhase_tr_phase_bounce_ok')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeStorageUsedShort(trBouncePhase.msg_size)(builder);
 			storeGrams(trBouncePhase.msg_fees)(builder);
 			storeGrams(trBouncePhase.fwd_fees)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -3500,10 +3500,10 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
 		let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
 		let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
 		let compute_ph: TrComputePhase = loadTrComputePhase(slice);
-		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, (slice: Slice) => {
+		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadTrActionPhase(slice1);
-  		});
+  		}));
 		let aborted: Bool = loadBool(slice);
 		let bounce: Maybe<TrBouncePhase> = loadMaybe<TrBouncePhase>(slice, loadTrBouncePhase);
 		let destroyed: Bool = loadBool(slice);
@@ -3532,10 +3532,10 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
 		let is_tock: Bool = loadBool(slice);
 		let storage_ph: TrStoragePhase = loadTrStoragePhase(slice);
 		let compute_ph: TrComputePhase = loadTrComputePhase(slice);
-		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, (slice: Slice) => {
+		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadTrActionPhase(slice1);
-  		});
+  		}));
 		let aborted: Bool = loadBool(slice);
 		let destroyed: Bool = loadBool(slice);
 		return {
@@ -3553,10 +3553,10 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
 		let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
 		let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
 		let compute_ph: TrComputePhase = loadTrComputePhase(slice);
-		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, (slice: Slice) => {
+		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadTrActionPhase(slice1);
-  		});
+  		}));
 		let aborted: Bool = loadBool(slice);
 		let destroyed: Bool = loadBool(slice);
 		return {
@@ -3602,10 +3602,10 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
 		let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
 		let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
 		let compute_ph: TrComputePhase = loadTrComputePhase(slice);
-		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, (slice: Slice) => {
+		let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadTrActionPhase(slice1);
-  		});
+  		}));
 		let aborted: Bool = loadBool(slice);
 		let destroyed: Bool = loadBool(slice);
 		return {
@@ -3624,84 +3624,84 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
   }
 export function storeTransactionDescr(transactionDescr: TransactionDescr): (builder: Builder) => void {
   	if ((transactionDescr.kind == 'TransactionDescr_trans_ord')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0000, 4);
 			storeBool(transactionDescr.credit_first)(builder);
 			storeMaybe<TrStoragePhase>(transactionDescr.storage_ph, storeTrStoragePhase)(builder);
 			storeMaybe<TrCreditPhase>(transactionDescr.credit_ph, storeTrCreditPhase)(builder);
 			storeTrComputePhase(transactionDescr.compute_ph)(builder);
-			storeMaybe<TrActionPhase>(transactionDescr.action, (arg: TrActionPhase) => {
-  				return (builder: Builder) => {
+			storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
+  				return ((builder: Builder) => {
   					let cell1 = beginCell()
 					storeTrActionPhase(arg)(cell1)
 					builder.storeRef(cell1);
-  				};
-  			})(builder);
+  				});
+  			}))(builder);
 			storeBool(transactionDescr.aborted)(builder);
 			storeMaybe<TrBouncePhase>(transactionDescr.bounce, storeTrBouncePhase)(builder);
 			storeBool(transactionDescr.destroyed)(builder);
-  		};
+  		});
   	};
 	if ((transactionDescr.kind == 'TransactionDescr_trans_storage')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0001, 4);
 			storeTrStoragePhase(transactionDescr.storage_ph)(builder);
-  		};
+  		});
   	};
 	if ((transactionDescr.kind == 'TransactionDescr_trans_tick_tock')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b001, 3);
 			storeBool(transactionDescr.is_tock)(builder);
 			storeTrStoragePhase(transactionDescr.storage_ph)(builder);
 			storeTrComputePhase(transactionDescr.compute_ph)(builder);
-			storeMaybe<TrActionPhase>(transactionDescr.action, (arg: TrActionPhase) => {
-  				return (builder: Builder) => {
+			storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
+  				return ((builder: Builder) => {
   					let cell1 = beginCell()
 					storeTrActionPhase(arg)(cell1)
 					builder.storeRef(cell1);
-  				};
-  			})(builder);
+  				});
+  			}))(builder);
 			storeBool(transactionDescr.aborted)(builder);
 			storeBool(transactionDescr.destroyed)(builder);
-  		};
+  		});
   	};
 	if ((transactionDescr.kind == 'TransactionDescr_trans_split_prepare')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0100, 4);
 			storeSplitMergeInfo(transactionDescr.split_info)(builder);
 			storeMaybe<TrStoragePhase>(transactionDescr.storage_ph, storeTrStoragePhase)(builder);
 			storeTrComputePhase(transactionDescr.compute_ph)(builder);
-			storeMaybe<TrActionPhase>(transactionDescr.action, (arg: TrActionPhase) => {
-  				return (builder: Builder) => {
+			storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
+  				return ((builder: Builder) => {
   					let cell1 = beginCell()
 					storeTrActionPhase(arg)(cell1)
 					builder.storeRef(cell1);
-  				};
-  			})(builder);
+  				});
+  			}))(builder);
 			storeBool(transactionDescr.aborted)(builder);
 			storeBool(transactionDescr.destroyed)(builder);
-  		};
+  		});
   	};
 	if ((transactionDescr.kind == 'TransactionDescr_trans_split_install')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0101, 4);
 			storeSplitMergeInfo(transactionDescr.split_info)(builder);
 			let cell1 = beginCell();
 			storeTransaction(transactionDescr.prepare_transaction)(cell1);
 			builder.storeRef(cell1);
 			storeBool(transactionDescr.installed)(builder);
-  		};
+  		});
   	};
 	if ((transactionDescr.kind == 'TransactionDescr_trans_merge_prepare')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0110, 4);
 			storeSplitMergeInfo(transactionDescr.split_info)(builder);
 			storeTrStoragePhase(transactionDescr.storage_ph)(builder);
 			storeBool(transactionDescr.aborted)(builder);
-  		};
+  		});
   	};
 	if ((transactionDescr.kind == 'TransactionDescr_trans_merge_install')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0111, 4);
 			storeSplitMergeInfo(transactionDescr.split_info)(builder);
 			let cell1 = beginCell();
@@ -3710,16 +3710,16 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
 			storeMaybe<TrStoragePhase>(transactionDescr.storage_ph, storeTrStoragePhase)(builder);
 			storeMaybe<TrCreditPhase>(transactionDescr.credit_ph, storeTrCreditPhase)(builder);
 			storeTrComputePhase(transactionDescr.compute_ph)(builder);
-			storeMaybe<TrActionPhase>(transactionDescr.action, (arg: TrActionPhase) => {
-  				return (builder: Builder) => {
+			storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
+  				return ((builder: Builder) => {
   					let cell1 = beginCell()
 					storeTrActionPhase(arg)(cell1)
 					builder.storeRef(cell1);
-  				};
-  			})(builder);
+  				});
+  			}))(builder);
 			storeBool(transactionDescr.aborted)(builder);
 			storeBool(transactionDescr.destroyed)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -3744,12 +3744,12 @@ export function loadSplitMergeInfo(slice: Slice): SplitMergeInfo {
   	};
   }
 export function storeSplitMergeInfo(splitMergeInfo: SplitMergeInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(splitMergeInfo.cur_shard_pfx_len, 6);
 		builder.storeUint(splitMergeInfo.acc_split_depth, 6);
 		builder.storeBits(splitMergeInfo.this_addr);
 		builder.storeBits(splitMergeInfo.sibling_addr);
-  	};
+  	});
   }
 export type SmartContractInfo = {
   	kind: 'SmartContractInfo';
@@ -3788,7 +3788,7 @@ export function loadSmartContractInfo(slice: Slice): SmartContractInfo {
 	throw new Error('');
   }
 export function storeSmartContractInfo(smartContractInfo: SmartContractInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x076ef1ea, 32);
 		builder.storeUint(smartContractInfo.actions, 16);
 		builder.storeUint(smartContractInfo.msgs_sent, 16);
@@ -3798,7 +3798,7 @@ export function storeSmartContractInfo(smartContractInfo: SmartContractInfo): (b
 		builder.storeBits(smartContractInfo.rand_seed);
 		storeCurrencyCollection(smartContractInfo.balance_remaining)(builder);
 		storeMsgAddressInt(smartContractInfo.myself)(builder);
-  	};
+  	});
   }
 export type OutList = OutList_out_list_empty | OutList_out_list;
 export type OutList_out_list_empty = {
@@ -3831,17 +3831,17 @@ export function loadOutList(slice: Slice, arg0: number): OutList {
   }
 export function storeOutList(outList: OutList): (builder: Builder) => void {
   	if ((outList.kind == 'OutList_out_list_empty')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((outList.kind == 'OutList_out_list')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeOutList(outList.prev)(cell1);
 			builder.storeRef(cell1);
 			storeOutAction(outList.action)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -3870,9 +3870,9 @@ export function loadOutAction(slice: Slice): OutAction {
   		slice.loadUint(32);
 		let mode: number = slice.loadUint(8);
 		let slice1 = slice.loadRef().beginParse();
-		let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, (slice: Slice) => {
+		let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, ((slice: Slice) => {
   			return slice;
-  		});
+  		}));
 		return {
   			kind: 'OutAction_action_send_msg',
 			mode: mode,
@@ -3915,42 +3915,42 @@ export function loadOutAction(slice: Slice): OutAction {
   }
 export function storeOutAction(outAction: OutAction): (builder: Builder) => void {
   	if ((outAction.kind == 'OutAction_action_send_msg')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x0ec3c86d, 32);
 			builder.storeUint(outAction.mode, 8);
 			let cell1 = beginCell();
-			storeMessageRelaxed<Slice>(outAction.out_msg, (arg: Slice) => {
-  				return (builder: Builder) => {
+			storeMessageRelaxed<Slice>(outAction.out_msg, ((arg: Slice) => {
+  				return ((builder: Builder) => {
   					cell1.storeSlice(arg);
-  				};
-  			})(cell1);
+  				});
+  			}))(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((outAction.kind == 'OutAction_action_set_code')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xad4de08e, 32);
 			let cell1 = beginCell();
 			cell1.storeSlice(outAction.new_code);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((outAction.kind == 'OutAction_action_reserve_currency')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x36e6b809, 32);
 			builder.storeUint(outAction.mode, 8);
 			storeCurrencyCollection(outAction.currency)(builder);
-  		};
+  		});
   	};
 	if ((outAction.kind == 'OutAction_action_change_library')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x26fa1dd4, 32);
 			builder.storeUint(outAction.mode, 7);
 			storeLibRef(outAction.libref)(builder);
 			if ((!(outAction.mode <= 2))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -3985,18 +3985,18 @@ export function loadLibRef(slice: Slice): LibRef {
   }
 export function storeLibRef(libRef: LibRef): (builder: Builder) => void {
   	if ((libRef.kind == 'LibRef_libref_hash')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			builder.storeBits(libRef.lib_hash);
-  		};
+  		});
   	};
 	if ((libRef.kind == 'LibRef_libref_ref')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			let cell1 = beginCell();
 			cell1.storeSlice(libRef.library);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -4016,12 +4016,12 @@ export function loadOutListNode(slice: Slice): OutListNode {
   	};
   }
 export function storeOutListNode(outListNode: OutListNode): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		let cell1 = beginCell();
 		cell1.storeSlice(outListNode.prev);
 		builder.storeRef(cell1);
 		storeOutAction(outListNode.action)(builder);
-  	};
+  	});
   }
 export type ShardIdent = {
   	kind: 'ShardIdent';
@@ -4045,12 +4045,12 @@ export function loadShardIdent(slice: Slice): ShardIdent {
 	throw new Error('');
   }
 export function storeShardIdent(shardIdent: ShardIdent): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0b00, 2);
 		builder.storeUint(shardIdent.shard_pfx_bits, bitLen(60));
 		builder.storeInt(shardIdent.workchain_id, 32);
 		builder.storeUint(shardIdent.shard_prefix, 64);
-  	};
+  	});
   }
 export type ExtBlkRef = {
   	kind: 'ExtBlkRef';
@@ -4073,12 +4073,12 @@ export function loadExtBlkRef(slice: Slice): ExtBlkRef {
   	};
   }
 export function storeExtBlkRef(extBlkRef: ExtBlkRef): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(extBlkRef.end_lt, 64);
 		builder.storeUint(extBlkRef.seq_no, 32);
 		builder.storeBits(extBlkRef.root_hash);
 		builder.storeBits(extBlkRef.file_hash);
-  	};
+  	});
   }
 export type BlockIdExt = {
   	kind: 'BlockIdExt';
@@ -4101,12 +4101,12 @@ export function loadBlockIdExt(slice: Slice): BlockIdExt {
   	};
   }
 export function storeBlockIdExt(blockIdExt: BlockIdExt): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeShardIdent(blockIdExt.shard_id)(builder);
 		builder.storeUint(blockIdExt.seq_no, 32);
 		builder.storeBits(blockIdExt.root_hash);
 		builder.storeBits(blockIdExt.file_hash);
-  	};
+  	});
   }
 export type BlkMasterInfo = {
   	kind: 'BlkMasterInfo';
@@ -4120,9 +4120,9 @@ export function loadBlkMasterInfo(slice: Slice): BlkMasterInfo {
   	};
   }
 export function storeBlkMasterInfo(blkMasterInfo: BlkMasterInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeExtBlkRef(blkMasterInfo.master)(builder);
-  	};
+  	});
   }
 export type ShardStateUnsplit = {
   	kind: 'ShardStateUnsplit';
@@ -4166,10 +4166,10 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
 		let total_validator_fees: CurrencyCollection = loadCurrencyCollection(slice3);
 		let libraries: HashmapE<LibDescr> = loadHashmapE<LibDescr>(slice3, 256, loadLibDescr);
 		let master_ref: Maybe<BlkMasterInfo> = loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo);
-		let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, (slice: Slice) => {
+		let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadMcStateExtra(slice1);
-  		});
+  		}));
 		return {
   			kind: 'ShardStateUnsplit',
 			global_id: global_id,
@@ -4194,7 +4194,7 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
 	throw new Error('');
   }
 export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x9023afe2, 32);
 		builder.storeInt(shardStateUnsplit.global_id, 32);
 		storeShardIdent(shardStateUnsplit.shard_id)(builder);
@@ -4218,14 +4218,14 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
 		storeHashmapE<LibDescr>(shardStateUnsplit.libraries, storeLibDescr)(cell3);
 		storeMaybe<BlkMasterInfo>(shardStateUnsplit.master_ref, storeBlkMasterInfo)(cell3);
 		builder.storeRef(cell3);
-		storeMaybe<McStateExtra>(shardStateUnsplit.custom, (arg: McStateExtra) => {
-  			return (builder: Builder) => {
+		storeMaybe<McStateExtra>(shardStateUnsplit.custom, ((arg: McStateExtra) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeMcStateExtra(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type ShardState = ShardState__ | ShardState_split_state;
 export type ShardState__ = {
@@ -4258,12 +4258,12 @@ export function loadShardState(slice: Slice): ShardState {
   }
 export function storeShardState(shardState: ShardState): (builder: Builder) => void {
   	if ((shardState.kind == 'ShardState__')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((shardState.kind == 'ShardState_split_state')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x5f327da5, 32);
 			let cell1 = beginCell();
 			storeShardStateUnsplit(shardState.left)(cell1);
@@ -4271,7 +4271,7 @@ export function storeShardState(shardState: ShardState): (builder: Builder) => v
 			let cell2 = beginCell();
 			storeShardStateUnsplit(shardState.right)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -4295,13 +4295,13 @@ export function loadLibDescr(slice: Slice): LibDescr {
 	throw new Error('');
   }
 export function storeLibDescr(libDescr: LibDescr): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0b00, 2);
 		let cell1 = beginCell();
 		cell1.storeSlice(libDescr.lib);
 		builder.storeRef(cell1);
 		storeHashmap<True>(libDescr.publishers, storeTrue)(builder);
-  	};
+  	});
   }
 export type BlockInfo = {
   	kind: 'BlockInfo';
@@ -4355,16 +4355,16 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
 		let min_ref_mc_seqno: number = slice.loadUint(32);
 		let prev_key_block_seqno: number = slice.loadUint(32);
 		let gen_software: GlobalVersion | undefined = ((flags & (1 << 0)) ? loadGlobalVersion(slice) : undefined);
-		let master_ref: BlkMasterInfo | undefined = (not_master ? (slice: Slice) => {
+		let master_ref: BlkMasterInfo | undefined = (not_master ? ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadBlkMasterInfo(slice1);
-  		} : undefined);
+  		})(slice) : undefined);
 		let slice1 = slice.loadRef().beginParse();
 		let prev_ref: BlkPrevInfo = loadBlkPrevInfo(slice1, after_merge);
-		let prev_vert_ref: BlkPrevInfo | undefined = (vert_seqno_incr ? (slice: Slice) => {
+		let prev_vert_ref: BlkPrevInfo | undefined = (vert_seqno_incr ? ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadBlkPrevInfo(slice1, 0);
-  		} : undefined);
+  		})(slice) : undefined);
 		if ((!(flags <= 1))) {
   			throw new Error('');
   		};
@@ -4405,7 +4405,7 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
 	throw new Error('');
   }
 export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x9bc7a987, 32);
 		builder.storeUint(blockInfo.version, 32);
 		builder.storeUint(blockInfo.not_master, 1);
@@ -4452,7 +4452,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
 		if ((!((blockInfo.prev_seq_no + 1) == blockInfo.seq_no))) {
   			throw new Error('');
   		};
-  	};
+  	});
   }
 export type BlkPrevInfo = BlkPrevInfo_prev_blk_info | BlkPrevInfo_prev_blks_info;
 export type BlkPrevInfo_prev_blk_info = {
@@ -4487,19 +4487,19 @@ export function loadBlkPrevInfo(slice: Slice, arg0: number): BlkPrevInfo {
   }
 export function storeBlkPrevInfo(blkPrevInfo: BlkPrevInfo): (builder: Builder) => void {
   	if ((blkPrevInfo.kind == 'BlkPrevInfo_prev_blk_info')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeExtBlkRef(blkPrevInfo.prev)(builder);
-  		};
+  		});
   	};
 	if ((blkPrevInfo.kind == 'BlkPrevInfo_prev_blks_info')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeExtBlkRef(blkPrevInfo.prev1)(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeExtBlkRef(blkPrevInfo.prev2)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -4535,7 +4535,7 @@ export function loadBlock(slice: Slice): Block {
 	throw new Error('');
   }
 export function storeBlock(block: Block): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x11ef55aa, 32);
 		builder.storeInt(block.global_id, 32);
 		let cell1 = beginCell();
@@ -4550,7 +4550,7 @@ export function storeBlock(block: Block): (builder: Builder) => void {
 		let cell4 = beginCell();
 		storeBlockExtra(block.extra)(cell4);
 		builder.storeRef(cell4);
-  	};
+  	});
   }
 export type BlockExtra = {
   	kind: 'BlockExtra';
@@ -4570,10 +4570,10 @@ export function loadBlockExtra(slice: Slice): BlockExtra {
 	let account_blocks: ShardAccountBlocks = loadShardAccountBlocks(slice3);
 	let rand_seed: BitString = slice.loadBits(256);
 	let created_by: BitString = slice.loadBits(256);
-	let custom: Maybe<McBlockExtra> = loadMaybe<McBlockExtra>(slice, (slice: Slice) => {
+	let custom: Maybe<McBlockExtra> = loadMaybe<McBlockExtra>(slice, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return loadMcBlockExtra(slice1);
-  	});
+  	}));
 	return {
   		kind: 'BlockExtra',
 		in_msg_descr: in_msg_descr,
@@ -4585,7 +4585,7 @@ export function loadBlockExtra(slice: Slice): BlockExtra {
   	};
   }
 export function storeBlockExtra(blockExtra: BlockExtra): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		let cell1 = beginCell();
 		storeInMsgDescr(blockExtra.in_msg_descr)(cell1);
 		builder.storeRef(cell1);
@@ -4597,14 +4597,14 @@ export function storeBlockExtra(blockExtra: BlockExtra): (builder: Builder) => v
 		builder.storeRef(cell3);
 		builder.storeBits(blockExtra.rand_seed);
 		builder.storeBits(blockExtra.created_by);
-		storeMaybe<McBlockExtra>(blockExtra.custom, (arg: McBlockExtra) => {
-  			return (builder: Builder) => {
+		storeMaybe<McBlockExtra>(blockExtra.custom, ((arg: McBlockExtra) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeMcBlockExtra(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type ValueFlow = {
   	kind: 'ValueFlow';
@@ -4644,7 +4644,7 @@ export function loadValueFlow(slice: Slice): ValueFlow {
   	};
   }
 export function storeValueFlow(valueFlow: ValueFlow): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		let cell1 = beginCell();
 		storeCurrencyCollection(valueFlow.from_prev_blk)(cell1);
 		storeCurrencyCollection(valueFlow.to_next_blk)(cell1);
@@ -4658,7 +4658,7 @@ export function storeValueFlow(valueFlow: ValueFlow): (builder: Builder) => void
 		storeCurrencyCollection(valueFlow.created)(cell2);
 		storeCurrencyCollection(valueFlow.minted)(cell2);
 		builder.storeRef(cell2);
-  	};
+  	});
   }
 export type BinTree<X> = BinTree_bt_leaf<X> | BinTree_bt_fork<X>;
 export type BinTree_bt_leaf<X> = {
@@ -4695,13 +4695,13 @@ export function loadBinTree<X>(slice: Slice, loadX: (slice: Slice) => X): BinTre
   }
 export function storeBinTree<X>(binTree: BinTree<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((binTree.kind == 'BinTree_bt_leaf')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeX(binTree.leaf)(builder);
-  		};
+  		});
   	};
 	if ((binTree.kind == 'BinTree_bt_fork')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			let cell1 = beginCell();
 			storeBinTree<X>(binTree.left, storeX)(cell1);
@@ -4709,7 +4709,7 @@ export function storeBinTree<X>(binTree: BinTree<X>, storeX: (x: X) => (builder:
 			let cell2 = beginCell();
 			storeBinTree<X>(binTree.right, storeX)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -4758,23 +4758,23 @@ export function loadFutureSplitMerge(slice: Slice): FutureSplitMerge {
   }
 export function storeFutureSplitMerge(futureSplitMerge: FutureSplitMerge): (builder: Builder) => void {
   	if ((futureSplitMerge.kind == 'FutureSplitMerge_fsm_none')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((futureSplitMerge.kind == 'FutureSplitMerge_fsm_split')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10, 2);
 			builder.storeUint(futureSplitMerge.split_utime, 32);
 			builder.storeUint(futureSplitMerge.interval, 32);
-  		};
+  		});
   	};
 	if ((futureSplitMerge.kind == 'FutureSplitMerge_fsm_merge')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b11, 2);
 			builder.storeUint(futureSplitMerge.merge_utime, 32);
 			builder.storeUint(futureSplitMerge.interval, 32);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -4923,7 +4923,7 @@ export function loadShardDescr(slice: Slice): ShardDescr {
   }
 export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => void {
   	if ((shardDescr.kind == 'ShardDescr_shard_descr')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xb, 4);
 			builder.storeUint(shardDescr.seq_no, 32);
 			builder.storeUint(shardDescr.reg_mc_seqno, 32);
@@ -4947,10 +4947,10 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
 			if ((!(shardDescr.flags == 0))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	if ((shardDescr.kind == 'ShardDescr_shard_descr_new')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xa, 4);
 			builder.storeUint(shardDescr.seq_no, 32);
 			builder.storeUint(shardDescr.reg_mc_seqno, 32);
@@ -4976,7 +4976,7 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
 			if ((!(shardDescr.flags == 0))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -4989,9 +4989,9 @@ export function loadShardHashes(slice: Slice): ShardHashes {
   	};
   }
 export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type BinTreeAug<X,Y> = BinTreeAug_bta_leaf<X,Y> | BinTreeAug_bta_fork<X,Y>;
 export type BinTreeAug_bta_leaf<X,Y> = {
@@ -5034,14 +5034,14 @@ export function loadBinTreeAug<X,Y>(slice: Slice, loadX: (slice: Slice) => X, lo
   }
 export function storeBinTreeAug<X,Y>(binTreeAug: BinTreeAug<X,Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
   	if ((binTreeAug.kind == 'BinTreeAug_bta_leaf')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeY(binTreeAug.extra)(builder);
 			storeX(binTreeAug.leaf)(builder);
-  		};
+  		});
   	};
 	if ((binTreeAug.kind == 'BinTreeAug_bta_fork')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			let cell1 = beginCell();
 			storeBinTreeAug<X,Y>(binTreeAug.left, storeX, storeY)(cell1);
@@ -5050,7 +5050,7 @@ export function storeBinTreeAug<X,Y>(binTreeAug: BinTreeAug<X,Y>, storeX: (x: X)
 			storeBinTreeAug<X,Y>(binTreeAug.right, storeX, storeY)(cell2);
 			builder.storeRef(cell2);
 			storeY(binTreeAug.extra)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -5069,10 +5069,10 @@ export function loadShardFeeCreated(slice: Slice): ShardFeeCreated {
   	};
   }
 export function storeShardFeeCreated(shardFeeCreated: ShardFeeCreated): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeCurrencyCollection(shardFeeCreated.fees)(builder);
 		storeCurrencyCollection(shardFeeCreated.create)(builder);
-  	};
+  	});
   }
 export type ShardFees = {
   	kind: 'ShardFees';
@@ -5083,9 +5083,9 @@ export function loadShardFees(slice: Slice): ShardFees {
   	};
   }
 export function storeShardFees(shardFees: ShardFees): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type ConfigParams = {
   	kind: 'ConfigParams';
@@ -5095,10 +5095,10 @@ export type ConfigParams = {
 export function loadConfigParams(slice: Slice): ConfigParams {
   	let config_addr: BitString = slice.loadBits(256);
 	let slice1 = slice.loadRef().beginParse();
-	let config: Hashmap<Slice> = loadHashmap<Slice>(slice1, 32, (slice: Slice) => {
+	let config: Hashmap<Slice> = loadHashmap<Slice>(slice1, 32, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return slice1;
-  	});
+  	}));
 	return {
   		kind: 'ConfigParams',
 		config_addr: config_addr,
@@ -5106,18 +5106,18 @@ export function loadConfigParams(slice: Slice): ConfigParams {
   	};
   }
 export function storeConfigParams(configParams: ConfigParams): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeBits(configParams.config_addr);
 		let cell1 = beginCell();
-		storeHashmap<Slice>(configParams.config, (arg: Slice) => {
-  			return (builder: Builder) => {
+		storeHashmap<Slice>(configParams.config, ((arg: Slice) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				cell1.storeSlice(arg)
 				builder.storeRef(cell1);
-  			};
-  		})(cell1);
+  			});
+  		}))(cell1);
 		builder.storeRef(cell1);
-  	};
+  	});
   }
 export type ValidatorInfo = {
   	kind: 'ValidatorInfo';
@@ -5137,11 +5137,11 @@ export function loadValidatorInfo(slice: Slice): ValidatorInfo {
   	};
   }
 export function storeValidatorInfo(validatorInfo: ValidatorInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(validatorInfo.validator_list_hash_short, 32);
 		builder.storeUint(validatorInfo.catchain_seqno, 32);
 		storeBool(validatorInfo.nx_cc_updated)(builder);
-  	};
+  	});
   }
 export type ValidatorBaseInfo = {
   	kind: 'ValidatorBaseInfo';
@@ -5158,10 +5158,10 @@ export function loadValidatorBaseInfo(slice: Slice): ValidatorBaseInfo {
   	};
   }
 export function storeValidatorBaseInfo(validatorBaseInfo: ValidatorBaseInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(validatorBaseInfo.validator_list_hash_short, 32);
 		builder.storeUint(validatorBaseInfo.catchain_seqno, 32);
-  	};
+  	});
   }
 export type KeyMaxLt = {
   	kind: 'KeyMaxLt';
@@ -5178,10 +5178,10 @@ export function loadKeyMaxLt(slice: Slice): KeyMaxLt {
   	};
   }
 export function storeKeyMaxLt(keyMaxLt: KeyMaxLt): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeBool(keyMaxLt.key)(builder);
 		builder.storeUint(keyMaxLt.max_end_lt, 64);
-  	};
+  	});
   }
 export type KeyExtBlkRef = {
   	kind: 'KeyExtBlkRef';
@@ -5198,10 +5198,10 @@ export function loadKeyExtBlkRef(slice: Slice): KeyExtBlkRef {
   	};
   }
 export function storeKeyExtBlkRef(keyExtBlkRef: KeyExtBlkRef): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeBool(keyExtBlkRef.key)(builder);
 		storeExtBlkRef(keyExtBlkRef.blk_ref)(builder);
-  	};
+  	});
   }
 export type OldMcBlocksInfo = {
   	kind: 'OldMcBlocksInfo';
@@ -5212,9 +5212,9 @@ export function loadOldMcBlocksInfo(slice: Slice): OldMcBlocksInfo {
   	};
   }
 export function storeOldMcBlocksInfo(oldMcBlocksInfo: OldMcBlocksInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type Counters = {
   	kind: 'Counters';
@@ -5237,12 +5237,12 @@ export function loadCounters(slice: Slice): Counters {
   	};
   }
 export function storeCounters(counters: Counters): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(counters.last_updated, 32);
 		builder.storeUint(counters.total, 64);
 		builder.storeUint(counters.cnt2048, 64);
 		builder.storeUint(counters.cnt65536, 64);
-  	};
+  	});
   }
 export type CreatorStats = {
   	kind: 'CreatorStats';
@@ -5263,11 +5263,11 @@ export function loadCreatorStats(slice: Slice): CreatorStats {
 	throw new Error('');
   }
 export function storeCreatorStats(creatorStats: CreatorStats): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x4, 4);
 		storeCounters(creatorStats.mc_blocks)(builder);
 		storeCounters(creatorStats.shard_blocks)(builder);
-  	};
+  	});
   }
 export type BlockCreateStats = BlockCreateStats_block_create_stats | BlockCreateStats_block_create_stats_ext;
 export type BlockCreateStats_block_create_stats = {
@@ -5289,9 +5289,9 @@ export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
   	};
 	if ((slice.preloadUint(8) == 0x34)) {
   		slice.loadUint(8);
-		let counters: HashmapAugE<CreatorStats,number> = loadHashmapAugE<CreatorStats,number>(slice, 256, loadCreatorStats, (slice: Slice) => {
+		let counters: HashmapAugE<CreatorStats,number> = loadHashmapAugE<CreatorStats,number>(slice, 256, loadCreatorStats, ((slice: Slice) => {
   			return slice.loadUint(32);
-  		});
+  		}));
 		return {
   			kind: 'BlockCreateStats_block_create_stats_ext',
 			counters: counters
@@ -5301,20 +5301,20 @@ export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
   }
 export function storeBlockCreateStats(blockCreateStats: BlockCreateStats): (builder: Builder) => void {
   	if ((blockCreateStats.kind == 'BlockCreateStats_block_create_stats')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x17, 8);
 			storeHashmapE<CreatorStats>(blockCreateStats.counters, storeCreatorStats)(builder);
-  		};
+  		});
   	};
 	if ((blockCreateStats.kind == 'BlockCreateStats_block_create_stats_ext')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x34, 8);
-			storeHashmapAugE<CreatorStats,number>(blockCreateStats.counters, storeCreatorStats, (arg: number) => {
-  				return (builder: Builder) => {
+			storeHashmapAugE<CreatorStats,number>(blockCreateStats.counters, storeCreatorStats, ((arg: number) => {
+  				return ((builder: Builder) => {
   					builder.storeUint(arg, 32);
-  				};
-  			})(builder);
-  		};
+  				});
+  			}))(builder);
+  		});
   	};
 	throw new Error('');
   }
@@ -5359,7 +5359,7 @@ export function loadMcStateExtra(slice: Slice): McStateExtra {
 	throw new Error('');
   }
 export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xcc26, 16);
 		storeShardHashes(mcStateExtra.shard_hashes)(builder);
 		storeConfigParams(mcStateExtra.config)(builder);
@@ -5374,7 +5374,7 @@ export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder
   		};
 		builder.storeRef(cell1);
 		storeCurrencyCollection(mcStateExtra.global_balance)(builder);
-  	};
+  	});
   }
 export type SigPubKey = {
   	kind: 'SigPubKey';
@@ -5392,10 +5392,10 @@ export function loadSigPubKey(slice: Slice): SigPubKey {
 	throw new Error('');
   }
 export function storeSigPubKey(sigPubKey: SigPubKey): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x8e81278a, 32);
 		builder.storeBits(sigPubKey.pubkey);
-  	};
+  	});
   }
 export type CryptoSignatureSimple = {
   	kind: 'CryptoSignatureSimple';
@@ -5416,11 +5416,11 @@ export function loadCryptoSignatureSimple(slice: Slice): CryptoSignatureSimple {
 	throw new Error('');
   }
 export function storeCryptoSignatureSimple(cryptoSignatureSimple: CryptoSignatureSimple): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x5, 4);
 		builder.storeBits(cryptoSignatureSimple.R);
 		builder.storeBits(cryptoSignatureSimple.s);
-  	};
+  	});
   }
 export type CryptoSignature = CryptoSignature__ | CryptoSignature_chained_signature;
 export type CryptoSignature__ = {
@@ -5452,18 +5452,18 @@ export function loadCryptoSignature(slice: Slice): CryptoSignature {
   }
 export function storeCryptoSignature(cryptoSignature: CryptoSignature): (builder: Builder) => void {
   	if ((cryptoSignature.kind == 'CryptoSignature__')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((cryptoSignature.kind == 'CryptoSignature_chained_signature')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xf, 4);
 			let cell1 = beginCell();
 			storeSignedCertificate(cryptoSignature.signed_cert)(cell1);
 			builder.storeRef(cell1);
 			storeCryptoSignatureSimple(cryptoSignature.temp_key_signature)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -5482,10 +5482,10 @@ export function loadCryptoSignaturePair(slice: Slice): CryptoSignaturePair {
   	};
   }
 export function storeCryptoSignaturePair(cryptoSignaturePair: CryptoSignaturePair): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeBits(cryptoSignaturePair.node_id_short);
 		storeCryptoSignature(cryptoSignaturePair.sign)(builder);
-  	};
+  	});
   }
 export type Certificate = {
   	kind: 'Certificate';
@@ -5509,12 +5509,12 @@ export function loadCertificate(slice: Slice): Certificate {
 	throw new Error('');
   }
 export function storeCertificate(certificate: Certificate): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x4, 4);
 		storeSigPubKey(certificate.temp_key)(builder);
 		builder.storeUint(certificate.valid_since, 32);
 		builder.storeUint(certificate.valid_until, 32);
-  	};
+  	});
   }
 export type CertificateEnv = {
   	kind: 'CertificateEnv';
@@ -5532,10 +5532,10 @@ export function loadCertificateEnv(slice: Slice): CertificateEnv {
 	throw new Error('');
   }
 export function storeCertificateEnv(certificateEnv: CertificateEnv): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xa419b7d, 28);
 		storeCertificate(certificateEnv.certificate)(builder);
-  	};
+  	});
   }
 export type SignedCertificate = {
   	kind: 'SignedCertificate';
@@ -5552,10 +5552,10 @@ export function loadSignedCertificate(slice: Slice): SignedCertificate {
   	};
   }
 export function storeSignedCertificate(signedCertificate: SignedCertificate): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeCertificate(signedCertificate.certificate)(builder);
 		storeCryptoSignature(signedCertificate.certificate_signature)(builder);
-  	};
+  	});
   }
 export type McBlockExtra = {
   	kind: 'McBlockExtra';
@@ -5575,14 +5575,14 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
 		let shard_fees: ShardFees = loadShardFees(slice);
 		let slice1 = slice.loadRef().beginParse();
 		let prev_blk_signatures: HashmapE<CryptoSignaturePair> = loadHashmapE<CryptoSignaturePair>(slice1, 16, loadCryptoSignaturePair);
-		let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, (slice: Slice) => {
+		let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadInMsg(slice1);
-  		});
-		let mint_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, (slice: Slice) => {
+  		}));
+		let mint_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadInMsg(slice1);
-  		});
+  		}));
 		let config: ConfigParams | undefined = (key_block ? loadConfigParams(slice) : undefined);
 		return {
   			kind: 'McBlockExtra',
@@ -5598,32 +5598,32 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
 	throw new Error('');
   }
 export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xcca5, 16);
 		builder.storeUint(mcBlockExtra.key_block, 1);
 		storeShardHashes(mcBlockExtra.shard_hashes)(builder);
 		storeShardFees(mcBlockExtra.shard_fees)(builder);
 		let cell1 = beginCell();
 		storeHashmapE<CryptoSignaturePair>(mcBlockExtra.prev_blk_signatures, storeCryptoSignaturePair)(cell1);
-		storeMaybe<InMsg>(mcBlockExtra.recover_create_msg, (arg: InMsg) => {
-  			return (builder: Builder) => {
+		storeMaybe<InMsg>(mcBlockExtra.recover_create_msg, ((arg: InMsg) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeInMsg(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(cell1);
-		storeMaybe<InMsg>(mcBlockExtra.mint_msg, (arg: InMsg) => {
-  			return (builder: Builder) => {
+  			});
+  		}))(cell1);
+		storeMaybe<InMsg>(mcBlockExtra.mint_msg, ((arg: InMsg) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeInMsg(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(cell1);
+  			});
+  		}))(cell1);
 		builder.storeRef(cell1);
 		if ((mcBlockExtra.config != undefined)) {
   			storeConfigParams(mcBlockExtra.config)(builder);
   		};
-  	};
+  	});
   }
 export type ValidatorDescr = ValidatorDescr_validator | ValidatorDescr_validator_addr;
 export type ValidatorDescr_validator = {
@@ -5664,19 +5664,19 @@ export function loadValidatorDescr(slice: Slice): ValidatorDescr {
   }
 export function storeValidatorDescr(validatorDescr: ValidatorDescr): (builder: Builder) => void {
   	if ((validatorDescr.kind == 'ValidatorDescr_validator')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x53, 8);
 			storeSigPubKey(validatorDescr.public_key)(builder);
 			builder.storeUint(validatorDescr.weight, 64);
-  		};
+  		});
   	};
 	if ((validatorDescr.kind == 'ValidatorDescr_validator_addr')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x73, 8);
 			storeSigPubKey(validatorDescr.public_key)(builder);
 			builder.storeUint(validatorDescr.weight, 64);
 			builder.storeBits(validatorDescr.adnl_addr);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -5746,7 +5746,7 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
   }
 export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder) => void {
   	if ((validatorSet.kind == 'ValidatorSet_validators')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x11, 8);
 			builder.storeUint(validatorSet.utime_since, 32);
 			builder.storeUint(validatorSet.utime_until, 32);
@@ -5758,10 +5758,10 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 			if ((!(validatorSet.main >= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	if ((validatorSet.kind == 'ValidatorSet_validators_ext')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x12, 8);
 			builder.storeUint(validatorSet.utime_since, 32);
 			builder.storeUint(validatorSet.utime_until, 32);
@@ -5775,7 +5775,7 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 			if ((!(validatorSet.main >= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -6185,86 +6185,86 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   }
 export function storeConfigParam(configParam: ConfigParam): (builder: Builder) => void {
   	if ((configParam.kind == 'ConfigParam__')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeBits(configParam.config_addr);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__1')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeBits(configParam.elector_addr);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__2')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeBits(configParam.minter_addr);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__3')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeBits(configParam.fee_collector_addr);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__4')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeBits(configParam.dns_root_addr);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__5')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeGrams(configParam.mint_new_price)(builder);
 			storeGrams(configParam.mint_add_price)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__6')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeExtraCurrencyCollection(configParam.to_mint)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__7')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__8')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeHashmap<True>(configParam.mandatory_params, storeTrue)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__9')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeHashmap<True>(configParam.critical_params, storeTrue)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__10')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__11')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeHashmapE<WorkchainDescr>(configParam.workchains, storeWorkchainDescr)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__12')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__13')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__14')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(configParam.validators_elected_for, 32);
 			builder.storeUint(configParam.elections_start_before, 32);
 			builder.storeUint(configParam.elections_end_before, 32);
 			builder.storeUint(configParam.stake_held_for, 32);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__15')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(configParam.max_validators, 16);
 			builder.storeUint(configParam.max_main_validators, 16);
 			builder.storeUint(configParam.min_validators, 16);
@@ -6277,120 +6277,120 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
 			if ((!(configParam.min_validators >= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__16')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeGrams(configParam.min_stake)(builder);
 			storeGrams(configParam.max_stake)(builder);
 			storeGrams(configParam.min_total_stake)(builder);
 			builder.storeUint(configParam.max_stake_factor, 32);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__17')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_mc_gas_prices')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_gas_prices')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_mc_block_limits')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_block_limits')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_mc_fwd_prices')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_fwd_prices')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__24')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__25')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__26')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeHashmapE<True>(configParam.fundamental_smc_addr, storeTrue)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__27')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeValidatorSet(configParam.prev_validators)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__28')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeValidatorSet(configParam.prev_temp_validators)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__29')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeValidatorSet(configParam.cur_validators)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__30')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeValidatorSet(configParam.cur_temp_validators)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__31')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeValidatorSet(configParam.next_validators)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__32')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeValidatorSet(configParam.next_temp_validators)(builder);
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__33')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__34')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__35')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__36')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((configParam.kind == 'ConfigParam__37')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -6413,11 +6413,11 @@ export function loadGlobalVersion(slice: Slice): GlobalVersion {
 	throw new Error('');
   }
 export function storeGlobalVersion(globalVersion: GlobalVersion): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xc4, 8);
 		builder.storeUint(globalVersion.version, 32);
 		builder.storeUint(globalVersion.capabilities, 64);
-  	};
+  	});
   }
 export type ConfigProposalSetup = {
   	kind: 'ConfigProposalSetup';
@@ -6456,7 +6456,7 @@ export function loadConfigProposalSetup(slice: Slice): ConfigProposalSetup {
 	throw new Error('');
   }
 export function storeConfigProposalSetup(configProposalSetup: ConfigProposalSetup): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x36, 8);
 		builder.storeUint(configProposalSetup.min_tot_rounds, 8);
 		builder.storeUint(configProposalSetup.max_tot_rounds, 8);
@@ -6466,7 +6466,7 @@ export function storeConfigProposalSetup(configProposalSetup: ConfigProposalSetu
 		builder.storeUint(configProposalSetup.max_store_sec, 32);
 		builder.storeUint(configProposalSetup.bit_price, 32);
 		builder.storeUint(configProposalSetup.cell_price, 32);
-  	};
+  	});
   }
 export type ConfigVotingSetup = {
   	kind: 'ConfigVotingSetup';
@@ -6489,7 +6489,7 @@ export function loadConfigVotingSetup(slice: Slice): ConfigVotingSetup {
 	throw new Error('');
   }
 export function storeConfigVotingSetup(configVotingSetup: ConfigVotingSetup): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x91, 8);
 		let cell1 = beginCell();
 		storeConfigProposalSetup(configVotingSetup.normal_params)(cell1);
@@ -6497,7 +6497,7 @@ export function storeConfigVotingSetup(configVotingSetup: ConfigVotingSetup): (b
 		let cell2 = beginCell();
 		storeConfigProposalSetup(configVotingSetup.critical_params)(cell2);
 		builder.storeRef(cell2);
-  	};
+  	});
   }
 export type ConfigProposal = {
   	kind: 'ConfigProposal';
@@ -6509,13 +6509,13 @@ export function loadConfigProposal(slice: Slice): ConfigProposal {
   	if ((slice.preloadUint(8) == 0xf3)) {
   		slice.loadUint(8);
 		let param_id: number = slice.loadInt(32);
-		let param_value: Maybe<Slice> = loadMaybe<Slice>(slice, (slice: Slice) => {
+		let param_value: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return slice1;
-  		});
-		let if_hash_equal: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+  		}));
+		let if_hash_equal: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
   			return slice.loadUint(256);
-  		});
+  		}));
 		return {
   			kind: 'ConfigProposal',
 			param_id: param_id,
@@ -6526,22 +6526,22 @@ export function loadConfigProposal(slice: Slice): ConfigProposal {
 	throw new Error('');
   }
 export function storeConfigProposal(configProposal: ConfigProposal): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xf3, 8);
 		builder.storeInt(configProposal.param_id, 32);
-		storeMaybe<Slice>(configProposal.param_value, (arg: Slice) => {
-  			return (builder: Builder) => {
+		storeMaybe<Slice>(configProposal.param_value, ((arg: Slice) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				cell1.storeSlice(arg)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-		storeMaybe<number>(configProposal.if_hash_equal, (arg: number) => {
-  			return (builder: Builder) => {
+  			});
+  		}))(builder);
+		storeMaybe<number>(configProposal.if_hash_equal, ((arg: number) => {
+  			return ((builder: Builder) => {
   				builder.storeUint(arg, 256);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type ConfigProposalStatus = {
   	kind: 'ConfigProposalStatus';
@@ -6584,7 +6584,7 @@ export function loadConfigProposalStatus(slice: Slice): ConfigProposalStatus {
 	throw new Error('');
   }
 export function storeConfigProposalStatus(configProposalStatus: ConfigProposalStatus): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xce, 8);
 		builder.storeUint(configProposalStatus.expires, 32);
 		let cell1 = beginCell();
@@ -6597,7 +6597,7 @@ export function storeConfigProposalStatus(configProposalStatus: ConfigProposalSt
 		builder.storeUint(configProposalStatus.rounds_remaining, 8);
 		builder.storeUint(configProposalStatus.wins, 8);
 		builder.storeUint(configProposalStatus.losses, 8);
-  	};
+  	});
   }
 export type WorkchainFormat = WorkchainFormat_wfmt_basic | WorkchainFormat_wfmt_ext;
 export type WorkchainFormat_wfmt_basic = {
@@ -6656,14 +6656,14 @@ export function loadWorkchainFormat(slice: Slice, arg0: number): WorkchainFormat
   }
 export function storeWorkchainFormat(workchainFormat: WorkchainFormat): (builder: Builder) => void {
   	if ((workchainFormat.kind == 'WorkchainFormat_wfmt_basic')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x1, 4);
 			builder.storeInt(workchainFormat.vm_version, 32);
 			builder.storeUint(workchainFormat.vm_mode, 64);
-  		};
+  		});
   	};
 	if ((workchainFormat.kind == 'WorkchainFormat_wfmt_ext')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x0, 4);
 			builder.storeUint(workchainFormat.min_addr_len, 12);
 			builder.storeUint(workchainFormat.max_addr_len, 12);
@@ -6684,7 +6684,7 @@ export function storeWorkchainFormat(workchainFormat: WorkchainFormat): (builder
 			if ((!(workchainFormat.workchain_type_id >= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -6743,7 +6743,7 @@ export function loadWorkchainDescr(slice: Slice): WorkchainDescr {
 	throw new Error('');
   }
 export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xa6, 8);
 		builder.storeUint(workchainDescr.enabled_since, 32);
 		builder.storeUint(workchainDescr.actual_min_split, 8);
@@ -6763,7 +6763,7 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
 		if ((!(workchainDescr.flags == 0))) {
   			throw new Error('');
   		};
-  	};
+  	});
   }
 export type ComplaintPricing = {
   	kind: 'ComplaintPricing';
@@ -6787,12 +6787,12 @@ export function loadComplaintPricing(slice: Slice): ComplaintPricing {
 	throw new Error('');
   }
 export function storeComplaintPricing(complaintPricing: ComplaintPricing): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x1a, 8);
 		storeGrams(complaintPricing.deposit)(builder);
 		storeGrams(complaintPricing.bit_price)(builder);
 		storeGrams(complaintPricing.cell_price)(builder);
-  	};
+  	});
   }
 export type BlockCreateFees = {
   	kind: 'BlockCreateFees';
@@ -6813,11 +6813,11 @@ export function loadBlockCreateFees(slice: Slice): BlockCreateFees {
 	throw new Error('');
   }
 export function storeBlockCreateFees(blockCreateFees: BlockCreateFees): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x6b, 8);
 		storeGrams(blockCreateFees.masterchain_block_fee)(builder);
 		storeGrams(blockCreateFees.basechain_block_fee)(builder);
-  	};
+  	});
   }
 export type StoragePrices = {
   	kind: 'StoragePrices';
@@ -6847,14 +6847,14 @@ export function loadStoragePrices(slice: Slice): StoragePrices {
 	throw new Error('');
   }
 export function storeStoragePrices(storagePrices: StoragePrices): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xcc, 8);
 		builder.storeUint(storagePrices.utime_since, 32);
 		builder.storeUint(storagePrices.bit_price_ps, 64);
 		builder.storeUint(storagePrices.cell_price_ps, 64);
 		builder.storeUint(storagePrices.mc_bit_price_ps, 64);
 		builder.storeUint(storagePrices.mc_cell_price_ps, 64);
-  	};
+  	});
   }
 export type GasLimitsPrices = GasLimitsPrices_gas_prices | GasLimitsPrices_gas_prices_ext | GasLimitsPrices_gas_flat_pfx;
 export type GasLimitsPrices_gas_prices = {
@@ -6937,7 +6937,7 @@ export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
   }
 export function storeGasLimitsPrices(gasLimitsPrices: GasLimitsPrices): (builder: Builder) => void {
   	if ((gasLimitsPrices.kind == 'GasLimitsPrices_gas_prices')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xdd, 8);
 			builder.storeUint(gasLimitsPrices.gas_price, 64);
 			builder.storeUint(gasLimitsPrices.gas_limit, 64);
@@ -6945,10 +6945,10 @@ export function storeGasLimitsPrices(gasLimitsPrices: GasLimitsPrices): (builder
 			builder.storeUint(gasLimitsPrices.block_gas_limit, 64);
 			builder.storeUint(gasLimitsPrices.freeze_due_limit, 64);
 			builder.storeUint(gasLimitsPrices.delete_due_limit, 64);
-  		};
+  		});
   	};
 	if ((gasLimitsPrices.kind == 'GasLimitsPrices_gas_prices_ext')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xde, 8);
 			builder.storeUint(gasLimitsPrices.gas_price, 64);
 			builder.storeUint(gasLimitsPrices.gas_limit, 64);
@@ -6957,15 +6957,15 @@ export function storeGasLimitsPrices(gasLimitsPrices: GasLimitsPrices): (builder
 			builder.storeUint(gasLimitsPrices.block_gas_limit, 64);
 			builder.storeUint(gasLimitsPrices.freeze_due_limit, 64);
 			builder.storeUint(gasLimitsPrices.delete_due_limit, 64);
-  		};
+  		});
   	};
 	if ((gasLimitsPrices.kind == 'GasLimitsPrices_gas_flat_pfx')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xd1, 8);
 			builder.storeUint(gasLimitsPrices.flat_gas_limit, 64);
 			builder.storeUint(gasLimitsPrices.flat_gas_price, 64);
 			storeGasLimitsPrices(gasLimitsPrices.other)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -6997,7 +6997,7 @@ export function loadParamLimits(slice: Slice): ParamLimits {
 	throw new Error('');
   }
 export function storeParamLimits(paramLimits: ParamLimits): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xc3, 8);
 		builder.storeUint(paramLimits.underload, 32);
 		builder.storeUint(paramLimits.soft_limit, 32);
@@ -7008,7 +7008,7 @@ export function storeParamLimits(paramLimits: ParamLimits): (builder: Builder) =
 		if ((!(paramLimits.soft_limit <= paramLimits.hard_limit))) {
   			throw new Error('');
   		};
-  	};
+  	});
   }
 export type BlockLimits = {
   	kind: 'BlockLimits';
@@ -7032,12 +7032,12 @@ export function loadBlockLimits(slice: Slice): BlockLimits {
 	throw new Error('');
   }
 export function storeBlockLimits(blockLimits: BlockLimits): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x5d, 8);
 		storeParamLimits(blockLimits.bytes)(builder);
 		storeParamLimits(blockLimits.gas)(builder);
 		storeParamLimits(blockLimits.lt_delta)(builder);
-  	};
+  	});
   }
 export type MsgForwardPrices = {
   	kind: 'MsgForwardPrices';
@@ -7070,7 +7070,7 @@ export function loadMsgForwardPrices(slice: Slice): MsgForwardPrices {
 	throw new Error('');
   }
 export function storeMsgForwardPrices(msgForwardPrices: MsgForwardPrices): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xea, 8);
 		builder.storeUint(msgForwardPrices.lump_price, 64);
 		builder.storeUint(msgForwardPrices.bit_price, 64);
@@ -7078,7 +7078,7 @@ export function storeMsgForwardPrices(msgForwardPrices: MsgForwardPrices): (buil
 		builder.storeUint(msgForwardPrices.ihr_price_factor, 32);
 		builder.storeUint(msgForwardPrices.first_frac, 16);
 		builder.storeUint(msgForwardPrices.next_frac, 16);
-  	};
+  	});
   }
 export type CatchainConfig = CatchainConfig_catchain_config | CatchainConfig_catchain_config_new;
 export type CatchainConfig_catchain_config = {
@@ -7137,16 +7137,16 @@ export function loadCatchainConfig(slice: Slice): CatchainConfig {
   }
 export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: Builder) => void {
   	if ((catchainConfig.kind == 'CatchainConfig_catchain_config')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xc1, 8);
 			builder.storeUint(catchainConfig.mc_catchain_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_catchain_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_validators_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_validators_num, 32);
-  		};
+  		});
   	};
 	if ((catchainConfig.kind == 'CatchainConfig_catchain_config_new')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xc2, 8);
 			builder.storeUint(catchainConfig.flags, 7);
 			storeBool(catchainConfig.shuffle_mc_validators)(builder);
@@ -7157,7 +7157,7 @@ export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: B
 			if ((!(catchainConfig.flags == 0))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -7347,7 +7347,7 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
   }
 export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder: Builder) => void {
   	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xd6, 8);
 			builder.storeUint(consensusConfig.round_candidates, 32);
 			builder.storeUint(consensusConfig.next_candidate_delay_ms, 32);
@@ -7360,10 +7360,10 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			if ((!(consensusConfig.round_candidates >= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_new')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xd7, 8);
 			builder.storeUint(consensusConfig.flags, 7);
 			storeBool(consensusConfig.new_catchain_ids)(builder);
@@ -7381,10 +7381,10 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			if ((!(consensusConfig.round_candidates >= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_v3')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xd8, 8);
 			builder.storeUint(consensusConfig.flags, 7);
 			storeBool(consensusConfig.new_catchain_ids)(builder);
@@ -7403,10 +7403,10 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			if ((!(consensusConfig.round_candidates >= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	if ((consensusConfig.kind == 'ConsensusConfig_consensus_config_v4')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xd9, 8);
 			builder.storeUint(consensusConfig.flags, 7);
 			storeBool(consensusConfig.new_catchain_ids)(builder);
@@ -7426,7 +7426,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			if ((!(consensusConfig.round_candidates >= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -7455,13 +7455,13 @@ export function loadValidatorTempKey(slice: Slice): ValidatorTempKey {
 	throw new Error('');
   }
 export function storeValidatorTempKey(validatorTempKey: ValidatorTempKey): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x3, 4);
 		builder.storeBits(validatorTempKey.adnl_addr);
 		storeSigPubKey(validatorTempKey.temp_public_key)(builder);
 		builder.storeUint(validatorTempKey.seqno, 32);
 		builder.storeUint(validatorTempKey.valid_until, 32);
-  	};
+  	});
   }
 export type ValidatorSignedTempKey = {
   	kind: 'ValidatorSignedTempKey';
@@ -7483,13 +7483,13 @@ export function loadValidatorSignedTempKey(slice: Slice): ValidatorSignedTempKey
 	throw new Error('');
   }
 export function storeValidatorSignedTempKey(validatorSignedTempKey: ValidatorSignedTempKey): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x4, 4);
 		let cell1 = beginCell();
 		storeValidatorTempKey(validatorSignedTempKey.key)(cell1);
 		builder.storeRef(cell1);
 		storeCryptoSignature(validatorSignedTempKey.signature)(builder);
-  	};
+  	});
   }
 export type MisbehaviourPunishmentConfig = {
   	kind: 'MisbehaviourPunishmentConfig';
@@ -7537,7 +7537,7 @@ export function loadMisbehaviourPunishmentConfig(slice: Slice): MisbehaviourPuni
 	throw new Error('');
   }
 export function storeMisbehaviourPunishmentConfig(misbehaviourPunishmentConfig: MisbehaviourPunishmentConfig): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x01, 8);
 		storeGrams(misbehaviourPunishmentConfig.default_flat_fine)(builder);
 		builder.storeUint(misbehaviourPunishmentConfig.default_proportional_fine, 32);
@@ -7550,7 +7550,7 @@ export function storeMisbehaviourPunishmentConfig(misbehaviourPunishmentConfig: 
 		builder.storeUint(misbehaviourPunishmentConfig.medium_interval, 16);
 		builder.storeUint(misbehaviourPunishmentConfig.medium_flat_mult, 16);
 		builder.storeUint(misbehaviourPunishmentConfig.medium_proportional_mult, 16);
-  	};
+  	});
   }
 export type OracleBridgeParams = {
   	kind: 'OracleBridgeParams';
@@ -7562,9 +7562,9 @@ export type OracleBridgeParams = {
 export function loadOracleBridgeParams(slice: Slice): OracleBridgeParams {
   	let bridge_address: BitString = slice.loadBits(256);
 	let oracle_mutlisig_address: BitString = slice.loadBits(256);
-	let oracles: HashmapE<number> = loadHashmapE<number>(slice, 256, (slice: Slice) => {
+	let oracles: HashmapE<number> = loadHashmapE<number>(slice, 256, ((slice: Slice) => {
   		return slice.loadUint(256);
-  	});
+  	}));
 	let external_chain_address: BitString = slice.loadBits(256);
 	return {
   		kind: 'OracleBridgeParams',
@@ -7575,16 +7575,16 @@ export function loadOracleBridgeParams(slice: Slice): OracleBridgeParams {
   	};
   }
 export function storeOracleBridgeParams(oracleBridgeParams: OracleBridgeParams): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeBits(oracleBridgeParams.bridge_address);
 		builder.storeBits(oracleBridgeParams.oracle_mutlisig_address);
-		storeHashmapE<number>(oracleBridgeParams.oracles, (arg: number) => {
-  			return (builder: Builder) => {
+		storeHashmapE<number>(oracleBridgeParams.oracles, ((arg: number) => {
+  			return ((builder: Builder) => {
   				builder.storeUint(arg, 256);
-  			};
-  		})(builder);
+  			});
+  		}))(builder);
 		builder.storeBits(oracleBridgeParams.external_chain_address);
-  	};
+  	});
   }
 export type BlockSignaturesPure = {
   	kind: 'BlockSignaturesPure';
@@ -7604,11 +7604,11 @@ export function loadBlockSignaturesPure(slice: Slice): BlockSignaturesPure {
   	};
   }
 export function storeBlockSignaturesPure(blockSignaturesPure: BlockSignaturesPure): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(blockSignaturesPure.sig_count, 32);
 		builder.storeUint(blockSignaturesPure.sig_weight, 64);
 		storeHashmapE<CryptoSignaturePair>(blockSignaturesPure.signatures, storeCryptoSignaturePair)(builder);
-  	};
+  	});
   }
 export type BlockSignatures = {
   	kind: 'BlockSignatures';
@@ -7629,11 +7629,11 @@ export function loadBlockSignatures(slice: Slice): BlockSignatures {
 	throw new Error('');
   }
 export function storeBlockSignatures(blockSignatures: BlockSignatures): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x11, 8);
 		storeValidatorBaseInfo(blockSignatures.validator_info)(builder);
 		storeBlockSignaturesPure(blockSignatures.pure_signatures)(builder);
-  	};
+  	});
   }
 export type BlockProof = {
   	kind: 'BlockProof';
@@ -7647,10 +7647,10 @@ export function loadBlockProof(slice: Slice): BlockProof {
 		let proof_for: BlockIdExt = loadBlockIdExt(slice);
 		let slice1 = slice.loadRef().beginParse();
 		let root: Slice = slice1;
-		let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, (slice: Slice) => {
+		let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadBlockSignatures(slice1);
-  		});
+  		}));
 		return {
   			kind: 'BlockProof',
 			proof_for: proof_for,
@@ -7661,20 +7661,20 @@ export function loadBlockProof(slice: Slice): BlockProof {
 	throw new Error('');
   }
 export function storeBlockProof(blockProof: BlockProof): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xc3, 8);
 		storeBlockIdExt(blockProof.proof_for)(builder);
 		let cell1 = beginCell();
 		cell1.storeSlice(blockProof.root);
 		builder.storeRef(cell1);
-		storeMaybe<BlockSignatures>(blockProof.signatures, (arg: BlockSignatures) => {
-  			return (builder: Builder) => {
+		storeMaybe<BlockSignatures>(blockProof.signatures, ((arg: BlockSignatures) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeBlockSignatures(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type ProofChain = ProofChain_chain_empty | ProofChain_chain_link;
 export type ProofChain_chain_empty = {
@@ -7695,10 +7695,10 @@ export function loadProofChain(slice: Slice, arg0: number): ProofChain {
 	if (true) {
   		let slice1 = slice.loadRef().beginParse();
 		let root: Slice = slice1;
-		let prev: ProofChain | undefined = ((arg0 - 1) ? (slice: Slice) => {
+		let prev: ProofChain | undefined = ((arg0 - 1) ? ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadProofChain(slice1, (arg0 - 1));
-  		} : undefined);
+  		})(slice) : undefined);
 		return {
   			kind: 'ProofChain_chain_link',
 			n: (arg0 - 1),
@@ -7710,12 +7710,12 @@ export function loadProofChain(slice: Slice, arg0: number): ProofChain {
   }
 export function storeProofChain(proofChain: ProofChain): (builder: Builder) => void {
   	if ((proofChain.kind == 'ProofChain_chain_empty')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((proofChain.kind == 'ProofChain_chain_link')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			cell1.storeSlice(proofChain.root);
 			builder.storeRef(cell1);
@@ -7724,7 +7724,7 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
 				storeProofChain(arg)(cell1)
 				builder.storeRef(cell1);
   			};
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -7739,10 +7739,10 @@ export function loadTopBlockDescr(slice: Slice): TopBlockDescr {
   	if ((slice.preloadUint(8) == 0xd5)) {
   		slice.loadUint(8);
 		let proof_for: BlockIdExt = loadBlockIdExt(slice);
-		let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, (slice: Slice) => {
+		let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadBlockSignatures(slice1);
-  		});
+  		}));
 		let len: number = slice.loadUint(8);
 		let chain: ProofChain = loadProofChain(slice, len);
 		if ((!(len >= 1))) {
@@ -7762,16 +7762,16 @@ export function loadTopBlockDescr(slice: Slice): TopBlockDescr {
 	throw new Error('');
   }
 export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xd5, 8);
 		storeBlockIdExt(topBlockDescr.proof_for)(builder);
-		storeMaybe<BlockSignatures>(topBlockDescr.signatures, (arg: BlockSignatures) => {
-  			return (builder: Builder) => {
+		storeMaybe<BlockSignatures>(topBlockDescr.signatures, ((arg: BlockSignatures) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeBlockSignatures(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
+  			});
+  		}))(builder);
 		builder.storeUint(topBlockDescr.len, 8);
 		storeProofChain(topBlockDescr.chain)(builder);
 		if ((!(topBlockDescr.len >= 1))) {
@@ -7780,7 +7780,7 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
 		if ((!(topBlockDescr.len <= 8))) {
   			throw new Error('');
   		};
-  	};
+  	});
   }
 export type TopBlockDescrSet = {
   	kind: 'TopBlockDescrSet';
@@ -7789,10 +7789,10 @@ export type TopBlockDescrSet = {
 export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
   	if ((slice.preloadUint(32) == 0x4ac789f3)) {
   		slice.loadUint(32);
-		let collection: HashmapE<TopBlockDescr> = loadHashmapE<TopBlockDescr>(slice, 96, (slice: Slice) => {
+		let collection: HashmapE<TopBlockDescr> = loadHashmapE<TopBlockDescr>(slice, 96, ((slice: Slice) => {
   			let slice1 = slice.loadRef().beginParse();
 			return loadTopBlockDescr(slice1);
-  		});
+  		}));
 		return {
   			kind: 'TopBlockDescrSet',
 			collection: collection
@@ -7801,16 +7801,16 @@ export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
 	throw new Error('');
   }
 export function storeTopBlockDescrSet(topBlockDescrSet: TopBlockDescrSet): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x4ac789f3, 32);
-		storeHashmapE<TopBlockDescr>(topBlockDescrSet.collection, (arg: TopBlockDescr) => {
-  			return (builder: Builder) => {
+		storeHashmapE<TopBlockDescr>(topBlockDescrSet.collection, ((arg: TopBlockDescr) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				storeTopBlockDescr(arg)(cell1)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type ProducerInfo = {
   	kind: 'ProducerInfo';
@@ -7839,7 +7839,7 @@ export function loadProducerInfo(slice: Slice): ProducerInfo {
 	throw new Error('');
   }
 export function storeProducerInfo(producerInfo: ProducerInfo): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x34, 8);
 		builder.storeUint(producerInfo.utime, 32);
 		storeExtBlkRef(producerInfo.mc_blk_ref)(builder);
@@ -7849,7 +7849,7 @@ export function storeProducerInfo(producerInfo: ProducerInfo): (builder: Builder
 		let cell2 = beginCell();
 		storeMERKLE_PROOF<ShardState>(producerInfo.prod_proof, storeShardState)(cell2);
 		builder.storeRef(cell2);
-  	};
+  	});
   }
 export type ComplaintDescr = ComplaintDescr_no_blk_gen | ComplaintDescr_no_blk_gen_diff;
 export type ComplaintDescr_no_blk_gen = {
@@ -7888,22 +7888,22 @@ export function loadComplaintDescr(slice: Slice): ComplaintDescr {
   }
 export function storeComplaintDescr(complaintDescr: ComplaintDescr): (builder: Builder) => void {
   	if ((complaintDescr.kind == 'ComplaintDescr_no_blk_gen')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(complaintDescr.from_utime, 32);
 			let cell1 = beginCell();
 			storeProducerInfo(complaintDescr.prod_info)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((complaintDescr.kind == 'ComplaintDescr_no_blk_gen_diff')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeProducerInfo(complaintDescr.prod_info_old)(cell1);
 			builder.storeRef(cell1);
 			let cell2 = beginCell();
 			storeProducerInfo(complaintDescr.prod_info_new)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -7945,7 +7945,7 @@ export function loadValidatorComplaint(slice: Slice): ValidatorComplaint {
 	throw new Error('');
   }
 export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0xbc, 8);
 		builder.storeBits(validatorComplaint.validator_pubkey);
 		let cell1 = beginCell();
@@ -7957,7 +7957,7 @@ export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint):
 		storeGrams(validatorComplaint.paid)(builder);
 		storeGrams(validatorComplaint.suggested_fine)(builder);
 		builder.storeUint(validatorComplaint.suggested_fine_part, 32);
-  	};
+  	});
   }
 export type ValidatorComplaintStatus = {
   	kind: 'ValidatorComplaintStatus';
@@ -7985,7 +7985,7 @@ export function loadValidatorComplaintStatus(slice: Slice): ValidatorComplaintSt
 	throw new Error('');
   }
 export function storeValidatorComplaintStatus(validatorComplaintStatus: ValidatorComplaintStatus): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x2d, 8);
 		let cell1 = beginCell();
 		storeValidatorComplaint(validatorComplaintStatus.complaint)(cell1);
@@ -7993,7 +7993,7 @@ export function storeValidatorComplaintStatus(validatorComplaintStatus: Validato
 		storeHashmapE<True>(validatorComplaintStatus.voters, storeTrue)(builder);
 		builder.storeUint(validatorComplaintStatus.vset_id, 256);
 		builder.storeInt(validatorComplaintStatus.weight_remaining, 64);
-  	};
+  	});
   }
 export type VmStackValue = VmStackValue_vm_stk_null | VmStackValue_vm_stk_tinyint | VmStackValue_vm_stk_int | VmStackValue_vm_stk_nan | VmStackValue_vm_stk_cell | VmStackValue_vm_stk_slice | VmStackValue_vm_stk_builder | VmStackValue_vm_stk_cont | VmStackValue_vm_stk_tuple;
 export type VmStackValue_vm_stk_null = {
@@ -8108,61 +8108,61 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
   }
 export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder) => void {
   	if ((vmStackValue.kind == 'VmStackValue_vm_stk_null')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x00, 8);
-  		};
+  		});
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_tinyint')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x01, 8);
 			builder.storeInt(vmStackValue.value, 64);
-  		};
+  		});
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_int')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x0201, 16);
 			builder.storeInt(vmStackValue.value, 257);
-  		};
+  		});
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_nan')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x02ff, 16);
-  		};
+  		});
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_cell')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x03, 8);
 			let cell1 = beginCell();
 			cell1.storeSlice(vmStackValue.cell);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_slice')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x04, 8);
 			storeVmCellSlice(vmStackValue._)(builder);
-  		};
+  		});
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_builder')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x05, 8);
 			let cell1 = beginCell();
 			cell1.storeSlice(vmStackValue.cell);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_cont')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x06, 8);
 			storeVmCont(vmStackValue.cont)(builder);
-  		};
+  		});
   	};
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_tuple')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x07, 8);
 			builder.storeUint(vmStackValue.len, 16);
 			storeVmTuple(vmStackValue.data)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -8197,7 +8197,7 @@ export function loadVmCellSlice(slice: Slice): VmCellSlice {
   	};
   }
 export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		let cell1 = beginCell();
 		cell1.storeSlice(vmCellSlice.cell);
 		builder.storeRef(cell1);
@@ -8211,7 +8211,7 @@ export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) =
 		if ((!(vmCellSlice.st_ref <= vmCellSlice.end_ref))) {
   			throw new Error('');
   		};
-  	};
+  	});
   }
 export type VmTupleRef = VmTupleRef_vm_tupref_nil | VmTupleRef_vm_tupref_single | VmTupleRef_vm_tupref_any;
 export type VmTupleRef_vm_tupref_nil = {
@@ -8253,23 +8253,23 @@ export function loadVmTupleRef(slice: Slice, arg0: number): VmTupleRef {
   }
 export function storeVmTupleRef(vmTupleRef: VmTupleRef): (builder: Builder) => void {
   	if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_nil')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_single')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeVmStackValue(vmTupleRef.entry)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_any')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeVmTuple(vmTupleRef.ref)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -8304,17 +8304,17 @@ export function loadVmTuple(slice: Slice, arg0: number): VmTuple {
   }
 export function storeVmTuple(vmTuple: VmTuple): (builder: Builder) => void {
   	if ((vmTuple.kind == 'VmTuple_vm_tuple_nil')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	if ((vmTuple.kind == 'VmTuple_vm_tuple_tcons')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			storeVmTupleRef(vmTuple.head)(builder);
 			let cell1 = beginCell();
 			storeVmStackValue(vmTuple.tail)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -8333,10 +8333,10 @@ export function loadVmStack(slice: Slice): VmStack {
   	};
   }
 export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(vmStack.depth, 24);
 		storeVmStackList(vmStack.stack)(builder);
-  	};
+  	});
   }
 export type VmStackList = VmStackList_vm_stk_cons | VmStackList_vm_stk_nil;
 export type VmStackList_vm_stk_cons = {
@@ -8369,17 +8369,17 @@ export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
   }
 export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) => void {
   	if ((vmStackList.kind == 'VmStackList_vm_stk_cons')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeVmStackList(vmStackList.rest)(cell1);
 			builder.storeRef(cell1);
 			storeVmStackValue(vmStackList.tos)(builder);
-  		};
+  		});
   	};
 	if ((vmStackList.kind == 'VmStackList_vm_stk_nil')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -8395,9 +8395,9 @@ export function loadVmSaveList(slice: Slice): VmSaveList {
   	};
   }
 export function storeVmSaveList(vmSaveList: VmSaveList): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		storeHashmapE<VmStackValue>(vmSaveList.cregs, storeVmStackValue)(builder);
-  	};
+  	});
   }
 export type VmGasLimits = {
   	kind: 'VmGasLimits';
@@ -8421,39 +8421,39 @@ export function loadVmGasLimits(slice: Slice): VmGasLimits {
   	};
   }
 export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeInt(vmGasLimits.remaining, 64);
 		let cell1 = beginCell();
 		cell1.storeInt(vmGasLimits.max_limit, 64);
 		cell1.storeInt(vmGasLimits.cur_limit, 64);
 		cell1.storeInt(vmGasLimits.credit, 64);
 		builder.storeRef(cell1);
-  	};
+  	});
   }
 export type VmLibraries = {
   	kind: 'VmLibraries';
 	libraries: HashmapE<Slice>;
   };
 export function loadVmLibraries(slice: Slice): VmLibraries {
-  	let libraries: HashmapE<Slice> = loadHashmapE<Slice>(slice, 256, (slice: Slice) => {
+  	let libraries: HashmapE<Slice> = loadHashmapE<Slice>(slice, 256, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return slice1;
-  	});
+  	}));
 	return {
   		kind: 'VmLibraries',
 		libraries: libraries
   	};
   }
 export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) => void {
-  	return (builder: Builder) => {
-  		storeHashmapE<Slice>(vmLibraries.libraries, (arg: Slice) => {
-  			return (builder: Builder) => {
+  	return ((builder: Builder) => {
+  		storeHashmapE<Slice>(vmLibraries.libraries, ((arg: Slice) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				cell1.storeSlice(arg)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type VmControlData = {
   	kind: 'VmControlData';
@@ -8463,14 +8463,14 @@ export type VmControlData = {
 	cp: Maybe<number>;
   };
 export function loadVmControlData(slice: Slice): VmControlData {
-  	let nargs: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+  	let nargs: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
   		return slice.loadUint(13);
-  	});
+  	}));
 	let stack: Maybe<VmStack> = loadMaybe<VmStack>(slice, loadVmStack);
 	let save: VmSaveList = loadVmSaveList(slice);
-	let cp: Maybe<number> = loadMaybe<number>(slice, (slice: Slice) => {
+	let cp: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
   		return slice.loadInt(16);
-  	});
+  	}));
 	return {
   		kind: 'VmControlData',
 		nargs: nargs,
@@ -8480,20 +8480,20 @@ export function loadVmControlData(slice: Slice): VmControlData {
   	};
   }
 export function storeVmControlData(vmControlData: VmControlData): (builder: Builder) => void {
-  	return (builder: Builder) => {
-  		storeMaybe<number>(vmControlData.nargs, (arg: number) => {
-  			return (builder: Builder) => {
+  	return ((builder: Builder) => {
+  		storeMaybe<number>(vmControlData.nargs, ((arg: number) => {
+  			return ((builder: Builder) => {
   				builder.storeUint(arg, 13);
-  			};
-  		})(builder);
+  			});
+  		}))(builder);
 		storeMaybe<VmStack>(vmControlData.stack, storeVmStack)(builder);
 		storeVmSaveList(vmControlData.save)(builder);
-		storeMaybe<number>(vmControlData.cp, (arg: number) => {
-  			return (builder: Builder) => {
+		storeMaybe<number>(vmControlData.cp, ((arg: number) => {
+  			return ((builder: Builder) => {
   				builder.storeInt(arg, 16);
-  			};
-  		})(builder);
-  	};
+  			});
+  		}))(builder);
+  	});
   }
 export type VmCont = VmCont_vmc_std | VmCont_vmc_envelope | VmCont_vmc_quit | VmCont_vmc_quit_exc | VmCont_vmc_repeat | VmCont_vmc_until | VmCont_vmc_again | VmCont_vmc_while_cond | VmCont_vmc_while_body | VmCont_vmc_pushint;
 export type VmCont_vmc_std = {
@@ -8661,34 +8661,34 @@ export function loadVmCont(slice: Slice): VmCont {
   }
 export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
   	if ((vmCont.kind == 'VmCont_vmc_std')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b00, 2);
 			storeVmControlData(vmCont.cdata)(builder);
 			storeVmCellSlice(vmCont.code)(builder);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_envelope')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b01, 2);
 			storeVmControlData(vmCont.cdata)(builder);
 			let cell1 = beginCell();
 			storeVmCont(vmCont.next)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_quit')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1000, 4);
 			builder.storeInt(vmCont.exit_code, 32);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_quit_exc')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1001, 4);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_repeat')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b10100, 5);
 			builder.storeUint(vmCont.count, 63);
 			let cell1 = beginCell();
@@ -8697,10 +8697,10 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
 			let cell2 = beginCell();
 			storeVmCont(vmCont.after)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_until')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b110000, 6);
 			let cell1 = beginCell();
 			storeVmCont(vmCont.body)(cell1);
@@ -8708,18 +8708,18 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
 			let cell2 = beginCell();
 			storeVmCont(vmCont.after)(cell2);
 			builder.storeRef(cell2);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_again')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b110001, 6);
 			let cell1 = beginCell();
 			storeVmCont(vmCont.body)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_while_cond')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b110010, 6);
 			let cell1 = beginCell();
 			storeVmCont(vmCont.cond)(cell1);
@@ -8730,10 +8730,10 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
 			let cell3 = beginCell();
 			storeVmCont(vmCont.after)(cell3);
 			builder.storeRef(cell3);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_while_body')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b110011, 6);
 			let cell1 = beginCell();
 			storeVmCont(vmCont.cond)(cell1);
@@ -8744,16 +8744,16 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
 			let cell3 = beginCell();
 			storeVmCont(vmCont.after)(cell3);
 			builder.storeRef(cell3);
-  		};
+  		});
   	};
 	if ((vmCont.kind == 'VmCont_vmc_pushint')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1111, 4);
 			builder.storeInt(vmCont.value, 32);
 			let cell1 = beginCell();
 			storeVmCont(vmCont.next)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -8766,9 +8766,9 @@ export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
   	};
   }
 export function storeDNS_RecordSet(dNS_RecordSet: DNS_RecordSet): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   
-  	};
+  	});
   }
 export type TextChunkRef = TextChunkRef_chunk_ref | TextChunkRef_chunk_ref_empty;
 export type TextChunkRef_chunk_ref = {
@@ -8798,16 +8798,16 @@ export function loadTextChunkRef(slice: Slice, arg0: number): TextChunkRef {
   }
 export function storeTextChunkRef(textChunkRef: TextChunkRef): (builder: Builder) => void {
   	if ((textChunkRef.kind == 'TextChunkRef_chunk_ref')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeTextChunks(textChunkRef.ref)(cell1);
 			builder.storeRef(cell1);
-  		};
+  		});
   	};
 	if ((textChunkRef.kind == 'TextChunkRef_chunk_ref_empty')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -8844,16 +8844,16 @@ export function loadTextChunks(slice: Slice, arg0: number): TextChunks {
   }
 export function storeTextChunks(textChunks: TextChunks): (builder: Builder) => void {
   	if ((textChunks.kind == 'TextChunks_text_chunk')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(textChunks.len, 8);
 			builder.storeBits(textChunks.data);
 			storeTextChunkRef(textChunks.next)(builder);
-  		};
+  		});
   	};
 	if ((textChunks.kind == 'TextChunks_text_chunk_empty')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -8872,10 +8872,10 @@ export function loadText(slice: Slice): Text {
   	};
   }
 export function storeText(text: Text): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(text.chunks, 8);
 		storeTextChunks(text.rest)(builder);
-  	};
+  	});
   }
 export type DNSRecord = DNSRecord_dns_text | DNSRecord_dns_next_resolver | DNSRecord_dns_adnl_address | DNSRecord_dns_smc_address;
 export type DNSRecord_dns_text = {
@@ -8949,19 +8949,19 @@ export function loadDNSRecord(slice: Slice): DNSRecord {
   }
 export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void {
   	if ((dNSRecord.kind == 'DNSRecord_dns_text')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x1eda, 16);
 			storeText(dNSRecord._)(builder);
-  		};
+  		});
   	};
 	if ((dNSRecord.kind == 'DNSRecord_dns_next_resolver')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xba93, 16);
 			storeMsgAddressInt(dNSRecord.resolver)(builder);
-  		};
+  		});
   	};
 	if ((dNSRecord.kind == 'DNSRecord_dns_adnl_address')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xad01, 16);
 			builder.storeBits(dNSRecord.adnl_addr);
 			builder.storeUint(dNSRecord.flags, 8);
@@ -8971,10 +8971,10 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
 			if ((!(dNSRecord.flags <= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	if ((dNSRecord.kind == 'DNSRecord_dns_smc_address')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x9fd3, 16);
 			storeMsgAddressInt(dNSRecord.smc_addr)(builder);
 			builder.storeUint(dNSRecord.flags, 8);
@@ -8984,7 +8984,7 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
 			if ((!(dNSRecord.flags <= 1))) {
   				throw new Error('');
   			};
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -9018,16 +9018,16 @@ export function loadProtoList(slice: Slice): ProtoList {
   }
 export function storeProtoList(protoList: ProtoList): (builder: Builder) => void {
   	if ((protoList.kind == 'ProtoList_proto_list_nil')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((protoList.kind == 'ProtoList_proto_list_next')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeProtocol(protoList.head)(builder);
 			storeProtoList(protoList.tail)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -9044,9 +9044,9 @@ export function loadProtocol(slice: Slice): Protocol {
 	throw new Error('');
   }
 export function storeProtocol(protocol: Protocol): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x4854, 16);
-  	};
+  	});
   }
 export type SmcCapList = SmcCapList_cap_list_nil | SmcCapList_cap_list_next;
 export type SmcCapList_cap_list_nil = {
@@ -9078,16 +9078,16 @@ export function loadSmcCapList(slice: Slice): SmcCapList {
   }
 export function storeSmcCapList(smcCapList: SmcCapList): (builder: Builder) => void {
   	if ((smcCapList.kind == 'SmcCapList_cap_list_nil')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
-  		};
+  		});
   	};
 	if ((smcCapList.kind == 'SmcCapList_cap_list_next')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b1, 1);
 			storeSmcCapability(smcCapList.head)(builder);
 			storeSmcCapList(smcCapList.tail)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -9136,25 +9136,25 @@ export function loadSmcCapability(slice: Slice): SmcCapability {
   }
 export function storeSmcCapability(smcCapability: SmcCapability): (builder: Builder) => void {
   	if ((smcCapability.kind == 'SmcCapability_cap_method_seqno')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x5371, 16);
-  		};
+  		});
   	};
 	if ((smcCapability.kind == 'SmcCapability_cap_method_pubkey')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x71f4, 16);
-  		};
+  		});
   	};
 	if ((smcCapability.kind == 'SmcCapability_cap_is_wallet')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x2177, 16);
-  		};
+  		});
   	};
 	if ((smcCapability.kind == 'SmcCapability_cap_name')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xff, 8);
 			storeText(smcCapability.name)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -9193,7 +9193,7 @@ export function loadChanConfig(slice: Slice): ChanConfig {
   	};
   }
 export function storeChanConfig(chanConfig: ChanConfig): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(chanConfig.init_timeout, 32);
 		builder.storeUint(chanConfig.close_timeout, 32);
 		builder.storeBits(chanConfig.a_key);
@@ -9206,7 +9206,7 @@ export function storeChanConfig(chanConfig: ChanConfig): (builder: Builder) => v
 		builder.storeRef(cell2);
 		builder.storeUint(chanConfig.channel_id, 64);
 		storeGrams(chanConfig.min_A_extra)(builder);
-  	};
+  	});
   }
 export type ChanState = ChanState_chan_state_init | ChanState_chan_state_close | ChanState_chan_state_payout;
 export type ChanState_chan_state_init = {
@@ -9289,7 +9289,7 @@ export function loadChanState(slice: Slice): ChanState {
   }
 export function storeChanState(chanState: ChanState): (builder: Builder) => void {
   	if ((chanState.kind == 'ChanState_chan_state_init')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b000, 3);
 			storeBool(chanState.signed_A)(builder);
 			storeBool(chanState.signed_B)(builder);
@@ -9298,10 +9298,10 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
 			builder.storeUint(chanState.expire_at, 32);
 			storeGrams(chanState.A)(builder);
 			storeGrams(chanState.B)(builder);
-  		};
+  		});
   	};
 	if ((chanState.kind == 'ChanState_chan_state_close')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b001, 3);
 			storeBool(chanState.signed_A)(builder);
 			storeBool(chanState.signed_B)(builder);
@@ -9310,14 +9310,14 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
 			builder.storeUint(chanState.expire_at, 32);
 			storeGrams(chanState.A)(builder);
 			storeGrams(chanState.B)(builder);
-  		};
+  		});
   	};
 	if ((chanState.kind == 'ChanState_chan_state_payout')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0b010, 3);
 			storeGrams(chanState.A)(builder);
 			storeGrams(chanState.B)(builder);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -9339,11 +9339,11 @@ export function loadChanPromise(slice: Slice): ChanPromise {
   	};
   }
 export function storeChanPromise(chanPromise: ChanPromise): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(chanPromise.channel_id, 64);
 		storeGrams(chanPromise.promise_A)(builder);
 		storeGrams(chanPromise.promise_B)(builder);
-  	};
+  	});
   }
 export type ChanSignedPromise = {
   	kind: 'ChanSignedPromise';
@@ -9351,10 +9351,10 @@ export type ChanSignedPromise = {
 	promise: ChanPromise;
   };
 export function loadChanSignedPromise(slice: Slice): ChanSignedPromise {
-  	let sig: Maybe<BitString> = loadMaybe<BitString>(slice, (slice: Slice) => {
+  	let sig: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return slice1.loadBits(512);
-  	});
+  	}));
 	let promise: ChanPromise = loadChanPromise(slice);
 	return {
   		kind: 'ChanSignedPromise',
@@ -9363,16 +9363,16 @@ export function loadChanSignedPromise(slice: Slice): ChanSignedPromise {
   	};
   }
 export function storeChanSignedPromise(chanSignedPromise: ChanSignedPromise): (builder: Builder) => void {
-  	return (builder: Builder) => {
-  		storeMaybe<BitString>(chanSignedPromise.sig, (arg: BitString) => {
-  			return (builder: Builder) => {
+  	return ((builder: Builder) => {
+  		storeMaybe<BitString>(chanSignedPromise.sig, ((arg: BitString) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				cell1.storeBits(arg)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
+  			});
+  		}))(builder);
 		storeChanPromise(chanSignedPromise.promise)(builder);
-  	};
+  	});
   }
 export type ChanMsg = ChanMsg_chan_msg_init | ChanMsg_chan_msg_close | ChanMsg_chan_msg_timeout | ChanMsg_chan_msg_payout;
 export type ChanMsg_chan_msg_init = {
@@ -9440,32 +9440,32 @@ export function loadChanMsg(slice: Slice): ChanMsg {
   }
 export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
   	if ((chanMsg.kind == 'ChanMsg_chan_msg_init')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x27317822, 32);
 			storeGrams(chanMsg.inc_A)(builder);
 			storeGrams(chanMsg.inc_B)(builder);
 			storeGrams(chanMsg.min_A)(builder);
 			storeGrams(chanMsg.min_B)(builder);
 			builder.storeUint(chanMsg.channel_id, 64);
-  		};
+  		});
   	};
 	if ((chanMsg.kind == 'ChanMsg_chan_msg_close')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0xf28ae183, 32);
 			storeGrams(chanMsg.extra_A)(builder);
 			storeGrams(chanMsg.extra_B)(builder);
 			storeChanSignedPromise(chanMsg.promise)(builder);
-  		};
+  		});
   	};
 	if ((chanMsg.kind == 'ChanMsg_chan_msg_timeout')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x43278a28, 32);
-  		};
+  		});
   	};
 	if ((chanMsg.kind == 'ChanMsg_chan_msg_payout')) {
-  		return (builder: Builder) => {
+  		return ((builder: Builder) => {
   			builder.storeUint(0x37fe7810, 32);
-  		};
+  		});
   	};
 	throw new Error('');
   }
@@ -9476,14 +9476,14 @@ export type ChanSignedMsg = {
 	msg: ChanMsg;
   };
 export function loadChanSignedMsg(slice: Slice): ChanSignedMsg {
-  	let sig_A: Maybe<BitString> = loadMaybe<BitString>(slice, (slice: Slice) => {
+  	let sig_A: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return slice1.loadBits(512);
-  	});
-	let sig_B: Maybe<BitString> = loadMaybe<BitString>(slice, (slice: Slice) => {
+  	}));
+	let sig_B: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
   		let slice1 = slice.loadRef().beginParse();
 		return slice1.loadBits(512);
-  	});
+  	}));
 	let msg: ChanMsg = loadChanMsg(slice);
 	return {
   		kind: 'ChanSignedMsg',
@@ -9493,23 +9493,23 @@ export function loadChanSignedMsg(slice: Slice): ChanSignedMsg {
   	};
   }
 export function storeChanSignedMsg(chanSignedMsg: ChanSignedMsg): (builder: Builder) => void {
-  	return (builder: Builder) => {
-  		storeMaybe<BitString>(chanSignedMsg.sig_A, (arg: BitString) => {
-  			return (builder: Builder) => {
+  	return ((builder: Builder) => {
+  		storeMaybe<BitString>(chanSignedMsg.sig_A, ((arg: BitString) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				cell1.storeBits(arg)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
-		storeMaybe<BitString>(chanSignedMsg.sig_B, (arg: BitString) => {
-  			return (builder: Builder) => {
+  			});
+  		}))(builder);
+		storeMaybe<BitString>(chanSignedMsg.sig_B, ((arg: BitString) => {
+  			return ((builder: Builder) => {
   				let cell1 = beginCell()
 				cell1.storeBits(arg)
 				builder.storeRef(cell1);
-  			};
-  		})(builder);
+  			});
+  		}))(builder);
 		storeChanMsg(chanSignedMsg.msg)(builder);
-  	};
+  	});
   }
 export type ChanOp = {
   	kind: 'ChanOp';
@@ -9527,10 +9527,10 @@ export function loadChanOp(slice: Slice): ChanOp {
 	throw new Error('');
   }
 export function storeChanOp(chanOp: ChanOp): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		builder.storeUint(0x912838d1, 32);
 		storeChanSignedMsg(chanOp.msg)(builder);
-  	};
+  	});
   }
 export type ChanData = {
   	kind: 'ChanData';
@@ -9549,12 +9549,12 @@ export function loadChanData(slice: Slice): ChanData {
   	};
   }
 export function storeChanData(chanData: ChanData): (builder: Builder) => void {
-  	return (builder: Builder) => {
+  	return ((builder: Builder) => {
   		let cell1 = beginCell();
 		storeChanConfig(chanData.config)(cell1);
 		builder.storeRef(cell1);
 		let cell2 = beginCell();
 		storeChanState(chanData.state)(cell2);
 		builder.storeRef(cell2);
-  	};
+  	});
   }
