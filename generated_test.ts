@@ -1659,3 +1659,26 @@ export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: B
   		};
   	});
   }
+export type LoadFromNegationOutsideExpr = {
+  	kind: 'LoadFromNegationOutsideExpr';
+	seq_no: number;
+	prev_seq_no: number;
+  };
+export function loadLoadFromNegationOutsideExpr(slice: Slice): LoadFromNegationOutsideExpr {
+  	if ((slice.preloadUint(32) == 0x9bc7a987)) {
+  		slice.loadUint(32);
+		let seq_no: number = slice.loadUint(32);
+		return {
+  			kind: 'LoadFromNegationOutsideExpr',
+			prev_seq_no: (seq_no - 1),
+			seq_no: seq_no
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeLoadFromNegationOutsideExpr(loadFromNegationOutsideExpr: LoadFromNegationOutsideExpr): (builder: Builder) => void {
+  	return ((builder: Builder) => {
+  		builder.storeUint(0x9bc7a987, 32);
+		builder.storeUint(loadFromNegationOutsideExpr.seq_no, 32);
+  	});
+  }

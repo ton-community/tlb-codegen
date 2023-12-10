@@ -4371,11 +4371,9 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
 		if ((!(vert_seq_no >= vert_seqno_incr))) {
   			throw new Error('');
   		};
-		if ((!((prev_seq_no + 1) == seq_no))) {
-  			throw new Error('');
-  		};
 		return {
   			kind: 'BlockInfo',
+			prev_seq_no: (seq_no - 1),
 			version: version,
 			not_master: not_master,
 			after_merge: after_merge,
@@ -4447,9 +4445,6 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
   			throw new Error('');
   		};
 		if ((!(blockInfo.vert_seq_no >= blockInfo.vert_seqno_incr))) {
-  			throw new Error('');
-  		};
-		if ((!((blockInfo.prev_seq_no + 1) == blockInfo.seq_no))) {
   			throw new Error('');
   		};
   	});

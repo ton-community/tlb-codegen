@@ -4,29 +4,29 @@ import { Identifier, Expression, BinaryExpression } from "./tsgen";
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
 import util from 'util'
 
-export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr | CompareExpr): TLBMathExpr {
+export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr | CompareExpr, negated: boolean = false): TLBMathExpr {
     if (mathExpr instanceof NameExpr) {
         let variables = new Set<string>();
         variables.add(mathExpr.name);
-        return new TLBVarExpr(mathExpr.name, variables, false);
+        return new TLBVarExpr(mathExpr.name, variables, negated);
     }
     if (mathExpr instanceof NumberExpr) {
         return new TLBNumberExpr(mathExpr.num, new Set<string>(), false);
     }
     if (mathExpr instanceof MathExpr) {
-        let left = convertToMathExpr(mathExpr.left)
-        let right = convertToMathExpr(mathExpr.right)
-        return new TLBBinaryOp(left, right, mathExpr.op, new Set(...left.variables, ...right.variables), left.hasNeg || right.hasNeg)
+        let left = convertToMathExpr(mathExpr.left, negated)
+        let right = convertToMathExpr(mathExpr.right, negated)
+        return new TLBBinaryOp(left, right, mathExpr.op, new Set([...left.variables, ...right.variables]), left.hasNeg || right.hasNeg)
     }
     if (mathExpr instanceof CompareExpr) {
-        let left = convertToMathExpr(mathExpr.left);
-        let right = convertToMathExpr(mathExpr.right);
+        let left = convertToMathExpr(mathExpr.left, negated);
+        let right = convertToMathExpr(mathExpr.right, negated);
         let operation: string = mathExpr.op;
-        return new TLBBinaryOp(left, right, operation, new Set(...left.variables, ...right.variables), left.hasNeg || right.hasNeg)
+        return new TLBBinaryOp(left, right, operation, new Set([...left.variables, ...right.variables]), left.hasNeg || right.hasNeg)
     }
     if (mathExpr instanceof NegateExpr) {
         if (mathExpr.expr instanceof MathExpr || mathExpr.expr instanceof NameExpr || mathExpr.expr instanceof NumberExpr) {
-            let expression = convertToMathExpr(mathExpr.expr);
+            let expression = convertToMathExpr(mathExpr.expr, true);
             if (expression instanceof TLBBinaryOp) {
                 return new TLBBinaryOp(expression.left, expression.right, expression.operation, expression.variables, true);
             }
@@ -112,14 +112,14 @@ export function reorganizeExpression(mathExpr: TLBMathExpr, variable: string): T
                 mathExpr.left,
                 other,
                 op,
-                new Set(...mathExpr.left.variables, ...other.variables),
+                new Set([...mathExpr.left.variables, ...other.variables]),
                 mathExpr.right.hasNeg || other.hasNeg
             )
             mathExpr = new TLBBinaryOp(
                 leftSide,
                 withVariable,
                 '=',
-                new Set(...leftSide.variables, withVariable.variables),
+                new Set([...leftSide.variables, ...withVariable.variables]),
                 leftSide.hasNeg || rightSide.hasNeg
             )
             return reorganizeExpression(mathExpr, variable);
