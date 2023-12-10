@@ -1632,3 +1632,30 @@ export function storeEqualityExpression(equalityExpression: EqualityExpression):
   		};
   	});
   }
+export type ConditionalRef = {
+  	kind: 'ConditionalRef';
+	x: number;
+	y: Simple | undefined;
+  };
+export function loadConditionalRef(slice: Slice): ConditionalRef {
+  	let x: number = slice.loadUint(1);
+	let y: Simple | undefined = (x ? ((slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return loadSimple(slice1);
+  	})(slice) : undefined);
+	return {
+  		kind: 'ConditionalRef',
+		x: x,
+		y: y
+  	};
+  }
+export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: Builder) => void {
+  	return ((builder: Builder) => {
+  		builder.storeUint(conditionalRef.x, 1);
+		if ((conditionalRef.y != undefined)) {
+  			let cell1 = beginCell()
+			storeSimple(conditionalRef.y)(cell1)
+			builder.storeRef(cell1);
+  		};
+  	});
+  }

@@ -4432,7 +4432,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
   		};
 		if ((blockInfo.master_ref != undefined)) {
   			let cell1 = beginCell()
-			storeBlkMasterInfo(arg)(cell1)
+			storeBlkMasterInfo(blockInfo.master_ref)(cell1)
 			builder.storeRef(cell1);
   		};
 		let cell1 = beginCell();
@@ -4440,7 +4440,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
 		builder.storeRef(cell1);
 		if ((blockInfo.prev_vert_ref != undefined)) {
   			let cell1 = beginCell()
-			storeBlkPrevInfo(arg)(cell1)
+			storeBlkPrevInfo(blockInfo.prev_vert_ref)(cell1)
 			builder.storeRef(cell1);
   		};
 		if ((!(blockInfo.flags <= 1))) {
@@ -7721,7 +7721,7 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
 			builder.storeRef(cell1);
 			if ((proofChain.prev != undefined)) {
   				let cell1 = beginCell()
-				storeProofChain(arg)(cell1)
+				storeProofChain(proofChain.prev)(cell1)
 				builder.storeRef(cell1);
   			};
   		});
