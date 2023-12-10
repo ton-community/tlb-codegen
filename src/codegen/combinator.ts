@@ -10,7 +10,7 @@ type FieldInfoType = {
   loadExpr: Expression | undefined
   loadFunctionExpr: Expression | undefined
   storeExpr: Statement | undefined
-  storeFunctionExpr: Statement | undefined
+  storeFunctionExpr: Expression | undefined
   negatedVariablesLoads: Array<{name: string, expression: Expression}>
 }
 
@@ -115,10 +115,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         if (subExprInfo.loadFunctionExpr) {
           loadFunctionsArray.push(subExprInfo.loadFunctionExpr);
         }
-        if (subExprInfo.storeFunctionExpr && subExprInfo.typeParamExpr) {
-            if (subExprInfo.storeFunctionExpr.type == 'ExpressionStatement') {
-              storeFunctionsArray.push(subExprInfo.storeFunctionExpr.expression); 
-            }
+        if (subExprInfo.storeFunctionExpr) {
+          storeFunctionsArray.push(subExprInfo.storeFunctionExpr); 
         }
         result.negatedVariablesLoads = result.negatedVariablesLoads.concat(subExprInfo.negatedVariablesLoads);
       });
@@ -267,14 +265,15 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
   }
 
   if (result.storeExpr && !result.storeFunctionExpr) {
-    result.storeFunctionExpr = result.storeExpr;
-
     if (result.typeParamExpr) {
-      if (result.storeFunctionExpr.type == 'ExpressionStatement' && result.storeFunctionExpr.expression.type == 'FunctionCall' || result.storeFunctionExpr.type == 'MultiStatement') {
-        result.storeFunctionExpr = tExpressionStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), result.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [result.storeFunctionExpr]))]))
+      if (result.storeExpr.type == 'ExpressionStatement' && result.storeExpr.expression.type == 'FunctionCall' || result.storeExpr.type == 'MultiStatement') {
+        result.storeFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), result.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [result.storeExpr]))])
+      } else {
+        if (result.storeExpr.type == 'ExpressionStatement') {
+          result.storeFunctionExpr = result.storeExpr.expression;
+        }
       }
     }
-    
   }
 
   return result;
