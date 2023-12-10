@@ -36,7 +36,15 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
   }
 
   if (field instanceof FieldNamedDef || field instanceof FieldExprDef) {
-    let fieldName = (field instanceof FieldNamedDef) ? field.name : 'anon' + fieldIndex;
+    let fieldName: string;
+    if (field instanceof FieldNamedDef) {
+      fieldName = field.name;
+    } else {
+      fieldName = 'anon' + fieldIndex;
+    }
+    if (field instanceof FieldExprDef && field.expr instanceof NameExpr && field.expr.name == '_') {
+      return;
+    }
 
     if (field.expr instanceof CellRefExpr) {
       slicePrefix[slicePrefix.length - 1]++;

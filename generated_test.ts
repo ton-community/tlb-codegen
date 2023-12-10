@@ -1698,3 +1698,24 @@ export function storeAnonymousData(anonymousData: AnonymousData): (builder: Buil
   		builder.storeUint(anonymousData.anon0, 1);
   	});
   }
+export type VmStackValue = {
+  	kind: 'VmStackValue';
+	value: number;
+  };
+export function loadVmStackValue(slice: Slice): VmStackValue {
+  	if ((slice.preloadUint(16) == 0x0201)) {
+  		slice.loadUint(16);
+		let value: number = slice.loadInt(257);
+		return {
+  			kind: 'VmStackValue',
+			value: value
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder) => void {
+  	return ((builder: Builder) => {
+  		builder.storeUint(0x0201, 16);
+		builder.storeInt(vmStackValue.value, 257);
+  	});
+  }

@@ -8121,7 +8121,6 @@ export type VmStackValue_vm_stk_tinyint = {
   };
 export type VmStackValue_vm_stk_int = {
   	kind: 'VmStackValue_vm_stk_int';
-	anon0: _;
 	value: number;
   };
 export type VmStackValue_vm_stk_nan = {
@@ -8165,11 +8164,9 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
   	};
 	if ((slice.preloadUint(16) == 0x0201)) {
   		slice.loadUint(16);
-		let anon0: _ = load_(slice);
 		let value: number = slice.loadInt(257);
 		return {
   			kind: 'VmStackValue_vm_stk_int',
-			anon0: anon0,
 			value: value
   		};
   	};
@@ -8240,7 +8237,6 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_int')) {
   		return ((builder: Builder) => {
   			builder.storeUint(0x0201, 16);
-			store_(vmStackValue.anon0)(builder);
 			builder.storeInt(vmStackValue.value, 257);
   		});
   	};
