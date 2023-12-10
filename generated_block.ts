@@ -204,15 +204,18 @@ export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Buil
   }
 export type Bit = {
   	kind: 'Bit';
+	anon0: number;
   };
 export function loadBit(slice: Slice): Bit {
-  	return {
-  		kind: 'Bit'
+  	let anon0: number = slice.loadUint(1);
+	return {
+  		kind: 'Bit',
+		anon0: anon0
   	};
   }
 export function storeBit(bit: Bit): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		builder.storeUint(bit.anon0, 1);
   	});
   }
 export function hashmap_get_l(label: HmLabel): number {
@@ -1688,15 +1691,24 @@ export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX
   }
 export type MessageAny = {
   	kind: 'MessageAny';
+	anon0: Message<Slice>;
   };
 export function loadMessageAny(slice: Slice): MessageAny {
-  	return {
-  		kind: 'MessageAny'
+  	let anon0: Message<Slice> = loadMessage<Slice>(slice, ((slice: Slice) => {
+  		return slice;
+  	}));
+	return {
+  		kind: 'MessageAny',
+		anon0: anon0
   	};
   }
 export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeMessage<Slice>(messageAny.anon0, ((arg: Slice) => {
+  			return ((builder: Builder) => {
+  				builder.storeSlice(arg);
+  			});
+  		}))(builder);
   	});
   }
 export type IntermediateAddress = IntermediateAddress_interm_addr_regular | IntermediateAddress_interm_addr_simple | IntermediateAddress_interm_addr_ext;
@@ -2079,15 +2091,18 @@ export function storeImportFees(importFees: ImportFees): (builder: Builder) => v
   }
 export type InMsgDescr = {
   	kind: 'InMsgDescr';
+	anon0: HashmapAugE<InMsg,ImportFees>;
   };
 export function loadInMsgDescr(slice: Slice): InMsgDescr {
-  	return {
-  		kind: 'InMsgDescr'
+  	let anon0: HashmapAugE<InMsg,ImportFees> = loadHashmapAugE<InMsg,ImportFees>(slice, 256, loadInMsg, loadImportFees);
+	return {
+  		kind: 'InMsgDescr',
+		anon0: anon0
   	};
   }
 export function storeInMsgDescr(inMsgDescr: InMsgDescr): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapAugE<InMsg,ImportFees>(inMsgDescr.anon0, storeInMsg, storeImportFees)(builder);
   	});
   }
 export type OutMsg = OutMsg_msg_export_ext | OutMsg_msg_export_imm | OutMsg_msg_export_new | OutMsg_msg_export_tr | OutMsg_msg_export_deq | OutMsg_msg_export_deq_short | OutMsg_msg_export_tr_req | OutMsg_msg_export_deq_imm;
@@ -2358,28 +2373,40 @@ export function storeEnqueuedMsg(enqueuedMsg: EnqueuedMsg): (builder: Builder) =
   }
 export type OutMsgDescr = {
   	kind: 'OutMsgDescr';
+	anon0: HashmapAugE<OutMsg,CurrencyCollection>;
   };
 export function loadOutMsgDescr(slice: Slice): OutMsgDescr {
-  	return {
-  		kind: 'OutMsgDescr'
+  	let anon0: HashmapAugE<OutMsg,CurrencyCollection> = loadHashmapAugE<OutMsg,CurrencyCollection>(slice, 256, loadOutMsg, loadCurrencyCollection);
+	return {
+  		kind: 'OutMsgDescr',
+		anon0: anon0
   	};
   }
 export function storeOutMsgDescr(outMsgDescr: OutMsgDescr): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapAugE<OutMsg,CurrencyCollection>(outMsgDescr.anon0, storeOutMsg, storeCurrencyCollection)(builder);
   	});
   }
 export type OutMsgQueue = {
   	kind: 'OutMsgQueue';
+	anon0: HashmapAugE<EnqueuedMsg,number>;
   };
 export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
-  	return {
-  		kind: 'OutMsgQueue'
+  	let anon0: HashmapAugE<EnqueuedMsg,number> = loadHashmapAugE<EnqueuedMsg,number>(slice, 352, loadEnqueuedMsg, ((slice: Slice) => {
+  		return slice.loadUint(64);
+  	}));
+	return {
+  		kind: 'OutMsgQueue',
+		anon0: anon0
   	};
   }
 export function storeOutMsgQueue(outMsgQueue: OutMsgQueue): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapAugE<EnqueuedMsg,number>(outMsgQueue.anon0, storeEnqueuedMsg, ((arg: number) => {
+  			return ((builder: Builder) => {
+  				builder.storeUint(arg, 64);
+  			});
+  		}))(builder);
   	});
   }
 export type ProcessedUpto = {
@@ -2404,15 +2431,18 @@ export function storeProcessedUpto(processedUpto: ProcessedUpto): (builder: Buil
   }
 export type ProcessedInfo = {
   	kind: 'ProcessedInfo';
+	anon0: HashmapE<ProcessedUpto>;
   };
 export function loadProcessedInfo(slice: Slice): ProcessedInfo {
-  	return {
-  		kind: 'ProcessedInfo'
+  	let anon0: HashmapE<ProcessedUpto> = loadHashmapE<ProcessedUpto>(slice, 96, loadProcessedUpto);
+	return {
+  		kind: 'ProcessedInfo',
+		anon0: anon0
   	};
   }
 export function storeProcessedInfo(processedInfo: ProcessedInfo): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapE<ProcessedUpto>(processedInfo.anon0, storeProcessedUpto)(builder);
   	});
   }
 export type IhrPendingSince = {
@@ -2433,15 +2463,18 @@ export function storeIhrPendingSince(ihrPendingSince: IhrPendingSince): (builder
   }
 export type IhrPendingInfo = {
   	kind: 'IhrPendingInfo';
+	anon0: HashmapE<IhrPendingSince>;
   };
 export function loadIhrPendingInfo(slice: Slice): IhrPendingInfo {
-  	return {
-  		kind: 'IhrPendingInfo'
+  	let anon0: HashmapE<IhrPendingSince> = loadHashmapE<IhrPendingSince>(slice, 320, loadIhrPendingSince);
+	return {
+  		kind: 'IhrPendingInfo',
+		anon0: anon0
   	};
   }
 export function storeIhrPendingInfo(ihrPendingInfo: IhrPendingInfo): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapE<IhrPendingSince>(ihrPendingInfo.anon0, storeIhrPendingSince)(builder);
   	});
   }
 export type OutMsgQueueInfo = {
@@ -2776,15 +2809,18 @@ export function storeDepthBalanceInfo(depthBalanceInfo: DepthBalanceInfo): (buil
   }
 export type ShardAccounts = {
   	kind: 'ShardAccounts';
+	anon0: HashmapAugE<ShardAccount,DepthBalanceInfo>;
   };
 export function loadShardAccounts(slice: Slice): ShardAccounts {
-  	return {
-  		kind: 'ShardAccounts'
+  	let anon0: HashmapAugE<ShardAccount,DepthBalanceInfo> = loadHashmapAugE<ShardAccount,DepthBalanceInfo>(slice, 256, loadShardAccount, loadDepthBalanceInfo);
+	return {
+  		kind: 'ShardAccounts',
+		anon0: anon0
   	};
   }
 export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapAugE<ShardAccount,DepthBalanceInfo>(shardAccounts.anon0, storeShardAccount, storeDepthBalanceInfo)(builder);
   	});
   }
 export type Transaction = {
@@ -3034,15 +3070,18 @@ export function storeAccountBlock(accountBlock: AccountBlock): (builder: Builder
   }
 export type ShardAccountBlocks = {
   	kind: 'ShardAccountBlocks';
+	anon0: HashmapAugE<AccountBlock,CurrencyCollection>;
   };
 export function loadShardAccountBlocks(slice: Slice): ShardAccountBlocks {
-  	return {
-  		kind: 'ShardAccountBlocks'
+  	let anon0: HashmapAugE<AccountBlock,CurrencyCollection> = loadHashmapAugE<AccountBlock,CurrencyCollection>(slice, 256, loadAccountBlock, loadCurrencyCollection);
+	return {
+  		kind: 'ShardAccountBlocks',
+		anon0: anon0
   	};
   }
 export function storeShardAccountBlocks(shardAccountBlocks: ShardAccountBlocks): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapAugE<AccountBlock,CurrencyCollection>(shardAccountBlocks.anon0, storeAccountBlock, storeCurrencyCollection)(builder);
   	});
   }
 export type TrStoragePhase = {
@@ -4230,6 +4269,7 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
 export type ShardState = ShardState__ | ShardState_split_state;
 export type ShardState__ = {
   	kind: 'ShardState__';
+	anon0: ShardStateUnsplit;
   };
 export type ShardState_split_state = {
   	kind: 'ShardState_split_state';
@@ -4238,8 +4278,10 @@ export type ShardState_split_state = {
   };
 export function loadShardState(slice: Slice): ShardState {
   	if (true) {
-  		return {
-  			kind: 'ShardState__'
+  		let anon0: ShardStateUnsplit = loadShardStateUnsplit(slice);
+		return {
+  			kind: 'ShardState__',
+			anon0: anon0
   		};
   	};
 	if ((slice.preloadUint(32) == 0x5f327da5)) {
@@ -4259,7 +4301,7 @@ export function loadShardState(slice: Slice): ShardState {
 export function storeShardState(shardState: ShardState): (builder: Builder) => void {
   	if ((shardState.kind == 'ShardState__')) {
   		return ((builder: Builder) => {
-  
+  			storeShardStateUnsplit(shardState.anon0)(builder);
   		});
   	};
 	if ((shardState.kind == 'ShardState_split_state')) {
@@ -4977,15 +5019,27 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
   }
 export type ShardHashes = {
   	kind: 'ShardHashes';
+	anon0: HashmapE<BinTree<ShardDescr>>;
   };
 export function loadShardHashes(slice: Slice): ShardHashes {
-  	return {
-  		kind: 'ShardHashes'
+  	let anon0: HashmapE<BinTree<ShardDescr>> = loadHashmapE<BinTree<ShardDescr>>(slice, 32, ((slice: Slice) => {
+  		let slice1 = slice.loadRef().beginParse();
+		return loadBinTree<ShardDescr>(slice1, loadShardDescr);
+  	}));
+	return {
+  		kind: 'ShardHashes',
+		anon0: anon0
   	};
   }
 export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapE<BinTree<ShardDescr>>(shardHashes.anon0, ((arg: BinTree<ShardDescr>) => {
+  			return ((builder: Builder) => {
+  				let cell1 = beginCell()
+				storeBinTree<ShardDescr>(arg, storeShardDescr)(cell1)
+				builder.storeRef(cell1);
+  			});
+  		}))(builder);
   	});
   }
 export type BinTreeAug<X,Y> = BinTreeAug_bta_leaf<X,Y> | BinTreeAug_bta_fork<X,Y>;
@@ -5071,15 +5125,18 @@ export function storeShardFeeCreated(shardFeeCreated: ShardFeeCreated): (builder
   }
 export type ShardFees = {
   	kind: 'ShardFees';
+	anon0: HashmapAugE<ShardFeeCreated,ShardFeeCreated>;
   };
 export function loadShardFees(slice: Slice): ShardFees {
-  	return {
-  		kind: 'ShardFees'
+  	let anon0: HashmapAugE<ShardFeeCreated,ShardFeeCreated> = loadHashmapAugE<ShardFeeCreated,ShardFeeCreated>(slice, 96, loadShardFeeCreated, loadShardFeeCreated);
+	return {
+  		kind: 'ShardFees',
+		anon0: anon0
   	};
   }
 export function storeShardFees(shardFees: ShardFees): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapAugE<ShardFeeCreated,ShardFeeCreated>(shardFees.anon0, storeShardFeeCreated, storeShardFeeCreated)(builder);
   	});
   }
 export type ConfigParams = {
@@ -5200,15 +5257,18 @@ export function storeKeyExtBlkRef(keyExtBlkRef: KeyExtBlkRef): (builder: Builder
   }
 export type OldMcBlocksInfo = {
   	kind: 'OldMcBlocksInfo';
+	anon0: HashmapAugE<KeyExtBlkRef,KeyMaxLt>;
   };
 export function loadOldMcBlocksInfo(slice: Slice): OldMcBlocksInfo {
-  	return {
-  		kind: 'OldMcBlocksInfo'
+  	let anon0: HashmapAugE<KeyExtBlkRef,KeyMaxLt> = loadHashmapAugE<KeyExtBlkRef,KeyMaxLt>(slice, 32, loadKeyExtBlkRef, loadKeyMaxLt);
+	return {
+  		kind: 'OldMcBlocksInfo',
+		anon0: anon0
   	};
   }
 export function storeOldMcBlocksInfo(oldMcBlocksInfo: OldMcBlocksInfo): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapAugE<KeyExtBlkRef,KeyMaxLt>(oldMcBlocksInfo.anon0, storeKeyExtBlkRef, storeKeyMaxLt)(builder);
   	});
   }
 export type Counters = {
@@ -5420,6 +5480,7 @@ export function storeCryptoSignatureSimple(cryptoSignatureSimple: CryptoSignatur
 export type CryptoSignature = CryptoSignature__ | CryptoSignature_chained_signature;
 export type CryptoSignature__ = {
   	kind: 'CryptoSignature__';
+	anon0: CryptoSignatureSimple;
   };
 export type CryptoSignature_chained_signature = {
   	kind: 'CryptoSignature_chained_signature';
@@ -5428,8 +5489,10 @@ export type CryptoSignature_chained_signature = {
   };
 export function loadCryptoSignature(slice: Slice): CryptoSignature {
   	if (true) {
-  		return {
-  			kind: 'CryptoSignature__'
+  		let anon0: CryptoSignatureSimple = loadCryptoSignatureSimple(slice);
+		return {
+  			kind: 'CryptoSignature__',
+			anon0: anon0
   		};
   	};
 	if ((slice.preloadUint(4) == 0xf)) {
@@ -5448,7 +5511,7 @@ export function loadCryptoSignature(slice: Slice): CryptoSignature {
 export function storeCryptoSignature(cryptoSignature: CryptoSignature): (builder: Builder) => void {
   	if ((cryptoSignature.kind == 'CryptoSignature__')) {
   		return ((builder: Builder) => {
-  
+  			storeCryptoSignatureSimple(cryptoSignature.anon0)(builder);
   		});
   	};
 	if ((cryptoSignature.kind == 'CryptoSignature_chained_signature')) {
@@ -5810,6 +5873,7 @@ export type ConfigParam__6 = {
   };
 export type ConfigParam__7 = {
   	kind: 'ConfigParam__7';
+	anon0: GlobalVersion;
   };
 export type ConfigParam__8 = {
   	kind: 'ConfigParam__8';
@@ -5821,6 +5885,7 @@ export type ConfigParam__9 = {
   };
 export type ConfigParam__10 = {
   	kind: 'ConfigParam__10';
+	anon0: ConfigVotingSetup;
   };
 export type ConfigParam__11 = {
   	kind: 'ConfigParam__11';
@@ -5828,9 +5893,11 @@ export type ConfigParam__11 = {
   };
 export type ConfigParam__12 = {
   	kind: 'ConfigParam__12';
+	anon0: ComplaintPricing;
   };
 export type ConfigParam__13 = {
   	kind: 'ConfigParam__13';
+	anon0: BlockCreateFees;
   };
 export type ConfigParam__14 = {
   	kind: 'ConfigParam__14';
@@ -5854,30 +5921,39 @@ export type ConfigParam__16 = {
   };
 export type ConfigParam__17 = {
   	kind: 'ConfigParam__17';
+	anon0: Hashmap<StoragePrices>;
   };
 export type ConfigParam_config_mc_gas_prices = {
   	kind: 'ConfigParam_config_mc_gas_prices';
+	anon0: GasLimitsPrices;
   };
 export type ConfigParam_config_gas_prices = {
   	kind: 'ConfigParam_config_gas_prices';
+	anon0: GasLimitsPrices;
   };
 export type ConfigParam_config_mc_block_limits = {
   	kind: 'ConfigParam_config_mc_block_limits';
+	anon0: BlockLimits;
   };
 export type ConfigParam_config_block_limits = {
   	kind: 'ConfigParam_config_block_limits';
+	anon0: BlockLimits;
   };
 export type ConfigParam_config_mc_fwd_prices = {
   	kind: 'ConfigParam_config_mc_fwd_prices';
+	anon0: MsgForwardPrices;
   };
 export type ConfigParam_config_fwd_prices = {
   	kind: 'ConfigParam_config_fwd_prices';
+	anon0: MsgForwardPrices;
   };
 export type ConfigParam__24 = {
   	kind: 'ConfigParam__24';
+	anon0: CatchainConfig;
   };
 export type ConfigParam__25 = {
   	kind: 'ConfigParam__25';
+	anon0: ConsensusConfig;
   };
 export type ConfigParam__26 = {
   	kind: 'ConfigParam__26';
@@ -5909,18 +5985,23 @@ export type ConfigParam__32 = {
   };
 export type ConfigParam__33 = {
   	kind: 'ConfigParam__33';
+	anon0: HashmapE<ValidatorSignedTempKey>;
   };
 export type ConfigParam__34 = {
   	kind: 'ConfigParam__34';
+	anon0: MisbehaviourPunishmentConfig;
   };
 export type ConfigParam__35 = {
   	kind: 'ConfigParam__35';
+	anon0: OracleBridgeParams;
   };
 export type ConfigParam__36 = {
   	kind: 'ConfigParam__36';
+	anon0: OracleBridgeParams;
   };
 export type ConfigParam__37 = {
   	kind: 'ConfigParam__37';
+	anon0: OracleBridgeParams;
   };
 export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   	if ((arg0 == 0)) {
@@ -5975,8 +6056,10 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   		};
   	};
 	if ((arg0 == 8)) {
-  		return {
-  			kind: 'ConfigParam__7'
+  		let anon0: GlobalVersion = loadGlobalVersion(slice);
+		return {
+  			kind: 'ConfigParam__7',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 9)) {
@@ -5994,8 +6077,10 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   		};
   	};
 	if ((arg0 == 11)) {
-  		return {
-  			kind: 'ConfigParam__10'
+  		let anon0: ConfigVotingSetup = loadConfigVotingSetup(slice);
+		return {
+  			kind: 'ConfigParam__10',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 12)) {
@@ -6006,13 +6091,17 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   		};
   	};
 	if ((arg0 == 13)) {
-  		return {
-  			kind: 'ConfigParam__12'
+  		let anon0: ComplaintPricing = loadComplaintPricing(slice);
+		return {
+  			kind: 'ConfigParam__12',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 14)) {
-  		return {
-  			kind: 'ConfigParam__13'
+  		let anon0: BlockCreateFees = loadBlockCreateFees(slice);
+		return {
+  			kind: 'ConfigParam__13',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 15)) {
@@ -6062,48 +6151,66 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   		};
   	};
 	if ((arg0 == 18)) {
-  		return {
-  			kind: 'ConfigParam__17'
+  		let anon0: Hashmap<StoragePrices> = loadHashmap<StoragePrices>(slice, 32, loadStoragePrices);
+		return {
+  			kind: 'ConfigParam__17',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 20)) {
-  		return {
-  			kind: 'ConfigParam_config_mc_gas_prices'
+  		let anon0: GasLimitsPrices = loadGasLimitsPrices(slice);
+		return {
+  			kind: 'ConfigParam_config_mc_gas_prices',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 21)) {
-  		return {
-  			kind: 'ConfigParam_config_gas_prices'
+  		let anon0: GasLimitsPrices = loadGasLimitsPrices(slice);
+		return {
+  			kind: 'ConfigParam_config_gas_prices',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 22)) {
-  		return {
-  			kind: 'ConfigParam_config_mc_block_limits'
+  		let anon0: BlockLimits = loadBlockLimits(slice);
+		return {
+  			kind: 'ConfigParam_config_mc_block_limits',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 23)) {
-  		return {
-  			kind: 'ConfigParam_config_block_limits'
+  		let anon0: BlockLimits = loadBlockLimits(slice);
+		return {
+  			kind: 'ConfigParam_config_block_limits',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 24)) {
-  		return {
-  			kind: 'ConfigParam_config_mc_fwd_prices'
+  		let anon0: MsgForwardPrices = loadMsgForwardPrices(slice);
+		return {
+  			kind: 'ConfigParam_config_mc_fwd_prices',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 25)) {
-  		return {
-  			kind: 'ConfigParam_config_fwd_prices'
+  		let anon0: MsgForwardPrices = loadMsgForwardPrices(slice);
+		return {
+  			kind: 'ConfigParam_config_fwd_prices',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 28)) {
-  		return {
-  			kind: 'ConfigParam__24'
+  		let anon0: CatchainConfig = loadCatchainConfig(slice);
+		return {
+  			kind: 'ConfigParam__24',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 29)) {
-  		return {
-  			kind: 'ConfigParam__25'
+  		let anon0: ConsensusConfig = loadConsensusConfig(slice);
+		return {
+  			kind: 'ConfigParam__25',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 31)) {
@@ -6156,28 +6263,38 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
   		};
   	};
 	if ((arg0 == 39)) {
-  		return {
-  			kind: 'ConfigParam__33'
+  		let anon0: HashmapE<ValidatorSignedTempKey> = loadHashmapE<ValidatorSignedTempKey>(slice, 256, loadValidatorSignedTempKey);
+		return {
+  			kind: 'ConfigParam__33',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 40)) {
-  		return {
-  			kind: 'ConfigParam__34'
+  		let anon0: MisbehaviourPunishmentConfig = loadMisbehaviourPunishmentConfig(slice);
+		return {
+  			kind: 'ConfigParam__34',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 71)) {
-  		return {
-  			kind: 'ConfigParam__35'
+  		let anon0: OracleBridgeParams = loadOracleBridgeParams(slice);
+		return {
+  			kind: 'ConfigParam__35',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 72)) {
-  		return {
-  			kind: 'ConfigParam__36'
+  		let anon0: OracleBridgeParams = loadOracleBridgeParams(slice);
+		return {
+  			kind: 'ConfigParam__36',
+			anon0: anon0
   		};
   	};
 	if ((arg0 == 73)) {
-  		return {
-  			kind: 'ConfigParam__37'
+  		let anon0: OracleBridgeParams = loadOracleBridgeParams(slice);
+		return {
+  			kind: 'ConfigParam__37',
+			anon0: anon0
   		};
   	};
 	throw new Error('');
@@ -6221,7 +6338,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   	};
 	if ((configParam.kind == 'ConfigParam__7')) {
   		return ((builder: Builder) => {
-  
+  			storeGlobalVersion(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__8')) {
@@ -6236,7 +6353,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   	};
 	if ((configParam.kind == 'ConfigParam__10')) {
   		return ((builder: Builder) => {
-  
+  			storeConfigVotingSetup(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__11')) {
@@ -6246,12 +6363,12 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   	};
 	if ((configParam.kind == 'ConfigParam__12')) {
   		return ((builder: Builder) => {
-  
+  			storeComplaintPricing(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__13')) {
   		return ((builder: Builder) => {
-  
+  			storeBlockCreateFees(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__14')) {
@@ -6288,47 +6405,47 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   	};
 	if ((configParam.kind == 'ConfigParam__17')) {
   		return ((builder: Builder) => {
-  
+  			storeHashmap<StoragePrices>(configParam.anon0, storeStoragePrices)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_mc_gas_prices')) {
   		return ((builder: Builder) => {
-  
+  			storeGasLimitsPrices(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_gas_prices')) {
   		return ((builder: Builder) => {
-  
+  			storeGasLimitsPrices(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_mc_block_limits')) {
   		return ((builder: Builder) => {
-  
+  			storeBlockLimits(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_block_limits')) {
   		return ((builder: Builder) => {
-  
+  			storeBlockLimits(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_mc_fwd_prices')) {
   		return ((builder: Builder) => {
-  
+  			storeMsgForwardPrices(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam_config_fwd_prices')) {
   		return ((builder: Builder) => {
-  
+  			storeMsgForwardPrices(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__24')) {
   		return ((builder: Builder) => {
-  
+  			storeCatchainConfig(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__25')) {
   		return ((builder: Builder) => {
-  
+  			storeConsensusConfig(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__26')) {
@@ -6368,27 +6485,27 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   	};
 	if ((configParam.kind == 'ConfigParam__33')) {
   		return ((builder: Builder) => {
-  
+  			storeHashmapE<ValidatorSignedTempKey>(configParam.anon0, storeValidatorSignedTempKey)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__34')) {
   		return ((builder: Builder) => {
-  
+  			storeMisbehaviourPunishmentConfig(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__35')) {
   		return ((builder: Builder) => {
-  
+  			storeOracleBridgeParams(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__36')) {
   		return ((builder: Builder) => {
-  
+  			storeOracleBridgeParams(configParam.anon0)(builder);
   		});
   	};
 	if ((configParam.kind == 'ConfigParam__37')) {
   		return ((builder: Builder) => {
-  
+  			storeOracleBridgeParams(configParam.anon0)(builder);
   		});
   	};
 	throw new Error('');
@@ -8004,6 +8121,7 @@ export type VmStackValue_vm_stk_tinyint = {
   };
 export type VmStackValue_vm_stk_int = {
   	kind: 'VmStackValue_vm_stk_int';
+	anon0: _;
 	value: number;
   };
 export type VmStackValue_vm_stk_nan = {
@@ -8047,9 +8165,11 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
   	};
 	if ((slice.preloadUint(16) == 0x0201)) {
   		slice.loadUint(16);
+		let anon0: _ = load_(slice);
 		let value: number = slice.loadInt(257);
 		return {
   			kind: 'VmStackValue_vm_stk_int',
+			anon0: anon0,
 			value: value
   		};
   	};
@@ -8120,6 +8240,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
 	if ((vmStackValue.kind == 'VmStackValue_vm_stk_int')) {
   		return ((builder: Builder) => {
   			builder.storeUint(0x0201, 16);
+			store_(vmStackValue.anon0)(builder);
 			builder.storeInt(vmStackValue.value, 257);
   		});
   	};
@@ -8758,15 +8879,18 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
   }
 export type DNS_RecordSet = {
   	kind: 'DNS_RecordSet';
+	anon0: HashmapE<DNSRecord>;
   };
 export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
-  	return {
-  		kind: 'DNS_RecordSet'
+  	let anon0: HashmapE<DNSRecord> = loadHashmapE<DNSRecord>(slice, 256, loadDNSRecord);
+	return {
+  		kind: 'DNS_RecordSet',
+		anon0: anon0
   	};
   }
 export function storeDNS_RecordSet(dNS_RecordSet: DNS_RecordSet): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  
+  		storeHashmapE<DNSRecord>(dNS_RecordSet.anon0, storeDNSRecord)(builder);
   	});
   }
 export type TextChunkRef = TextChunkRef_chunk_ref | TextChunkRef_chunk_ref_empty;

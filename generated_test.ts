@@ -1682,3 +1682,19 @@ export function storeLoadFromNegationOutsideExpr(loadFromNegationOutsideExpr: Lo
 		builder.storeUint(loadFromNegationOutsideExpr.seq_no, 32);
   	});
   }
+export type AnonymousData = {
+  	kind: 'AnonymousData';
+	anon0: number;
+  };
+export function loadAnonymousData(slice: Slice): AnonymousData {
+  	let anon0: number = slice.loadUint(1);
+	return {
+  		kind: 'AnonymousData',
+		anon0: anon0
+  	};
+  }
+export function storeAnonymousData(anonymousData: AnonymousData): (builder: Builder) => void {
+  	return ((builder: Builder) => {
+  		builder.storeUint(anonymousData.anon0, 1);
+  	});
+  }

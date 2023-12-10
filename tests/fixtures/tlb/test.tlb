@@ -109,3 +109,5 @@ a$_ n:# { 5 + n = 7 } = EqualityExpression;
 a$_ x:(## 1) y:x?^Simple = ConditionalRef;
 
 block_info#9bc7a987 seq_no:# { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no } = LoadFromNegationOutsideExpr;
+
+bit$_ (## 1) = AnonymousData;
