@@ -21,7 +21,8 @@ export function convertToMathExpr(mathExpr: SimpleExpr | NameExpr | NumberExpr |
     if (mathExpr instanceof CompareExpr) {
         let left = convertToMathExpr(mathExpr.left);
         let right = convertToMathExpr(mathExpr.right);
-        return new TLBBinaryOp(left, right, mathExpr.op, new Set(...left.variables, ...right.variables), left.hasNeg || right.hasNeg)
+        let operation: string = mathExpr.op;
+        return new TLBBinaryOp(left, right, operation, new Set(...left.variables, ...right.variables), left.hasNeg || right.hasNeg)
     }
     if (mathExpr instanceof NegateExpr) {
         if (mathExpr.expr instanceof MathExpr || mathExpr.expr instanceof NameExpr || mathExpr.expr instanceof NumberExpr) {
@@ -54,7 +55,11 @@ export function convertToAST(mathExpr: TLBMathExpr, constructor: TLBConstructor,
         return tNumericLiteral(mathExpr.n)
     }
     if (mathExpr instanceof TLBBinaryOp) {
-        return tBinaryExpression(convertToAST(mathExpr.left, constructor, calculate, objectId), mathExpr.operation, convertToAST(mathExpr.right, constructor, calculate, objectId));
+        let operation: string = mathExpr.operation;
+        if (operation == '=') {
+            operation = '=='
+        }
+        return tBinaryExpression(convertToAST(mathExpr.left, constructor, calculate, objectId), operation, convertToAST(mathExpr.right, constructor, calculate, objectId));
     }
     return tIdentifier('');
 }

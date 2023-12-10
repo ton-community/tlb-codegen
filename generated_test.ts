@@ -1610,3 +1610,25 @@ export function storeRefCombinatorAny(refCombinatorAny: RefCombinatorAny): (buil
 		builder.storeRef(cell1);
   	};
   }
+export type EqualityExpression = {
+  	kind: 'EqualityExpression';
+	n: number;
+  };
+export function loadEqualityExpression(slice: Slice): EqualityExpression {
+  	let n: number = slice.loadUint(32);
+	if ((!((5 + n) == 7))) {
+  		throw new Error('');
+  	};
+	return {
+  		kind: 'EqualityExpression',
+		n: n
+  	};
+  }
+export function storeEqualityExpression(equalityExpression: EqualityExpression): (builder: Builder) => void {
+  	return (builder: Builder) => {
+  		builder.storeUint(equalityExpression.n, 32);
+		if ((!((5 + equalityExpression.n) == 7))) {
+  			throw new Error('');
+  		};
+  	};
+  }

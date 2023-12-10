@@ -4371,7 +4371,7 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
 		if ((!(vert_seq_no >= vert_seqno_incr))) {
   			throw new Error('');
   		};
-		if ((!((prev_seq_no + 1) = seq_no))) {
+		if ((!((prev_seq_no + 1) == seq_no))) {
   			throw new Error('');
   		};
 		return {
@@ -4449,7 +4449,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
 		if ((!(blockInfo.vert_seq_no >= blockInfo.vert_seqno_incr))) {
   			throw new Error('');
   		};
-		if ((!((blockInfo.prev_seq_no + 1) = blockInfo.seq_no))) {
+		if ((!((blockInfo.prev_seq_no + 1) == blockInfo.seq_no))) {
   			throw new Error('');
   		};
   	};
@@ -4845,7 +4845,7 @@ export function loadShardDescr(slice: Slice): ShardDescr {
 		let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice);
 		let fees_collected: CurrencyCollection = loadCurrencyCollection(slice);
 		let funds_created: CurrencyCollection = loadCurrencyCollection(slice);
-		if ((!(flags = 0))) {
+		if ((!(flags == 0))) {
   			throw new Error('');
   		};
 		return {
@@ -4893,7 +4893,7 @@ export function loadShardDescr(slice: Slice): ShardDescr {
 		let slice1 = slice.loadRef().beginParse();
 		let fees_collected: CurrencyCollection = loadCurrencyCollection(slice1);
 		let funds_created: CurrencyCollection = loadCurrencyCollection(slice1);
-		if ((!(flags = 0))) {
+		if ((!(flags == 0))) {
   			throw new Error('');
   		};
 		return {
@@ -4944,7 +4944,7 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
 			storeFutureSplitMerge(shardDescr.split_merge_at)(builder);
 			storeCurrencyCollection(shardDescr.fees_collected)(builder);
 			storeCurrencyCollection(shardDescr.funds_created)(builder);
-			if ((!(shardDescr.flags = 0))) {
+			if ((!(shardDescr.flags == 0))) {
   				throw new Error('');
   			};
   		};
@@ -4973,7 +4973,7 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
 			storeCurrencyCollection(shardDescr.fees_collected)(cell1);
 			storeCurrencyCollection(shardDescr.funds_created)(cell1);
 			builder.storeRef(cell1);
-			if ((!(shardDescr.flags = 0))) {
+			if ((!(shardDescr.flags == 0))) {
   				throw new Error('');
   			};
   		};
@@ -6721,7 +6721,7 @@ export function loadWorkchainDescr(slice: Slice): WorkchainDescr {
 		if ((!(actual_min_split <= min_split))) {
   			throw new Error('');
   		};
-		if ((!(flags = 0))) {
+		if ((!(flags == 0))) {
   			throw new Error('');
   		};
 		return {
@@ -6760,7 +6760,7 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
 		if ((!(workchainDescr.actual_min_split <= workchainDescr.min_split))) {
   			throw new Error('');
   		};
-		if ((!(workchainDescr.flags = 0))) {
+		if ((!(workchainDescr.flags == 0))) {
   			throw new Error('');
   		};
   	};
@@ -7120,7 +7120,7 @@ export function loadCatchainConfig(slice: Slice): CatchainConfig {
 		let shard_catchain_lifetime: number = slice.loadUint(32);
 		let shard_validators_lifetime: number = slice.loadUint(32);
 		let shard_validators_num: number = slice.loadUint(32);
-		if ((!(flags = 0))) {
+		if ((!(flags == 0))) {
   			throw new Error('');
   		};
 		return {
@@ -7154,7 +7154,7 @@ export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: B
 			builder.storeUint(catchainConfig.shard_catchain_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_validators_lifetime, 32);
 			builder.storeUint(catchainConfig.shard_validators_num, 32);
-			if ((!(catchainConfig.flags = 0))) {
+			if ((!(catchainConfig.flags == 0))) {
   				throw new Error('');
   			};
   		};
@@ -7253,7 +7253,7 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 		let catchain_max_deps: number = slice.loadUint(32);
 		let max_block_bytes: number = slice.loadUint(32);
 		let max_collated_bytes: number = slice.loadUint(32);
-		if ((!(flags = 0))) {
+		if ((!(flags == 0))) {
   			throw new Error('');
   		};
 		if ((!(round_candidates >= 1))) {
@@ -7286,7 +7286,7 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 		let max_block_bytes: number = slice.loadUint(32);
 		let max_collated_bytes: number = slice.loadUint(32);
 		let proto_version: number = slice.loadUint(16);
-		if ((!(flags = 0))) {
+		if ((!(flags == 0))) {
   			throw new Error('');
   		};
 		if ((!(round_candidates >= 1))) {
@@ -7321,7 +7321,7 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
 		let max_collated_bytes: number = slice.loadUint(32);
 		let proto_version: number = slice.loadUint(16);
 		let catchain_max_blocks_coeff: number = slice.loadUint(32);
-		if ((!(flags = 0))) {
+		if ((!(flags == 0))) {
   			throw new Error('');
   		};
 		if ((!(round_candidates >= 1))) {
@@ -7375,7 +7375,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			builder.storeUint(consensusConfig.catchain_max_deps, 32);
 			builder.storeUint(consensusConfig.max_block_bytes, 32);
 			builder.storeUint(consensusConfig.max_collated_bytes, 32);
-			if ((!(consensusConfig.flags = 0))) {
+			if ((!(consensusConfig.flags == 0))) {
   				throw new Error('');
   			};
 			if ((!(consensusConfig.round_candidates >= 1))) {
@@ -7397,7 +7397,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			builder.storeUint(consensusConfig.max_block_bytes, 32);
 			builder.storeUint(consensusConfig.max_collated_bytes, 32);
 			builder.storeUint(consensusConfig.proto_version, 16);
-			if ((!(consensusConfig.flags = 0))) {
+			if ((!(consensusConfig.flags == 0))) {
   				throw new Error('');
   			};
 			if ((!(consensusConfig.round_candidates >= 1))) {
@@ -7420,7 +7420,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 			builder.storeUint(consensusConfig.max_collated_bytes, 32);
 			builder.storeUint(consensusConfig.proto_version, 16);
 			builder.storeUint(consensusConfig.catchain_max_blocks_coeff, 32);
-			if ((!(consensusConfig.flags = 0))) {
+			if ((!(consensusConfig.flags == 0))) {
   				throw new Error('');
   			};
 			if ((!(consensusConfig.round_candidates >= 1))) {

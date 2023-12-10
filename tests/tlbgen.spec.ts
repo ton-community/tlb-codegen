@@ -8,7 +8,7 @@ import { generate } from '../src/codegen/main'
 import { Program } from '../src/ast/nodes'
 import { BitString, Slice, Builder } from 'ton'
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag, TupleCheck, loadTupleCheck, storeTupleCheck, HashmapE, loadHashmapE, storeHashmapE, HashmapEUser, loadHashmapEUser, storeHashmapEUser, ConditionalField, loadConditionalField, storeConditionalField, BitSelection, loadBitSelection, storeBitSelection, ImplicitCondition, loadImplicitCondition, storeImplicitCondition, MultipleEmptyConstructor, loadMultipleEmptyConstructor, storeMultipleEmptyConstructor, True, loadTrue, storeTrue, ParamNamedArgInSecondConstr, loadParamNamedArgInSecondConstr, storeParamNamedArgInSecondConstr, RefCombinatorAny, loadRefCombinatorAny, storeRefCombinatorAny } from '../generated_test'
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag, TupleCheck, loadTupleCheck, storeTupleCheck, HashmapE, loadHashmapE, storeHashmapE, HashmapEUser, loadHashmapEUser, storeHashmapEUser, ConditionalField, loadConditionalField, storeConditionalField, BitSelection, loadBitSelection, storeBitSelection, ImplicitCondition, loadImplicitCondition, storeImplicitCondition, MultipleEmptyConstructor, loadMultipleEmptyConstructor, storeMultipleEmptyConstructor, True, loadTrue, storeTrue, ParamNamedArgInSecondConstr, loadParamNamedArgInSecondConstr, storeParamNamedArgInSecondConstr, RefCombinatorAny, loadRefCombinatorAny, storeRefCombinatorAny, EqualityExpression, loadEqualityExpression, storeEqualityExpression } from '../generated_test'
 import { beginCell } from 'ton'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
@@ -180,6 +180,8 @@ describe('Generating tlb code', () => {
     })
 
     test('Exceptions', () => {
+        expect.hasAssertions()
+
         let implicitConditionIncorrect: ImplicitCondition = {kind: 'ImplicitCondition', flags: 200}
         checkThrowOnStoreLoad(implicitConditionIncorrect, loadImplicitCondition, storeImplicitCondition);
 
@@ -193,6 +195,12 @@ describe('Generating tlb code', () => {
 
         let implicitConditionCell = beginCell().storeUint(100, 10).endCell().beginParse();
         expect(loadImplicitCondition(implicitConditionCell).flags == 100).toBeTruthy()
+
+        let equalityExpression: EqualityExpression = {kind: 'EqualityExpression', n: 2}
+        checkSameOnStoreLoad(equalityExpression, loadEqualityExpression, storeEqualityExpression);
+
+        let equalityExpressionIncorrect: EqualityExpression = {kind: 'EqualityExpression', n: 3}
+        checkThrowOnStoreLoad(equalityExpressionIncorrect, loadEqualityExpression, storeEqualityExpression);
     })
 
     test('Hashmap', () => {

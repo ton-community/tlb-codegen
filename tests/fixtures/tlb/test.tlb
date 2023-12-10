@@ -103,3 +103,5 @@ a$0 {n:#} = ParamNamedArgInSecondConstr n;
 b$1 {n:#} = ParamNamedArgInSecondConstr (n + 1);
 
 a$_ msg:^(Maybe Any) = RefCombinatorAny;
+
+a$_ n:# { 5 + n = 7 } = EqualityExpression;
