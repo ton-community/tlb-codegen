@@ -281,10 +281,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       result.loadFunctionExpr = result.loadExpr
     }
   }
-  console.log('there')
   if (result.storeExpr && !result.storeFunctionExpr) {
     if (!storeExpr2) {
-      console.log('here')
       storeExpr2 = result.storeExpr
     }
     if (result.typeParamExpr) {
@@ -299,14 +297,6 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
   }
 
   result.storeExpr2 = storeExpr2
-
-  if (result.storeFunctionExpr && result.storeExpr && storeExpr2) {
-    console.log('log all')
-    console.log(toCode(result.storeFunctionExpr, {tabs: 0}))
-    console.log(toCode(result.storeExpr, {tabs: 0}))
-    console.log(toCode(storeExpr2, {tabs: 0}))
-    console.log(expr)
-  }
 
   return result;
 }
