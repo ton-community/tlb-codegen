@@ -47,7 +47,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
       throw new Error('Expression not supported' + expr)
     }
   } else if (expr instanceof BuiltinOneArgExpr) {
-    if (expr.name == '##') {
+    if (expr.name.toString() == '##' || expr.name.toString() == '(##)') {
       if (expr.arg instanceof NumberExpr) {
         exprForParam = {argLoadExpr: tNumericLiteral(expr.arg.num), argStoreExpr: tNumericLiteral(expr.arg.num), paramType: 'number', fieldLoadStoreSuffix: 'Uint'}
       }

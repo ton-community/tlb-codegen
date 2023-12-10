@@ -39,7 +39,6 @@ export function generate(tree: Program) {
     let structTypeParametersExpr: TypeParametersExpression = tTypeParametersExpression([]);
 
     tlbType.constructors.forEach(constructor => {
-
       let constructorLoadStatements: Statement[] = []
       let declaration = constructor.declaration;
       let subStructName: string = getSubStructName(tlbType, constructor);

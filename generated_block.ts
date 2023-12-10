@@ -5685,6 +5685,7 @@ export type ValidatorSet_validators = {
   	kind: 'ValidatorSet_validators';
 	utime_since: number;
 	utime_until: number;
+	total: number;
 	main: number;
 	list: Hashmap<ValidatorDescr>;
   };
@@ -5702,6 +5703,7 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
   		slice.loadUint(8);
 		let utime_since: number = slice.loadUint(32);
 		let utime_until: number = slice.loadUint(32);
+		let total: number = slice.loadUint(16);
 		let main: number = slice.loadUint(16);
 		let list: Hashmap<ValidatorDescr> = loadHashmap<ValidatorDescr>(slice, 16, loadValidatorDescr);
 		if ((!(main <= total))) {
@@ -5714,6 +5716,7 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
   			kind: 'ValidatorSet_validators',
 			utime_since: utime_since,
 			utime_until: utime_until,
+			total: total,
 			main: main,
 			list: list
   		};
@@ -5750,6 +5753,7 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
   			builder.storeUint(0x11, 8);
 			builder.storeUint(validatorSet.utime_since, 32);
 			builder.storeUint(validatorSet.utime_until, 32);
+			builder.storeUint(validatorSet.total, 16);
 			builder.storeUint(validatorSet.main, 16);
 			storeHashmap<ValidatorDescr>(validatorSet.list, storeValidatorDescr)(builder);
 			if ((!(validatorSet.main <= validatorSet.total))) {
