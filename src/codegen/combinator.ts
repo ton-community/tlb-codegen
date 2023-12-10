@@ -116,9 +116,6 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
           loadFunctionsArray.push(subExprInfo.loadFunctionExpr);
         }
         if (subExprInfo.storeFunctionExpr && subExprInfo.typeParamExpr) {
-            if (subExprInfo.storeFunctionExpr.type == 'ExpressionStatement' && subExprInfo.storeFunctionExpr.expression.type == 'FunctionCall' || subExprInfo.storeFunctionExpr.type == 'MultiStatement') {
-              subExprInfo.storeFunctionExpr = tExpressionStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [subExprInfo.storeFunctionExpr]))]))
-            }
             if (subExprInfo.storeFunctionExpr.type == 'ExpressionStatement') {
               storeFunctionsArray.push(subExprInfo.storeFunctionExpr.expression); 
             }
@@ -271,8 +268,14 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
 
   if (result.storeExpr && !result.storeFunctionExpr) {
     result.storeFunctionExpr = result.storeExpr;
-  }
 
+    if (result.typeParamExpr) {
+      if (result.storeFunctionExpr.type == 'ExpressionStatement' && result.storeFunctionExpr.expression.type == 'FunctionCall' || result.storeFunctionExpr.type == 'MultiStatement') {
+        result.storeFunctionExpr = tExpressionStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), result.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [result.storeFunctionExpr]))]))
+      }
+    }
+    
+  }
 
   return result;
 }
