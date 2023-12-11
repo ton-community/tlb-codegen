@@ -113,3 +113,6 @@ block_info#9bc7a987 seq_no:# { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no } = L
 bit$_ (## 1) = AnonymousData;
 
 vm_stk_int#0201_ value:int257 = FalseAnonField;
+
+_ Simple = ConstructorOrder;
+a$0 a:Simple = ConstructorOrder;

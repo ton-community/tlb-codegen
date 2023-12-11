@@ -4266,25 +4266,18 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
   		}))(builder);
   	});
   }
-export type ShardState = ShardState__ | ShardState_split_state;
-export type ShardState__ = {
-  	kind: 'ShardState__';
-	anon0: ShardStateUnsplit;
-  };
+export type ShardState = ShardState_split_state | ShardState__;
 export type ShardState_split_state = {
   	kind: 'ShardState_split_state';
 	left: ShardStateUnsplit;
 	right: ShardStateUnsplit;
   };
+export type ShardState__ = {
+  	kind: 'ShardState__';
+	anon0: ShardStateUnsplit;
+  };
 export function loadShardState(slice: Slice): ShardState {
-  	if (true) {
-  		let anon0: ShardStateUnsplit = loadShardStateUnsplit(slice);
-		return {
-  			kind: 'ShardState__',
-			anon0: anon0
-  		};
-  	};
-	if ((slice.preloadUint(32) == 0x5f327da5)) {
+  	if ((slice.preloadUint(32) == 0x5f327da5)) {
   		slice.loadUint(32);
 		let slice1 = slice.loadRef().beginParse();
 		let left: ShardStateUnsplit = loadShardStateUnsplit(slice1);
@@ -4296,15 +4289,17 @@ export function loadShardState(slice: Slice): ShardState {
 			right: right
   		};
   	};
+	if (true) {
+  		let anon0: ShardStateUnsplit = loadShardStateUnsplit(slice);
+		return {
+  			kind: 'ShardState__',
+			anon0: anon0
+  		};
+  	};
 	throw new Error('');
   }
 export function storeShardState(shardState: ShardState): (builder: Builder) => void {
-  	if ((shardState.kind == 'ShardState__')) {
-  		return ((builder: Builder) => {
-  			storeShardStateUnsplit(shardState.anon0)(builder);
-  		});
-  	};
-	if ((shardState.kind == 'ShardState_split_state')) {
+  	if ((shardState.kind == 'ShardState_split_state')) {
   		return ((builder: Builder) => {
   			builder.storeUint(0x5f327da5, 32);
 			let cell1 = beginCell();
@@ -4313,6 +4308,11 @@ export function storeShardState(shardState: ShardState): (builder: Builder) => v
 			let cell2 = beginCell();
 			storeShardStateUnsplit(shardState.right)(cell2);
 			builder.storeRef(cell2);
+  		});
+  	};
+	if ((shardState.kind == 'ShardState__')) {
+  		return ((builder: Builder) => {
+  			storeShardStateUnsplit(shardState.anon0)(builder);
   		});
   	};
 	throw new Error('');
@@ -5477,25 +5477,18 @@ export function storeCryptoSignatureSimple(cryptoSignatureSimple: CryptoSignatur
 		builder.storeBits(cryptoSignatureSimple.s);
   	});
   }
-export type CryptoSignature = CryptoSignature__ | CryptoSignature_chained_signature;
-export type CryptoSignature__ = {
-  	kind: 'CryptoSignature__';
-	anon0: CryptoSignatureSimple;
-  };
+export type CryptoSignature = CryptoSignature_chained_signature | CryptoSignature__;
 export type CryptoSignature_chained_signature = {
   	kind: 'CryptoSignature_chained_signature';
 	signed_cert: SignedCertificate;
 	temp_key_signature: CryptoSignatureSimple;
   };
+export type CryptoSignature__ = {
+  	kind: 'CryptoSignature__';
+	anon0: CryptoSignatureSimple;
+  };
 export function loadCryptoSignature(slice: Slice): CryptoSignature {
-  	if (true) {
-  		let anon0: CryptoSignatureSimple = loadCryptoSignatureSimple(slice);
-		return {
-  			kind: 'CryptoSignature__',
-			anon0: anon0
-  		};
-  	};
-	if ((slice.preloadUint(4) == 0xf)) {
+  	if ((slice.preloadUint(4) == 0xf)) {
   		slice.loadUint(4);
 		let slice1 = slice.loadRef().beginParse();
 		let signed_cert: SignedCertificate = loadSignedCertificate(slice1);
@@ -5506,21 +5499,28 @@ export function loadCryptoSignature(slice: Slice): CryptoSignature {
 			temp_key_signature: temp_key_signature
   		};
   	};
+	if (true) {
+  		let anon0: CryptoSignatureSimple = loadCryptoSignatureSimple(slice);
+		return {
+  			kind: 'CryptoSignature__',
+			anon0: anon0
+  		};
+  	};
 	throw new Error('');
   }
 export function storeCryptoSignature(cryptoSignature: CryptoSignature): (builder: Builder) => void {
-  	if ((cryptoSignature.kind == 'CryptoSignature__')) {
-  		return ((builder: Builder) => {
-  			storeCryptoSignatureSimple(cryptoSignature.anon0)(builder);
-  		});
-  	};
-	if ((cryptoSignature.kind == 'CryptoSignature_chained_signature')) {
+  	if ((cryptoSignature.kind == 'CryptoSignature_chained_signature')) {
   		return ((builder: Builder) => {
   			builder.storeUint(0xf, 4);
 			let cell1 = beginCell();
 			storeSignedCertificate(cryptoSignature.signed_cert)(cell1);
 			builder.storeRef(cell1);
 			storeCryptoSignatureSimple(cryptoSignature.temp_key_signature)(builder);
+  		});
+  	};
+	if ((cryptoSignature.kind == 'CryptoSignature__')) {
+  		return ((builder: Builder) => {
+  			storeCryptoSignatureSimple(cryptoSignature.anon0)(builder);
   		});
   	};
 	throw new Error('');
@@ -8454,18 +8454,23 @@ export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
 		storeVmStackList(vmStack.stack)(builder);
   	});
   }
-export type VmStackList = VmStackList_vm_stk_cons | VmStackList_vm_stk_nil;
+export type VmStackList = VmStackList_vm_stk_nil | VmStackList_vm_stk_cons;
+export type VmStackList_vm_stk_nil = {
+  	kind: 'VmStackList_vm_stk_nil';
+  };
 export type VmStackList_vm_stk_cons = {
   	kind: 'VmStackList_vm_stk_cons';
 	n: number;
 	rest: VmStackList;
 	tos: VmStackValue;
   };
-export type VmStackList_vm_stk_nil = {
-  	kind: 'VmStackList_vm_stk_nil';
-  };
 export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
-  	if (true) {
+  	if ((arg0 == 0)) {
+  		return {
+  			kind: 'VmStackList_vm_stk_nil'
+  		};
+  	};
+	if (true) {
   		let slice1 = slice.loadRef().beginParse();
 		let rest: VmStackList = loadVmStackList(slice1, (arg0 - 1));
 		let tos: VmStackValue = loadVmStackValue(slice);
@@ -8476,25 +8481,20 @@ export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
 			tos: tos
   		};
   	};
-	if ((arg0 == 0)) {
-  		return {
-  			kind: 'VmStackList_vm_stk_nil'
-  		};
-  	};
 	throw new Error('');
   }
 export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) => void {
-  	if ((vmStackList.kind == 'VmStackList_vm_stk_cons')) {
+  	if ((vmStackList.kind == 'VmStackList_vm_stk_nil')) {
+  		return ((builder: Builder) => {
+  
+  		});
+  	};
+	if ((vmStackList.kind == 'VmStackList_vm_stk_cons')) {
   		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeVmStackList(vmStackList.rest)(cell1);
 			builder.storeRef(cell1);
 			storeVmStackValue(vmStackList.tos)(builder);
-  		});
-  	};
-	if ((vmStackList.kind == 'VmStackList_vm_stk_nil')) {
-  		return ((builder: Builder) => {
-  
   		});
   	};
 	throw new Error('');
@@ -8889,17 +8889,22 @@ export function storeDNS_RecordSet(dNS_RecordSet: DNS_RecordSet): (builder: Buil
   		storeHashmapE<DNSRecord>(dNS_RecordSet.anon0, storeDNSRecord)(builder);
   	});
   }
-export type TextChunkRef = TextChunkRef_chunk_ref | TextChunkRef_chunk_ref_empty;
+export type TextChunkRef = TextChunkRef_chunk_ref_empty | TextChunkRef_chunk_ref;
+export type TextChunkRef_chunk_ref_empty = {
+  	kind: 'TextChunkRef_chunk_ref_empty';
+  };
 export type TextChunkRef_chunk_ref = {
   	kind: 'TextChunkRef_chunk_ref';
 	n: number;
 	ref: TextChunks;
   };
-export type TextChunkRef_chunk_ref_empty = {
-  	kind: 'TextChunkRef_chunk_ref_empty';
-  };
 export function loadTextChunkRef(slice: Slice, arg0: number): TextChunkRef {
-  	if (true) {
+  	if ((arg0 == 0)) {
+  		return {
+  			kind: 'TextChunkRef_chunk_ref_empty'
+  		};
+  	};
+	if (true) {
   		let slice1 = slice.loadRef().beginParse();
 		let ref: TextChunks = loadTextChunks(slice1, ((arg0 - 1) + 1));
 		return {
@@ -8908,29 +8913,27 @@ export function loadTextChunkRef(slice: Slice, arg0: number): TextChunkRef {
 			ref: ref
   		};
   	};
-	if ((arg0 == 0)) {
-  		return {
-  			kind: 'TextChunkRef_chunk_ref_empty'
-  		};
-  	};
 	throw new Error('');
   }
 export function storeTextChunkRef(textChunkRef: TextChunkRef): (builder: Builder) => void {
-  	if ((textChunkRef.kind == 'TextChunkRef_chunk_ref')) {
+  	if ((textChunkRef.kind == 'TextChunkRef_chunk_ref_empty')) {
+  		return ((builder: Builder) => {
+  
+  		});
+  	};
+	if ((textChunkRef.kind == 'TextChunkRef_chunk_ref')) {
   		return ((builder: Builder) => {
   			let cell1 = beginCell();
 			storeTextChunks(textChunkRef.ref)(cell1);
 			builder.storeRef(cell1);
   		});
   	};
-	if ((textChunkRef.kind == 'TextChunkRef_chunk_ref_empty')) {
-  		return ((builder: Builder) => {
-  
-  		});
-  	};
 	throw new Error('');
   }
-export type TextChunks = TextChunks_text_chunk | TextChunks_text_chunk_empty;
+export type TextChunks = TextChunks_text_chunk_empty | TextChunks_text_chunk;
+export type TextChunks_text_chunk_empty = {
+  	kind: 'TextChunks_text_chunk_empty';
+  };
 export type TextChunks_text_chunk = {
   	kind: 'TextChunks_text_chunk';
 	n: number;
@@ -8938,11 +8941,13 @@ export type TextChunks_text_chunk = {
 	data: BitString;
 	next: TextChunkRef;
   };
-export type TextChunks_text_chunk_empty = {
-  	kind: 'TextChunks_text_chunk_empty';
-  };
 export function loadTextChunks(slice: Slice, arg0: number): TextChunks {
-  	if (true) {
+  	if ((arg0 == 0)) {
+  		return {
+  			kind: 'TextChunks_text_chunk_empty'
+  		};
+  	};
+	if (true) {
   		let len: number = slice.loadUint(8);
 		let data: BitString = slice.loadBits((len * 8));
 		let next: TextChunkRef = loadTextChunkRef(slice, (arg0 - 1));
@@ -8954,24 +8959,19 @@ export function loadTextChunks(slice: Slice, arg0: number): TextChunks {
 			next: next
   		};
   	};
-	if ((arg0 == 0)) {
-  		return {
-  			kind: 'TextChunks_text_chunk_empty'
-  		};
-  	};
 	throw new Error('');
   }
 export function storeTextChunks(textChunks: TextChunks): (builder: Builder) => void {
-  	if ((textChunks.kind == 'TextChunks_text_chunk')) {
+  	if ((textChunks.kind == 'TextChunks_text_chunk_empty')) {
+  		return ((builder: Builder) => {
+  
+  		});
+  	};
+	if ((textChunks.kind == 'TextChunks_text_chunk')) {
   		return ((builder: Builder) => {
   			builder.storeUint(textChunks.len, 8);
 			builder.storeBits(textChunks.data);
 			storeTextChunkRef(textChunks.next)(builder);
-  		});
-  	};
-	if ((textChunks.kind == 'TextChunks_text_chunk_empty')) {
-  		return ((builder: Builder) => {
-  
   		});
   	};
 	throw new Error('');

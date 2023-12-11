@@ -654,11 +654,7 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type ParamConst = ParamConst_a | ParamConst_b | ParamConst_c | ParamConst_d;
-export type ParamConst_a = {
-  	kind: 'ParamConst_a';
-	n: number;
-  };
+export type ParamConst = ParamConst_b | ParamConst_c | ParamConst_a | ParamConst_d;
 export type ParamConst_b = {
   	kind: 'ParamConst_b';
 	m: number;
@@ -670,6 +666,10 @@ export type ParamConst_c = {
 	m: number;
 	k: number;
   };
+export type ParamConst_a = {
+  	kind: 'ParamConst_a';
+	n: number;
+  };
 export type ParamConst_d = {
   	kind: 'ParamConst_d';
 	n: number;
@@ -678,14 +678,7 @@ export type ParamConst_d = {
 	l: number;
   };
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
-  	if (((arg0 == 1) && (arg1 == 1))) {
-  		let n: number = slice.loadUint(32);
-		return {
-  			kind: 'ParamConst_a',
-			n: n
-  		};
-  	};
-	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1)))) {
+  	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1)))) {
   		slice.loadUint(2);
 		let m: number = slice.loadUint(32);
 		let k: number = slice.loadUint(32);
@@ -707,6 +700,13 @@ export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamC
 			k: k
   		};
   	};
+	if (((arg0 == 1) && (arg1 == 1))) {
+  		let n: number = slice.loadUint(32);
+		return {
+  			kind: 'ParamConst_a',
+			n: n
+  		};
+  	};
 	if (((arg0 == 4) && (arg1 == 2))) {
   		let n: number = slice.loadUint(32);
 		let m: number = slice.loadUint(32);
@@ -723,12 +723,7 @@ export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamC
 	throw new Error('');
   }
 export function storeParamConst(paramConst: ParamConst): (builder: Builder) => void {
-  	if ((paramConst.kind == 'ParamConst_a')) {
-  		return ((builder: Builder) => {
-  			builder.storeUint(paramConst.n, 32);
-  		});
-  	};
-	if ((paramConst.kind == 'ParamConst_b')) {
+  	if ((paramConst.kind == 'ParamConst_b')) {
   		return ((builder: Builder) => {
   			builder.storeUint(0b01, 2);
 			builder.storeUint(paramConst.m, 32);
@@ -741,6 +736,11 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
 			builder.storeUint(paramConst.n, 32);
 			builder.storeUint(paramConst.m, 32);
 			builder.storeUint(paramConst.k, 32);
+  		});
+  	};
+	if ((paramConst.kind == 'ParamConst_a')) {
+  		return ((builder: Builder) => {
+  			builder.storeUint(paramConst.n, 32);
   		});
   	};
 	if ((paramConst.kind == 'ParamConst_d')) {
@@ -1718,4 +1718,45 @@ export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: B
   		builder.storeUint(0x0201, 16);
 		builder.storeInt(falseAnonField.value, 257);
   	});
+  }
+export type ConstructorOrder = ConstructorOrder_a | ConstructorOrder__;
+export type ConstructorOrder_a = {
+  	kind: 'ConstructorOrder_a';
+	a: Simple;
+  };
+export type ConstructorOrder__ = {
+  	kind: 'ConstructorOrder__';
+	anon0: Simple;
+  };
+export function loadConstructorOrder(slice: Slice): ConstructorOrder {
+  	if ((slice.preloadUint(1) == 0b0)) {
+  		slice.loadUint(1);
+		let a: Simple = loadSimple(slice);
+		return {
+  			kind: 'ConstructorOrder_a',
+			a: a
+  		};
+  	};
+	if (true) {
+  		let anon0: Simple = loadSimple(slice);
+		return {
+  			kind: 'ConstructorOrder__',
+			anon0: anon0
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeConstructorOrder(constructorOrder: ConstructorOrder): (builder: Builder) => void {
+  	if ((constructorOrder.kind == 'ConstructorOrder_a')) {
+  		return ((builder: Builder) => {
+  			builder.storeUint(0b0, 1);
+			storeSimple(constructorOrder.a)(builder);
+  		});
+  	};
+	if ((constructorOrder.kind == 'ConstructorOrder__')) {
+  		return ((builder: Builder) => {
+  			storeSimple(constructorOrder.anon0)(builder);
+  		});
+  	};
+	throw new Error('');
   }

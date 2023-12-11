@@ -207,6 +207,31 @@ export function getTypeParametersExpression(parameters: Array<TLBParameter>) {
     return structTypeParametersExpr;
 }
 
+function constructorPriority(c: TLBConstructor): number {
+    let result = 0;
+    if (c.tag.bitLen > 0) {
+        result++;
+    }
+    c.parameters.forEach(parameter => {
+        if (parameter.variable.const) {
+            result++;
+        }
+    })
+    return result;
+}
+
+export function compareConstructors(a: TLBConstructor, b: TLBConstructor): number {
+    let aPriority = constructorPriority(a);
+    let bPriority = constructorPriority(b);
+    if ( aPriority < bPriority ){
+        return 1;
+    }
+    if ( aPriority > bPriority ){
+        return -1;
+    }
+    return 0;
+}
+
 export function getCondition(conditions: Array<BinaryExpression>): Expression {
     let cnd = conditions[0];
     if (cnd) {
@@ -457,5 +482,6 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) 
         checkConstructors(tlbType);
         fillParameterNames(tlbType);
         fixNaming(tlbType);
+        tlbType.constructors.sort(compareConstructors)
     });
 }
