@@ -42,7 +42,7 @@ export function isBadVarName(name: string): boolean {
   return false;
 }
 
-export function goodVariableName(name: string, possibleSuffix: string): string {
+export function goodVariableName(name: string, possibleSuffix: string = '0'): string {
   if (name.startsWith('slice') || name.startsWith('cell')) {
     name = '_' + name;
   }

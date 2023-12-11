@@ -119,3 +119,5 @@ a$0 a:Simple = ConstructorOrder;
 
 a a:#  = CheckCrc32;
 b b:# c:# = CheckCrc32;
+
+a$_ const:# = CheckKeyword;

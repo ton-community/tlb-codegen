@@ -1833,3 +1833,19 @@ export function storeCheckCrc32(checkCrc32: CheckCrc32): (builder: Builder) => v
   	};
 	throw new Error('');
   }
+export type CheckKeyword = {
+  	kind: 'CheckKeyword';
+	const0: number;
+  };
+export function loadCheckKeyword(slice: Slice): CheckKeyword {
+  	let const0: number = slice.loadUint(32);
+	return {
+  		kind: 'CheckKeyword',
+		const0: const0
+  	};
+  }
+export function storeCheckKeyword(checkKeyword: CheckKeyword): (builder: Builder) => void {
+  	return ((builder: Builder) => {
+  		builder.storeUint(checkKeyword.const0, 32);
+  	});
+  }

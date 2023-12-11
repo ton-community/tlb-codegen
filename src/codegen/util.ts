@@ -1,6 +1,6 @@
 import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr, Declaration, CompareExpr, FieldCurlyExprDef, FieldNamedDef } from "../ast/nodes";
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructorTag, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
-import { calculateOpcode } from "./helpers";
+import { calculateOpcode, goodVariableName, isBadVarName } from "./helpers";
 import { Identifier, Expression, BinaryExpression } from "./tsgen";
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
 import util from 'util'
@@ -47,10 +47,12 @@ export function convertToAST(mathExpr: TLBMathExpr, constructor: TLBConstructor,
         mathExpr = getCalculatedExpression(mathExpr, constructor)
     }
     if (mathExpr instanceof TLBVarExpr) {
+        let varName = mathExpr.x;
+        varName = goodVariableName(varName, '0');
         if (objectId != undefined) {
-            return tMemberExpression(objectId, tIdentifier(mathExpr.x));
+            return tMemberExpression(objectId, tIdentifier(varName));
         }
-        return tIdentifier(mathExpr.x);
+        return tIdentifier(varName);
     }
     if (mathExpr instanceof TLBNumberExpr) {
         return tNumericLiteral(mathExpr.n)

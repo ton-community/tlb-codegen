@@ -1586,22 +1586,22 @@ export function storeStateInit(stateInit: StateInit): (builder: Builder) => void
   }
 export type SimpleLib = {
   	kind: 'SimpleLib';
-	public: Bool;
+	public0: Bool;
 	root: Slice;
   };
 export function loadSimpleLib(slice: Slice): SimpleLib {
-  	let public: Bool = loadBool(slice);
+  	let public0: Bool = loadBool(slice);
 	let slice1 = slice.loadRef().beginParse();
 	let root: Slice = slice1;
 	return {
   		kind: 'SimpleLib',
-		public: public,
+		public0: public0,
 		root: root
   	};
   }
 export function storeSimpleLib(simpleLib: SimpleLib): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  		storeBool(simpleLib.public)(builder);
+  		storeBool(simpleLib.public0)(builder);
 		let cell1 = beginCell();
 		cell1.storeSlice(simpleLib.root);
 		builder.storeRef(cell1);
@@ -2557,45 +2557,45 @@ export function storeOutMsgQueueInfo(outMsgQueueInfo: OutMsgQueueInfo): (builder
   }
 export type StorageUsed = {
   	kind: 'StorageUsed';
-	cells: VarUInteger;
+	_cells: VarUInteger;
 	bits: VarUInteger;
 	public_cells: VarUInteger;
   };
 export function loadStorageUsed(slice: Slice): StorageUsed {
-  	let cells: VarUInteger = loadVarUInteger(slice, 7);
+  	let _cells: VarUInteger = loadVarUInteger(slice, 7);
 	let bits: VarUInteger = loadVarUInteger(slice, 7);
 	let public_cells: VarUInteger = loadVarUInteger(slice, 7);
 	return {
   		kind: 'StorageUsed',
-		cells: cells,
+		_cells: _cells,
 		bits: bits,
 		public_cells: public_cells
   	};
   }
 export function storeStorageUsed(storageUsed: StorageUsed): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  		storeVarUInteger(storageUsed.cells)(builder);
+  		storeVarUInteger(storageUsed._cells)(builder);
 		storeVarUInteger(storageUsed.bits)(builder);
 		storeVarUInteger(storageUsed.public_cells)(builder);
   	});
   }
 export type StorageUsedShort = {
   	kind: 'StorageUsedShort';
-	cells: VarUInteger;
+	_cells: VarUInteger;
 	bits: VarUInteger;
   };
 export function loadStorageUsedShort(slice: Slice): StorageUsedShort {
-  	let cells: VarUInteger = loadVarUInteger(slice, 7);
+  	let _cells: VarUInteger = loadVarUInteger(slice, 7);
 	let bits: VarUInteger = loadVarUInteger(slice, 7);
 	return {
   		kind: 'StorageUsedShort',
-		cells: cells,
+		_cells: _cells,
 		bits: bits
   	};
   }
 export function storeStorageUsedShort(storageUsedShort: StorageUsedShort): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  		storeVarUInteger(storageUsedShort.cells)(builder);
+  		storeVarUInteger(storageUsedShort._cells)(builder);
 		storeVarUInteger(storageUsedShort.bits)(builder);
   	});
   }
@@ -2995,7 +2995,7 @@ export type MERKLE_UPDATE<X> = {
 	old_hash: BitString;
 	new_hash: BitString;
 	old: X;
-	new: X;
+	new0: X;
   };
 export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): MERKLE_UPDATE<X> {
   	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x02))) {
@@ -3005,13 +3005,13 @@ export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): 
 		let slice1 = slice.loadRef().beginParse();
 		let old: X = loadX(slice1);
 		let slice2 = slice.loadRef().beginParse();
-		let new: X = loadX(slice2);
+		let new0: X = loadX(slice2);
 		return {
   			kind: 'MERKLE_UPDATE',
 			old_hash: old_hash,
 			new_hash: new_hash,
 			old: old,
-			new: new
+			new0: new0
   		};
   	};
 	throw new Error('');
@@ -3025,7 +3025,7 @@ export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (
 		storeX(mERKLE_UPDATE.old)(cell1);
 		builder.storeRef(cell1);
 		let cell2 = beginCell();
-		storeX(mERKLE_UPDATE.new)(cell2);
+		storeX(mERKLE_UPDATE.new0)(cell2);
 		builder.storeRef(cell2);
   	});
   }
@@ -6721,7 +6721,7 @@ export type ConfigProposalSetup = {
 	min_store_sec: number;
 	max_store_sec: number;
 	bit_price: number;
-	cell_price: number;
+	_cell_price: number;
   };
 export function loadConfigProposalSetup(slice: Slice): ConfigProposalSetup {
   	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x36))) {
@@ -6733,7 +6733,7 @@ export function loadConfigProposalSetup(slice: Slice): ConfigProposalSetup {
 		let min_store_sec: number = slice.loadUint(32);
 		let max_store_sec: number = slice.loadUint(32);
 		let bit_price: number = slice.loadUint(32);
-		let cell_price: number = slice.loadUint(32);
+		let _cell_price: number = slice.loadUint(32);
 		return {
   			kind: 'ConfigProposalSetup',
 			min_tot_rounds: min_tot_rounds,
@@ -6743,7 +6743,7 @@ export function loadConfigProposalSetup(slice: Slice): ConfigProposalSetup {
 			min_store_sec: min_store_sec,
 			max_store_sec: max_store_sec,
 			bit_price: bit_price,
-			cell_price: cell_price
+			_cell_price: _cell_price
   		};
   	};
 	throw new Error('');
@@ -6758,7 +6758,7 @@ export function storeConfigProposalSetup(configProposalSetup: ConfigProposalSetu
 		builder.storeUint(configProposalSetup.min_store_sec, 32);
 		builder.storeUint(configProposalSetup.max_store_sec, 32);
 		builder.storeUint(configProposalSetup.bit_price, 32);
-		builder.storeUint(configProposalSetup.cell_price, 32);
+		builder.storeUint(configProposalSetup._cell_price, 32);
   	});
   }
 export type ConfigVotingSetup = {
@@ -7062,19 +7062,19 @@ export type ComplaintPricing = {
   	kind: 'ComplaintPricing';
 	deposit: Grams;
 	bit_price: Grams;
-	cell_price: Grams;
+	_cell_price: Grams;
   };
 export function loadComplaintPricing(slice: Slice): ComplaintPricing {
   	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x1a))) {
   		slice.loadUint(8);
 		let deposit: Grams = loadGrams(slice);
 		let bit_price: Grams = loadGrams(slice);
-		let cell_price: Grams = loadGrams(slice);
+		let _cell_price: Grams = loadGrams(slice);
 		return {
   			kind: 'ComplaintPricing',
 			deposit: deposit,
 			bit_price: bit_price,
-			cell_price: cell_price
+			_cell_price: _cell_price
   		};
   	};
 	throw new Error('');
@@ -7084,7 +7084,7 @@ export function storeComplaintPricing(complaintPricing: ComplaintPricing): (buil
   		builder.storeUint(0x1a, 8);
 		storeGrams(complaintPricing.deposit)(builder);
 		storeGrams(complaintPricing.bit_price)(builder);
-		storeGrams(complaintPricing.cell_price)(builder);
+		storeGrams(complaintPricing._cell_price)(builder);
   	});
   }
 export type BlockCreateFees = {
@@ -7116,7 +7116,7 @@ export type StoragePrices = {
   	kind: 'StoragePrices';
 	utime_since: number;
 	bit_price_ps: number;
-	cell_price_ps: number;
+	_cell_price_ps: number;
 	mc_bit_price_ps: number;
 	mc_cell_price_ps: number;
   };
@@ -7125,14 +7125,14 @@ export function loadStoragePrices(slice: Slice): StoragePrices {
   		slice.loadUint(8);
 		let utime_since: number = slice.loadUint(32);
 		let bit_price_ps: number = slice.loadUint(64);
-		let cell_price_ps: number = slice.loadUint(64);
+		let _cell_price_ps: number = slice.loadUint(64);
 		let mc_bit_price_ps: number = slice.loadUint(64);
 		let mc_cell_price_ps: number = slice.loadUint(64);
 		return {
   			kind: 'StoragePrices',
 			utime_since: utime_since,
 			bit_price_ps: bit_price_ps,
-			cell_price_ps: cell_price_ps,
+			_cell_price_ps: _cell_price_ps,
 			mc_bit_price_ps: mc_bit_price_ps,
 			mc_cell_price_ps: mc_cell_price_ps
   		};
@@ -7144,7 +7144,7 @@ export function storeStoragePrices(storagePrices: StoragePrices): (builder: Buil
   		builder.storeUint(0xcc, 8);
 		builder.storeUint(storagePrices.utime_since, 32);
 		builder.storeUint(storagePrices.bit_price_ps, 64);
-		builder.storeUint(storagePrices.cell_price_ps, 64);
+		builder.storeUint(storagePrices._cell_price_ps, 64);
 		builder.storeUint(storagePrices.mc_bit_price_ps, 64);
 		builder.storeUint(storagePrices.mc_cell_price_ps, 64);
   	});
@@ -7336,7 +7336,7 @@ export type MsgForwardPrices = {
   	kind: 'MsgForwardPrices';
 	lump_price: number;
 	bit_price: number;
-	cell_price: number;
+	_cell_price: number;
 	ihr_price_factor: number;
 	first_frac: number;
 	next_frac: number;
@@ -7346,7 +7346,7 @@ export function loadMsgForwardPrices(slice: Slice): MsgForwardPrices {
   		slice.loadUint(8);
 		let lump_price: number = slice.loadUint(64);
 		let bit_price: number = slice.loadUint(64);
-		let cell_price: number = slice.loadUint(64);
+		let _cell_price: number = slice.loadUint(64);
 		let ihr_price_factor: number = slice.loadUint(32);
 		let first_frac: number = slice.loadUint(16);
 		let next_frac: number = slice.loadUint(16);
@@ -7354,7 +7354,7 @@ export function loadMsgForwardPrices(slice: Slice): MsgForwardPrices {
   			kind: 'MsgForwardPrices',
 			lump_price: lump_price,
 			bit_price: bit_price,
-			cell_price: cell_price,
+			_cell_price: _cell_price,
 			ihr_price_factor: ihr_price_factor,
 			first_frac: first_frac,
 			next_frac: next_frac
@@ -7367,7 +7367,7 @@ export function storeMsgForwardPrices(msgForwardPrices: MsgForwardPrices): (buil
   		builder.storeUint(0xea, 8);
 		builder.storeUint(msgForwardPrices.lump_price, 64);
 		builder.storeUint(msgForwardPrices.bit_price, 64);
-		builder.storeUint(msgForwardPrices.cell_price, 64);
+		builder.storeUint(msgForwardPrices._cell_price, 64);
 		builder.storeUint(msgForwardPrices.ihr_price_factor, 32);
 		builder.storeUint(msgForwardPrices.first_frac, 16);
 		builder.storeUint(msgForwardPrices.next_frac, 16);
@@ -8309,7 +8309,7 @@ export type VmStackValue_vm_stk_nan = {
   };
 export type VmStackValue_vm_stk_cell = {
   	kind: 'VmStackValue_vm_stk_cell';
-	cell: Slice;
+	_cell: Slice;
   };
 export type VmStackValue_vm_stk_slice = {
   	kind: 'VmStackValue_vm_stk_slice';
@@ -8317,7 +8317,7 @@ export type VmStackValue_vm_stk_slice = {
   };
 export type VmStackValue_vm_stk_builder = {
   	kind: 'VmStackValue_vm_stk_builder';
-	cell: Slice;
+	_cell: Slice;
   };
 export type VmStackValue_vm_stk_cont = {
   	kind: 'VmStackValue_vm_stk_cont';
@@ -8360,10 +8360,10 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
 	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
   		slice.loadUint(8);
 		let slice1 = slice.loadRef().beginParse();
-		let cell: Slice = slice1;
+		let _cell: Slice = slice1;
 		return {
   			kind: 'VmStackValue_vm_stk_cell',
-			cell: cell
+			_cell: _cell
   		};
   	};
 	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x04))) {
@@ -8377,10 +8377,10 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
 	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x05))) {
   		slice.loadUint(8);
 		let slice1 = slice.loadRef().beginParse();
-		let cell: Slice = slice1;
+		let _cell: Slice = slice1;
 		return {
   			kind: 'VmStackValue_vm_stk_builder',
-			cell: cell
+			_cell: _cell
   		};
   	};
 	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x06))) {
@@ -8430,7 +8430,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
   		return ((builder: Builder) => {
   			builder.storeUint(0x03, 8);
 			let cell1 = beginCell();
-			cell1.storeSlice(vmStackValue.cell);
+			cell1.storeSlice(vmStackValue._cell);
 			builder.storeRef(cell1);
   		});
   	};
@@ -8444,7 +8444,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
   		return ((builder: Builder) => {
   			builder.storeUint(0x05, 8);
 			let cell1 = beginCell();
-			cell1.storeSlice(vmStackValue.cell);
+			cell1.storeSlice(vmStackValue._cell);
 			builder.storeRef(cell1);
   		});
   	};
@@ -8465,7 +8465,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
   }
 export type VmCellSlice = {
   	kind: 'VmCellSlice';
-	cell: Slice;
+	_cell: Slice;
 	st_bits: number;
 	end_bits: number;
 	st_ref: number;
@@ -8475,7 +8475,7 @@ export function loadVmCellSlice(slice: Slice): VmCellSlice {
   	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd6a63245))) {
   		slice.loadUint(32);
 		let slice1 = slice.loadRef().beginParse();
-		let cell: Slice = slice1;
+		let _cell: Slice = slice1;
 		let st_bits: number = slice.loadUint(10);
 		let end_bits: number = slice.loadUint(10);
 		let st_ref: number = slice.loadUint(bitLen(4));
@@ -8488,7 +8488,7 @@ export function loadVmCellSlice(slice: Slice): VmCellSlice {
   		};
 		return {
   			kind: 'VmCellSlice',
-			cell: cell,
+			_cell: _cell,
 			st_bits: st_bits,
 			end_bits: end_bits,
 			st_ref: st_ref,
@@ -8501,7 +8501,7 @@ export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) =
   	return ((builder: Builder) => {
   		builder.storeUint(0xd6a63245, 32);
 		let cell1 = beginCell();
-		cell1.storeSlice(vmCellSlice.cell);
+		cell1.storeSlice(vmCellSlice._cell);
 		builder.storeRef(cell1);
 		builder.storeUint(vmCellSlice.st_bits, 10);
 		builder.storeUint(vmCellSlice.end_bits, 10);

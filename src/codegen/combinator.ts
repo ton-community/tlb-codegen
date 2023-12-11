@@ -3,7 +3,7 @@ import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpre
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
-import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName, simpleCycle, sliceLoad } from './helpers'
+import { getNegationDerivationFunctionBody, getParamVarExpr, getVarExprByName, goodVariableName, simpleCycle, sliceLoad } from './helpers'
 
 type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined
@@ -37,7 +37,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
 
   let insideStoreParameters: Expression[];
 
-  insideStoreParameters = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(fieldName))];
+  insideStoreParameters = [tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(goodVariableName(fieldName)))];
   let insideStoreParameters2: Expression[] = [tIdentifier('arg')]
 
   if (expr instanceof BuiltinZeroArgs) {
@@ -58,7 +58,7 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
         }
         exprForParam = {
           argLoadExpr: getParamVarExpr(parameter, constructor), 
-          argStoreExpr: tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(expr.arg.name)), 
+          argStoreExpr: tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier(goodVariableName(expr.arg.name))), 
           paramType: 'number', fieldLoadStoreSuffix: 'Uint'
         }
       } // TODO: handle other cases
@@ -174,8 +174,8 @@ export function handleCombinator(expr: ParserExpression, fieldName: string, isFi
     result.loadExpr = tNumericLiteral(expr.num)
   } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) { // TODO: handle other case
     let getParameterFunctionId = tIdentifier(variableSubStructName + '_get_' + expr.expr.name)
-    jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(fieldName), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
-    result.negatedVariablesLoads.push({name: expr.expr.name, expression: tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)])})
+    jsCodeDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(goodVariableName(fieldName)), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(tlbCode, fieldTypeName, argIndex, fieldName)))
+    result.negatedVariablesLoads.push({name: expr.expr.name, expression: tFunctionCall(getParameterFunctionId, [tIdentifier(goodVariableName(fieldName))])})
   } else if (expr instanceof CellRefExpr) {
     let currentSlice = getCurrentSlice([1, 0], 'slice');
     let currentCell = getCurrentSlice([1, 0], 'cell');

@@ -5,7 +5,7 @@ import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpre
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
 import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
-import { addLoadProperty, getNegationDerivationFunctionBody, getParamVarExpr, sliceLoad } from './helpers'
+import { addLoadProperty, getNegationDerivationFunctionBody, getParamVarExpr, goodVariableName, sliceLoad } from './helpers'
 
 export function handleField(field: FieldDefinition, slicePrefix: Array<number>, tlbCode: TLBCode, constructor: TLBConstructor, constructorLoadStatements: Statement[], subStructStoreStatements: Statement[], subStructProperties: TypedIdentifier[], subStructLoadProperties: ObjectProperty[], variableCombinatorName: string, variableSubStructName: string, jsCodeDeclarations: GenDeclaration[], fieldIndex: string) {
   let currentSlice = getCurrentSlice(slicePrefix, 'slice');
@@ -28,10 +28,10 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
   }
 
   if (field instanceof FieldBuiltinDef && field.type != 'Type') {
-    subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('number')));
+    subStructProperties.push(tTypedIdentifier(tIdentifier(goodVariableName(field.name)), tIdentifier('number')));
     let parameter = constructor.parametersMap.get(field.name)
     if (parameter && !parameter.variable.const && !parameter.variable.negated) {
-      subStructLoadProperties.push(tObjectProperty(tIdentifier(field.name), getParamVarExpr(parameter, constructor)))
+      subStructLoadProperties.push(tObjectProperty(tIdentifier(goodVariableName(field.name)), getParamVarExpr(parameter, constructor)))
     }
   }
 
@@ -67,16 +67,16 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
 
       let fieldInfo = handleCombinator(field.expr, fieldName, true, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
       if (fieldInfo.loadExpr) {
-        addLoadProperty(fieldName, fieldInfo.loadExpr, fieldInfo.typeParamExpr, constructorLoadStatements, subStructLoadProperties);
+        addLoadProperty(goodVariableName(fieldName), fieldInfo.loadExpr, fieldInfo.typeParamExpr, constructorLoadStatements, subStructLoadProperties);
       }
       if (fieldInfo.typeParamExpr) {
-        subStructProperties.push(tTypedIdentifier(tIdentifier(fieldName), fieldInfo.typeParamExpr));
+        subStructProperties.push(tTypedIdentifier(tIdentifier(goodVariableName(fieldName)), fieldInfo.typeParamExpr));
       }
       if (fieldInfo.storeExpr) {
         subStructStoreStatements.push(fieldInfo.storeExpr)
       }
       fieldInfo.negatedVariablesLoads.forEach(element => {
-        addLoadProperty(element.name, element.expression, undefined, constructorLoadStatements, subStructLoadProperties)
+        addLoadProperty(goodVariableName(element.name), element.expression, undefined, constructorLoadStatements, subStructLoadProperties)
       });
     }
   }
