@@ -2,9 +2,11 @@ import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray, TypeWithParameters, ArrowFunctionExpression, tForCycle } from './tsgen'
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
-import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
+import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression, getStringDeclaration } from './util'
 import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
+import * as crc32 from 'crc-32';
+
 
 export function isBadVarName(name: string): boolean {
   let tsReserved = [
@@ -115,4 +117,11 @@ export function addLoadProperty(name: string, loadExpr: Expression, typeExpr: Ty
   let nameId = tIdentifier(name);
   constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(nameId, loadExpr, typeExpr)))
   subStructLoadProperties.push(tObjectProperty(nameId, nameId))
+}
+
+export function calculateOpcode(declaration: Declaration, input: string[]): string {
+    let constructorString = getStringDeclaration(declaration, input)
+    const a = BigInt(crc32.str(constructorString));
+    const b = BigInt(0x80000000);
+    return ((a | b) < 0 ? (a | b) + BigInt('4294967296') : a | b).toString(16);
 }

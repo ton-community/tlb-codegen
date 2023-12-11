@@ -37,7 +37,7 @@ export type TwoConstructors_bool_true = {
 	b: number;
   };
 export function loadTwoConstructors(slice: Slice): TwoConstructors {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		let a: number = slice.loadUint(32);
 		let b: number = slice.loadUint(7);
@@ -49,7 +49,7 @@ export function loadTwoConstructors(slice: Slice): TwoConstructors {
 			c: c
   		};
   	};
-	if ((slice.preloadUint(1) == 0b1)) {
+	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
   		slice.loadUint(1);
 		let b: number = slice.loadUint(32);
 		return {
@@ -141,13 +141,13 @@ export type Maybe_just<TheType> = {
 	value: TheType;
   };
 export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		return {
   			kind: 'Maybe_nothing'
   		};
   	};
-	if ((slice.preloadUint(1) == 0b1)) {
+	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
   		slice.loadUint(1);
 		let value: TheType = loadTheType(slice);
 		return {
@@ -197,7 +197,7 @@ export type Either_right<X,Y> = {
 	value: Y;
   };
 export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		let value: X = loadX(slice);
 		return {
@@ -205,7 +205,7 @@ export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY:
 			value: value
   		};
   	};
-	if ((slice.preloadUint(1) == 0b1)) {
+	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
   		slice.loadUint(1);
 		let value: Y = loadY(slice);
 		return {
@@ -622,13 +622,13 @@ export type Unary_unary_succ = {
 	x: Unary;
   };
 export function loadUnary(slice: Slice): Unary {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		return {
   			kind: 'Unary_unary_zero'
   		};
   	};
-	if ((slice.preloadUint(1) == 0b1)) {
+	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
   		slice.loadUint(1);
 		let x: Unary = loadUnary(slice);
 		let n = unary_unary_succ_get_n(x);
@@ -678,7 +678,7 @@ export type ParamConst_d = {
 	l: number;
   };
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
-  	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1)))) {
+  	if (((slice.remainingBits >= 2) && ((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1))))) {
   		slice.loadUint(2);
 		let m: number = slice.loadUint(32);
 		let k: number = slice.loadUint(32);
@@ -688,7 +688,7 @@ export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamC
 			k: k
   		};
   	};
-	if (((slice.preloadUint(2) == 0b01) && ((arg0 == 3) && (arg1 == 3)))) {
+	if (((slice.remainingBits >= 2) && ((slice.preloadUint(2) == 0b01) && ((arg0 == 3) && (arg1 == 3))))) {
   		slice.loadUint(2);
 		let n: number = slice.loadUint(32);
 		let m: number = slice.loadUint(32);
@@ -805,19 +805,19 @@ export type ParamDifNames_d = {
 	x: ParamDifNames;
   };
 export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
-  	if (((slice.preloadUint(1) == 0b0) && (arg0 == 2))) {
+  	if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b0) && (arg0 == 2)))) {
   		slice.loadUint(1);
 		return {
   			kind: 'ParamDifNames_a'
   		};
   	};
-	if (((slice.preloadUint(1) == 0b1) && (arg0 == 3))) {
+	if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b1) && (arg0 == 3)))) {
   		slice.loadUint(1);
 		return {
   			kind: 'ParamDifNames_b'
   		};
   	};
-	if (((slice.preloadUint(1) == 0b1) && (arg0 == 2))) {
+	if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b1) && (arg0 == 2)))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 2);
 		let n = paramDifNames_c_get_n(x);
@@ -827,7 +827,7 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
 			n: n
   		};
   	};
-	if (((slice.preloadUint(1) == 0b0) && (arg0 == 3))) {
+	if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b0) && (arg0 == 3)))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 3);
 		let m = paramDifNames_d_get_m(x);
@@ -887,7 +887,7 @@ export type ParamDifNamesUser = {
 	x: ParamDifNames;
   };
 export function loadParamDifNamesUser(slice: Slice): ParamDifNamesUser {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		let x: ParamDifNames = loadParamDifNames(slice, 2);
 		let k = paramDifNamesUser_get_k(x);
@@ -912,7 +912,7 @@ export type NegationFromImplicit = {
 	z: number;
   };
 export function loadNegationFromImplicit(slice: Slice): NegationFromImplicit {
-  	if ((slice.preloadUint(1) == 0b1)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
   		slice.loadUint(1);
 		let t: number = slice.loadUint(32);
 		let z: number = slice.loadUint(32);
@@ -1072,15 +1072,20 @@ export type EmptyTag = {
 	a: number;
   };
 export function loadEmptyTag(slice: Slice): EmptyTag {
-  	let a: number = slice.loadUint(32);
-	return {
-  		kind: 'EmptyTag',
-		a: a
+  	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xab787f76))) {
+  		slice.loadUint(32);
+		let a: number = slice.loadUint(32);
+		return {
+  			kind: 'EmptyTag',
+			a: a
+  		};
   	};
+	throw new Error('');
   }
 export function storeEmptyTag(emptyTag: EmptyTag): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  		builder.storeUint(emptyTag.a, 32);
+  		builder.storeUint(0xab787f76, 32);
+		builder.storeUint(emptyTag.a, 32);
   	});
   }
 export type SharpTag = {
@@ -1088,7 +1093,7 @@ export type SharpTag = {
 	x: number;
   };
 export function loadSharpTag(slice: Slice): SharpTag {
-  	if ((slice.preloadUint(8) == 0xf4)) {
+  	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xf4))) {
   		slice.loadUint(8);
 		let x: number = slice.loadUint(32);
 		return {
@@ -1109,7 +1114,7 @@ export type DollarTag = {
 	x: number;
   };
 export function loadDollarTag(slice: Slice): DollarTag {
-  	if ((slice.preloadUint(4) == 0b1011)) {
+  	if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1011))) {
   		slice.loadUint(4);
 		let x: number = slice.loadUint(32);
 		return {
@@ -1269,7 +1274,7 @@ export type HmLabel_hml_same = {
 	n: number;
   };
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		let len: Unary = loadUnary(slice);
 		let n = hmLabel_hml_short_get_n(len);
@@ -1287,7 +1292,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 			s: s
   		};
   	};
-	if ((slice.preloadUint(2) == 0b10)) {
+	if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
   		slice.loadUint(2);
 		let n: number = slice.loadUint(bitLen(m));
 		let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
@@ -1300,7 +1305,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
 			s: s
   		};
   	};
-	if ((slice.preloadUint(2) == 0b11)) {
+	if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
   		slice.loadUint(2);
 		let v: BitString = slice.loadBits(1);
 		let n: number = slice.loadUint(bitLen(m));
@@ -1355,14 +1360,14 @@ export type HashmapE_hme_root<X> = {
 	root: Hashmap<X>;
   };
 export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapE<X> {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		return {
   			kind: 'HashmapE_hme_empty',
 			n: n
   		};
   	};
-	if ((slice.preloadUint(1) == 0b1)) {
+	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
   		slice.loadUint(1);
 		let slice1 = slice.loadRef().beginParse();
 		let root: Hashmap<X> = loadHashmap<X>(slice1, n, loadX);
@@ -1418,17 +1423,22 @@ export type ConditionalField = {
 	b: number | undefined;
   };
 export function loadConditionalField(slice: Slice): ConditionalField {
-  	let a: number = slice.loadUint(1);
-	let b: number | undefined = (a ? slice.loadUint(32) : undefined);
-	return {
-  		kind: 'ConditionalField',
-		a: a,
-		b: b
+  	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xdc165658))) {
+  		slice.loadUint(32);
+		let a: number = slice.loadUint(1);
+		let b: number | undefined = (a ? slice.loadUint(32) : undefined);
+		return {
+  			kind: 'ConditionalField',
+			a: a,
+			b: b
+  		};
   	};
+	throw new Error('');
   }
 export function storeConditionalField(conditionalField: ConditionalField): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  		builder.storeUint(conditionalField.a, 1);
+  		builder.storeUint(0xdc165658, 32);
+		builder.storeUint(conditionalField.a, 1);
 		if ((conditionalField.b != undefined)) {
   			builder.storeUint(conditionalField.b, 32);
   		};
@@ -1440,17 +1450,22 @@ export type BitSelection = {
 	b: number | undefined;
   };
 export function loadBitSelection(slice: Slice): BitSelection {
-  	let a: number = slice.loadUint(6);
-	let b: number | undefined = ((a & (1 << 2)) ? slice.loadUint(32) : undefined);
-	return {
-  		kind: 'BitSelection',
-		a: a,
-		b: b
+  	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xe1a2049e))) {
+  		slice.loadUint(32);
+		let a: number = slice.loadUint(6);
+		let b: number | undefined = ((a & (1 << 2)) ? slice.loadUint(32) : undefined);
+		return {
+  			kind: 'BitSelection',
+			a: a,
+			b: b
+  		};
   	};
+	throw new Error('');
   }
 export function storeBitSelection(bitSelection: BitSelection): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  		builder.storeUint(bitSelection.a, 6);
+  		builder.storeUint(0xe1a2049e, 32);
+		builder.storeUint(bitSelection.a, 6);
 		if ((bitSelection.b != undefined)) {
   			builder.storeUint(bitSelection.b, 32);
   		};
@@ -1461,18 +1476,23 @@ export type ImplicitCondition = {
 	flags: number;
   };
 export function loadImplicitCondition(slice: Slice): ImplicitCondition {
-  	let flags: number = slice.loadUint(10);
-	if ((!(flags <= 100))) {
-  		throw new Error('');
+  	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd86a5028))) {
+  		slice.loadUint(32);
+		let flags: number = slice.loadUint(10);
+		if ((!(flags <= 100))) {
+  			throw new Error('');
+  		};
+		return {
+  			kind: 'ImplicitCondition',
+			flags: flags
+  		};
   	};
-	return {
-  		kind: 'ImplicitCondition',
-		flags: flags
-  	};
+	throw new Error('');
   }
 export function storeImplicitCondition(implicitCondition: ImplicitCondition): (builder: Builder) => void {
   	return ((builder: Builder) => {
-  		builder.storeUint(implicitCondition.flags, 10);
+  		builder.storeUint(0xd86a5028, 32);
+		builder.storeUint(implicitCondition.flags, 10);
 		if ((!(implicitCondition.flags <= 100))) {
   			throw new Error('');
   		};
@@ -1492,15 +1512,17 @@ export type MultipleEmptyConstructor_a = {
 	x: number;
   };
 export function loadMultipleEmptyConstructor(slice: Slice, arg0: number): MultipleEmptyConstructor {
-  	if ((arg0 == 0)) {
-  		let a: number = slice.loadUint(32);
+  	if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x85e93c51) && (arg0 == 0)))) {
+  		slice.loadUint(32);
+		let a: number = slice.loadUint(32);
 		return {
   			kind: 'MultipleEmptyConstructor__',
 			a: a
   		};
   	};
-	if ((arg0 == 1)) {
-  		let b: number = slice.loadUint(5);
+	if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xc5d27bf1) && (arg0 == 1)))) {
+  		slice.loadUint(32);
+		let b: number = slice.loadUint(5);
 		return {
   			kind: 'MultipleEmptyConstructor__1',
 			b: b
@@ -1518,12 +1540,14 @@ export function loadMultipleEmptyConstructor(slice: Slice, arg0: number): Multip
 export function storeMultipleEmptyConstructor(multipleEmptyConstructor: MultipleEmptyConstructor): (builder: Builder) => void {
   	if ((multipleEmptyConstructor.kind == 'MultipleEmptyConstructor__')) {
   		return ((builder: Builder) => {
-  			builder.storeUint(multipleEmptyConstructor.a, 32);
+  			builder.storeUint(0x85e93c51, 32);
+			builder.storeUint(multipleEmptyConstructor.a, 32);
   		});
   	};
 	if ((multipleEmptyConstructor.kind == 'MultipleEmptyConstructor__1')) {
   		return ((builder: Builder) => {
-  			builder.storeUint(multipleEmptyConstructor.b, 5);
+  			builder.storeUint(0xc5d27bf1, 32);
+			builder.storeUint(multipleEmptyConstructor.b, 5);
   		});
   	};
 	if ((multipleEmptyConstructor.kind == 'MultipleEmptyConstructor_a')) {
@@ -1556,14 +1580,14 @@ export type ParamNamedArgInSecondConstr_b = {
 	n: number;
   };
 export function loadParamNamedArgInSecondConstr(slice: Slice, arg0: number): ParamNamedArgInSecondConstr {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		return {
   			kind: 'ParamNamedArgInSecondConstr_a',
 			n: arg0
   		};
   	};
-	if ((slice.preloadUint(1) == 0b1)) {
+	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
   		slice.loadUint(1);
 		return {
   			kind: 'ParamNamedArgInSecondConstr_b',
@@ -1665,7 +1689,7 @@ export type LoadFromNegationOutsideExpr = {
 	prev_seq_no: number;
   };
 export function loadLoadFromNegationOutsideExpr(slice: Slice): LoadFromNegationOutsideExpr {
-  	if ((slice.preloadUint(32) == 0x9bc7a987)) {
+  	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9bc7a987))) {
   		slice.loadUint(32);
 		let seq_no: number = slice.loadUint(32);
 		return {
@@ -1703,7 +1727,7 @@ export type FalseAnonField = {
 	value: number;
   };
 export function loadFalseAnonField(slice: Slice): FalseAnonField {
-  	if ((slice.preloadUint(16) == 0x0201)) {
+  	if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x0201))) {
   		slice.loadUint(16);
 		let value: number = slice.loadInt(257);
 		return {
@@ -1719,17 +1743,25 @@ export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: B
 		builder.storeInt(falseAnonField.value, 257);
   	});
   }
-export type ConstructorOrder = ConstructorOrder_a | ConstructorOrder__;
-export type ConstructorOrder_a = {
-  	kind: 'ConstructorOrder_a';
-	a: Simple;
-  };
+export type ConstructorOrder = ConstructorOrder__ | ConstructorOrder_a;
 export type ConstructorOrder__ = {
   	kind: 'ConstructorOrder__';
 	anon0: Simple;
   };
+export type ConstructorOrder_a = {
+  	kind: 'ConstructorOrder_a';
+	a: Simple;
+  };
 export function loadConstructorOrder(slice: Slice): ConstructorOrder {
-  	if ((slice.preloadUint(1) == 0b0)) {
+  	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xc6cc03c3))) {
+  		slice.loadUint(32);
+		let anon0: Simple = loadSimple(slice);
+		return {
+  			kind: 'ConstructorOrder__',
+			anon0: anon0
+  		};
+  	};
+	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
   		slice.loadUint(1);
 		let a: Simple = loadSimple(slice);
 		return {
@@ -1737,25 +1769,66 @@ export function loadConstructorOrder(slice: Slice): ConstructorOrder {
 			a: a
   		};
   	};
-	if (true) {
-  		let anon0: Simple = loadSimple(slice);
-		return {
-  			kind: 'ConstructorOrder__',
-			anon0: anon0
-  		};
-  	};
 	throw new Error('');
   }
 export function storeConstructorOrder(constructorOrder: ConstructorOrder): (builder: Builder) => void {
-  	if ((constructorOrder.kind == 'ConstructorOrder_a')) {
+  	if ((constructorOrder.kind == 'ConstructorOrder__')) {
+  		return ((builder: Builder) => {
+  			builder.storeUint(0xc6cc03c3, 32);
+			storeSimple(constructorOrder.anon0)(builder);
+  		});
+  	};
+	if ((constructorOrder.kind == 'ConstructorOrder_a')) {
   		return ((builder: Builder) => {
   			builder.storeUint(0b0, 1);
 			storeSimple(constructorOrder.a)(builder);
   		});
   	};
-	if ((constructorOrder.kind == 'ConstructorOrder__')) {
+	throw new Error('');
+  }
+export type CheckCrc32 = CheckCrc32_a | CheckCrc32_b;
+export type CheckCrc32_a = {
+  	kind: 'CheckCrc32_a';
+	a: number;
+  };
+export type CheckCrc32_b = {
+  	kind: 'CheckCrc32_b';
+	b: number;
+	c: number;
+  };
+export function loadCheckCrc32(slice: Slice): CheckCrc32 {
+  	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd6e7c617))) {
+  		slice.loadUint(32);
+		let a: number = slice.loadUint(32);
+		return {
+  			kind: 'CheckCrc32_a',
+			a: a
+  		};
+  	};
+	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xde1cb606))) {
+  		slice.loadUint(32);
+		let b: number = slice.loadUint(32);
+		let c: number = slice.loadUint(32);
+		return {
+  			kind: 'CheckCrc32_b',
+			b: b,
+			c: c
+  		};
+  	};
+	throw new Error('');
+  }
+export function storeCheckCrc32(checkCrc32: CheckCrc32): (builder: Builder) => void {
+  	if ((checkCrc32.kind == 'CheckCrc32_a')) {
   		return ((builder: Builder) => {
-  			storeSimple(constructorOrder.anon0)(builder);
+  			builder.storeUint(0xd6e7c617, 32);
+			builder.storeUint(checkCrc32.a, 32);
+  		});
+  	};
+	if ((checkCrc32.kind == 'CheckCrc32_b')) {
+  		return ((builder: Builder) => {
+  			builder.storeUint(0xde1cb606, 32);
+			builder.storeUint(checkCrc32.b, 32);
+			builder.storeUint(checkCrc32.c, 32);
   		});
   	};
 	throw new Error('');

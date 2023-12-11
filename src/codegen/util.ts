@@ -1,5 +1,6 @@
 import { SimpleExpr, NameExpr, NumberExpr, MathExpr, FieldBuiltinDef, NegateExpr, Declaration, CompareExpr, FieldCurlyExprDef, FieldNamedDef } from "../ast/nodes";
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructorTag, TLBConstructor, TLBParameter, TLBVariable } from "../codegen/ast"
+import { calculateOpcode } from "./helpers";
 import { Identifier, Expression, BinaryExpression } from "./tsgen";
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, toCodeArray } from './tsgen'
 import util from 'util'
@@ -186,16 +187,6 @@ export function bitLen(n: number) {
     return n.toString(2).length;
 }
 
-// export type TLBVariable = {
-//   name: string,
-
-// }
-
-// export type TLBField = {
-//   name: string
-//   expression: 
-// }
-
 export function getTypeParametersExpression(parameters: Array<TLBParameter>) {
     let structTypeParameters: Array<Identifier> = []
     parameters.forEach(element => {
@@ -369,7 +360,15 @@ export function calculateVariables(constructor: TLBConstructor) {
 }
 
 
-export function getConstructorTag(tag: string | null): TLBConstructorTag {
+export function getConstructorTag(declaration: Declaration, input: string[]): TLBConstructorTag {
+    let tag = declaration.constructorDef.tag;
+    if (tag == null) {
+        let opCode = calculateOpcode(declaration, input)
+        return {
+            bitLen: 32,
+            binary: '0x' + opCode
+        }
+    }
     if (tag == undefined || tag && tag.length > 1 && tag[1] == '_') {
       return {
         bitLen: 0,
@@ -404,13 +403,30 @@ function fixNaming(tlbType: TLBType) {
     }
 }
 
-export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode) {
+export function getStringDeclaration(declaration: Declaration, input: string[]): string {
+    let result = '';
+    let splittedInput = input
+    let currentLine = declaration.locations.line - 1;
+    let currentColumn = 0;
+    while (!splittedInput[currentLine]?.includes(';')) {
+        result += splittedInput[currentLine]?.substring(currentColumn);
+        currentLine++;
+        currentColumn = 0;
+    }
+    let currentInput = splittedInput[currentLine];
+    if (currentInput) {
+        result += currentInput.substring(currentColumn, currentInput.indexOf(';') + 1)
+    }
+    return result;
+}
+
+export function fillConstructors(declarations: Declaration[], tlbCode: TLBCode, input: string[]) {
     declarations.forEach(declaration => {
         let tlbType: TLBType | undefined = tlbCode.types.get(declaration.combinator.name);
         if (tlbType == undefined) {
             tlbType = { name: declaration.combinator.name, constructors: [] }
         }
-        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>(), tag: getConstructorTag(declaration.constructorDef.tag), constraints: [] });
+        tlbType.constructors.push({ declaration: declaration, parameters: [], parametersMap: new Map<string, TLBParameter>(), name: declaration.constructorDef.name, variables: new Array<TLBVariable>(), variablesMap: new Map<string, TLBVariable>(), tag: getConstructorTag(declaration, input), constraints: [] });
         tlbCode.types.set(tlbType.name, tlbType);
     })
 

@@ -2,14 +2,14 @@ import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration
 import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, GenDeclaration, toCodeArray, TypeWithParameters, ArrowFunctionExpression, tUnionTypeExpression, tUnaryOpExpression } from './tsgen'
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable, TLBConstructorTag } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
-import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression } from './util'
+import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression, getStringDeclaration } from './util'
 import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
 import { FunctionDeclaration } from '@babel/types'
 import { handleField } from './field'
 import { getParamVarExpr, getSubStructName, goodVariableName } from './helpers'
 
-export function generate(tree: Program) {
+export function generate(tree: Program, input: string) {
   let jsCodeDeclarations: GenDeclaration[] = []
   jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Builder'), tStringLiteral('ton'))) // importDeclaration([importSpecifier(identifier('Builder'), identifier('Builder'))], stringLiteral('../boc/Builder')))
   jsCodeDeclarations.push(tImportDeclaration(tIdentifier('Slice'), tStringLiteral('ton')))  // importDeclaration([importSpecifier(identifier('Slice'), identifier('Slice'))], stringLiteral('../boc/Slice')))
@@ -23,7 +23,8 @@ export function generate(tree: Program) {
 
   let tlbCode: TLBCode = { types: new Map<string, TLBType>() }
 
-  fillConstructors(tree.declarations, tlbCode);
+  let splittedInput = input.split('\n')
+  fillConstructors(tree.declarations, tlbCode, splittedInput);
 
   tlbCode.types.forEach((tlbType: TLBType, combinatorName: string) => {
     let variableCombinatorName = goodVariableName(firstLower(combinatorName), '0')
@@ -81,6 +82,7 @@ export function generate(tree: Program) {
       if (constructor.tag.bitLen != 0 || tlbType.constructors.length > 1) {
         let conditions: Array<BinaryExpression> = []
         if (constructor.tag.bitLen != 0) {
+          conditions.push(tBinaryExpression(tMemberExpression(tIdentifier('slice'), tIdentifier('remainingBits')), '>=', tNumericLiteral(constructor.tag.bitLen)))
           conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(constructor.tag.bitLen)]), '==', tIdentifier(constructor.tag.binary)))
           let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(constructor.tag.bitLen)]))]
           constructorLoadStatements = loadBitsStatement.concat(constructorLoadStatements);

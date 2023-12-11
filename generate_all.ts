@@ -19,7 +19,7 @@ function generateCode(filename: string) {
 
     const tree = ast(input)
 
-    fs.writeFile('generated_' + filename + '.ts', generate(tree), () => { });
+    fs.writeFile('generated_' + filename + '.ts', generate(tree, input), () => { });
 }
 
 // generateCode('my')

@@ -116,3 +116,6 @@ vm_stk_int#0201_ value:int257 = FalseAnonField;
 
 _ Simple = ConstructorOrder;
 a$0 a:Simple = ConstructorOrder;
+
+a a:#  = CheckCrc32;
+b b:# c:# = CheckCrc32;
