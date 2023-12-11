@@ -33,7 +33,7 @@
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
     "crc-32": "^1.2.2",
-    "ohm-js": "^16.6.0",
+    "ohm-js": "^17.1.0",
     "ton": "^13.6.1"
   },
   "devDependencies": {
