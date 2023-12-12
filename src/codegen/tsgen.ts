@@ -1,3 +1,4 @@
+import { CodeBuilder } from "./CodeBuilder";
 
 export interface ASTNode {
     type: TheNode["type"];
@@ -5,7 +6,7 @@ export interface ASTNode {
 
 export interface Identifier extends ASTNode {
     type: "Identifier",
-    name: String
+    name: string
 }
 
 export interface TypeWithParameters extends ASTNode {
@@ -180,7 +181,7 @@ export type GenDeclaration = ImportDeclaration | StructDeclaration | UnionTypeDe
 export type TheNode = Identifier | GenDeclaration | TypedIdentifier | Expression | ObjectProperty | Statement;
 
 
-export function tIdentifier(name: String): Identifier {
+export function tIdentifier(name: string): Identifier {
     return { type: "Identifier", name: name };
 }
 
@@ -287,156 +288,145 @@ export function tMultiStatement(statements: Array<Statement>): MultiStatement {
 
 
 
-export function toCodeArray(nodeArray: Array<TheNode>, delimeter: string, prefix: string, printContext: PrintContext, suffix: string) {
-    let parameters: string = '';
+// export function toCodeArray(nodeArray: Array<TheNode>, delimeter: string, prefix: string, printContext: PrintContext, suffix: string) {
+//     let parameters: string = '';
 
-    for (let i = 0; i < nodeArray.length; i++) {
-        let currentParam = nodeArray[i];
-        if (currentParam != undefined) {
-            parameters += prefix + toCode(currentParam, printContext) + suffix;
-        }
-        if (i + 1 < nodeArray.length) {
-            parameters += delimeter;
-        }
-    }
+//     for (let i = 0; i < nodeArray.length; i++) {
+//         let currentParam = nodeArray[i];
+//         if (currentParam != undefined) {
+//             parameters += prefix + toCode(currentParam, printContext) + suffix;
+//         }
+//         if (i + 1 < nodeArray.length) {
+//             parameters += delimeter;
+//         }
+//     }
 
-    return parameters;
-}
+//     return parameters;
+// }
 
-type PrintContext = {
-    tabs: number;
-}
-
-function addTab(printContext: PrintContext): PrintContext {
-    return {
-        ...printContext,
-        tabs: printContext.tabs + 1,
-    }
-}
-
-export function toCode(node: TheNode, printContext: PrintContext): string {
-    let result: string = '';
-    let currentTabs = '\t'.repeat(printContext.tabs);
-
+export function toCode(node: TheNode, code: CodeBuilder): string {
     if (node.type == "Identifier") {
-        result += node.name;
+        code.add(node.name, false);
     }
 
     if (node.type == "NumericLiteral") {
-        result += node.value.toString()
+        code.add(node.value.toString(), false)
     }
 
     if (node.type == "ImportDeclaration") {
-        result += currentTabs + `import { ${toCode(node.importValue, printContext)} } from ${toCode(node.from, printContext)}`;
+        code.add(`import { `, false);
+        toCode(node.importValue, code);
+        code.add(` } from `, false)
+        toCode(node.from, code)
     }
 
-    if (node.type == "FunctionDeclaration") {
-        result += currentTabs + `export function ${toCode(node.name, printContext)}${toCode(node.typeParameters, printContext)}(${toCodeArray(node.parameters, ', ', '', printContext, '')})${node.returnType ? ': ' + toCode(node.returnType, printContext) : ''} {
-  ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-  ${currentTabs}}`
-    }
+    // if (node.type == "FunctionDeclaration") {
+    //     code.add(`export function ${toCode(node.name, printContext)}${toCode(node.typeParameters, printContext)}(${toCodeArray(node.parameters, ', ', '', printContext, '')})${node.returnType ? ': ' + toCode(node.returnType, printContext) : ''} {
+    //         ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
+    //         ${currentTabs}}`)
+    // }
 
-    if (node.type == "ArrowFunctionExpression") {
-        result += `((${toCodeArray(node.parameters, ', ', '', printContext, '')}) => {
-  ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-  ${currentTabs}})`
-    }
+//     if (node.type == "ArrowFunctionExpression") {
+//         result += `((${toCodeArray(node.parameters, ', ', '', printContext, '')}) => {
+//   ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
+//   ${currentTabs}})`
+//     }
 
-    if (node.type == "ArrowFunctionType") {
-        result += `(${toCodeArray(node.parameters, ', ', '', printContext, '')}) => ${node.returnType ? toCode(node.returnType, printContext) : ''}`
-    }
+//     if (node.type == "ArrowFunctionType") {
+//         result += `(${toCodeArray(node.parameters, ', ', '', printContext, '')}) => ${node.returnType ? toCode(node.returnType, printContext) : ''}`
+//     }
 
-    if (node.type == "TypeWithParameters") {
-        result += `${toCode(node.name, printContext)}${toCode(node.typeParameters, printContext)}`
-    }
+//     if (node.type == "TypeWithParameters") {
+//         result += `${toCode(node.name, printContext)}${toCode(node.typeParameters, printContext)}`
+//     }
 
-    if (node.type == "TypedIdentifier") {
-        result += toCode(node.name, printContext) + ': ' + toCode(node.typeId, printContext);
-    }
+//     if (node.type == "TypedIdentifier") {
+//         result += toCode(node.name, printContext) + ': ' + toCode(node.typeId, printContext);
+//     }
 
-    if (node.type == "ObjectProperty") {
-        result += currentTabs + toCode(node.key, printContext) + ': ' + toCode(node.value, printContext);
-    }
+//     if (node.type == "ObjectProperty") {
+//         result += currentTabs + toCode(node.key, printContext) + ': ' + toCode(node.value, printContext);
+//     }
 
-    if (node.type == "DeclareVariable") {
-        result += `let ${toCode(node.name, printContext)}${node.typeName ? ': ' + toCode(node.typeName, printContext) : ''}${node.init ? ' = ' + toCode(node.init, printContext) : ''}`
-    }
+//     if (node.type == "DeclareVariable") {
+//         result += `let ${toCode(node.name, printContext)}${node.typeName ? ': ' + toCode(node.typeName, printContext) : ''}${node.init ? ' = ' + toCode(node.init, printContext) : ''}`
+//     }
 
-    if (node.type == "ObjectExpression") {
-        result += `{
-  ${toCodeArray(node.objectValues, ',\n', '', addTab(printContext), '')}
-  ${currentTabs}}`
-    }
+//     if (node.type == "ObjectExpression") {
+//         result += `{
+//   ${toCodeArray(node.objectValues, ',\n', '', addTab(printContext), '')}
+//   ${currentTabs}}`
+//     }
 
-    if (node.type == "MultiStatement") {
-        result += toCodeArray(node.statements, '\n', '', printContext, '');
-    }
+//     if (node.type == "MultiStatement") {
+//         result += toCodeArray(node.statements, '\n', '', printContext, '');
+//     }
 
-    if (node.type == "ReturnStatement") {
-        result += currentTabs + `return ${toCode(node.returnValue, printContext)}`
-    }
+//     if (node.type == "ReturnStatement") {
+//         result += currentTabs + `return ${toCode(node.returnValue, printContext)}`
+//     }
 
-    if (node.type == "ExpressionStatement") {
-        result += currentTabs + toCode(node.expression, printContext)
-    }
+//     if (node.type == "ExpressionStatement") {
+//         result += currentTabs + toCode(node.expression, printContext)
+//     }
 
-    if (node.type == "TypeParametersExpression") {
-        if (node.typeParameters.length > 0) {
-            result += '<';
-            result += toCodeArray(node.typeParameters, ',', '', printContext, '');
-            result += '>';
-        }
-    }
+//     if (node.type == "TypeParametersExpression") {
+//         if (node.typeParameters.length > 0) {
+//             result += '<';
+//             result += toCodeArray(node.typeParameters, ',', '', printContext, '');
+//             result += '>';
+//         }
+//     }
 
-    if (node.type == "StructDeclaration") {
-        result += currentTabs + `export interface ${toCode(node.name, printContext)}${toCode(node.typeParametersExpression, printContext)} {
-  ${toCodeArray(node.fields, '\n', '\treadonly ', printContext, ';')}
-  ${currentTabs}};`
-    }
+//     if (node.type == "StructDeclaration") {
+//         result += currentTabs + `export interface ${toCode(node.name, printContext)}${toCode(node.typeParametersExpression, printContext)} {
+//   ${toCodeArray(node.fields, '\n', '\treadonly ', printContext, ';')}
+//   ${currentTabs}};`
+//     }
 
-    if (node.type == "UnionTypeDeclaration") {
-        result += currentTabs + `export type ${toCode(node.name, printContext)} = ${toCode(node.union, printContext)};`
-    }
+//     if (node.type == "UnionTypeDeclaration") {
+//         result += currentTabs + `export type ${toCode(node.name, printContext)} = ${toCode(node.union, printContext)};`
+//     }
 
-    if (node.type == "UnionTypeExpression") {
-        return `${toCodeArray(node.unionMembers, ' | ', '', printContext, '')}`
-    }
+//     if (node.type == "UnionTypeExpression") {
+//         return `${toCodeArray(node.unionMembers, ' | ', '', printContext, '')}`
+//     }
 
-    if (node.type == "FunctionCall") {
-        result += `${toCode(node.functionId, printContext)}${node.typeParameters ? toCode(node.typeParameters, printContext) : ''}(${toCodeArray(node.parameters, ', ', '', printContext, '')})`
-    }
+//     if (node.type == "FunctionCall") {
+//         result += `${toCode(node.functionId, printContext)}${node.typeParameters ? toCode(node.typeParameters, printContext) : ''}(${toCodeArray(node.parameters, ', ', '', printContext, '')})`
+//     }
 
     if (node.type == "StringLiteral") {
-        result += `'${node.value}'`
+        code.add(`'${node.value}'`, false)
     }
 
-    if (node.type == "MemberExpression") {
-        result += toCode(node.thisObject, printContext) + '.' + toCode(node.memberName, printContext);
-    }
+//     if (node.type == "MemberExpression") {
+//         result += toCode(node.thisObject, printContext) + '.' + toCode(node.memberName, printContext);
+//     }
 
-    if (node.type == "IfStatement") {
-        result += `${currentTabs}if (${toCode(node.condition, printContext)}) {
-  ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-  ${currentTabs}}`
-    }
+//     if (node.type == "IfStatement") {
+//         result += `${currentTabs}if (${toCode(node.condition, printContext)}) {
+//   ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
+//   ${currentTabs}}`
+//     }
 
-    if (node.type == "ForCycle") {
-        result += `${currentTabs}for (${toCode(node.init, printContext)};${toCode(node.cond, printContext)};${toCode(node.inc, printContext)}) {
-    ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-    ${currentTabs}}`
-    }
+//     if (node.type == "ForCycle") {
+//         result += `${currentTabs}for (${toCode(node.init, printContext)};${toCode(node.cond, printContext)};${toCode(node.inc, printContext)}) {
+//     ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
+//     ${currentTabs}}`
+//     }
 
-    if (node.type == "UnaryOpExpression") {
-        result += `(${node.unaryOperator}${toCode(node.expr, printContext)})`
-    }
+//     if (node.type == "UnaryOpExpression") {
+//         result += `(${node.unaryOperator}${toCode(node.expr, printContext)})`
+//     }
 
-    if (node.type == "BinaryExpression") {
-        result += `(${toCode(node.left, printContext)} ${node.binarySign} ${toCode(node.right, printContext)})`
-    }
+//     if (node.type == "BinaryExpression") {
+//         result += `(${toCode(node.left, printContext)} ${node.binarySign} ${toCode(node.right, printContext)})`
+//     }
 
-    if (node.type == "TernaryExpression") {
-        result += `(${toCode(node.condition, printContext)} ? ${toCode(node.body, printContext)} : ${toCode(node.elseBody, printContext)})`
-    }
+//     if (node.type == "TernaryExpression") {
+//         result += `(${toCode(node.condition, printContext)} ? ${toCode(node.body, printContext)} : ${toCode(node.elseBody, printContext)})`
+//     }
 
-    return result;
+    return code.render();
 }
