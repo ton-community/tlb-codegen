@@ -304,7 +304,21 @@ export function tMultiStatement(statements: Array<Statement>): MultiStatement {
 //     return parameters;
 // }
 
-export function toCode(node: TheNode, code: CodeBuilder): CodeBuilder {
+
+export function toCodeArray(nodeArray: Array<TheNode>, code: CodeBuilder, delimeter: string) {
+    for (let i = 0; i < nodeArray.length; i++) {
+        let currentParam = nodeArray[i];
+        if (currentParam != undefined) {
+            code.add(toCode(currentParam).render(), false)
+        }
+        if (i + 1 < nodeArray.length) {
+            code.add(delimeter, false);
+        }
+    }
+    return code;
+}
+
+export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): CodeBuilder {
     if (node.type == "Identifier") {
         code.add(node.name, false);
     }
@@ -314,116 +328,146 @@ export function toCode(node: TheNode, code: CodeBuilder): CodeBuilder {
     }
 
     if (node.type == "ImportDeclaration") {
-        code.add(`import { ${toCode(node.importValue, new CodeBuilder()).render()} } from ${toCode(node.from, new CodeBuilder()).render()}`, false);
+        code.add(`import { ${toCode(node.importValue).render()} } from ${toCode(node.from).render()}`, false);
     }
 
-    // if (node.type == "FunctionDeclaration") {
-    //     code.add(`export function ${toCode(node.name, printContext)}${toCode(node.typeParameters, printContext)}(${toCodeArray(node.parameters, ', ', '', printContext, '')})${node.returnType ? ': ' + toCode(node.returnType, printContext) : ''} {
-    //         ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-    //         ${currentTabs}}`)
-    // }
+    if (node.type == "FunctionDeclaration") {
+        code.add(`export function ${toCode(node.name).render()}${toCode(node.typeParameters).render()}(`, false)
+        toCodeArray(node.parameters, code, ', ')
+        code.add(`)${node.returnType ? ': ' + toCode(node.returnType).render() : ''} {`)
+        code.inTab(() => {
+            node.body.forEach((statement) => {
+                code.add(toCode(statement).render() + ';');
+            })
+        });
+        code.add('}')
+    }
 
-//     if (node.type == "ArrowFunctionExpression") {
-//         result += `((${toCodeArray(node.parameters, ', ', '', printContext, '')}) => {
-//   ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-//   ${currentTabs}})`
-//     }
+    if (node.type == "ArrowFunctionExpression") {
+        code.add(`((`, false)
+        toCodeArray(node.parameters, code, ', ')
+        code.add(`) => {`)
+        code.inTab(() => {
+            node.body.forEach(statement => {
+                code.append(toCode(statement));
+            })
+        })
+        code.add(`})`)
+    }
 
-//     if (node.type == "ArrowFunctionType") {
-//         result += `(${toCodeArray(node.parameters, ', ', '', printContext, '')}) => ${node.returnType ? toCode(node.returnType, printContext) : ''}`
-//     }
+    if (node.type == "ArrowFunctionType") {
+        code.add(`(${toCodeArray(node.parameters, new CodeBuilder(), ', ').render()}) => ${node.returnType ? toCode(node.returnType).render() : ''}`)
+    }
 
-//     if (node.type == "TypeWithParameters") {
-//         result += `${toCode(node.name, printContext)}${toCode(node.typeParameters, printContext)}`
-//     }
+    if (node.type == "TypeWithParameters") {
+        code.add(`${toCode(node.name).render()}${toCode(node.typeParameters).render()}`, false)
+    }
 
-//     if (node.type == "TypedIdentifier") {
-//         result += toCode(node.name, printContext) + ': ' + toCode(node.typeId, printContext);
-//     }
+    if (node.type == "TypedIdentifier") {
+        code.add(toCode(node.name).render() + ': ' + toCode(node.typeId).render(), false)
+    }
 
-//     if (node.type == "ObjectProperty") {
-//         result += currentTabs + toCode(node.key, printContext) + ': ' + toCode(node.value, printContext);
-//     }
+    if (node.type == "ObjectProperty") {
+        code.add(toCode(node.key).render() + ': ' + toCode(node.value).render(), false)
+    }
 
-//     if (node.type == "DeclareVariable") {
-//         result += `let ${toCode(node.name, printContext)}${node.typeName ? ': ' + toCode(node.typeName, printContext) : ''}${node.init ? ' = ' + toCode(node.init, printContext) : ''}`
-//     }
+    if (node.type == "DeclareVariable") {
+        code.add(`let ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}${node.init ? ' = ' + toCode(node.init).render() : ''}`)
+    }
 
-//     if (node.type == "ObjectExpression") {
-//         result += `{
-//   ${toCodeArray(node.objectValues, ',\n', '', addTab(printContext), '')}
-//   ${currentTabs}}`
-//     }
+    if (node.type == "ObjectExpression") {
+        code.add('{');
+        code.inTab(() => {
+            node.objectValues.forEach(objectValue => {
+                code.add(toCode(objectValue).render() + ',');
+            })
+        });
+        code.add('}');
+    }
 
-//     if (node.type == "MultiStatement") {
-//         result += toCodeArray(node.statements, '\n', '', printContext, '');
-//     }
+    if (node.type == "MultiStatement") {
+        node.statements.forEach(statement => {
+            code.append(toCode(statement));
+        })
+    }
 
-//     if (node.type == "ReturnStatement") {
-//         result += currentTabs + `return ${toCode(node.returnValue, printContext)}`
-//     }
+    if (node.type == "ReturnStatement") {
+        code.add(`return ${toCode(node.returnValue).render()}`)
+    }
 
-//     if (node.type == "ExpressionStatement") {
-//         result += currentTabs + toCode(node.expression, printContext)
-//     }
+    if (node.type == "ExpressionStatement") {
+        code.appendInline(toCode(node.expression))
+    }
 
-//     if (node.type == "TypeParametersExpression") {
-//         if (node.typeParameters.length > 0) {
-//             result += '<';
-//             result += toCodeArray(node.typeParameters, ',', '', printContext, '');
-//             result += '>';
-//         }
-//     }
+    if (node.type == "TypeParametersExpression") {
+        if (node.typeParameters.length > 0) {
+            code.add('<', false);
+            toCodeArray(node.typeParameters, code, ', ')
+            code.add('>', false);
+        }
+    }
 
-//     if (node.type == "StructDeclaration") {
-//         result += currentTabs + `export interface ${toCode(node.name, printContext)}${toCode(node.typeParametersExpression, printContext)} {
-//   ${toCodeArray(node.fields, '\n', '\treadonly ', printContext, ';')}
-//   ${currentTabs}};`
-//     }
+    if (node.type == "StructDeclaration") {
+        code.add(`export interface ${toCode(node.name).render()}${toCode(node.typeParametersExpression).render()} {`)
+        node.fields.forEach(field => {
+            code.add(`readonly ${toCode(field).render()}`)
+        })
+        code.add('}')
+    }
 
-//     if (node.type == "UnionTypeDeclaration") {
-//         result += currentTabs + `export type ${toCode(node.name, printContext)} = ${toCode(node.union, printContext)};`
-//     }
+    if (node.type == "UnionTypeDeclaration") {
+        code.add(`export type ${toCode(node.name).render()} = ${toCode(node.union).render()};`)
+    }
 
-//     if (node.type == "UnionTypeExpression") {
-//         return `${toCodeArray(node.unionMembers, ' | ', '', printContext, '')}`
-//     }
+    if (node.type == "UnionTypeExpression") {
+        toCodeArray(node.unionMembers, code, ' | ');
+    }
 
-//     if (node.type == "FunctionCall") {
-//         result += `${toCode(node.functionId, printContext)}${node.typeParameters ? toCode(node.typeParameters, printContext) : ''}(${toCodeArray(node.parameters, ', ', '', printContext, '')})`
-//     }
+    if (node.type == "FunctionCall") {
+        code.add(`${toCode(node.functionId).render()}${node.typeParameters ? toCode(node.typeParameters).render() : ''}(`, false)
+        toCodeArray(node.parameters, code, ', ')
+        code.add(`)`, false)
+    }
 
     if (node.type == "StringLiteral") {
         code.add(`'${node.value}'`, false)
     }
 
-//     if (node.type == "MemberExpression") {
-//         result += toCode(node.thisObject, printContext) + '.' + toCode(node.memberName, printContext);
-//     }
+    if (node.type == "MemberExpression") {
+        code.add(toCode(node.thisObject).render() + '.' + toCode(node.memberName).render(), false);
+    }
 
-//     if (node.type == "IfStatement") {
-//         result += `${currentTabs}if (${toCode(node.condition, printContext)}) {
-//   ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-//   ${currentTabs}}`
-//     }
+    if (node.type == "IfStatement") {
+        code.add(`if (${toCode(node.condition).render()}) {`)
+        code.inTab(() => {
+            node.body.forEach(statement => {
+                toCode(statement, code);
+            })
+        })
+        code.add('}')
+    }
 
-//     if (node.type == "ForCycle") {
-//         result += `${currentTabs}for (${toCode(node.init, printContext)};${toCode(node.cond, printContext)};${toCode(node.inc, printContext)}) {
-//     ${toCodeArray(node.body, '\n', '', addTab(printContext), ';')}
-//     ${currentTabs}}`
-//     }
+    if (node.type == "ForCycle") {
+        code.add(`for (${toCode(node.init).render()};${toCode(node.cond).render()};${toCode(node.inc).render()}) {`)
+        code.inTab(() => {
+            node.body.forEach(statement => {
+                toCode(statement, code);
+            })
+        })
+        code.add(`}`);
+    }
 
-//     if (node.type == "UnaryOpExpression") {
-//         result += `(${node.unaryOperator}${toCode(node.expr, printContext)})`
-//     }
+    if (node.type == "UnaryOpExpression") {
+        code.add(`(${node.unaryOperator}${toCode(node.expr).render()})`, false)
+    }
 
-//     if (node.type == "BinaryExpression") {
-//         result += `(${toCode(node.left, printContext)} ${node.binarySign} ${toCode(node.right, printContext)})`
-//     }
+    if (node.type == "BinaryExpression") {
+        code.add(`(${toCode(node.left).render()} ${node.binarySign} ${toCode(node.right).render()})`, false)
+    }
 
-//     if (node.type == "TernaryExpression") {
-//         result += `(${toCode(node.condition, printContext)} ? ${toCode(node.body, printContext)} : ${toCode(node.elseBody, printContext)})`
-//     }
+    if (node.type == "TernaryExpression") {
+        code.add(`(${toCode(node.condition).render()} ? ${toCode(node.body).render()} : ${toCode(node.elseBody).render()})`, false)
+    }
 
     return code;
 }
