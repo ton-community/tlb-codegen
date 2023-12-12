@@ -6,9 +6,9 @@ export function bitLen(n: number) {
   	return n.toString(2).length;;
   }
 export interface Simple {
-  	kind: 'Simple';
-	a: number;
-	b: number;
+  	readonly kind: 'Simple';
+	readonly a: number;
+	readonly b: number;
   };
 export function loadSimple(slice: Slice): Simple {
   	let a: number = slice.loadUint(32);
@@ -27,14 +27,14 @@ export function storeSimple(simple: Simple): (builder: Builder) => void {
   }
 export type TwoConstructors = TwoConstructors_bool_false | TwoConstructors_bool_true;
 export interface TwoConstructors_bool_false {
-  	kind: 'TwoConstructors_bool_false';
-	a: number;
-	b: number;
-	c: number;
+  	readonly kind: 'TwoConstructors_bool_false';
+	readonly a: number;
+	readonly b: number;
+	readonly c: number;
   };
 export interface TwoConstructors_bool_true {
-  	kind: 'TwoConstructors_bool_true';
-	b: number;
+  	readonly kind: 'TwoConstructors_bool_true';
+	readonly b: number;
   };
 export function loadTwoConstructors(slice: Slice): TwoConstructors {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
@@ -77,8 +77,8 @@ export function storeTwoConstructors(twoConstructors: TwoConstructors): (builder
 	throw new Error('');
   }
 export interface FixedIntParam {
-  	kind: 'FixedIntParam';
-	y: number;
+  	readonly kind: 'FixedIntParam';
+	readonly y: number;
   };
 export function loadFixedIntParam(slice: Slice): FixedIntParam {
   	let y: number = slice.loadUint(5);
@@ -93,9 +93,9 @@ export function storeFixedIntParam(fixedIntParam: FixedIntParam): (builder: Buil
   	});
   }
 export interface TypedField {
-  	kind: 'TypedField';
-	y: FixedIntParam;
-	c: number;
+  	readonly kind: 'TypedField';
+	readonly y: FixedIntParam;
+	readonly c: number;
   };
 export function loadTypedField(slice: Slice): TypedField {
   	let y: FixedIntParam = loadFixedIntParam(slice);
@@ -113,9 +113,9 @@ export function storeTypedField(typedField: TypedField): (builder: Builder) => v
   	});
   }
 export interface SharpConstructor {
-  	kind: 'SharpConstructor';
-	y: FixedIntParam;
-	c: number;
+  	readonly kind: 'SharpConstructor';
+	readonly y: FixedIntParam;
+	readonly c: number;
   };
 export function loadSharpConstructor(slice: Slice): SharpConstructor {
   	let y: FixedIntParam = loadFixedIntParam(slice);
@@ -134,11 +134,11 @@ export function storeSharpConstructor(sharpConstructor: SharpConstructor): (buil
   }
 export type Maybe<TheType> = Maybe_nothing<TheType> | Maybe_just<TheType>;
 export interface Maybe_nothing<TheType> {
-  	kind: 'Maybe_nothing';
+  	readonly kind: 'Maybe_nothing';
   };
 export interface Maybe_just<TheType> {
-  	kind: 'Maybe_just';
-	value: TheType;
+  	readonly kind: 'Maybe_just';
+	readonly value: TheType;
   };
 export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
@@ -172,8 +172,8 @@ export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theTyp
 	throw new Error('');
   }
 export interface TypedParam {
-  	kind: 'TypedParam';
-	x: Maybe<SharpConstructor>;
+  	readonly kind: 'TypedParam';
+	readonly x: Maybe<SharpConstructor>;
   };
 export function loadTypedParam(slice: Slice): TypedParam {
   	let x: Maybe<SharpConstructor> = loadMaybe<SharpConstructor>(slice, loadSharpConstructor);
@@ -189,12 +189,12 @@ export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => v
   }
 export type Either<X,Y> = Either_left<X,Y> | Either_right<X,Y>;
 export interface Either_left<X,Y> {
-  	kind: 'Either_left';
-	value: X;
+  	readonly kind: 'Either_left';
+	readonly value: X;
   };
 export interface Either_right<X,Y> {
-  	kind: 'Either_right';
-	value: Y;
+  	readonly kind: 'Either_right';
+	readonly value: Y;
   };
 export function loadEither<X,Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X,Y> {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
@@ -231,9 +231,9 @@ export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder
 	throw new Error('');
   }
 export interface BitLenArg {
-  	kind: 'BitLenArg';
-	x: number;
-	value: number;
+  	readonly kind: 'BitLenArg';
+	readonly x: number;
+	readonly value: number;
   };
 export function loadBitLenArg(slice: Slice, x: number): BitLenArg {
   	let value: number = slice.loadUint(x);
@@ -249,8 +249,8 @@ export function storeBitLenArg(bitLenArg: BitLenArg): (builder: Builder) => void
   	});
   }
 export interface BitLenArgUser {
-  	kind: 'BitLenArgUser';
-	t: BitLenArg;
+  	readonly kind: 'BitLenArgUser';
+	readonly t: BitLenArg;
   };
 export function loadBitLenArgUser(slice: Slice): BitLenArgUser {
   	let t: BitLenArg = loadBitLenArg(slice, 4);
@@ -265,9 +265,9 @@ export function storeBitLenArgUser(bitLenArgUser: BitLenArgUser): (builder: Buil
   	});
   }
 export interface ExprArg {
-  	kind: 'ExprArg';
-	x: number;
-	value: number;
+  	readonly kind: 'ExprArg';
+	readonly x: number;
+	readonly value: number;
   };
 export function loadExprArg(slice: Slice, arg0: number): ExprArg {
   	let value: number = slice.loadUint((arg0 - 2));
@@ -283,8 +283,8 @@ export function storeExprArg(exprArg: ExprArg): (builder: Builder) => void {
   	});
   }
 export interface ExprArgUser {
-  	kind: 'ExprArgUser';
-	t: ExprArg;
+  	readonly kind: 'ExprArgUser';
+	readonly t: ExprArg;
   };
 export function loadExprArgUser(slice: Slice): ExprArgUser {
   	let t: ExprArg = loadExprArg(slice, 6);
@@ -299,8 +299,8 @@ export function storeExprArgUser(exprArgUser: ExprArgUser): (builder: Builder) =
   	});
   }
 export interface ComplexTypedField {
-  	kind: 'ComplexTypedField';
-	a: ExprArgUser;
+  	readonly kind: 'ComplexTypedField';
+	readonly a: ExprArgUser;
   };
 export function loadComplexTypedField(slice: Slice): ComplexTypedField {
   	let a: ExprArgUser = loadExprArgUser(slice);
@@ -315,8 +315,8 @@ export function storeComplexTypedField(complexTypedField: ComplexTypedField): (b
   	});
   }
 export interface CellTypedField {
-  	kind: 'CellTypedField';
-	a: ExprArgUser;
+  	readonly kind: 'CellTypedField';
+	readonly a: ExprArgUser;
   };
 export function loadCellTypedField(slice: Slice): CellTypedField {
   	let slice1 = slice.loadRef().beginParse();
@@ -334,14 +334,14 @@ export function storeCellTypedField(_cellTypedField: CellTypedField): (builder: 
   	});
   }
 export interface CellsSimple {
-  	kind: 'CellsSimple';
-	t: number;
-	q: number;
-	a: number;
-	e: number;
-	b: number;
-	d: number;
-	c: number;
+  	readonly kind: 'CellsSimple';
+	readonly t: number;
+	readonly q: number;
+	readonly a: number;
+	readonly e: number;
+	readonly b: number;
+	readonly d: number;
+	readonly c: number;
   };
 export function loadCellsSimple(slice: Slice): CellsSimple {
   	let t: number = slice.loadUint(32);
@@ -389,11 +389,11 @@ export function storeCellsSimple(_cellsSimple: CellsSimple): (builder: Builder) 
   	});
   }
 export interface IntBits<Arg> {
-  	kind: 'IntBits';
-	d: number;
-	g: BitString;
-	arg: Arg;
-	x: Slice;
+  	readonly kind: 'IntBits';
+	readonly d: number;
+	readonly g: BitString;
+	readonly arg: Arg;
+	readonly x: Slice;
   };
 export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntBits<Arg> {
   	let d: number = slice.loadInt(11);
@@ -417,9 +417,9 @@ export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) =>
   	});
   }
 export interface IntBitsInside {
-  	kind: 'IntBitsInside';
-	x: number;
-	a: IntBits<number>;
+  	readonly kind: 'IntBitsInside';
+	readonly x: number;
+	readonly a: IntBits<number>;
   };
 export function loadIntBitsInside(slice: Slice, arg0: number): IntBitsInside {
   	let a: IntBits<number> = loadIntBits<number>(slice, ((slice: Slice) => {
@@ -441,8 +441,8 @@ export function storeIntBitsInside(intBitsInside: IntBitsInside): (builder: Buil
   	});
   }
 export interface IntBitsOutside {
-  	kind: 'IntBitsOutside';
-	x: IntBitsInside;
+  	readonly kind: 'IntBitsOutside';
+	readonly x: IntBitsInside;
   };
 export function loadIntBitsOutside(slice: Slice): IntBitsOutside {
   	let x: IntBitsInside = loadIntBitsInside(slice, 6);
@@ -457,14 +457,14 @@ export function storeIntBitsOutside(intBitsOutside: IntBitsOutside): (builder: B
   	});
   }
 export interface IntBitsParametrized {
-  	kind: 'IntBitsParametrized';
-	e: number;
-	h: number;
-	f: number;
-	i: BitString;
-	j: number;
-	k: number;
-	tc: Slice;
+  	readonly kind: 'IntBitsParametrized';
+	readonly e: number;
+	readonly h: number;
+	readonly f: number;
+	readonly i: BitString;
+	readonly j: number;
+	readonly k: number;
+	readonly tc: Slice;
   };
 export function loadIntBitsParametrized(slice: Slice, e: number): IntBitsParametrized {
   	let h: number = slice.loadInt((e * 8));
@@ -495,9 +495,9 @@ export function storeIntBitsParametrized(intBitsParametrized: IntBitsParametrize
   	});
   }
 export interface IntBitsParametrizedInside {
-  	kind: 'IntBitsParametrizedInside';
-	x: number;
-	a: IntBitsParametrized;
+  	readonly kind: 'IntBitsParametrizedInside';
+	readonly x: number;
+	readonly a: IntBitsParametrized;
   };
 export function loadIntBitsParametrizedInside(slice: Slice, x: number): IntBitsParametrizedInside {
   	let a: IntBitsParametrized = loadIntBitsParametrized(slice, x);
@@ -513,8 +513,8 @@ export function storeIntBitsParametrizedInside(intBitsParametrizedInside: IntBit
   	});
   }
 export interface IntBitsParametrizedOutside {
-  	kind: 'IntBitsParametrizedOutside';
-	x: IntBitsParametrizedInside;
+  	readonly kind: 'IntBitsParametrizedOutside';
+	readonly x: IntBitsParametrizedInside;
   };
 export function loadIntBitsParametrizedOutside(slice: Slice): IntBitsParametrizedOutside {
   	let x: IntBitsParametrizedInside = loadIntBitsParametrizedInside(slice, 5);
@@ -529,9 +529,9 @@ export function storeIntBitsParametrizedOutside(intBitsParametrizedOutside: IntB
   	});
   }
 export interface LessThan {
-  	kind: 'LessThan';
-	x: number;
-	y: number;
+  	readonly kind: 'LessThan';
+	readonly x: number;
+	readonly y: number;
   };
 export function loadLessThan(slice: Slice): LessThan {
   	let x: number = slice.loadUint(bitLen((4 - 1)));
@@ -549,9 +549,9 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
   	});
   }
 export interface OneComb<A> {
-  	kind: 'OneComb';
-	t: number;
-	x: A;
+  	readonly kind: 'OneComb';
+	readonly t: number;
+	readonly x: A;
   };
 export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
   	let t: number = slice.loadUint(32);
@@ -569,8 +569,8 @@ export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder:
   	});
   }
 export interface ManyComb {
-  	kind: 'ManyComb';
-	y: OneComb<OneComb<OneComb<number>>>;
+  	readonly kind: 'ManyComb';
+	readonly y: OneComb<OneComb<OneComb<number>>>;
   };
 export function loadManyComb(slice: Slice): ManyComb {
   	let y: OneComb<OneComb<OneComb<number>>> = loadOneComb<OneComb<OneComb<number>>>(slice, ((slice: Slice) => {
@@ -614,12 +614,12 @@ export function unary_unary_succ_get_n(x: Unary): number {
   }
 export type Unary = Unary_unary_zero | Unary_unary_succ;
 export interface Unary_unary_zero {
-  	kind: 'Unary_unary_zero';
+  	readonly kind: 'Unary_unary_zero';
   };
 export interface Unary_unary_succ {
-  	kind: 'Unary_unary_succ';
-	n: number;
-	x: Unary;
+  	readonly kind: 'Unary_unary_succ';
+	readonly n: number;
+	readonly x: Unary;
   };
 export function loadUnary(slice: Slice): Unary {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
@@ -656,26 +656,26 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
   }
 export type ParamConst = ParamConst_b | ParamConst_c | ParamConst_a | ParamConst_d;
 export interface ParamConst_b {
-  	kind: 'ParamConst_b';
-	m: number;
-	k: number;
+  	readonly kind: 'ParamConst_b';
+	readonly m: number;
+	readonly k: number;
   };
 export interface ParamConst_c {
-  	kind: 'ParamConst_c';
-	n: number;
-	m: number;
-	k: number;
+  	readonly kind: 'ParamConst_c';
+	readonly n: number;
+	readonly m: number;
+	readonly k: number;
   };
 export interface ParamConst_a {
-  	kind: 'ParamConst_a';
-	n: number;
+  	readonly kind: 'ParamConst_a';
+	readonly n: number;
   };
 export interface ParamConst_d {
-  	kind: 'ParamConst_d';
-	n: number;
-	m: number;
-	k: number;
-	l: number;
+  	readonly kind: 'ParamConst_d';
+	readonly n: number;
+	readonly m: number;
+	readonly k: number;
+	readonly l: number;
   };
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
   	if (((slice.remainingBits >= 2) && ((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1))))) {
@@ -789,20 +789,20 @@ export function paramDifNames_d_get_m(x: ParamDifNames): number {
   }
 export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c | ParamDifNames_d;
 export interface ParamDifNames_a {
-  	kind: 'ParamDifNames_a';
+  	readonly kind: 'ParamDifNames_a';
   };
 export interface ParamDifNames_b {
-  	kind: 'ParamDifNames_b';
+  	readonly kind: 'ParamDifNames_b';
   };
 export interface ParamDifNames_c {
-  	kind: 'ParamDifNames_c';
-	n: number;
-	x: ParamDifNames;
+  	readonly kind: 'ParamDifNames_c';
+	readonly n: number;
+	readonly x: ParamDifNames;
   };
 export interface ParamDifNames_d {
-  	kind: 'ParamDifNames_d';
-	m: number;
-	x: ParamDifNames;
+  	readonly kind: 'ParamDifNames_d';
+	readonly m: number;
+	readonly x: ParamDifNames;
   };
 export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
   	if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b0) && (arg0 == 2)))) {
@@ -882,9 +882,9 @@ export function paramDifNamesUser_get_k(x: ParamDifNames): number {
 	throw new Error('');
   }
 export interface ParamDifNamesUser {
-  	kind: 'ParamDifNamesUser';
-	k: number;
-	x: ParamDifNames;
+  	readonly kind: 'ParamDifNamesUser';
+	readonly k: number;
+	readonly x: ParamDifNames;
   };
 export function loadParamDifNamesUser(slice: Slice): ParamDifNamesUser {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
@@ -906,10 +906,10 @@ export function storeParamDifNamesUser(paramDifNamesUser: ParamDifNamesUser): (b
   	});
   }
 export interface NegationFromImplicit {
-  	kind: 'NegationFromImplicit';
-	y: number;
-	t: number;
-	z: number;
+  	readonly kind: 'NegationFromImplicit';
+	readonly y: number;
+	readonly t: number;
+	readonly z: number;
   };
 export function loadNegationFromImplicit(slice: Slice): NegationFromImplicit {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
@@ -943,10 +943,10 @@ export function unaryUserCheckOrder_get_l(label: Unary): number {
 	throw new Error('');
   }
 export interface UnaryUserCheckOrder {
-  	kind: 'UnaryUserCheckOrder';
-	l: number;
-	m: number;
-	label: Unary;
+  	readonly kind: 'UnaryUserCheckOrder';
+	readonly l: number;
+	readonly m: number;
+	readonly label: Unary;
   };
 export function loadUnaryUserCheckOrder(slice: Slice): UnaryUserCheckOrder {
   	let label: Unary = loadUnary(slice);
@@ -964,11 +964,11 @@ export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrde
   	});
   }
 export interface CombArgCellRef<X> {
-  	kind: 'CombArgCellRef';
-	info: number;
-	init: Maybe<Either<X,number>>;
-	other: Either<X,OneComb<X>>;
-	body: Either<X,X>;
+  	readonly kind: 'CombArgCellRef';
+	readonly info: number;
+	readonly init: Maybe<Either<X,number>>;
+	readonly other: Either<X,OneComb<X>>;
+	readonly body: Either<X,X>;
   };
 export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X): CombArgCellRef<X> {
   	let info: number = slice.loadInt(32);
@@ -1025,8 +1025,8 @@ export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX
   	});
   }
 export interface CombArgCellRefUser {
-  	kind: 'CombArgCellRefUser';
-	x: CombArgCellRef<number>;
+  	readonly kind: 'CombArgCellRefUser';
+	readonly x: CombArgCellRef<number>;
   };
 export function loadCombArgCellRefUser(slice: Slice): CombArgCellRefUser {
   	let x: CombArgCellRef<number> = loadCombArgCellRef<number>(slice, ((slice: Slice) => {
@@ -1047,9 +1047,9 @@ export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser):
   	});
   }
 export interface MathExprAsCombArg {
-  	kind: 'MathExprAsCombArg';
-	n: number;
-	ref: BitLenArg;
+  	readonly kind: 'MathExprAsCombArg';
+	readonly n: number;
+	readonly ref: BitLenArg;
   };
 export function loadMathExprAsCombArg(slice: Slice, arg0: number): MathExprAsCombArg {
   	let slice1 = slice.loadRef().beginParse();
@@ -1068,8 +1068,8 @@ export function storeMathExprAsCombArg(mathExprAsCombArg: MathExprAsCombArg): (b
   	});
   }
 export interface EmptyTag {
-  	kind: 'EmptyTag';
-	a: number;
+  	readonly kind: 'EmptyTag';
+	readonly a: number;
   };
 export function loadEmptyTag(slice: Slice): EmptyTag {
   	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xab787f76))) {
@@ -1089,8 +1089,8 @@ export function storeEmptyTag(emptyTag: EmptyTag): (builder: Builder) => void {
   	});
   }
 export interface SharpTag {
-  	kind: 'SharpTag';
-	x: number;
+  	readonly kind: 'SharpTag';
+	readonly x: number;
   };
 export function loadSharpTag(slice: Slice): SharpTag {
   	if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xf4))) {
@@ -1110,8 +1110,8 @@ export function storeSharpTag(sharpTag: SharpTag): (builder: Builder) => void {
   	});
   }
 export interface DollarTag {
-  	kind: 'DollarTag';
-	x: number;
+  	readonly kind: 'DollarTag';
+	readonly x: number;
   };
 export function loadDollarTag(slice: Slice): DollarTag {
   	if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1011))) {
@@ -1131,8 +1131,8 @@ export function storeDollarTag(dollarTag: DollarTag): (builder: Builder) => void
   	});
   }
 export interface TupleCheck {
-  	kind: 'TupleCheck';
-	s: Array<number>;
+  	readonly kind: 'TupleCheck';
+	readonly s: Array<number>;
   };
 export function loadTupleCheck(slice: Slice): TupleCheck {
   	let s: Array<number> = Array.from(Array(3).keys()).map(((arg: number) => {
@@ -1166,12 +1166,12 @@ export function hashmap_get_l(label: HmLabel): number {
 	throw new Error('');
   }
 export interface Hashmap<X> {
-  	kind: 'Hashmap';
-	n: number;
-	l: number;
-	m: number;
-	label: HmLabel;
-	node: HashmapNode<X>;
+  	readonly kind: 'Hashmap';
+	readonly n: number;
+	readonly l: number;
+	readonly m: number;
+	readonly label: HmLabel;
+	readonly node: HashmapNode<X>;
   };
 export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
   	let label: HmLabel = loadHmLabel(slice, n);
@@ -1194,14 +1194,14 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
   }
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 export interface HashmapNode_hmn_leaf<X> {
-  	kind: 'HashmapNode_hmn_leaf';
-	value: X;
+  	readonly kind: 'HashmapNode_hmn_leaf';
+	readonly value: X;
   };
 export interface HashmapNode_hmn_fork<X> {
-  	kind: 'HashmapNode_hmn_fork';
-	n: number;
-	left: Hashmap<X>;
-	right: Hashmap<X>;
+  	readonly kind: 'HashmapNode_hmn_fork';
+	readonly n: number;
+	readonly left: Hashmap<X>;
+	readonly right: Hashmap<X>;
   };
 export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): HashmapNode<X> {
   	if ((arg0 == 0)) {
@@ -1255,23 +1255,23 @@ export function hmLabel_hml_short_get_n(len: Unary): number {
   }
 export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
 export interface HmLabel_hml_short {
-  	kind: 'HmLabel_hml_short';
-	m: number;
-	n: number;
-	len: Unary;
-	s: Array<BitString>;
+  	readonly kind: 'HmLabel_hml_short';
+	readonly m: number;
+	readonly n: number;
+	readonly len: Unary;
+	readonly s: Array<BitString>;
   };
 export interface HmLabel_hml_long {
-  	kind: 'HmLabel_hml_long';
-	m: number;
-	n: number;
-	s: Array<BitString>;
+  	readonly kind: 'HmLabel_hml_long';
+	readonly m: number;
+	readonly n: number;
+	readonly s: Array<BitString>;
   };
 export interface HmLabel_hml_same {
-  	kind: 'HmLabel_hml_same';
-	m: number;
-	v: BitString;
-	n: number;
+  	readonly kind: 'HmLabel_hml_same';
+	readonly m: number;
+	readonly v: BitString;
+	readonly n: number;
   };
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
@@ -1351,13 +1351,13 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
   }
 export type HashmapE<X> = HashmapE_hme_empty<X> | HashmapE_hme_root<X>;
 export interface HashmapE_hme_empty<X> {
-  	kind: 'HashmapE_hme_empty';
-	n: number;
+  	readonly kind: 'HashmapE_hme_empty';
+	readonly n: number;
   };
 export interface HashmapE_hme_root<X> {
-  	kind: 'HashmapE_hme_root';
-	n: number;
-	root: Hashmap<X>;
+  	readonly kind: 'HashmapE_hme_root';
+	readonly n: number;
+	readonly root: Hashmap<X>;
   };
 export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapE<X> {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
@@ -1396,8 +1396,8 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
 	throw new Error('');
   }
 export interface HashmapEUser {
-  	kind: 'HashmapEUser';
-	x: HashmapE<number>;
+  	readonly kind: 'HashmapEUser';
+	readonly x: HashmapE<number>;
   };
 export function loadHashmapEUser(slice: Slice): HashmapEUser {
   	let x: HashmapE<number> = loadHashmapE<number>(slice, 8, ((slice: Slice) => {
@@ -1418,9 +1418,9 @@ export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder
   	});
   }
 export interface ConditionalField {
-  	kind: 'ConditionalField';
-	a: number;
-	b: number | undefined;
+  	readonly kind: 'ConditionalField';
+	readonly a: number;
+	readonly b: number | undefined;
   };
 export function loadConditionalField(slice: Slice): ConditionalField {
   	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xdc165658))) {
@@ -1445,9 +1445,9 @@ export function storeConditionalField(conditionalField: ConditionalField): (buil
   	});
   }
 export interface BitSelection {
-  	kind: 'BitSelection';
-	a: number;
-	b: number | undefined;
+  	readonly kind: 'BitSelection';
+	readonly a: number;
+	readonly b: number | undefined;
   };
 export function loadBitSelection(slice: Slice): BitSelection {
   	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xe1a2049e))) {
@@ -1472,8 +1472,8 @@ export function storeBitSelection(bitSelection: BitSelection): (builder: Builder
   	});
   }
 export interface ImplicitCondition {
-  	kind: 'ImplicitCondition';
-	flags: number;
+  	readonly kind: 'ImplicitCondition';
+	readonly flags: number;
   };
 export function loadImplicitCondition(slice: Slice): ImplicitCondition {
   	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd86a5028))) {
@@ -1500,16 +1500,16 @@ export function storeImplicitCondition(implicitCondition: ImplicitCondition): (b
   }
 export type MultipleEmptyConstructor = MultipleEmptyConstructor__ | MultipleEmptyConstructor__1 | MultipleEmptyConstructor_a;
 export interface MultipleEmptyConstructor__ {
-  	kind: 'MultipleEmptyConstructor__';
-	a: number;
+  	readonly kind: 'MultipleEmptyConstructor__';
+	readonly a: number;
   };
 export interface MultipleEmptyConstructor__1 {
-  	kind: 'MultipleEmptyConstructor__1';
-	b: number;
+  	readonly kind: 'MultipleEmptyConstructor__1';
+	readonly b: number;
   };
 export interface MultipleEmptyConstructor_a {
-  	kind: 'MultipleEmptyConstructor_a';
-	x: number;
+  	readonly kind: 'MultipleEmptyConstructor_a';
+	readonly x: number;
   };
 export function loadMultipleEmptyConstructor(slice: Slice, arg0: number): MultipleEmptyConstructor {
   	if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x85e93c51) && (arg0 == 0)))) {
@@ -1558,7 +1558,7 @@ export function storeMultipleEmptyConstructor(multipleEmptyConstructor: Multiple
 	throw new Error('');
   }
 export interface True {
-  	kind: 'True';
+  	readonly kind: 'True';
   };
 export function loadTrue(slice: Slice): True {
   	return {
@@ -1572,12 +1572,12 @@ export function storeTrue(true0: True): (builder: Builder) => void {
   }
 export type ParamNamedArgInSecondConstr = ParamNamedArgInSecondConstr_a | ParamNamedArgInSecondConstr_b;
 export interface ParamNamedArgInSecondConstr_a {
-  	kind: 'ParamNamedArgInSecondConstr_a';
-	n: number;
+  	readonly kind: 'ParamNamedArgInSecondConstr_a';
+	readonly n: number;
   };
 export interface ParamNamedArgInSecondConstr_b {
-  	kind: 'ParamNamedArgInSecondConstr_b';
-	n: number;
+  	readonly kind: 'ParamNamedArgInSecondConstr_b';
+	readonly n: number;
   };
 export function loadParamNamedArgInSecondConstr(slice: Slice, arg0: number): ParamNamedArgInSecondConstr {
   	if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
@@ -1610,8 +1610,8 @@ export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: Pa
 	throw new Error('');
   }
 export interface RefCombinatorAny {
-  	kind: 'RefCombinatorAny';
-	msg: Maybe<Slice>;
+  	readonly kind: 'RefCombinatorAny';
+	readonly msg: Maybe<Slice>;
   };
 export function loadRefCombinatorAny(slice: Slice): RefCombinatorAny {
   	let slice1 = slice.loadRef().beginParse();
@@ -1635,8 +1635,8 @@ export function storeRefCombinatorAny(refCombinatorAny: RefCombinatorAny): (buil
   	});
   }
 export interface EqualityExpression {
-  	kind: 'EqualityExpression';
-	n: number;
+  	readonly kind: 'EqualityExpression';
+	readonly n: number;
   };
 export function loadEqualityExpression(slice: Slice): EqualityExpression {
   	let n: number = slice.loadUint(32);
@@ -1657,9 +1657,9 @@ export function storeEqualityExpression(equalityExpression: EqualityExpression):
   	});
   }
 export interface ConditionalRef {
-  	kind: 'ConditionalRef';
-	x: number;
-	y: Simple | undefined;
+  	readonly kind: 'ConditionalRef';
+	readonly x: number;
+	readonly y: Simple | undefined;
   };
 export function loadConditionalRef(slice: Slice): ConditionalRef {
   	let x: number = slice.loadUint(1);
@@ -1684,9 +1684,9 @@ export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: B
   	});
   }
 export interface LoadFromNegationOutsideExpr {
-  	kind: 'LoadFromNegationOutsideExpr';
-	seq_no: number;
-	prev_seq_no: number;
+  	readonly kind: 'LoadFromNegationOutsideExpr';
+	readonly seq_no: number;
+	readonly prev_seq_no: number;
   };
 export function loadLoadFromNegationOutsideExpr(slice: Slice): LoadFromNegationOutsideExpr {
   	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9bc7a987))) {
@@ -1707,8 +1707,8 @@ export function storeLoadFromNegationOutsideExpr(loadFromNegationOutsideExpr: Lo
   	});
   }
 export interface AnonymousData {
-  	kind: 'AnonymousData';
-	anon0: number;
+  	readonly kind: 'AnonymousData';
+	readonly anon0: number;
   };
 export function loadAnonymousData(slice: Slice): AnonymousData {
   	let anon0: number = slice.loadUint(1);
@@ -1723,8 +1723,8 @@ export function storeAnonymousData(anonymousData: AnonymousData): (builder: Buil
   	});
   }
 export interface FalseAnonField {
-  	kind: 'FalseAnonField';
-	value: number;
+  	readonly kind: 'FalseAnonField';
+	readonly value: number;
   };
 export function loadFalseAnonField(slice: Slice): FalseAnonField {
   	if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x0201))) {
@@ -1745,12 +1745,12 @@ export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: B
   }
 export type ConstructorOrder = ConstructorOrder__ | ConstructorOrder_a;
 export interface ConstructorOrder__ {
-  	kind: 'ConstructorOrder__';
-	anon0: Simple;
+  	readonly kind: 'ConstructorOrder__';
+	readonly anon0: Simple;
   };
 export interface ConstructorOrder_a {
-  	kind: 'ConstructorOrder_a';
-	a: Simple;
+  	readonly kind: 'ConstructorOrder_a';
+	readonly a: Simple;
   };
 export function loadConstructorOrder(slice: Slice): ConstructorOrder {
   	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xc6cc03c3))) {
@@ -1788,13 +1788,13 @@ export function storeConstructorOrder(constructorOrder: ConstructorOrder): (buil
   }
 export type CheckCrc32 = CheckCrc32_a | CheckCrc32_b;
 export interface CheckCrc32_a {
-  	kind: 'CheckCrc32_a';
-	a: number;
+  	readonly kind: 'CheckCrc32_a';
+	readonly a: number;
   };
 export interface CheckCrc32_b {
-  	kind: 'CheckCrc32_b';
-	b: number;
-	c: number;
+  	readonly kind: 'CheckCrc32_b';
+	readonly b: number;
+	readonly c: number;
   };
 export function loadCheckCrc32(slice: Slice): CheckCrc32 {
   	if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd6e7c617))) {
@@ -1834,8 +1834,8 @@ export function storeCheckCrc32(checkCrc32: CheckCrc32): (builder: Builder) => v
 	throw new Error('');
   }
 export interface CheckKeyword {
-  	kind: 'CheckKeyword';
-	const0: number;
+  	readonly kind: 'CheckKeyword';
+	readonly const0: number;
   };
 export function loadCheckKeyword(slice: Slice): CheckKeyword {
   	let const0: number = slice.loadUint(32);
