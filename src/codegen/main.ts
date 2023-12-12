@@ -178,7 +178,7 @@ export function generate(tree: Program, input: string) {
   });
 
   jsCodeDeclarations.forEach(element => {
-    generatedCode += toCode(element, new CodeBuilder()) + '\n';
+    generatedCode += toCode(element, new CodeBuilder()).render() + '\n';
   });
   return generatedCode;
 }
