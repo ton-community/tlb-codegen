@@ -304,7 +304,7 @@ export function tMultiStatement(statements: Array<Statement>): MultiStatement {
 //     return parameters;
 // }
 
-export function toCode(node: TheNode, code: CodeBuilder): string {
+export function toCode(node: TheNode, code: CodeBuilder): CodeBuilder {
     if (node.type == "Identifier") {
         code.add(node.name, false);
     }
@@ -314,10 +314,7 @@ export function toCode(node: TheNode, code: CodeBuilder): string {
     }
 
     if (node.type == "ImportDeclaration") {
-        code.add(`import { `, false);
-        toCode(node.importValue, code);
-        code.add(` } from `, false)
-        toCode(node.from, code)
+        code.add(`import { ${toCode(node.importValue, new CodeBuilder()).render()} } from ${toCode(node.from, new CodeBuilder()).render()}`, false);
     }
 
     // if (node.type == "FunctionDeclaration") {
@@ -428,5 +425,5 @@ export function toCode(node: TheNode, code: CodeBuilder): string {
 //         result += `(${toCode(node.condition, printContext)} ? ${toCode(node.body, printContext)} : ${toCode(node.elseBody, printContext)})`
 //     }
 
-    return code.render();
+    return code;
 }
