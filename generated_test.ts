@@ -859,9 +859,9 @@ export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) =>
 
 export function loadIntBitsInside(slice: Slice, arg0: number): IntBitsInside {
     let a: IntBits<number> = loadIntBits<number>(slice, ((slice: Slice) => {
-    return slice.loadInt((1 + (arg0 / 2)))
-})
-);
+        return slice.loadInt((1 + (arg0 / 2)))
+
+    }));
     return {
         kind: 'IntBitsInside',
         x: (arg0 / 2),
@@ -873,12 +873,11 @@ export function loadIntBitsInside(slice: Slice, arg0: number): IntBitsInside {
 export function storeIntBitsInside(intBitsInside: IntBitsInside): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeIntBits<number>(intBitsInside.a, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeInt(arg, (1 + intBitsInside.x));
-        })
+            return ((builder: Builder) => {
+                builder.storeInt(arg, (1 + intBitsInside.x));
+            })
 
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -1004,15 +1003,15 @@ export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder:
 
 export function loadManyComb(slice: Slice): ManyComb {
     let y: OneComb<OneComb<OneComb<number>>> = loadOneComb<OneComb<OneComb<number>>>(slice, ((slice: Slice) => {
-    return loadOneComb<OneComb<number>>(slice, ((slice: Slice) => {
-        return loadOneComb<number>(slice, ((slice: Slice) => {
-            return slice.loadInt(3)
-        })
-        )
-    })
-    )
-})
-);
+        return loadOneComb<OneComb<number>>(slice, ((slice: Slice) => {
+            return loadOneComb<number>(slice, ((slice: Slice) => {
+                return slice.loadInt(3)
+
+            }))
+
+        }))
+
+    }));
     return {
         kind: 'ManyComb',
         y: y,
@@ -1023,24 +1022,21 @@ export function loadManyComb(slice: Slice): ManyComb {
 export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeOneComb<OneComb<OneComb<number>>>(manyComb.y, ((arg: OneComb<OneComb<number>>) => {
-        return ((builder: Builder) => {
-            storeOneComb<OneComb<number>>(arg, ((arg: OneComb<number>) => {
             return ((builder: Builder) => {
-                storeOneComb<number>(arg, ((arg: number) => {
-                return ((builder: Builder) => {
-                    builder.storeInt(arg, 3);
-                })
+                storeOneComb<OneComb<number>>(arg, ((arg: OneComb<number>) => {
+                    return ((builder: Builder) => {
+                        storeOneComb<number>(arg, ((arg: number) => {
+                            return ((builder: Builder) => {
+                                builder.storeInt(arg, 3);
+                            })
 
+                        }))(builder);
+                    })
+
+                }))(builder);
             })
-            )(builder);
-            })
 
-        })
-        )(builder);
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -1048,10 +1044,12 @@ export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
 export function unary_unary_succ_get_n(x: Unary): number {
     if ((x.kind == 'Unary_unary_zero')) {
         return 0
+
     }
     if ((x.kind == 'Unary_unary_succ')) {
         let n = x.n;
         return (n + 1)
+
     }
     throw new Error('');
 }
@@ -1184,17 +1182,21 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
 export function paramDifNames_c_get_n(x: ParamDifNames): number {
     if ((x.kind == 'ParamDifNames_a')) {
         return 1
+
     }
     if ((x.kind == 'ParamDifNames_b')) {
         return 1
+
     }
     if ((x.kind == 'ParamDifNames_c')) {
         let n = x.n;
         return (n + 1)
+
     }
     if ((x.kind == 'ParamDifNames_d')) {
         let m = x.m;
         return (m * 2)
+
     }
     throw new Error('');
 }
@@ -1202,17 +1204,21 @@ export function paramDifNames_c_get_n(x: ParamDifNames): number {
 export function paramDifNames_d_get_m(x: ParamDifNames): number {
     if ((x.kind == 'ParamDifNames_a')) {
         return 1
+
     }
     if ((x.kind == 'ParamDifNames_b')) {
         return 1
+
     }
     if ((x.kind == 'ParamDifNames_c')) {
         let n = x.n;
         return (n + 1)
+
     }
     if ((x.kind == 'ParamDifNames_d')) {
         let m = x.m;
         return (m * 2)
+
     }
     throw new Error('');
 }
@@ -1290,17 +1296,21 @@ export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Buil
 export function paramDifNamesUser_get_k(x: ParamDifNames): number {
     if ((x.kind == 'ParamDifNames_a')) {
         return 1
+
     }
     if ((x.kind == 'ParamDifNames_b')) {
         return 1
+
     }
     if ((x.kind == 'ParamDifNames_c')) {
         let n = x.n;
         return (n + 1)
+
     }
     if ((x.kind == 'ParamDifNames_d')) {
         let m = x.m;
         return (m * 2)
+
     }
     throw new Error('');
 }
@@ -1356,10 +1366,12 @@ export function storeNegationFromImplicit(negationFromImplicit: NegationFromImpl
 export function unaryUserCheckOrder_get_l(label: Unary): number {
     if ((label.kind == 'Unary_unary_zero')) {
         return 0
+
     }
     if ((label.kind == 'Unary_unary_succ')) {
         let n = label.n;
         return (n + 1)
+
     }
     throw new Error('');
 }
@@ -1386,23 +1398,23 @@ export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrde
 export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X): CombArgCellRef<X> {
     let info: number = slice.loadInt(32);
     let init: Maybe<Either<X, number>> = loadMaybe<Either<X, number>>(slice, ((slice: Slice) => {
-    return loadEither<X, number>(slice, loadX, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return slice1.loadInt(22)
-    })
-    )
-})
-);
+        return loadEither<X, number>(slice, loadX, ((slice: Slice) => {
+            let slice1 = slice.loadRef().beginParse();
+            return slice1.loadInt(22)
+
+        }))
+
+    }));
     let other: Either<X, OneComb<X>> = loadEither<X, OneComb<X>>(slice, loadX, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadOneComb<X>(slice1, loadX)
-})
-);
+        let slice1 = slice.loadRef().beginParse();
+        return loadOneComb<X>(slice1, loadX)
+
+    }));
     let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadX(slice1)
-})
-);
+        let slice1 = slice.loadRef().beginParse();
+        return loadX(slice1)
+
+    }));
     return {
         kind: 'CombArgCellRef',
         info: info,
@@ -1417,56 +1429,46 @@ export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX
     return ((builder: Builder) => {
         builder.storeInt(combArgCellRef.info, 32);
         storeMaybe<Either<X, number>>(combArgCellRef.init, ((arg: Either<X, number>) => {
-        return ((builder: Builder) => {
-            storeEither<X, number>(arg, storeX, ((arg: number) => {
+            return ((builder: Builder) => {
+                storeEither<X, number>(arg, storeX, ((arg: number) => {
+                    return ((builder: Builder) => {
+                        let cell1 = beginCell();
+                        cell1.storeInt(arg, 22);
+                        builder.storeRef(cell1);
+
+                    })
+
+                }))(builder);
+            })
+
+        }))(builder);
+        storeEither<X, OneComb<X>>(combArgCellRef.other, storeX, ((arg: OneComb<X>) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-
-                cell1.storeInt(arg, 22);
-
+                storeOneComb<X>(arg, storeX)(cell1);
                 builder.storeRef(cell1);
 
             })
 
-        })
-        )(builder);
-        })
-
-    })
-    )(builder);
-        storeEither<X, OneComb<X>>(combArgCellRef.other, storeX, ((arg: OneComb<X>) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
-
-            storeOneComb<X>(arg, storeX)(cell1);
-
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
         storeEither<X, X>(combArgCellRef.body, storeX, ((arg: X) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeX(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeX(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
 
 export function loadCombArgCellRefUser(slice: Slice): CombArgCellRefUser {
     let x: CombArgCellRef<number> = loadCombArgCellRef<number>(slice, ((slice: Slice) => {
-    return slice.loadInt(12)
-})
-);
+        return slice.loadInt(12)
+
+    }));
     return {
         kind: 'CombArgCellRefUser',
         x: x,
@@ -1477,12 +1479,11 @@ export function loadCombArgCellRefUser(slice: Slice): CombArgCellRefUser {
 export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeCombArgCellRef<number>(combArgCellRefUser.x, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeInt(arg, 12);
-        })
+            return ((builder: Builder) => {
+                builder.storeInt(arg, 12);
+            })
 
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -1572,9 +1573,9 @@ export function storeDollarTag(dollarTag: DollarTag): (builder: Builder) => void
 
 export function loadTupleCheck(slice: Slice): TupleCheck {
     let s: Array<number> = Array.from(Array(3).keys()).map(((arg: number) => {
-    return slice.loadInt(5)
-})
-);
+        return slice.loadInt(5)
+
+    }));
     return {
         kind: 'TupleCheck',
         s: s,
@@ -1585,9 +1586,8 @@ export function loadTupleCheck(slice: Slice): TupleCheck {
 export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => void {
     return ((builder: Builder) => {
         tupleCheck.s.forEach(((arg: number) => {
-        builder.storeInt(arg, 5);
-    })
-    );
+            builder.storeInt(arg, 5);
+        }));
     })
 
 }
@@ -1596,14 +1596,17 @@ export function hashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_long')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_same')) {
         let n = label.n;
         return n
+
     }
     throw new Error('');
 }
@@ -1680,10 +1683,12 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
 export function hmLabel_hml_short_get_n(len: Unary): number {
     if ((len.kind == 'Unary_unary_zero')) {
         return 0
+
     }
     if ((len.kind == 'Unary_unary_succ')) {
         let n = len.n;
         return (n + 1)
+
     }
     throw new Error('');
 }
@@ -1694,9 +1699,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         let len: Unary = loadUnary(slice);
         let n = hmLabel_hml_short_get_n(len);
         let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-    return slice.loadBits(1)
-})
-);
+            return slice.loadBits(1)
+
+        }));
         if ((!(n <= m))) {
             throw new Error('');
         }
@@ -1713,9 +1718,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         slice.loadUint(2);
         let n: number = slice.loadUint(bitLen(m));
         let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-    return slice.loadBits(1)
-})
-);
+            return slice.loadBits(1)
+
+        }));
         return {
             kind: 'HmLabel_hml_long',
             m: m,
@@ -1745,9 +1750,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
             builder.storeUint(0b0, 1);
             storeUnary(hmLabel.len)(builder);
             hmLabel.s.forEach(((arg: BitString) => {
-            builder.storeBits(arg);
-        })
-        );
+                builder.storeBits(arg);
+            }));
             if ((!(hmLabel.n <= hmLabel.m))) {
                 throw new Error('');
             }
@@ -1759,9 +1763,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
             builder.storeUint(0b10, 2);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
             hmLabel.s.forEach(((arg: BitString) => {
-            builder.storeBits(arg);
-        })
-        );
+                builder.storeBits(arg);
+            }));
         })
 
     }
@@ -1820,9 +1823,9 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
 
 export function loadHashmapEUser(slice: Slice): HashmapEUser {
     let x: HashmapE<number> = loadHashmapE<number>(slice, 8, ((slice: Slice) => {
-    return slice.loadUint(16)
-})
-);
+        return slice.loadUint(16)
+
+    }));
     return {
         kind: 'HashmapEUser',
         x: x,
@@ -1833,12 +1836,11 @@ export function loadHashmapEUser(slice: Slice): HashmapEUser {
 export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHashmapE<number>(hashmapEUser.x, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeUint(arg, 16);
-        })
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 16);
+            })
 
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -2028,9 +2030,9 @@ export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: Pa
 export function loadRefCombinatorAny(slice: Slice): RefCombinatorAny {
     let slice1 = slice.loadRef().beginParse();
     let msg: Maybe<Slice> = loadMaybe<Slice>(slice1, ((slice: Slice) => {
-    return slice
-})
-);
+        return slice
+
+    }));
     return {
         kind: 'RefCombinatorAny',
         msg: msg,
@@ -2042,12 +2044,11 @@ export function storeRefCombinatorAny(refCombinatorAny: RefCombinatorAny): (buil
     return ((builder: Builder) => {
         let cell1 = beginCell();
         storeMaybe<Slice>(refCombinatorAny.msg, ((arg: Slice) => {
-        return ((builder: Builder) => {
-            cell1.storeSlice(arg);
-        })
+            return ((builder: Builder) => {
+                cell1.storeSlice(arg);
+            })
 
-    })
-    )(cell1);
+        }))(cell1);
         builder.storeRef(cell1);
     })
 
@@ -2078,10 +2079,10 @@ export function storeEqualityExpression(equalityExpression: EqualityExpression):
 export function loadConditionalRef(slice: Slice): ConditionalRef {
     let x: number = slice.loadUint(1);
     let y: Simple | undefined = (x ? ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadSimple(slice1)
-})
-(slice) : undefined);
+        let slice1 = slice.loadRef().beginParse();
+        return loadSimple(slice1)
+
+    })(slice) : undefined);
     return {
         kind: 'ConditionalRef',
         x: x,
@@ -2095,9 +2096,7 @@ export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: B
         builder.storeUint(conditionalRef.x, 1);
         if ((conditionalRef.y != undefined)) {
             let cell1 = beginCell();
-
             storeSimple(conditionalRef.y)(cell1);
-
             builder.storeRef(cell1);
 
         }

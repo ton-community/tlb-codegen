@@ -1,4 +1,5 @@
 import { CodeBuilder } from "./CodeBuilder";
+import util from 'util'
 
 export interface ASTNode {
     type: TheNode["type"];
@@ -309,7 +310,7 @@ export function toCodeArray(nodeArray: Array<TheNode>, code: CodeBuilder, delime
     for (let i = 0; i < nodeArray.length; i++) {
         let currentParam = nodeArray[i];
         if (currentParam != undefined) {
-            code.add(toCode(currentParam).render(), false)
+            toCode(currentParam, code);
         }
         if (i + 1 < nodeArray.length) {
             code.add(delimeter, false);
@@ -337,7 +338,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
         code.add(`)${node.returnType ? ': ' + toCode(node.returnType).render() : ''} {`)
         code.inTab(() => {
             node.body.forEach((statement) => {
-                toCode(statement, code);
+                code.append(toCode(statement));
             })
         });
         code.add('}')
@@ -349,10 +350,10 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
         code.add(`) => {`)
         code.inTab(() => {
             node.body.forEach(statement => {
-                toCode(statement, code);
+                code.append(toCode(statement));
             })
         })
-        code.add(`})`)
+        code.add(`})`, false)
     }
 
     if (node.type == "ArrowFunctionType") {
@@ -372,7 +373,11 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
     }
 
     if (node.type == "DeclareVariable") {
-        code.add(`let ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}${node.init ? ' = ' + toCode(node.init).render() : ''}`, false)
+        code.add(`let ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}`, false)
+        if (node.init) {
+            code.add(' = ', false);
+            toCode(node.init, code);
+        }
     }
 
     if (node.type == "ObjectExpression") {
@@ -382,7 +387,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
                 code.add(toCode(objectValue).render() + ',');
             })
         });
-        code.add('}');
+        code.add('}', false);
     }
 
     if (node.type == "MultiStatement") {
@@ -397,7 +402,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
     }
 
     if (node.type == "ExpressionStatement") {
-        code.add(toCode(node.expression).render() + ';')
+        code.add(toCode(node.expression).render() + ';', false)
     }
 
     if (node.type == "TypeParametersExpression") {
@@ -444,20 +449,20 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
         code.add(`if (${toCode(node.condition).render()}) {`)
         code.inTab(() => {
             node.body.forEach(statement => {
-                toCode(statement, code);
+                code.append(toCode(statement));
             })
         })
-        code.add('}')
+        code.add('}', false)
     }
 
     if (node.type == "ForCycle") {
         code.add(`for (${toCode(node.init).render()};${toCode(node.cond).render()};${toCode(node.inc).render()}) {`)
         code.inTab(() => {
             node.body.forEach(statement => {
-                toCode(statement, code);
+                code.append(toCode(statement));
             })
         })
-        code.add(`}`);
+        code.add(`}`, false);
     }
 
     if (node.type == "UnaryOpExpression") {

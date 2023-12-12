@@ -7,8 +7,8 @@
  */
 
 export class CodeBuilder {
-    private tabLevel = 0
-    private code = ''
+    tabLevel = 0
+    code = ''
 
     tab() {
         this.tabLevel++
