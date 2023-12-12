@@ -180,7 +180,5 @@ export function generate(tree: Program, input: string) {
   jsCodeDeclarations.forEach(element => {
     generatedCode += toCode(element, new CodeBuilder()).render() + '\n';
   });
-  // let ex = tFunctionDeclaration(tIdentifier('hello'), tTypeParametersExpression([]), null, [], [tIfStatement(tIdentifier('true'), [tIfStatement(tIdentifier('true'), [tIfStatement(tIdentifier('true'), [tReturnStatement(tNumericLiteral(5))])])])]);
-  // let ex2 = tFunctionDeclaration(tIdentifier('hello'), tTypeParametersExpression([]), null, [tTypedIdentifier(tIdentifier('x'), tIdentifier('any'))], [tExpressionStatement(tFunctionCall(tIdentifier('hello'), [tArrowFunctionExpression([], [tExpressionStatement(tFunctionCall(tIdentifier('hello'), [tArrowFunctionExpression([], [tExpressionStatement(tFunctionCall(tIdentifier('hello'), [tNumericLiteral(5)]))]) ]))]) ]))]);
-  return generatedCode;//toCode(ex2, new CodeBuilder()).render() + '\n';
+  return generatedCode;
 }
