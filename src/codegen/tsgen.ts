@@ -337,7 +337,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
         code.add(`)${node.returnType ? ': ' + toCode(node.returnType).render() : ''} {`)
         code.inTab(() => {
             node.body.forEach((statement) => {
-                code.add(toCode(statement).render() + ';');
+                toCode(statement, code);
             })
         });
         code.add('}')
@@ -349,7 +349,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
         code.add(`) => {`)
         code.inTab(() => {
             node.body.forEach(statement => {
-                code.append(toCode(statement));
+                toCode(statement, code);
             })
         })
         code.add(`})`)
@@ -372,7 +372,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
     }
 
     if (node.type == "DeclareVariable") {
-        code.add(`let ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}${node.init ? ' = ' + toCode(node.init).render() : ''}`)
+        code.add(`let ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}${node.init ? ' = ' + toCode(node.init).render() : ''}`, false)
     }
 
     if (node.type == "ObjectExpression") {
@@ -392,11 +392,12 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
     }
 
     if (node.type == "ReturnStatement") {
-        code.add(`return ${toCode(node.returnValue).render()}`)
+        code.add(`return `, false)
+        code.appendInline(toCode(node.returnValue))
     }
 
     if (node.type == "ExpressionStatement") {
-        code.add(toCode(node.expression).render())
+        code.add(toCode(node.expression).render() + ';')
     }
 
     if (node.type == "TypeParametersExpression") {
