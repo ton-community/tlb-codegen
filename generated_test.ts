@@ -3,467 +3,467 @@ import { Slice } from 'ton'
 import { beginCell } from 'ton'
 import { BitString } from 'ton'
 export interface Simple {
-readonly kind: 'Simple'
-readonly a: number
-readonly b: number
+    readonly kind: 'Simple';
+    readonly a: number;
+    readonly b: number;
 }
 
 export type TwoConstructors = TwoConstructors_bool_false | TwoConstructors_bool_true;
 
 export interface TwoConstructors_bool_false {
-readonly kind: 'TwoConstructors_bool_false'
-readonly a: number
-readonly b: number
-readonly c: number
+    readonly kind: 'TwoConstructors_bool_false';
+    readonly a: number;
+    readonly b: number;
+    readonly c: number;
 }
 
 export interface TwoConstructors_bool_true {
-readonly kind: 'TwoConstructors_bool_true'
-readonly b: number
+    readonly kind: 'TwoConstructors_bool_true';
+    readonly b: number;
 }
 
 export interface FixedIntParam {
-readonly kind: 'FixedIntParam'
-readonly y: number
+    readonly kind: 'FixedIntParam';
+    readonly y: number;
 }
 
 export interface TypedField {
-readonly kind: 'TypedField'
-readonly y: FixedIntParam
-readonly c: number
+    readonly kind: 'TypedField';
+    readonly y: FixedIntParam;
+    readonly c: number;
 }
 
 export interface SharpConstructor {
-readonly kind: 'SharpConstructor'
-readonly y: FixedIntParam
-readonly c: number
+    readonly kind: 'SharpConstructor';
+    readonly y: FixedIntParam;
+    readonly c: number;
 }
 
 export type Maybe<TheType> = Maybe_nothing<TheType> | Maybe_just<TheType>;
 
 export interface Maybe_nothing<TheType> {
-readonly kind: 'Maybe_nothing'
+    readonly kind: 'Maybe_nothing';
 }
 
 export interface Maybe_just<TheType> {
-readonly kind: 'Maybe_just'
-readonly value: TheType
+    readonly kind: 'Maybe_just';
+    readonly value: TheType;
 }
 
 export interface TypedParam {
-readonly kind: 'TypedParam'
-readonly x: Maybe<SharpConstructor>
+    readonly kind: 'TypedParam';
+    readonly x: Maybe<SharpConstructor>;
 }
 
 export type Either<X, Y> = Either_left<X, Y> | Either_right<X, Y>;
 
 export interface Either_left<X, Y> {
-readonly kind: 'Either_left'
-readonly value: X
+    readonly kind: 'Either_left';
+    readonly value: X;
 }
 
 export interface Either_right<X, Y> {
-readonly kind: 'Either_right'
-readonly value: Y
+    readonly kind: 'Either_right';
+    readonly value: Y;
 }
 
 export interface BitLenArg {
-readonly kind: 'BitLenArg'
-readonly x: number
-readonly value: number
+    readonly kind: 'BitLenArg';
+    readonly x: number;
+    readonly value: number;
 }
 
 export interface BitLenArgUser {
-readonly kind: 'BitLenArgUser'
-readonly t: BitLenArg
+    readonly kind: 'BitLenArgUser';
+    readonly t: BitLenArg;
 }
 
 export interface ExprArg {
-readonly kind: 'ExprArg'
-readonly x: number
-readonly value: number
+    readonly kind: 'ExprArg';
+    readonly x: number;
+    readonly value: number;
 }
 
 export interface ExprArgUser {
-readonly kind: 'ExprArgUser'
-readonly t: ExprArg
+    readonly kind: 'ExprArgUser';
+    readonly t: ExprArg;
 }
 
 export interface ComplexTypedField {
-readonly kind: 'ComplexTypedField'
-readonly a: ExprArgUser
+    readonly kind: 'ComplexTypedField';
+    readonly a: ExprArgUser;
 }
 
 export interface CellTypedField {
-readonly kind: 'CellTypedField'
-readonly a: ExprArgUser
+    readonly kind: 'CellTypedField';
+    readonly a: ExprArgUser;
 }
 
 export interface CellsSimple {
-readonly kind: 'CellsSimple'
-readonly t: number
-readonly q: number
-readonly a: number
-readonly e: number
-readonly b: number
-readonly d: number
-readonly c: number
+    readonly kind: 'CellsSimple';
+    readonly t: number;
+    readonly q: number;
+    readonly a: number;
+    readonly e: number;
+    readonly b: number;
+    readonly d: number;
+    readonly c: number;
 }
 
 export interface IntBits<Arg> {
-readonly kind: 'IntBits'
-readonly d: number
-readonly g: BitString
-readonly arg: Arg
-readonly x: Slice
+    readonly kind: 'IntBits';
+    readonly d: number;
+    readonly g: BitString;
+    readonly arg: Arg;
+    readonly x: Slice;
 }
 
 export interface IntBitsInside {
-readonly kind: 'IntBitsInside'
-readonly x: number
-readonly a: IntBits<number>
+    readonly kind: 'IntBitsInside';
+    readonly x: number;
+    readonly a: IntBits<number>;
 }
 
 export interface IntBitsOutside {
-readonly kind: 'IntBitsOutside'
-readonly x: IntBitsInside
+    readonly kind: 'IntBitsOutside';
+    readonly x: IntBitsInside;
 }
 
 export interface IntBitsParametrized {
-readonly kind: 'IntBitsParametrized'
-readonly e: number
-readonly h: number
-readonly f: number
-readonly i: BitString
-readonly j: number
-readonly k: number
-readonly tc: Slice
+    readonly kind: 'IntBitsParametrized';
+    readonly e: number;
+    readonly h: number;
+    readonly f: number;
+    readonly i: BitString;
+    readonly j: number;
+    readonly k: number;
+    readonly tc: Slice;
 }
 
 export interface IntBitsParametrizedInside {
-readonly kind: 'IntBitsParametrizedInside'
-readonly x: number
-readonly a: IntBitsParametrized
+    readonly kind: 'IntBitsParametrizedInside';
+    readonly x: number;
+    readonly a: IntBitsParametrized;
 }
 
 export interface IntBitsParametrizedOutside {
-readonly kind: 'IntBitsParametrizedOutside'
-readonly x: IntBitsParametrizedInside
+    readonly kind: 'IntBitsParametrizedOutside';
+    readonly x: IntBitsParametrizedInside;
 }
 
 export interface LessThan {
-readonly kind: 'LessThan'
-readonly x: number
-readonly y: number
+    readonly kind: 'LessThan';
+    readonly x: number;
+    readonly y: number;
 }
 
 export interface OneComb<A> {
-readonly kind: 'OneComb'
-readonly t: number
-readonly x: A
+    readonly kind: 'OneComb';
+    readonly t: number;
+    readonly x: A;
 }
 
 export interface ManyComb {
-readonly kind: 'ManyComb'
-readonly y: OneComb<OneComb<OneComb<number>>>
+    readonly kind: 'ManyComb';
+    readonly y: OneComb<OneComb<OneComb<number>>>;
 }
 
 export type Unary = Unary_unary_zero | Unary_unary_succ;
 
 export interface Unary_unary_zero {
-readonly kind: 'Unary_unary_zero'
+    readonly kind: 'Unary_unary_zero';
 }
 
 export interface Unary_unary_succ {
-readonly kind: 'Unary_unary_succ'
-readonly n: number
-readonly x: Unary
+    readonly kind: 'Unary_unary_succ';
+    readonly n: number;
+    readonly x: Unary;
 }
 
 export type ParamConst = ParamConst_b | ParamConst_c | ParamConst_a | ParamConst_d;
 
 export interface ParamConst_b {
-readonly kind: 'ParamConst_b'
-readonly m: number
-readonly k: number
+    readonly kind: 'ParamConst_b';
+    readonly m: number;
+    readonly k: number;
 }
 
 export interface ParamConst_c {
-readonly kind: 'ParamConst_c'
-readonly n: number
-readonly m: number
-readonly k: number
+    readonly kind: 'ParamConst_c';
+    readonly n: number;
+    readonly m: number;
+    readonly k: number;
 }
 
 export interface ParamConst_a {
-readonly kind: 'ParamConst_a'
-readonly n: number
+    readonly kind: 'ParamConst_a';
+    readonly n: number;
 }
 
 export interface ParamConst_d {
-readonly kind: 'ParamConst_d'
-readonly n: number
-readonly m: number
-readonly k: number
-readonly l: number
+    readonly kind: 'ParamConst_d';
+    readonly n: number;
+    readonly m: number;
+    readonly k: number;
+    readonly l: number;
 }
 
 export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c | ParamDifNames_d;
 
 export interface ParamDifNames_a {
-readonly kind: 'ParamDifNames_a'
+    readonly kind: 'ParamDifNames_a';
 }
 
 export interface ParamDifNames_b {
-readonly kind: 'ParamDifNames_b'
+    readonly kind: 'ParamDifNames_b';
 }
 
 export interface ParamDifNames_c {
-readonly kind: 'ParamDifNames_c'
-readonly n: number
-readonly x: ParamDifNames
+    readonly kind: 'ParamDifNames_c';
+    readonly n: number;
+    readonly x: ParamDifNames;
 }
 
 export interface ParamDifNames_d {
-readonly kind: 'ParamDifNames_d'
-readonly m: number
-readonly x: ParamDifNames
+    readonly kind: 'ParamDifNames_d';
+    readonly m: number;
+    readonly x: ParamDifNames;
 }
 
 export interface ParamDifNamesUser {
-readonly kind: 'ParamDifNamesUser'
-readonly k: number
-readonly x: ParamDifNames
+    readonly kind: 'ParamDifNamesUser';
+    readonly k: number;
+    readonly x: ParamDifNames;
 }
 
 export interface NegationFromImplicit {
-readonly kind: 'NegationFromImplicit'
-readonly y: number
-readonly t: number
-readonly z: number
+    readonly kind: 'NegationFromImplicit';
+    readonly y: number;
+    readonly t: number;
+    readonly z: number;
 }
 
 export interface UnaryUserCheckOrder {
-readonly kind: 'UnaryUserCheckOrder'
-readonly l: number
-readonly m: number
-readonly label: Unary
+    readonly kind: 'UnaryUserCheckOrder';
+    readonly l: number;
+    readonly m: number;
+    readonly label: Unary;
 }
 
 export interface CombArgCellRef<X> {
-readonly kind: 'CombArgCellRef'
-readonly info: number
-readonly init: Maybe<Either<X, number>>
-readonly other: Either<X, OneComb<X>>
-readonly body: Either<X, X>
+    readonly kind: 'CombArgCellRef';
+    readonly info: number;
+    readonly init: Maybe<Either<X, number>>;
+    readonly other: Either<X, OneComb<X>>;
+    readonly body: Either<X, X>;
 }
 
 export interface CombArgCellRefUser {
-readonly kind: 'CombArgCellRefUser'
-readonly x: CombArgCellRef<number>
+    readonly kind: 'CombArgCellRefUser';
+    readonly x: CombArgCellRef<number>;
 }
 
 export interface MathExprAsCombArg {
-readonly kind: 'MathExprAsCombArg'
-readonly n: number
-readonly ref: BitLenArg
+    readonly kind: 'MathExprAsCombArg';
+    readonly n: number;
+    readonly ref: BitLenArg;
 }
 
 export interface EmptyTag {
-readonly kind: 'EmptyTag'
-readonly a: number
+    readonly kind: 'EmptyTag';
+    readonly a: number;
 }
 
 export interface SharpTag {
-readonly kind: 'SharpTag'
-readonly x: number
+    readonly kind: 'SharpTag';
+    readonly x: number;
 }
 
 export interface DollarTag {
-readonly kind: 'DollarTag'
-readonly x: number
+    readonly kind: 'DollarTag';
+    readonly x: number;
 }
 
 export interface TupleCheck {
-readonly kind: 'TupleCheck'
-readonly s: Array<number>
+    readonly kind: 'TupleCheck';
+    readonly s: Array<number>;
 }
 
 export interface Hashmap<X> {
-readonly kind: 'Hashmap'
-readonly n: number
-readonly l: number
-readonly m: number
-readonly label: HmLabel
-readonly node: HashmapNode<X>
+    readonly kind: 'Hashmap';
+    readonly n: number;
+    readonly l: number;
+    readonly m: number;
+    readonly label: HmLabel;
+    readonly node: HashmapNode<X>;
 }
 
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 
 export interface HashmapNode_hmn_leaf<X> {
-readonly kind: 'HashmapNode_hmn_leaf'
-readonly value: X
+    readonly kind: 'HashmapNode_hmn_leaf';
+    readonly value: X;
 }
 
 export interface HashmapNode_hmn_fork<X> {
-readonly kind: 'HashmapNode_hmn_fork'
-readonly n: number
-readonly left: Hashmap<X>
-readonly right: Hashmap<X>
+    readonly kind: 'HashmapNode_hmn_fork';
+    readonly n: number;
+    readonly left: Hashmap<X>;
+    readonly right: Hashmap<X>;
 }
 
 export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
 
 export interface HmLabel_hml_short {
-readonly kind: 'HmLabel_hml_short'
-readonly m: number
-readonly n: number
-readonly len: Unary
-readonly s: Array<BitString>
+    readonly kind: 'HmLabel_hml_short';
+    readonly m: number;
+    readonly n: number;
+    readonly len: Unary;
+    readonly s: Array<BitString>;
 }
 
 export interface HmLabel_hml_long {
-readonly kind: 'HmLabel_hml_long'
-readonly m: number
-readonly n: number
-readonly s: Array<BitString>
+    readonly kind: 'HmLabel_hml_long';
+    readonly m: number;
+    readonly n: number;
+    readonly s: Array<BitString>;
 }
 
 export interface HmLabel_hml_same {
-readonly kind: 'HmLabel_hml_same'
-readonly m: number
-readonly v: BitString
-readonly n: number
+    readonly kind: 'HmLabel_hml_same';
+    readonly m: number;
+    readonly v: BitString;
+    readonly n: number;
 }
 
 export type HashmapE<X> = HashmapE_hme_empty<X> | HashmapE_hme_root<X>;
 
 export interface HashmapE_hme_empty<X> {
-readonly kind: 'HashmapE_hme_empty'
-readonly n: number
+    readonly kind: 'HashmapE_hme_empty';
+    readonly n: number;
 }
 
 export interface HashmapE_hme_root<X> {
-readonly kind: 'HashmapE_hme_root'
-readonly n: number
-readonly root: Hashmap<X>
+    readonly kind: 'HashmapE_hme_root';
+    readonly n: number;
+    readonly root: Hashmap<X>;
 }
 
 export interface HashmapEUser {
-readonly kind: 'HashmapEUser'
-readonly x: HashmapE<number>
+    readonly kind: 'HashmapEUser';
+    readonly x: HashmapE<number>;
 }
 
 export interface ConditionalField {
-readonly kind: 'ConditionalField'
-readonly a: number
-readonly b: number | undefined
+    readonly kind: 'ConditionalField';
+    readonly a: number;
+    readonly b: number | undefined;
 }
 
 export interface BitSelection {
-readonly kind: 'BitSelection'
-readonly a: number
-readonly b: number | undefined
+    readonly kind: 'BitSelection';
+    readonly a: number;
+    readonly b: number | undefined;
 }
 
 export interface ImplicitCondition {
-readonly kind: 'ImplicitCondition'
-readonly flags: number
+    readonly kind: 'ImplicitCondition';
+    readonly flags: number;
 }
 
 export type MultipleEmptyConstructor = MultipleEmptyConstructor__ | MultipleEmptyConstructor__1 | MultipleEmptyConstructor_a;
 
 export interface MultipleEmptyConstructor__ {
-readonly kind: 'MultipleEmptyConstructor__'
-readonly a: number
+    readonly kind: 'MultipleEmptyConstructor__';
+    readonly a: number;
 }
 
 export interface MultipleEmptyConstructor__1 {
-readonly kind: 'MultipleEmptyConstructor__1'
-readonly b: number
+    readonly kind: 'MultipleEmptyConstructor__1';
+    readonly b: number;
 }
 
 export interface MultipleEmptyConstructor_a {
-readonly kind: 'MultipleEmptyConstructor_a'
-readonly x: number
+    readonly kind: 'MultipleEmptyConstructor_a';
+    readonly x: number;
 }
 
 export interface True {
-readonly kind: 'True'
+    readonly kind: 'True';
 }
 
 export type ParamNamedArgInSecondConstr = ParamNamedArgInSecondConstr_a | ParamNamedArgInSecondConstr_b;
 
 export interface ParamNamedArgInSecondConstr_a {
-readonly kind: 'ParamNamedArgInSecondConstr_a'
-readonly n: number
+    readonly kind: 'ParamNamedArgInSecondConstr_a';
+    readonly n: number;
 }
 
 export interface ParamNamedArgInSecondConstr_b {
-readonly kind: 'ParamNamedArgInSecondConstr_b'
-readonly n: number
+    readonly kind: 'ParamNamedArgInSecondConstr_b';
+    readonly n: number;
 }
 
 export interface RefCombinatorAny {
-readonly kind: 'RefCombinatorAny'
-readonly msg: Maybe<Slice>
+    readonly kind: 'RefCombinatorAny';
+    readonly msg: Maybe<Slice>;
 }
 
 export interface EqualityExpression {
-readonly kind: 'EqualityExpression'
-readonly n: number
+    readonly kind: 'EqualityExpression';
+    readonly n: number;
 }
 
 export interface ConditionalRef {
-readonly kind: 'ConditionalRef'
-readonly x: number
-readonly y: Simple | undefined
+    readonly kind: 'ConditionalRef';
+    readonly x: number;
+    readonly y: Simple | undefined;
 }
 
 export interface LoadFromNegationOutsideExpr {
-readonly kind: 'LoadFromNegationOutsideExpr'
-readonly seq_no: number
-readonly prev_seq_no: number
+    readonly kind: 'LoadFromNegationOutsideExpr';
+    readonly seq_no: number;
+    readonly prev_seq_no: number;
 }
 
 export interface AnonymousData {
-readonly kind: 'AnonymousData'
-readonly anon0: number
+    readonly kind: 'AnonymousData';
+    readonly anon0: number;
 }
 
 export interface FalseAnonField {
-readonly kind: 'FalseAnonField'
-readonly value: number
+    readonly kind: 'FalseAnonField';
+    readonly value: number;
 }
 
 export type ConstructorOrder = ConstructorOrder__ | ConstructorOrder_a;
 
 export interface ConstructorOrder__ {
-readonly kind: 'ConstructorOrder__'
-readonly anon0: Simple
+    readonly kind: 'ConstructorOrder__';
+    readonly anon0: Simple;
 }
 
 export interface ConstructorOrder_a {
-readonly kind: 'ConstructorOrder_a'
-readonly a: Simple
+    readonly kind: 'ConstructorOrder_a';
+    readonly a: Simple;
 }
 
 export type CheckCrc32 = CheckCrc32_a | CheckCrc32_b;
 
 export interface CheckCrc32_a {
-readonly kind: 'CheckCrc32_a'
-readonly a: number
+    readonly kind: 'CheckCrc32_a';
+    readonly a: number;
 }
 
 export interface CheckCrc32_b {
-readonly kind: 'CheckCrc32_b'
-readonly b: number
-readonly c: number
+    readonly kind: 'CheckCrc32_b';
+    readonly b: number;
+    readonly c: number;
 }
 
 export interface CheckKeyword {
-readonly kind: 'CheckKeyword'
-readonly const0: number
+    readonly kind: 'CheckKeyword';
+    readonly const0: number;
 }
 
 export function bitLen(n: number) {
