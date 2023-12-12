@@ -500,12 +500,12 @@ export function storeSimple(simple: Simple): (builder: Builder) => void {
 
 export function loadTwoConstructors(slice: Slice): TwoConstructors {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let a: number = slice.loadUint(32)
+    slice.loadUint(1)
+    let a: number = slice.loadUint(32)
 
-let b: number = slice.loadUint(7)
+    let b: number = slice.loadUint(7)
 
-let c: number = slice.loadUint(32)
+    let c: number = slice.loadUint(32)
 
     return {
     kind: 'TwoConstructors_bool_false',
@@ -517,8 +517,8 @@ let c: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let b: number = slice.loadUint(32)
+    slice.loadUint(1)
+    let b: number = slice.loadUint(32)
 
     return {
     kind: 'TwoConstructors_bool_true',
@@ -638,7 +638,7 @@ export function storeSharpConstructor(sharpConstructor: SharpConstructor): (buil
 export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType
 ): Maybe<TheType> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'Maybe_nothing',
 }
@@ -646,8 +646,8 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let value: TheType = loadTheType(slice)
+    slice.loadUint(1)
+    let value: TheType = loadTheType(slice)
 
     return {
     kind: 'Maybe_just',
@@ -710,8 +710,8 @@ export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X
 , loadY: (slice: Slice) => Y
 ): Either<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let value: X = loadX(slice)
+    slice.loadUint(1)
+    let value: X = loadX(slice)
 
     return {
     kind: 'Either_left',
@@ -721,8 +721,8 @@ let value: X = loadX(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let value: Y = loadY(slice)
+    slice.loadUint(1)
+    let value: Y = loadY(slice)
 
     return {
     kind: 'Either_right',
@@ -1309,7 +1309,7 @@ export function unary_unary_succ_get_n(x: Unary): number {
 }
 ;
     if ((x.kind == 'Unary_unary_succ')) {
-let n = x.n
+    let n = x.n
 
     return (n + 1)
 }
@@ -1320,7 +1320,7 @@ let n = x.n
 
 export function loadUnary(slice: Slice): Unary {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'Unary_unary_zero',
 }
@@ -1328,10 +1328,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let x: Unary = loadUnary(slice)
+    slice.loadUint(1)
+    let x: Unary = loadUnary(slice)
 
-let n = unary_unary_succ_get_n(x)
+    let n = unary_unary_succ_get_n(x)
 
     return {
     kind: 'Unary_unary_succ',
@@ -1370,10 +1370,10 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
 
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
     if (((slice.remainingBits >= 2) && ((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1))))) {
-slice.loadUint(2)
-let m: number = slice.loadUint(32)
+    slice.loadUint(2)
+    let m: number = slice.loadUint(32)
 
-let k: number = slice.loadUint(32)
+    let k: number = slice.loadUint(32)
 
     return {
     kind: 'ParamConst_b',
@@ -1384,12 +1384,12 @@ let k: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 2) && ((slice.preloadUint(2) == 0b01) && ((arg0 == 3) && (arg1 == 3))))) {
-slice.loadUint(2)
-let n: number = slice.loadUint(32)
+    slice.loadUint(2)
+    let n: number = slice.loadUint(32)
 
-let m: number = slice.loadUint(32)
+    let m: number = slice.loadUint(32)
 
-let k: number = slice.loadUint(32)
+    let k: number = slice.loadUint(32)
 
     return {
     kind: 'ParamConst_c',
@@ -1401,7 +1401,7 @@ let k: number = slice.loadUint(32)
 }
 ;
     if (((arg0 == 1) && (arg1 == 1))) {
-let n: number = slice.loadUint(32)
+    let n: number = slice.loadUint(32)
 
     return {
     kind: 'ParamConst_a',
@@ -1411,13 +1411,13 @@ let n: number = slice.loadUint(32)
 }
 ;
     if (((arg0 == 4) && (arg1 == 2))) {
-let n: number = slice.loadUint(32)
+    let n: number = slice.loadUint(32)
 
-let m: number = slice.loadUint(32)
+    let m: number = slice.loadUint(32)
 
-let k: number = slice.loadUint(32)
+    let k: number = slice.loadUint(32)
 
-let l: number = slice.loadUint(32)
+    let l: number = slice.loadUint(32)
 
     return {
     kind: 'ParamConst_d',
@@ -1496,13 +1496,13 @@ export function paramDifNames_c_get_n(x: ParamDifNames): number {
 }
 ;
     if ((x.kind == 'ParamDifNames_c')) {
-let n = x.n
+    let n = x.n
 
     return (n + 1)
 }
 ;
     if ((x.kind == 'ParamDifNames_d')) {
-let m = x.m
+    let m = x.m
 
     return (m * 2)
 }
@@ -1521,13 +1521,13 @@ export function paramDifNames_d_get_m(x: ParamDifNames): number {
 }
 ;
     if ((x.kind == 'ParamDifNames_c')) {
-let n = x.n
+    let n = x.n
 
     return (n + 1)
 }
 ;
     if ((x.kind == 'ParamDifNames_d')) {
-let m = x.m
+    let m = x.m
 
     return (m * 2)
 }
@@ -1538,7 +1538,7 @@ let m = x.m
 
 export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
     if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b0) && (arg0 == 2)))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'ParamDifNames_a',
 }
@@ -1546,7 +1546,7 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b1) && (arg0 == 3)))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'ParamDifNames_b',
 }
@@ -1554,10 +1554,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b1) && (arg0 == 2)))) {
-slice.loadUint(1)
-let x: ParamDifNames = loadParamDifNames(slice, 2)
+    slice.loadUint(1)
+    let x: ParamDifNames = loadParamDifNames(slice, 2)
 
-let n = paramDifNames_c_get_n(x)
+    let n = paramDifNames_c_get_n(x)
 
     return {
     kind: 'ParamDifNames_c',
@@ -1568,10 +1568,10 @@ let n = paramDifNames_c_get_n(x)
 }
 ;
     if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b0) && (arg0 == 3)))) {
-slice.loadUint(1)
-let x: ParamDifNames = loadParamDifNames(slice, 3)
+    slice.loadUint(1)
+    let x: ParamDifNames = loadParamDifNames(slice, 3)
 
-let m = paramDifNames_d_get_m(x)
+    let m = paramDifNames_d_get_m(x)
 
     return {
     kind: 'ParamDifNames_d',
@@ -1636,13 +1636,13 @@ export function paramDifNamesUser_get_k(x: ParamDifNames): number {
 }
 ;
     if ((x.kind == 'ParamDifNames_c')) {
-let n = x.n
+    let n = x.n
 
     return (n + 1)
 }
 ;
     if ((x.kind == 'ParamDifNames_d')) {
-let m = x.m
+    let m = x.m
 
     return (m * 2)
 }
@@ -1653,10 +1653,10 @@ let m = x.m
 
 export function loadParamDifNamesUser(slice: Slice): ParamDifNamesUser {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let x: ParamDifNames = loadParamDifNames(slice, 2)
+    slice.loadUint(1)
+    let x: ParamDifNames = loadParamDifNames(slice, 2)
 
-let k = paramDifNamesUser_get_k(x)
+    let k = paramDifNamesUser_get_k(x)
 
     return {
     kind: 'ParamDifNamesUser',
@@ -1683,10 +1683,10 @@ export function storeParamDifNamesUser(paramDifNamesUser: ParamDifNamesUser): (b
 
 export function loadNegationFromImplicit(slice: Slice): NegationFromImplicit {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let t: number = slice.loadUint(32)
+    slice.loadUint(1)
+    let t: number = slice.loadUint(32)
 
-let z: number = slice.loadUint(32)
+    let z: number = slice.loadUint(32)
 
     return {
     kind: 'NegationFromImplicit',
@@ -1720,7 +1720,7 @@ export function unaryUserCheckOrder_get_l(label: Unary): number {
 }
 ;
     if ((label.kind == 'Unary_unary_succ')) {
-let n = label.n
+    let n = label.n
 
     return (n + 1)
 }
@@ -1937,8 +1937,8 @@ export function storeMathExprAsCombArg(mathExprAsCombArg: MathExprAsCombArg): (b
 
 export function loadEmptyTag(slice: Slice): EmptyTag {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xab787f76))) {
-slice.loadUint(32)
-let a: number = slice.loadUint(32)
+    slice.loadUint(32)
+    let a: number = slice.loadUint(32)
 
     return {
     kind: 'EmptyTag',
@@ -1964,8 +1964,8 @@ export function storeEmptyTag(emptyTag: EmptyTag): (builder: Builder) => void {
 
 export function loadSharpTag(slice: Slice): SharpTag {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xf4))) {
-slice.loadUint(8)
-let x: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let x: number = slice.loadUint(32)
 
     return {
     kind: 'SharpTag',
@@ -1991,8 +1991,8 @@ export function storeSharpTag(sharpTag: SharpTag): (builder: Builder) => void {
 
 export function loadDollarTag(slice: Slice): DollarTag {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1011))) {
-slice.loadUint(4)
-let x: number = slice.loadUint(32)
+    slice.loadUint(4)
+    let x: number = slice.loadUint(32)
 
     return {
     kind: 'DollarTag',
@@ -2047,19 +2047,19 @@ export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => v
 
 export function hashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_long')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_same')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
@@ -2107,7 +2107,7 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
 export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
 ): HashmapNode<X> {
     if ((arg0 == 0)) {
-let value: X = loadX(slice)
+    let value: X = loadX(slice)
 
     return {
     kind: 'HashmapNode_hmn_leaf',
@@ -2117,13 +2117,13 @@ let value: X = loadX(slice)
 }
 ;
     if (true) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX)
+    let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX)
+    let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX)
 
     return {
     kind: 'HashmapNode_hmn_fork',
@@ -2179,7 +2179,7 @@ export function hmLabel_hml_short_get_n(len: Unary): number {
 }
 ;
     if ((len.kind == 'Unary_unary_succ')) {
-let n = len.n
+    let n = len.n
 
     return (n + 1)
 }
@@ -2190,19 +2190,19 @@ let n = len.n
 
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let len: Unary = loadUnary(slice)
+    slice.loadUint(1)
+    let len: Unary = loadUnary(slice)
 
-let n = hmLabel_hml_short_get_n(len)
+    let n = hmLabel_hml_short_get_n(len)
 
-let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-        return slice.loadBits(1)
+    let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
+    return slice.loadBits(1)
 
-    })
-    )
+})
+)
 
     if ((!(n <= m))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'HmLabel_hml_short',
@@ -2215,14 +2215,14 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
-let n: number = slice.loadUint(bitLen(m))
+    slice.loadUint(2)
+    let n: number = slice.loadUint(bitLen(m))
 
-let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-        return slice.loadBits(1)
+    let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
+    return slice.loadBits(1)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'HmLabel_hml_long',
@@ -2234,10 +2234,10 @@ let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
-let v: BitString = slice.loadBits(1)
+    slice.loadUint(2)
+    let v: BitString = slice.loadBits(1)
 
-let n: number = slice.loadUint(bitLen(m))
+    let n: number = slice.loadUint(bitLen(m))
 
     return {
     kind: 'HmLabel_hml_same',
@@ -2266,7 +2266,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
     )
 
     if ((!(hmLabel.n <= hmLabel.m))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -2308,7 +2308,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
 ): HashmapE<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'HashmapE_hme_empty',
     n: n,
@@ -2317,10 +2317,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let root: Hashmap<X> = loadHashmap<X>(slice1, n, loadX)
+    let root: Hashmap<X> = loadHashmap<X>(slice1, n, loadX)
 
     return {
     kind: 'HashmapE_hme_root',
@@ -2399,10 +2399,10 @@ export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder
 
 export function loadConditionalField(slice: Slice): ConditionalField {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xdc165658))) {
-slice.loadUint(32)
-let a: number = slice.loadUint(1)
+    slice.loadUint(32)
+    let a: number = slice.loadUint(1)
 
-let b: number | undefined = (a ? slice.loadUint(32) : undefined)
+    let b: number | undefined = (a ? slice.loadUint(32) : undefined)
 
     return {
     kind: 'ConditionalField',
@@ -2423,7 +2423,7 @@ export function storeConditionalField(conditionalField: ConditionalField): (buil
     builder.storeUint(conditionalField.a, 1)
 
     if ((conditionalField.b != undefined)) {
-    builder.storeUint(conditionalField.b, 32)
+        builder.storeUint(conditionalField.b, 32)
     }
 
 })
@@ -2433,10 +2433,10 @@ export function storeConditionalField(conditionalField: ConditionalField): (buil
 
 export function loadBitSelection(slice: Slice): BitSelection {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xe1a2049e))) {
-slice.loadUint(32)
-let a: number = slice.loadUint(6)
+    slice.loadUint(32)
+    let a: number = slice.loadUint(6)
 
-let b: number | undefined = ((a & (1 << 2)) ? slice.loadUint(32) : undefined)
+    let b: number | undefined = ((a & (1 << 2)) ? slice.loadUint(32) : undefined)
 
     return {
     kind: 'BitSelection',
@@ -2457,7 +2457,7 @@ export function storeBitSelection(bitSelection: BitSelection): (builder: Builder
     builder.storeUint(bitSelection.a, 6)
 
     if ((bitSelection.b != undefined)) {
-    builder.storeUint(bitSelection.b, 32)
+        builder.storeUint(bitSelection.b, 32)
     }
 
 })
@@ -2467,11 +2467,11 @@ export function storeBitSelection(bitSelection: BitSelection): (builder: Builder
 
 export function loadImplicitCondition(slice: Slice): ImplicitCondition {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd86a5028))) {
-slice.loadUint(32)
-let flags: number = slice.loadUint(10)
+    slice.loadUint(32)
+    let flags: number = slice.loadUint(10)
 
     if ((!(flags <= 100))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ImplicitCondition',
@@ -2491,7 +2491,7 @@ export function storeImplicitCondition(implicitCondition: ImplicitCondition): (b
     builder.storeUint(implicitCondition.flags, 10)
 
     if ((!(implicitCondition.flags <= 100))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -2501,8 +2501,8 @@ export function storeImplicitCondition(implicitCondition: ImplicitCondition): (b
 
 export function loadMultipleEmptyConstructor(slice: Slice, arg0: number): MultipleEmptyConstructor {
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x85e93c51) && (arg0 == 0)))) {
-slice.loadUint(32)
-let a: number = slice.loadUint(32)
+    slice.loadUint(32)
+    let a: number = slice.loadUint(32)
 
     return {
     kind: 'MultipleEmptyConstructor__',
@@ -2512,8 +2512,8 @@ let a: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xc5d27bf1) && (arg0 == 1)))) {
-slice.loadUint(32)
-let b: number = slice.loadUint(5)
+    slice.loadUint(32)
+    let b: number = slice.loadUint(5)
 
     return {
     kind: 'MultipleEmptyConstructor__1',
@@ -2523,7 +2523,7 @@ let b: number = slice.loadUint(5)
 }
 ;
     if ((arg0 == 2)) {
-let x: number = slice.loadUint(6)
+    let x: number = slice.loadUint(6)
 
     return {
     kind: 'MultipleEmptyConstructor_a',
@@ -2586,7 +2586,7 @@ export function storeTrue(true0: True): (builder: Builder) => void {
 
 export function loadParamNamedArgInSecondConstr(slice: Slice, arg0: number): ParamNamedArgInSecondConstr {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'ParamNamedArgInSecondConstr_a',
     n: arg0,
@@ -2595,7 +2595,7 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'ParamNamedArgInSecondConstr_b',
     n: (arg0 - 1),
@@ -2674,7 +2674,7 @@ export function loadEqualityExpression(slice: Slice): EqualityExpression {
 
 ;
     if ((!((5 + n) == 7))) {
-throw new Error('')
+    throw new Error('')
 }
 ;
     return {
@@ -2690,7 +2690,7 @@ export function storeEqualityExpression(equalityExpression: EqualityExpression):
     builder.storeUint(equalityExpression.n, 32)
 
     if ((!((5 + equalityExpression.n) == 7))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -2742,8 +2742,8 @@ export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: B
 
 export function loadLoadFromNegationOutsideExpr(slice: Slice): LoadFromNegationOutsideExpr {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9bc7a987))) {
-slice.loadUint(32)
-let seq_no: number = slice.loadUint(32)
+    slice.loadUint(32)
+    let seq_no: number = slice.loadUint(32)
 
     return {
     kind: 'LoadFromNegationOutsideExpr',
@@ -2791,8 +2791,8 @@ export function storeAnonymousData(anonymousData: AnonymousData): (builder: Buil
 
 export function loadFalseAnonField(slice: Slice): FalseAnonField {
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x0201))) {
-slice.loadUint(16)
-let value: number = slice.loadInt(257)
+    slice.loadUint(16)
+    let value: number = slice.loadInt(257)
 
     return {
     kind: 'FalseAnonField',
@@ -2818,8 +2818,8 @@ export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: B
 
 export function loadConstructorOrder(slice: Slice): ConstructorOrder {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xc6cc03c3))) {
-slice.loadUint(32)
-let anon0: Simple = loadSimple(slice)
+    slice.loadUint(32)
+    let anon0: Simple = loadSimple(slice)
 
     return {
     kind: 'ConstructorOrder__',
@@ -2829,8 +2829,8 @@ let anon0: Simple = loadSimple(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let a: Simple = loadSimple(slice)
+    slice.loadUint(1)
+    let a: Simple = loadSimple(slice)
 
     return {
     kind: 'ConstructorOrder_a',
@@ -2870,8 +2870,8 @@ export function storeConstructorOrder(constructorOrder: ConstructorOrder): (buil
 
 export function loadCheckCrc32(slice: Slice): CheckCrc32 {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd6e7c617))) {
-slice.loadUint(32)
-let a: number = slice.loadUint(32)
+    slice.loadUint(32)
+    let a: number = slice.loadUint(32)
 
     return {
     kind: 'CheckCrc32_a',
@@ -2881,10 +2881,10 @@ let a: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xde1cb606))) {
-slice.loadUint(32)
-let b: number = slice.loadUint(32)
+    slice.loadUint(32)
+    let b: number = slice.loadUint(32)
 
-let c: number = slice.loadUint(32)
+    let c: number = slice.loadUint(32)
 
     return {
     kind: 'CheckCrc32_b',

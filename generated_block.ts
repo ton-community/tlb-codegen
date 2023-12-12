@@ -2423,7 +2423,7 @@ export function storeTrue(true0: True): (builder: Builder) => void {
 
 export function loadBool(slice: Slice): Bool {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'Bool_bool_false',
 }
@@ -2431,7 +2431,7 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'Bool_bool_true',
 }
@@ -2465,7 +2465,7 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
 
 export function loadBoolFalse(slice: Slice): BoolFalse {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'BoolFalse',
 }
@@ -2487,7 +2487,7 @@ export function storeBoolFalse(boolFalse: BoolFalse): (builder: Builder) => void
 
 export function loadBoolTrue(slice: Slice): BoolTrue {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'BoolTrue',
 }
@@ -2510,7 +2510,7 @@ export function storeBoolTrue(boolTrue: BoolTrue): (builder: Builder) => void {
 export function loadMaybe<X>(slice: Slice, loadX: (slice: Slice) => X
 ): Maybe<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'Maybe_nothing',
 }
@@ -2518,8 +2518,8 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let value: X = loadX(slice)
+    slice.loadUint(1)
+    let value: X = loadX(slice)
 
     return {
     kind: 'Maybe_just',
@@ -2561,8 +2561,8 @@ export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X
 , loadY: (slice: Slice) => Y
 ): Either<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let value: X = loadX(slice)
+    slice.loadUint(1)
+    let value: X = loadX(slice)
 
     return {
     kind: 'Either_left',
@@ -2572,8 +2572,8 @@ let value: X = loadX(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let value: Y = loadY(slice)
+    slice.loadUint(1)
+    let value: Y = loadY(slice)
 
     return {
     kind: 'Either_right',
@@ -2671,19 +2671,19 @@ export function storeBit(bit: Bit): (builder: Builder) => void {
 
 export function hashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_long')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_same')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
@@ -2731,7 +2731,7 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
 export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
 ): HashmapNode<X> {
     if ((arg0 == 0)) {
-let value: X = loadX(slice)
+    let value: X = loadX(slice)
 
     return {
     kind: 'HashmapNode_hmn_leaf',
@@ -2741,13 +2741,13 @@ let value: X = loadX(slice)
 }
 ;
     if (true) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX)
+    let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX)
+    let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX)
 
     return {
     kind: 'HashmapNode_hmn_fork',
@@ -2803,7 +2803,7 @@ export function hmLabel_hml_short_get_n(len: Unary): number {
 }
 ;
     if ((len.kind == 'Unary_unary_succ')) {
-let n = len.n
+    let n = len.n
 
     return (n + 1)
 }
@@ -2814,19 +2814,19 @@ let n = len.n
 
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let len: Unary = loadUnary(slice)
+    slice.loadUint(1)
+    let len: Unary = loadUnary(slice)
 
-let n = hmLabel_hml_short_get_n(len)
+    let n = hmLabel_hml_short_get_n(len)
 
-let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-        return slice.loadBits(1)
+    let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
+    return slice.loadBits(1)
 
-    })
-    )
+})
+)
 
     if ((!(n <= m))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'HmLabel_hml_short',
@@ -2839,14 +2839,14 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
-let n: number = slice.loadUint(bitLen(m))
+    slice.loadUint(2)
+    let n: number = slice.loadUint(bitLen(m))
 
-let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-        return slice.loadBits(1)
+    let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
+    return slice.loadBits(1)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'HmLabel_hml_long',
@@ -2858,10 +2858,10 @@ let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
-let v: BitString = slice.loadBits(1)
+    slice.loadUint(2)
+    let v: BitString = slice.loadBits(1)
 
-let n: number = slice.loadUint(bitLen(m))
+    let n: number = slice.loadUint(bitLen(m))
 
     return {
     kind: 'HmLabel_hml_same',
@@ -2890,7 +2890,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
     )
 
     if ((!(hmLabel.n <= hmLabel.m))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -2935,7 +2935,7 @@ export function unary_unary_succ_get_n(x: Unary): number {
 }
 ;
     if ((x.kind == 'Unary_unary_succ')) {
-let n = x.n
+    let n = x.n
 
     return (n + 1)
 }
@@ -2946,7 +2946,7 @@ let n = x.n
 
 export function loadUnary(slice: Slice): Unary {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'Unary_unary_zero',
 }
@@ -2954,10 +2954,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let x: Unary = loadUnary(slice)
+    slice.loadUint(1)
+    let x: Unary = loadUnary(slice)
 
-let n = unary_unary_succ_get_n(x)
+    let n = unary_unary_succ_get_n(x)
 
     return {
     kind: 'Unary_unary_succ',
@@ -2997,7 +2997,7 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
 export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
 ): HashmapE<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'HashmapE_hme_empty',
     n: n,
@@ -3006,10 +3006,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let root: Hashmap<X> = loadHashmap<X>(slice1, n, loadX)
+    let root: Hashmap<X> = loadHashmap<X>(slice1, n, loadX)
 
     return {
     kind: 'HashmapE_hme_root',
@@ -3055,8 +3055,8 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
 
 export function loadBitstringSet(slice: Slice, n: number): BitstringSet {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xda553663))) {
-slice.loadUint(32)
-let _: Hashmap<True> = loadHashmap<True>(slice, n, loadTrue)
+    slice.loadUint(32)
+    let _: Hashmap<True> = loadHashmap<True>(slice, n, loadTrue)
 
     return {
     kind: 'BitstringSet',
@@ -3083,19 +3083,19 @@ export function storeBitstringSet(bitstringSet: BitstringSet): (builder: Builder
 
 export function hashmapAug_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_long')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_same')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
@@ -3147,9 +3147,9 @@ export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (sli
 , loadY: (slice: Slice) => Y
 ): HashmapAugNode<X, Y> {
     if ((arg0 == 0)) {
-let extra: Y = loadY(slice)
+    let extra: Y = loadY(slice)
 
-let value: X = loadX(slice)
+    let value: X = loadX(slice)
 
     return {
     kind: 'HashmapAugNode_ahmn_leaf',
@@ -3160,15 +3160,15 @@ let value: X = loadX(slice)
 }
 ;
     if (true) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let left: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, (arg0 - 1), loadX, loadY)
+    let left: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, (arg0 - 1), loadX, loadY)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let right: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice2, (arg0 - 1), loadX, loadY)
+    let right: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice2, (arg0 - 1), loadX, loadY)
 
-let extra: Y = loadY(slice)
+    let extra: Y = loadY(slice)
 
     return {
     kind: 'HashmapAugNode_ahmn_fork',
@@ -3229,8 +3229,8 @@ export function loadHashmapAugE<X, Y>(slice: Slice, n: number, loadX: (slice: Sl
 , loadY: (slice: Slice) => Y
 ): HashmapAugE<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let extra: Y = loadY(slice)
+    slice.loadUint(1)
+    let extra: Y = loadY(slice)
 
     return {
     kind: 'HashmapAugE_ahme_empty',
@@ -3241,12 +3241,12 @@ let extra: Y = loadY(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let root: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, n, loadX, loadY)
+    let root: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, n, loadX, loadY)
 
-let extra: Y = loadY(slice)
+    let extra: Y = loadY(slice)
 
     return {
     kind: 'HashmapAugE_ahme_root',
@@ -3299,19 +3299,19 @@ export function storeHashmapAugE<X, Y>(hashmapAugE: HashmapAugE<X, Y>, storeX: (
 
 export function varHashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_long')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_same')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
@@ -3359,8 +3359,8 @@ export function storeVarHashmap<X>(varHashmap: VarHashmap<X>, storeX: (x: X) => 
 export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
 ): VarHashmapNode<X> {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
-let value: X = loadX(slice)
+    slice.loadUint(2)
+    let value: X = loadX(slice)
 
     return {
     kind: 'VarHashmapNode_vhmn_leaf',
@@ -3371,16 +3371,16 @@ let value: X = loadX(slice)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
-slice.loadUint(2)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(2)
+    let slice1 = slice.loadRef().beginParse()
 
-let left: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX)
+    let left: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let right: VarHashmap<X> = loadVarHashmap<X>(slice2, (arg0 - 1), loadX)
+    let right: VarHashmap<X> = loadVarHashmap<X>(slice2, (arg0 - 1), loadX)
 
-let value: Maybe<X> = loadMaybe<X>(slice, loadX)
+    let value: Maybe<X> = loadMaybe<X>(slice, loadX)
 
     return {
     kind: 'VarHashmapNode_vhmn_fork',
@@ -3393,14 +3393,14 @@ let value: Maybe<X> = loadMaybe<X>(slice, loadX)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let branch: BitString = slice.loadBits(1)
+    slice.loadUint(1)
+    let branch: BitString = slice.loadBits(1)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let child: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX)
+    let child: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX)
 
-let value: X = loadX(slice)
+    let value: X = loadX(slice)
 
     return {
     kind: 'VarHashmapNode_vhmn_cont',
@@ -3479,7 +3479,7 @@ export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX
 export function loadVarHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
 ): VarHashmapE<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'VarHashmapE_vhme_empty',
     n: n,
@@ -3488,10 +3488,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let root: VarHashmap<X> = loadVarHashmap<X>(slice1, n, loadX)
+    let root: VarHashmap<X> = loadVarHashmap<X>(slice1, n, loadX)
 
     return {
     kind: 'VarHashmapE_vhme_root',
@@ -3537,19 +3537,19 @@ export function storeVarHashmapE<X>(varHashmapE: VarHashmapE<X>, storeX: (x: X) 
 
 export function pfxHashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_long')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
 ;
     if ((label.kind == 'HmLabel_hml_same')) {
-let n = label.n
+    let n = label.n
 
     return n
 }
@@ -3597,8 +3597,8 @@ export function storePfxHashmap<X>(pfxHashmap: PfxHashmap<X>, storeX: (x: X) => 
 export function loadPfxHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
 ): PfxHashmapNode<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let value: X = loadX(slice)
+    slice.loadUint(1)
+    let value: X = loadX(slice)
 
     return {
     kind: 'PfxHashmapNode_phmn_leaf',
@@ -3609,14 +3609,14 @@ let value: X = loadX(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let left: PfxHashmap<X> = loadPfxHashmap<X>(slice1, (arg0 - 1), loadX)
+    let left: PfxHashmap<X> = loadPfxHashmap<X>(slice1, (arg0 - 1), loadX)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let right: PfxHashmap<X> = loadPfxHashmap<X>(slice2, (arg0 - 1), loadX)
+    let right: PfxHashmap<X> = loadPfxHashmap<X>(slice2, (arg0 - 1), loadX)
 
     return {
     kind: 'PfxHashmapNode_phmn_fork',
@@ -3673,7 +3673,7 @@ export function storePfxHashmapNode<X>(pfxHashmapNode: PfxHashmapNode<X>, storeX
 export function loadPfxHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
 ): PfxHashmapE<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'PfxHashmapE_phme_empty',
     n: n,
@@ -3682,10 +3682,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let root: PfxHashmap<X> = loadPfxHashmap<X>(slice1, n, loadX)
+    let root: PfxHashmap<X> = loadPfxHashmap<X>(slice1, n, loadX)
 
     return {
     kind: 'PfxHashmapE_phme_root',
@@ -3731,7 +3731,7 @@ export function storePfxHashmapE<X>(pfxHashmapE: PfxHashmapE<X>, storeX: (x: X) 
 
 export function loadMsgAddressExt(slice: Slice): MsgAddressExt {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'MsgAddressExt_addr_none',
 }
@@ -3739,10 +3739,10 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
-slice.loadUint(2)
-let len: number = slice.loadUint(9)
+    slice.loadUint(2)
+    let len: number = slice.loadUint(9)
 
-let external_address: BitString = slice.loadBits(len)
+    let external_address: BitString = slice.loadBits(len)
 
     return {
     kind: 'MsgAddressExt_addr_extern',
@@ -3789,7 +3789,7 @@ export function loadAnycast(slice: Slice): Anycast {
 
 ;
     if ((!(depth >= 1))) {
-throw new Error('')
+    throw new Error('')
 }
 ;
     return {
@@ -3808,7 +3808,7 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
     builder.storeBits(anycast.rewrite_pfx)
 
     if ((!(anycast.depth >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -3818,12 +3818,12 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
 
 export function loadMsgAddressInt(slice: Slice): MsgAddressInt {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
-let anycast: Maybe<Anycast> = loadMaybe<Anycast>(slice, loadAnycast)
+    slice.loadUint(2)
+    let anycast: Maybe<Anycast> = loadMaybe<Anycast>(slice, loadAnycast)
 
-let workchain_id: number = slice.loadInt(8)
+    let workchain_id: number = slice.loadInt(8)
 
-let address: BitString = slice.loadBits(256)
+    let address: BitString = slice.loadBits(256)
 
     return {
     kind: 'MsgAddressInt_addr_std',
@@ -3835,14 +3835,14 @@ let address: BitString = slice.loadBits(256)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
-let anycast: Maybe<Anycast> = loadMaybe<Anycast>(slice, loadAnycast)
+    slice.loadUint(2)
+    let anycast: Maybe<Anycast> = loadMaybe<Anycast>(slice, loadAnycast)
 
-let addr_len: number = slice.loadUint(9)
+    let addr_len: number = slice.loadUint(9)
 
-let workchain_id: number = slice.loadInt(32)
+    let workchain_id: number = slice.loadInt(32)
 
-let address: BitString = slice.loadBits(addr_len)
+    let address: BitString = slice.loadBits(addr_len)
 
     return {
     kind: 'MsgAddressInt_addr_var',
@@ -3895,8 +3895,8 @@ export function storeMsgAddressInt(msgAddressInt: MsgAddressInt): (builder: Buil
 
 export function loadMsgAddress(slice: Slice): MsgAddress {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xef3a10fa))) {
-slice.loadUint(32)
-let _: MsgAddressInt = loadMsgAddressInt(slice)
+    slice.loadUint(32)
+    let _: MsgAddressInt = loadMsgAddressInt(slice)
 
     return {
     kind: 'MsgAddress__',
@@ -3906,8 +3906,8 @@ let _: MsgAddressInt = loadMsgAddressInt(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xcf942fd1))) {
-slice.loadUint(32)
-let _: MsgAddressExt = loadMsgAddressExt(slice)
+    slice.loadUint(32)
+    let _: MsgAddressExt = loadMsgAddressExt(slice)
 
     return {
     kind: 'MsgAddress__1',
@@ -4084,26 +4084,26 @@ export function storeCurrencyCollection(currencyCollection: CurrencyCollection):
 
 export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let ihr_disabled: Bool = loadBool(slice)
+    slice.loadUint(1)
+    let ihr_disabled: Bool = loadBool(slice)
 
-let bounce: Bool = loadBool(slice)
+    let bounce: Bool = loadBool(slice)
 
-let bounced: Bool = loadBool(slice)
+    let bounced: Bool = loadBool(slice)
 
-let src: MsgAddressInt = loadMsgAddressInt(slice)
+    let src: MsgAddressInt = loadMsgAddressInt(slice)
 
-let dest: MsgAddressInt = loadMsgAddressInt(slice)
+    let dest: MsgAddressInt = loadMsgAddressInt(slice)
 
-let value: CurrencyCollection = loadCurrencyCollection(slice)
+    let value: CurrencyCollection = loadCurrencyCollection(slice)
 
-let ihr_fee: Grams = loadGrams(slice)
+    let ihr_fee: Grams = loadGrams(slice)
 
-let fwd_fee: Grams = loadGrams(slice)
+    let fwd_fee: Grams = loadGrams(slice)
 
-let created_lt: number = slice.loadUint(64)
+    let created_lt: number = slice.loadUint(64)
 
-let created_at: number = slice.loadUint(32)
+    let created_at: number = slice.loadUint(32)
 
     return {
     kind: 'CommonMsgInfo_int_msg_info',
@@ -4122,12 +4122,12 @@ let created_at: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
-let src: MsgAddressExt = loadMsgAddressExt(slice)
+    slice.loadUint(2)
+    let src: MsgAddressExt = loadMsgAddressExt(slice)
 
-let dest: MsgAddressInt = loadMsgAddressInt(slice)
+    let dest: MsgAddressInt = loadMsgAddressInt(slice)
 
-let import_fee: Grams = loadGrams(slice)
+    let import_fee: Grams = loadGrams(slice)
 
     return {
     kind: 'CommonMsgInfo_ext_in_msg_info',
@@ -4139,14 +4139,14 @@ let import_fee: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
-let src: MsgAddressInt = loadMsgAddressInt(slice)
+    slice.loadUint(2)
+    let src: MsgAddressInt = loadMsgAddressInt(slice)
 
-let dest: MsgAddressExt = loadMsgAddressExt(slice)
+    let dest: MsgAddressExt = loadMsgAddressExt(slice)
 
-let created_lt: number = slice.loadUint(64)
+    let created_lt: number = slice.loadUint(64)
 
-let created_at: number = slice.loadUint(32)
+    let created_at: number = slice.loadUint(32)
 
     return {
     kind: 'CommonMsgInfo_ext_out_msg_info',
@@ -4227,26 +4227,26 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
 
 export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let ihr_disabled: Bool = loadBool(slice)
+    slice.loadUint(1)
+    let ihr_disabled: Bool = loadBool(slice)
 
-let bounce: Bool = loadBool(slice)
+    let bounce: Bool = loadBool(slice)
 
-let bounced: Bool = loadBool(slice)
+    let bounced: Bool = loadBool(slice)
 
-let src: MsgAddress = loadMsgAddress(slice)
+    let src: MsgAddress = loadMsgAddress(slice)
 
-let dest: MsgAddressInt = loadMsgAddressInt(slice)
+    let dest: MsgAddressInt = loadMsgAddressInt(slice)
 
-let value: CurrencyCollection = loadCurrencyCollection(slice)
+    let value: CurrencyCollection = loadCurrencyCollection(slice)
 
-let ihr_fee: Grams = loadGrams(slice)
+    let ihr_fee: Grams = loadGrams(slice)
 
-let fwd_fee: Grams = loadGrams(slice)
+    let fwd_fee: Grams = loadGrams(slice)
 
-let created_lt: number = slice.loadUint(64)
+    let created_lt: number = slice.loadUint(64)
 
-let created_at: number = slice.loadUint(32)
+    let created_at: number = slice.loadUint(32)
 
     return {
     kind: 'CommonMsgInfoRelaxed_int_msg_info',
@@ -4265,14 +4265,14 @@ let created_at: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
-let src: MsgAddress = loadMsgAddress(slice)
+    slice.loadUint(2)
+    let src: MsgAddress = loadMsgAddress(slice)
 
-let dest: MsgAddressExt = loadMsgAddressExt(slice)
+    let dest: MsgAddressExt = loadMsgAddressExt(slice)
 
-let created_lt: number = slice.loadUint(64)
+    let created_lt: number = slice.loadUint(64)
 
-let created_at: number = slice.loadUint(32)
+    let created_at: number = slice.loadUint(32)
 
     return {
     kind: 'CommonMsgInfoRelaxed_ext_out_msg_info',
@@ -4366,34 +4366,34 @@ export function storeTickTock(tickTock: TickTock): (builder: Builder) => void {
 
 export function loadStateInit(slice: Slice): StateInit {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x91231967))) {
-slice.loadUint(32)
-let split_depth: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
-        return slice.loadUint(5)
+    slice.loadUint(32)
+    let split_depth: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
+    return slice.loadUint(5)
 
-    })
-    )
+})
+)
 
-let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock)
+    let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock)
 
-let code: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
-
-
-        return slice1
-
-    })
-    )
-
-let data: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let code: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return slice1
+    return slice1
 
-    })
-    )
+})
+)
 
-let library: HashmapE<SimpleLib> = loadHashmapE<SimpleLib>(slice, 256, loadSimpleLib)
+    let data: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
+
+
+    return slice1
+
+})
+)
+
+    let library: HashmapE<SimpleLib> = loadHashmapE<SimpleLib>(slice, 256, loadSimpleLib)
 
     return {
     kind: 'StateInit',
@@ -4682,12 +4682,12 @@ export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX
 
 export function loadMessageAny(slice: Slice): MessageAny {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9c54aa4b))) {
-slice.loadUint(32)
-let anon0: Message<Slice> = loadMessage<Slice>(slice, ((slice: Slice) => {
-        return slice
+    slice.loadUint(32)
+    let anon0: Message<Slice> = loadMessage<Slice>(slice, ((slice: Slice) => {
+    return slice
 
-    })
-    )
+})
+)
 
     return {
     kind: 'MessageAny',
@@ -4721,8 +4721,8 @@ export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => v
 
 export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let use_dest_bits: number = slice.loadUint(bitLen(96))
+    slice.loadUint(1)
+    let use_dest_bits: number = slice.loadUint(bitLen(96))
 
     return {
     kind: 'IntermediateAddress_interm_addr_regular',
@@ -4732,10 +4732,10 @@ let use_dest_bits: number = slice.loadUint(bitLen(96))
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
-let workchain_id: number = slice.loadInt(8)
+    slice.loadUint(2)
+    let workchain_id: number = slice.loadInt(8)
 
-let addr_pfx: number = slice.loadUint(64)
+    let addr_pfx: number = slice.loadUint(64)
 
     return {
     kind: 'IntermediateAddress_interm_addr_simple',
@@ -4746,10 +4746,10 @@ let addr_pfx: number = slice.loadUint(64)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
-let workchain_id: number = slice.loadInt(32)
+    slice.loadUint(2)
+    let workchain_id: number = slice.loadInt(32)
 
-let addr_pfx: number = slice.loadUint(64)
+    let addr_pfx: number = slice.loadUint(64)
 
     return {
     kind: 'IntermediateAddress_interm_addr_ext',
@@ -4804,20 +4804,20 @@ export function storeIntermediateAddress(intermediateAddress: IntermediateAddres
 
 export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0x4))) {
-slice.loadUint(4)
-let cur_addr: IntermediateAddress = loadIntermediateAddress(slice)
+    slice.loadUint(4)
+    let cur_addr: IntermediateAddress = loadIntermediateAddress(slice)
 
-let next_addr: IntermediateAddress = loadIntermediateAddress(slice)
+    let next_addr: IntermediateAddress = loadIntermediateAddress(slice)
 
-let fwd_fee_remaining: Grams = loadGrams(slice)
+    let fwd_fee_remaining: Grams = loadGrams(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-        return slice
+    let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
+    return slice
 
-    })
-    )
+})
+)
 
     return {
     kind: 'MsgEnvelope',
@@ -4865,18 +4865,18 @@ export function storeMsgEnvelope(msgEnvelope: MsgEnvelope): (builder: Builder) =
 
 export function loadInMsg(slice: Slice): InMsg {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b000))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-        return slice
+    let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
+    return slice
 
-    })
-    )
+})
+)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let transaction: Transaction = loadTransaction(slice2)
+    let transaction: Transaction = loadTransaction(slice2)
 
     return {
     kind: 'InMsg_msg_import_ext',
@@ -4887,24 +4887,24 @@ let transaction: Transaction = loadTransaction(slice2)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b010))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-        return slice
+    let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
+    return slice
 
-    })
-    )
+})
+)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let transaction: Transaction = loadTransaction(slice2)
+    let transaction: Transaction = loadTransaction(slice2)
 
-let ihr_fee: Grams = loadGrams(slice)
+    let ihr_fee: Grams = loadGrams(slice)
 
-let slice3 = slice.loadRef().beginParse()
+    let slice3 = slice.loadRef().beginParse()
 
-let proof_created: Slice = slice3
+    let proof_created: Slice = slice3
 
     return {
     kind: 'InMsg_msg_import_ihr',
@@ -4917,16 +4917,16 @@ let proof_created: Slice = slice3
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b011))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let transaction: Transaction = loadTransaction(slice2)
+    let transaction: Transaction = loadTransaction(slice2)
 
-let fwd_fee: Grams = loadGrams(slice)
+    let fwd_fee: Grams = loadGrams(slice)
 
     return {
     kind: 'InMsg_msg_import_imm',
@@ -4938,16 +4938,16 @@ let fwd_fee: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b100))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let transaction: Transaction = loadTransaction(slice2)
+    let transaction: Transaction = loadTransaction(slice2)
 
-let fwd_fee: Grams = loadGrams(slice)
+    let fwd_fee: Grams = loadGrams(slice)
 
     return {
     kind: 'InMsg_msg_import_fin',
@@ -4959,16 +4959,16 @@ let fwd_fee: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b101))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let out_msg: MsgEnvelope = loadMsgEnvelope(slice2)
+    let out_msg: MsgEnvelope = loadMsgEnvelope(slice2)
 
-let transit_fee: Grams = loadGrams(slice)
+    let transit_fee: Grams = loadGrams(slice)
 
     return {
     kind: 'InMsg_msg_import_tr',
@@ -4980,14 +4980,14 @@ let transit_fee: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b110))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let transaction_id: number = slice.loadUint(64)
+    let transaction_id: number = slice.loadUint(64)
 
-let fwd_fee: Grams = loadGrams(slice)
+    let fwd_fee: Grams = loadGrams(slice)
 
     return {
     kind: 'InMsg_msg_discard_fin',
@@ -4999,18 +4999,18 @@ let fwd_fee: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b111))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let in_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let transaction_id: number = slice.loadUint(64)
+    let transaction_id: number = slice.loadUint(64)
 
-let fwd_fee: Grams = loadGrams(slice)
+    let fwd_fee: Grams = loadGrams(slice)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let proof_delivered: Slice = slice2
+    let proof_delivered: Slice = slice2
 
     return {
     kind: 'InMsg_msg_discard_tr',
@@ -5246,8 +5246,8 @@ export function storeImportFees(importFees: ImportFees): (builder: Builder) => v
 
 export function loadInMsgDescr(slice: Slice): InMsgDescr {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x8615b8fd))) {
-slice.loadUint(32)
-let anon0: HashmapAugE<InMsg, ImportFees> = loadHashmapAugE<InMsg, ImportFees>(slice, 256, loadInMsg, loadImportFees)
+    slice.loadUint(32)
+    let anon0: HashmapAugE<InMsg, ImportFees> = loadHashmapAugE<InMsg, ImportFees>(slice, 256, loadInMsg, loadImportFees)
 
     return {
     kind: 'InMsgDescr',
@@ -5273,18 +5273,18 @@ export function storeInMsgDescr(inMsgDescr: InMsgDescr): (builder: Builder) => v
 
 export function loadOutMsg(slice: Slice): OutMsg {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b000))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-        return slice
+    let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
+    return slice
 
-    })
-    )
+})
+)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let transaction: Transaction = loadTransaction(slice2)
+    let transaction: Transaction = loadTransaction(slice2)
 
     return {
     kind: 'OutMsg_msg_export_ext',
@@ -5295,18 +5295,18 @@ let transaction: Transaction = loadTransaction(slice2)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b010))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let transaction: Transaction = loadTransaction(slice2)
+    let transaction: Transaction = loadTransaction(slice2)
 
-let slice3 = slice.loadRef().beginParse()
+    let slice3 = slice.loadRef().beginParse()
 
-let reimport: InMsg = loadInMsg(slice3)
+    let reimport: InMsg = loadInMsg(slice3)
 
     return {
     kind: 'OutMsg_msg_export_imm',
@@ -5318,14 +5318,14 @@ let reimport: InMsg = loadInMsg(slice3)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b001))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let transaction: Transaction = loadTransaction(slice2)
+    let transaction: Transaction = loadTransaction(slice2)
 
     return {
     kind: 'OutMsg_msg_export_new',
@@ -5336,14 +5336,14 @@ let transaction: Transaction = loadTransaction(slice2)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b011))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let imported: InMsg = loadInMsg(slice2)
+    let imported: InMsg = loadInMsg(slice2)
 
     return {
     kind: 'OutMsg_msg_export_tr',
@@ -5354,12 +5354,12 @@ let imported: InMsg = loadInMsg(slice2)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1100))) {
-slice.loadUint(4)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(4)
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let import_block_lt: number = slice.loadUint(63)
+    let import_block_lt: number = slice.loadUint(63)
 
     return {
     kind: 'OutMsg_msg_export_deq',
@@ -5370,14 +5370,14 @@ let import_block_lt: number = slice.loadUint(63)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1101))) {
-slice.loadUint(4)
-let msg_env_hash: BitString = slice.loadBits(256)
+    slice.loadUint(4)
+    let msg_env_hash: BitString = slice.loadBits(256)
 
-let next_workchain: number = slice.loadInt(32)
+    let next_workchain: number = slice.loadInt(32)
 
-let next_addr_pfx: number = slice.loadUint(64)
+    let next_addr_pfx: number = slice.loadUint(64)
 
-let import_block_lt: number = slice.loadUint(64)
+    let import_block_lt: number = slice.loadUint(64)
 
     return {
     kind: 'OutMsg_msg_export_deq_short',
@@ -5390,14 +5390,14 @@ let import_block_lt: number = slice.loadUint(64)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b111))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let imported: InMsg = loadInMsg(slice2)
+    let imported: InMsg = loadInMsg(slice2)
 
     return {
     kind: 'OutMsg_msg_export_tr_req',
@@ -5408,14 +5408,14 @@ let imported: InMsg = loadInMsg(slice2)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b100))) {
-slice.loadUint(3)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(3)
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let reimport: InMsg = loadInMsg(slice2)
+    let reimport: InMsg = loadInMsg(slice2)
 
     return {
     kind: 'OutMsg_msg_export_deq_imm',
@@ -5616,12 +5616,12 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
 
 export function loadEnqueuedMsg(slice: Slice): EnqueuedMsg {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x98cd4c6e))) {
-slice.loadUint(32)
-let enqueued_lt: number = slice.loadUint(64)
+    slice.loadUint(32)
+    let enqueued_lt: number = slice.loadUint(64)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
+    let out_msg: MsgEnvelope = loadMsgEnvelope(slice1)
 
     return {
     kind: 'EnqueuedMsg',
@@ -5655,8 +5655,8 @@ export function storeEnqueuedMsg(enqueuedMsg: EnqueuedMsg): (builder: Builder) =
 
 export function loadOutMsgDescr(slice: Slice): OutMsgDescr {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xbcd61b19))) {
-slice.loadUint(32)
-let anon0: HashmapAugE<OutMsg, CurrencyCollection> = loadHashmapAugE<OutMsg, CurrencyCollection>(slice, 256, loadOutMsg, loadCurrencyCollection)
+    slice.loadUint(32)
+    let anon0: HashmapAugE<OutMsg, CurrencyCollection> = loadHashmapAugE<OutMsg, CurrencyCollection>(slice, 256, loadOutMsg, loadCurrencyCollection)
 
     return {
     kind: 'OutMsgDescr',
@@ -5682,12 +5682,12 @@ export function storeOutMsgDescr(outMsgDescr: OutMsgDescr): (builder: Builder) =
 
 export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xcf5f0da2))) {
-slice.loadUint(32)
-let anon0: HashmapAugE<EnqueuedMsg, number> = loadHashmapAugE<EnqueuedMsg, number>(slice, 352, loadEnqueuedMsg, ((slice: Slice) => {
-        return slice.loadUint(64)
+    slice.loadUint(32)
+    let anon0: HashmapAugE<EnqueuedMsg, number> = loadHashmapAugE<EnqueuedMsg, number>(slice, 352, loadEnqueuedMsg, ((slice: Slice) => {
+    return slice.loadUint(64)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'OutMsgQueue',
@@ -5748,8 +5748,8 @@ export function storeProcessedUpto(processedUpto: ProcessedUpto): (builder: Buil
 
 export function loadProcessedInfo(slice: Slice): ProcessedInfo {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x982f4fa3))) {
-slice.loadUint(32)
-let anon0: HashmapE<ProcessedUpto> = loadHashmapE<ProcessedUpto>(slice, 96, loadProcessedUpto)
+    slice.loadUint(32)
+    let anon0: HashmapE<ProcessedUpto> = loadHashmapE<ProcessedUpto>(slice, 96, loadProcessedUpto)
 
     return {
     kind: 'ProcessedInfo',
@@ -5796,8 +5796,8 @@ export function storeIhrPendingSince(ihrPendingSince: IhrPendingSince): (builder
 
 export function loadIhrPendingInfo(slice: Slice): IhrPendingInfo {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xc31463df))) {
-slice.loadUint(32)
-let anon0: HashmapE<IhrPendingSince> = loadHashmapE<IhrPendingSince>(slice, 320, loadIhrPendingSince)
+    slice.loadUint(32)
+    let anon0: HashmapE<IhrPendingSince> = loadHashmapE<IhrPendingSince>(slice, 320, loadIhrPendingSince)
 
     return {
     kind: 'IhrPendingInfo',
@@ -5823,12 +5823,12 @@ export function storeIhrPendingInfo(ihrPendingInfo: IhrPendingInfo): (builder: B
 
 export function loadOutMsgQueueInfo(slice: Slice): OutMsgQueueInfo {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x98bb9b21))) {
-slice.loadUint(32)
-let out_queue: OutMsgQueue = loadOutMsgQueue(slice)
+    slice.loadUint(32)
+    let out_queue: OutMsgQueue = loadOutMsgQueue(slice)
 
-let proc_info: ProcessedInfo = loadProcessedInfo(slice)
+    let proc_info: ProcessedInfo = loadProcessedInfo(slice)
 
-let ihr_pending: IhrPendingInfo = loadIhrPendingInfo(slice)
+    let ihr_pending: IhrPendingInfo = loadIhrPendingInfo(slice)
 
     return {
     kind: 'OutMsgQueueInfo',
@@ -5953,7 +5953,7 @@ export function storeStorageInfo(storageInfo: StorageInfo): (builder: Builder) =
 
 export function loadAccount(slice: Slice): Account {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'Account_account_none',
 }
@@ -5961,12 +5961,12 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let addr: MsgAddressInt = loadMsgAddressInt(slice)
+    slice.loadUint(1)
+    let addr: MsgAddressInt = loadMsgAddressInt(slice)
 
-let storage_stat: StorageInfo = loadStorageInfo(slice)
+    let storage_stat: StorageInfo = loadStorageInfo(slice)
 
-let storage: AccountStorage = loadAccountStorage(slice)
+    let storage: AccountStorage = loadAccountStorage(slice)
 
     return {
     kind: 'Account_account',
@@ -6043,7 +6043,7 @@ export function storeAccountStorage(accountStorage: AccountStorage): (builder: B
 
 export function loadAccountState(slice: Slice): AccountState {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'AccountState_account_uninit',
 }
@@ -6051,8 +6051,8 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let _: StateInit = loadStateInit(slice)
+    slice.loadUint(1)
+    let _: StateInit = loadStateInit(slice)
 
     return {
     kind: 'AccountState_account_active',
@@ -6062,8 +6062,8 @@ let _: StateInit = loadStateInit(slice)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
-slice.loadUint(2)
-let state_hash: BitString = slice.loadBits(256)
+    slice.loadUint(2)
+    let state_hash: BitString = slice.loadBits(256)
 
     return {
     kind: 'AccountState_account_frozen',
@@ -6111,7 +6111,7 @@ export function storeAccountState(accountState: AccountState): (builder: Builder
 
 export function loadAccountStatus(slice: Slice): AccountStatus {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'AccountStatus_acc_state_uninit',
 }
@@ -6119,7 +6119,7 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'AccountStatus_acc_state_frozen',
 }
@@ -6127,7 +6127,7 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'AccountStatus_acc_state_active',
 }
@@ -6135,7 +6135,7 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'AccountStatus_acc_state_nonexist',
 }
@@ -6253,8 +6253,8 @@ export function storeDepthBalanceInfo(depthBalanceInfo: DepthBalanceInfo): (buil
 
 export function loadShardAccounts(slice: Slice): ShardAccounts {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xa59aef08))) {
-slice.loadUint(32)
-let anon0: HashmapAugE<ShardAccount, DepthBalanceInfo> = loadHashmapAugE<ShardAccount, DepthBalanceInfo>(slice, 256, loadShardAccount, loadDepthBalanceInfo)
+    slice.loadUint(32)
+    let anon0: HashmapAugE<ShardAccount, DepthBalanceInfo> = loadHashmapAugE<ShardAccount, DepthBalanceInfo>(slice, 256, loadShardAccount, loadDepthBalanceInfo)
 
     return {
     kind: 'ShardAccounts',
@@ -6280,60 +6280,60 @@ export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Buil
 
 export function loadTransaction(slice: Slice): Transaction {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0111))) {
-slice.loadUint(4)
-let account_addr: BitString = slice.loadBits(256)
+    slice.loadUint(4)
+    let account_addr: BitString = slice.loadBits(256)
 
-let lt: number = slice.loadUint(64)
+    let lt: number = slice.loadUint(64)
 
-let prev_trans_hash: BitString = slice.loadBits(256)
+    let prev_trans_hash: BitString = slice.loadBits(256)
 
-let prev_trans_lt: number = slice.loadUint(64)
+    let prev_trans_lt: number = slice.loadUint(64)
 
-let now: number = slice.loadUint(32)
+    let now: number = slice.loadUint(32)
 
-let outmsg_cnt: number = slice.loadUint(15)
+    let outmsg_cnt: number = slice.loadUint(15)
 
-let orig_status: AccountStatus = loadAccountStatus(slice)
+    let orig_status: AccountStatus = loadAccountStatus(slice)
 
-let end_status: AccountStatus = loadAccountStatus(slice)
+    let end_status: AccountStatus = loadAccountStatus(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadMessage<Slice>(slice1, ((slice: Slice) => {
-            return slice
-
-        })
-        )
+    return loadMessage<Slice>(slice1, ((slice: Slice) => {
+        return slice
 
     })
     )
 
-let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+})
+)
+
+    let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadMessage<Slice>(slice1, ((slice: Slice) => {
-            return slice
-
-        })
-        )
+    return loadMessage<Slice>(slice1, ((slice: Slice) => {
+        return slice
 
     })
     )
 
-let total_fees: CurrencyCollection = loadCurrencyCollection(slice)
+})
+)
 
-let slice2 = slice.loadRef().beginParse()
+    let total_fees: CurrencyCollection = loadCurrencyCollection(slice)
 
-let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount)
+    let slice2 = slice.loadRef().beginParse()
 
-let slice3 = slice.loadRef().beginParse()
+    let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount)
 
-let description: TransactionDescr = loadTransactionDescr(slice3)
+    let slice3 = slice.loadRef().beginParse()
+
+    let description: TransactionDescr = loadTransactionDescr(slice3)
 
     return {
     kind: 'Transaction',
@@ -6455,18 +6455,18 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
 export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X
 ): MERKLE_UPDATE<X> {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x02))) {
-slice.loadUint(8)
-let old_hash: BitString = slice.loadBits(256)
+    slice.loadUint(8)
+    let old_hash: BitString = slice.loadBits(256)
 
-let new_hash: BitString = slice.loadBits(256)
+    let new_hash: BitString = slice.loadBits(256)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let old: X = loadX(slice1)
+    let old: X = loadX(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let new0: X = loadX(slice2)
+    let new0: X = loadX(slice2)
 
     return {
     kind: 'MERKLE_UPDATE',
@@ -6514,10 +6514,10 @@ export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (
 export function loadHASH_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X
 ): HASH_UPDATE<X> {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x72))) {
-slice.loadUint(8)
-let old_hash: BitString = slice.loadBits(256)
+    slice.loadUint(8)
+    let old_hash: BitString = slice.loadBits(256)
 
-let new_hash: BitString = slice.loadBits(256)
+    let new_hash: BitString = slice.loadBits(256)
 
     return {
     kind: 'HASH_UPDATE',
@@ -6549,14 +6549,14 @@ export function storeHASH_UPDATE<X>(hASH_UPDATE: HASH_UPDATE<X>, storeX: (x: X) 
 export function loadMERKLE_PROOF<X>(slice: Slice, loadX: (slice: Slice) => X
 ): MERKLE_PROOF<X> {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
-slice.loadUint(8)
-let virtual_hash: BitString = slice.loadBits(256)
+    slice.loadUint(8)
+    let virtual_hash: BitString = slice.loadBits(256)
 
-let depth: number = slice.loadUint(16)
+    let depth: number = slice.loadUint(16)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let virtual_root: X = loadX(slice1)
+    let virtual_root: X = loadX(slice1)
 
     return {
     kind: 'MERKLE_PROOF',
@@ -6595,21 +6595,21 @@ export function storeMERKLE_PROOF<X>(mERKLE_PROOF: MERKLE_PROOF<X>, storeX: (x: 
 
 export function loadAccountBlock(slice: Slice): AccountBlock {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0x5))) {
-slice.loadUint(4)
-let account_addr: BitString = slice.loadBits(256)
+    slice.loadUint(4)
+    let account_addr: BitString = slice.loadBits(256)
 
-let transactions: HashmapAug<Transaction, CurrencyCollection> = loadHashmapAug<Transaction, CurrencyCollection>(slice, 64, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let transactions: HashmapAug<Transaction, CurrencyCollection> = loadHashmapAug<Transaction, CurrencyCollection>(slice, 64, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadTransaction(slice1)
+    return loadTransaction(slice1)
 
-    })
-    , loadCurrencyCollection)
+})
+, loadCurrencyCollection)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice1, loadAccount)
+    let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice1, loadAccount)
 
     return {
     kind: 'AccountBlock',
@@ -6660,8 +6660,8 @@ export function storeAccountBlock(accountBlock: AccountBlock): (builder: Builder
 
 export function loadShardAccountBlocks(slice: Slice): ShardAccountBlocks {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xdc67c889))) {
-slice.loadUint(32)
-let anon0: HashmapAugE<AccountBlock, CurrencyCollection> = loadHashmapAugE<AccountBlock, CurrencyCollection>(slice, 256, loadAccountBlock, loadCurrencyCollection)
+    slice.loadUint(32)
+    let anon0: HashmapAugE<AccountBlock, CurrencyCollection> = loadHashmapAugE<AccountBlock, CurrencyCollection>(slice, 256, loadAccountBlock, loadCurrencyCollection)
 
     return {
     kind: 'ShardAccountBlocks',
@@ -6720,7 +6720,7 @@ export function storeTrStoragePhase(trStoragePhase: TrStoragePhase): (builder: B
 
 export function loadAccStatusChange(slice: Slice): AccStatusChange {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'AccStatusChange_acst_unchanged',
 }
@@ -6728,7 +6728,7 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'AccStatusChange_acst_frozen',
 }
@@ -6736,7 +6736,7 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'AccStatusChange_acst_deleted',
 }
@@ -6805,8 +6805,8 @@ export function storeTrCreditPhase(trCreditPhase: TrCreditPhase): (builder: Buil
 
 export function loadTrComputePhase(slice: Slice): TrComputePhase {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let reason: ComputeSkipReason = loadComputeSkipReason(slice)
+    slice.loadUint(1)
+    let reason: ComputeSkipReason = loadComputeSkipReason(slice)
 
     return {
     kind: 'TrComputePhase_tr_phase_compute_skipped',
@@ -6816,42 +6816,42 @@ let reason: ComputeSkipReason = loadComputeSkipReason(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let success: Bool = loadBool(slice)
+    slice.loadUint(1)
+    let success: Bool = loadBool(slice)
 
-let msg_state_used: Bool = loadBool(slice)
+    let msg_state_used: Bool = loadBool(slice)
 
-let account_activated: Bool = loadBool(slice)
+    let account_activated: Bool = loadBool(slice)
 
-let gas_fees: Grams = loadGrams(slice)
+    let gas_fees: Grams = loadGrams(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let gas_used: VarUInteger = loadVarUInteger(slice1, 7)
+    let gas_used: VarUInteger = loadVarUInteger(slice1, 7)
 
-let gas_limit: VarUInteger = loadVarUInteger(slice1, 7)
+    let gas_limit: VarUInteger = loadVarUInteger(slice1, 7)
 
-let gas_credit: Maybe<VarUInteger> = loadMaybe<VarUInteger>(slice1, ((slice: Slice) => {
-        return loadVarUInteger(slice, 3)
+    let gas_credit: Maybe<VarUInteger> = loadMaybe<VarUInteger>(slice1, ((slice: Slice) => {
+    return loadVarUInteger(slice, 3)
 
-    })
-    )
+})
+)
 
-let mode: number = slice1.loadInt(8)
+    let mode: number = slice1.loadInt(8)
 
-let exit_code: number = slice1.loadInt(32)
+    let exit_code: number = slice1.loadInt(32)
 
-let exit_arg: Maybe<number> = loadMaybe<number>(slice1, ((slice: Slice) => {
-        return slice1.loadInt(32)
+    let exit_arg: Maybe<number> = loadMaybe<number>(slice1, ((slice: Slice) => {
+    return slice1.loadInt(32)
 
-    })
-    )
+})
+)
 
-let vm_steps: number = slice1.loadUint(32)
+    let vm_steps: number = slice1.loadUint(32)
 
-let vm_init_state_hash: BitString = slice1.loadBits(256)
+    let vm_init_state_hash: BitString = slice1.loadBits(256)
 
-let vm_final_state_hash: BitString = slice1.loadBits(256)
+    let vm_final_state_hash: BitString = slice1.loadBits(256)
 
     return {
     kind: 'TrComputePhase_tr_phase_compute_vm',
@@ -6948,7 +6948,7 @@ export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: B
 
 export function loadComputeSkipReason(slice: Slice): ComputeSkipReason {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'ComputeSkipReason_cskip_no_state',
 }
@@ -6956,7 +6956,7 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'ComputeSkipReason_cskip_bad_state',
 }
@@ -6964,7 +6964,7 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'ComputeSkipReason_cskip_no_gas',
 }
@@ -7117,7 +7117,7 @@ export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Buil
 
 export function loadTrBouncePhase(slice: Slice): TrBouncePhase {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
+    slice.loadUint(2)
     return {
     kind: 'TrBouncePhase_tr_phase_bounce_negfunds',
 }
@@ -7125,10 +7125,10 @@ slice.loadUint(2)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
-slice.loadUint(2)
-let msg_size: StorageUsedShort = loadStorageUsedShort(slice)
+    slice.loadUint(2)
+    let msg_size: StorageUsedShort = loadStorageUsedShort(slice)
 
-let req_fwd_fees: Grams = loadGrams(slice)
+    let req_fwd_fees: Grams = loadGrams(slice)
 
     return {
     kind: 'TrBouncePhase_tr_phase_bounce_nofunds',
@@ -7139,12 +7139,12 @@ let req_fwd_fees: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let msg_size: StorageUsedShort = loadStorageUsedShort(slice)
+    slice.loadUint(1)
+    let msg_size: StorageUsedShort = loadStorageUsedShort(slice)
 
-let msg_fees: Grams = loadGrams(slice)
+    let msg_fees: Grams = loadGrams(slice)
 
-let fwd_fees: Grams = loadGrams(slice)
+    let fwd_fees: Grams = loadGrams(slice)
 
     return {
     kind: 'TrBouncePhase_tr_phase_bounce_ok',
@@ -7200,29 +7200,29 @@ export function storeTrBouncePhase(trBouncePhase: TrBouncePhase): (builder: Buil
 
 export function loadTransactionDescr(slice: Slice): TransactionDescr {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0000))) {
-slice.loadUint(4)
-let credit_first: Bool = loadBool(slice)
+    slice.loadUint(4)
+    let credit_first: Bool = loadBool(slice)
 
-let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase)
+    let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase)
 
-let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase)
+    let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase)
 
-let compute_ph: TrComputePhase = loadTrComputePhase(slice)
+    let compute_ph: TrComputePhase = loadTrComputePhase(slice)
 
-let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadTrActionPhase(slice1)
+    return loadTrActionPhase(slice1)
 
-    })
-    )
+})
+)
 
-let aborted: Bool = loadBool(slice)
+    let aborted: Bool = loadBool(slice)
 
-let bounce: Maybe<TrBouncePhase> = loadMaybe<TrBouncePhase>(slice, loadTrBouncePhase)
+    let bounce: Maybe<TrBouncePhase> = loadMaybe<TrBouncePhase>(slice, loadTrBouncePhase)
 
-let destroyed: Bool = loadBool(slice)
+    let destroyed: Bool = loadBool(slice)
 
     return {
     kind: 'TransactionDescr_trans_ord',
@@ -7239,8 +7239,8 @@ let destroyed: Bool = loadBool(slice)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0001))) {
-slice.loadUint(4)
-let storage_ph: TrStoragePhase = loadTrStoragePhase(slice)
+    slice.loadUint(4)
+    let storage_ph: TrStoragePhase = loadTrStoragePhase(slice)
 
     return {
     kind: 'TransactionDescr_trans_storage',
@@ -7250,25 +7250,25 @@ let storage_ph: TrStoragePhase = loadTrStoragePhase(slice)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b001))) {
-slice.loadUint(3)
-let is_tock: Bool = loadBool(slice)
+    slice.loadUint(3)
+    let is_tock: Bool = loadBool(slice)
 
-let storage_ph: TrStoragePhase = loadTrStoragePhase(slice)
+    let storage_ph: TrStoragePhase = loadTrStoragePhase(slice)
 
-let compute_ph: TrComputePhase = loadTrComputePhase(slice)
+    let compute_ph: TrComputePhase = loadTrComputePhase(slice)
 
-let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadTrActionPhase(slice1)
+    return loadTrActionPhase(slice1)
 
-    })
-    )
+})
+)
 
-let aborted: Bool = loadBool(slice)
+    let aborted: Bool = loadBool(slice)
 
-let destroyed: Bool = loadBool(slice)
+    let destroyed: Bool = loadBool(slice)
 
     return {
     kind: 'TransactionDescr_trans_tick_tock',
@@ -7283,25 +7283,25 @@ let destroyed: Bool = loadBool(slice)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0100))) {
-slice.loadUint(4)
-let split_info: SplitMergeInfo = loadSplitMergeInfo(slice)
+    slice.loadUint(4)
+    let split_info: SplitMergeInfo = loadSplitMergeInfo(slice)
 
-let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase)
+    let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase)
 
-let compute_ph: TrComputePhase = loadTrComputePhase(slice)
+    let compute_ph: TrComputePhase = loadTrComputePhase(slice)
 
-let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadTrActionPhase(slice1)
+    return loadTrActionPhase(slice1)
 
-    })
-    )
+})
+)
 
-let aborted: Bool = loadBool(slice)
+    let aborted: Bool = loadBool(slice)
 
-let destroyed: Bool = loadBool(slice)
+    let destroyed: Bool = loadBool(slice)
 
     return {
     kind: 'TransactionDescr_trans_split_prepare',
@@ -7316,14 +7316,14 @@ let destroyed: Bool = loadBool(slice)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0101))) {
-slice.loadUint(4)
-let split_info: SplitMergeInfo = loadSplitMergeInfo(slice)
+    slice.loadUint(4)
+    let split_info: SplitMergeInfo = loadSplitMergeInfo(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let prepare_transaction: Transaction = loadTransaction(slice1)
+    let prepare_transaction: Transaction = loadTransaction(slice1)
 
-let installed: Bool = loadBool(slice)
+    let installed: Bool = loadBool(slice)
 
     return {
     kind: 'TransactionDescr_trans_split_install',
@@ -7335,12 +7335,12 @@ let installed: Bool = loadBool(slice)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0110))) {
-slice.loadUint(4)
-let split_info: SplitMergeInfo = loadSplitMergeInfo(slice)
+    slice.loadUint(4)
+    let split_info: SplitMergeInfo = loadSplitMergeInfo(slice)
 
-let storage_ph: TrStoragePhase = loadTrStoragePhase(slice)
+    let storage_ph: TrStoragePhase = loadTrStoragePhase(slice)
 
-let aborted: Bool = loadBool(slice)
+    let aborted: Bool = loadBool(slice)
 
     return {
     kind: 'TransactionDescr_trans_merge_prepare',
@@ -7352,31 +7352,31 @@ let aborted: Bool = loadBool(slice)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0111))) {
-slice.loadUint(4)
-let split_info: SplitMergeInfo = loadSplitMergeInfo(slice)
+    slice.loadUint(4)
+    let split_info: SplitMergeInfo = loadSplitMergeInfo(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let prepare_transaction: Transaction = loadTransaction(slice1)
+    let prepare_transaction: Transaction = loadTransaction(slice1)
 
-let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase)
+    let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase)
 
-let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase)
+    let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase)
 
-let compute_ph: TrComputePhase = loadTrComputePhase(slice)
+    let compute_ph: TrComputePhase = loadTrComputePhase(slice)
 
-let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadTrActionPhase(slice1)
+    return loadTrActionPhase(slice1)
 
-    })
-    )
+})
+)
 
-let aborted: Bool = loadBool(slice)
+    let aborted: Bool = loadBool(slice)
 
-let destroyed: Bool = loadBool(slice)
+    let destroyed: Bool = loadBool(slice)
 
     return {
     kind: 'TransactionDescr_trans_merge_install',
@@ -7634,22 +7634,22 @@ export function storeSplitMergeInfo(splitMergeInfo: SplitMergeInfo): (builder: B
 
 export function loadSmartContractInfo(slice: Slice): SmartContractInfo {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x076ef1ea))) {
-slice.loadUint(32)
-let actions: number = slice.loadUint(16)
+    slice.loadUint(32)
+    let actions: number = slice.loadUint(16)
 
-let msgs_sent: number = slice.loadUint(16)
+    let msgs_sent: number = slice.loadUint(16)
 
-let unixtime: number = slice.loadUint(32)
+    let unixtime: number = slice.loadUint(32)
 
-let block_lt: number = slice.loadUint(64)
+    let block_lt: number = slice.loadUint(64)
 
-let trans_lt: number = slice.loadUint(64)
+    let trans_lt: number = slice.loadUint(64)
 
-let rand_seed: BitString = slice.loadBits(256)
+    let rand_seed: BitString = slice.loadBits(256)
 
-let balance_remaining: CurrencyCollection = loadCurrencyCollection(slice)
+    let balance_remaining: CurrencyCollection = loadCurrencyCollection(slice)
 
-let myself: MsgAddressInt = loadMsgAddressInt(slice)
+    let myself: MsgAddressInt = loadMsgAddressInt(slice)
 
     return {
     kind: 'SmartContractInfo',
@@ -7703,11 +7703,11 @@ export function loadOutList(slice: Slice, arg0: number): OutList {
 }
 ;
     if (true) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let prev: OutList = loadOutList(slice1, (arg0 - 1))
+    let prev: OutList = loadOutList(slice1, (arg0 - 1))
 
-let action: OutAction = loadOutAction(slice)
+    let action: OutAction = loadOutAction(slice)
 
     return {
     kind: 'OutList_out_list',
@@ -7750,16 +7750,16 @@ export function storeOutList(outList: OutList): (builder: Builder) => void {
 
 export function loadOutAction(slice: Slice): OutAction {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x0ec3c86d))) {
-slice.loadUint(32)
-let mode: number = slice.loadUint(8)
+    slice.loadUint(32)
+    let mode: number = slice.loadUint(8)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, ((slice: Slice) => {
-        return slice
+    let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, ((slice: Slice) => {
+    return slice
 
-    })
-    )
+})
+)
 
     return {
     kind: 'OutAction_action_send_msg',
@@ -7770,10 +7770,10 @@ let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, ((slice: 
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xad4de08e))) {
-slice.loadUint(32)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let slice1 = slice.loadRef().beginParse()
 
-let new_code: Slice = slice1
+    let new_code: Slice = slice1
 
     return {
     kind: 'OutAction_action_set_code',
@@ -7783,10 +7783,10 @@ let new_code: Slice = slice1
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x36e6b809))) {
-slice.loadUint(32)
-let mode: number = slice.loadUint(8)
+    slice.loadUint(32)
+    let mode: number = slice.loadUint(8)
 
-let currency: CurrencyCollection = loadCurrencyCollection(slice)
+    let currency: CurrencyCollection = loadCurrencyCollection(slice)
 
     return {
     kind: 'OutAction_action_reserve_currency',
@@ -7797,13 +7797,13 @@ let currency: CurrencyCollection = loadCurrencyCollection(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x26fa1dd4))) {
-slice.loadUint(32)
-let mode: number = slice.loadUint(7)
+    slice.loadUint(32)
+    let mode: number = slice.loadUint(7)
 
-let libref: LibRef = loadLibRef(slice)
+    let libref: LibRef = loadLibRef(slice)
 
     if ((!(mode <= 2))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'OutAction_action_change_library',
@@ -7879,7 +7879,7 @@ export function storeOutAction(outAction: OutAction): (builder: Builder) => void
     storeLibRef(outAction.libref)(builder)
 
     if ((!(outAction.mode <= 2))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -7892,8 +7892,8 @@ export function storeOutAction(outAction: OutAction): (builder: Builder) => void
 
 export function loadLibRef(slice: Slice): LibRef {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let lib_hash: BitString = slice.loadBits(256)
+    slice.loadUint(1)
+    let lib_hash: BitString = slice.loadBits(256)
 
     return {
     kind: 'LibRef_libref_hash',
@@ -7903,10 +7903,10 @@ let lib_hash: BitString = slice.loadBits(256)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let library: Slice = slice1
+    let library: Slice = slice1
 
     return {
     kind: 'LibRef_libref_ref',
@@ -7986,12 +7986,12 @@ export function storeOutListNode(outListNode: OutListNode): (builder: Builder) =
 
 export function loadShardIdent(slice: Slice): ShardIdent {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
-let shard_pfx_bits: number = slice.loadUint(bitLen(60))
+    slice.loadUint(2)
+    let shard_pfx_bits: number = slice.loadUint(bitLen(60))
 
-let workchain_id: number = slice.loadInt(32)
+    let workchain_id: number = slice.loadInt(32)
 
-let shard_prefix: number = slice.loadUint(64)
+    let shard_prefix: number = slice.loadUint(64)
 
     return {
     kind: 'ShardIdent',
@@ -8122,53 +8122,53 @@ export function storeBlkMasterInfo(blkMasterInfo: BlkMasterInfo): (builder: Buil
 
 export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9023afe2))) {
-slice.loadUint(32)
-let global_id: number = slice.loadInt(32)
+    slice.loadUint(32)
+    let global_id: number = slice.loadInt(32)
 
-let shard_id: ShardIdent = loadShardIdent(slice)
+    let shard_id: ShardIdent = loadShardIdent(slice)
 
-let seq_no: number = slice.loadUint(32)
+    let seq_no: number = slice.loadUint(32)
 
-let vert_seq_no: number = slice.loadUint(32)
+    let vert_seq_no: number = slice.loadUint(32)
 
-let gen_utime: number = slice.loadUint(32)
+    let gen_utime: number = slice.loadUint(32)
 
-let gen_lt: number = slice.loadUint(64)
+    let gen_lt: number = slice.loadUint(64)
 
-let min_ref_mc_seqno: number = slice.loadUint(32)
+    let min_ref_mc_seqno: number = slice.loadUint(32)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let out_msg_queue_info: OutMsgQueueInfo = loadOutMsgQueueInfo(slice1)
+    let out_msg_queue_info: OutMsgQueueInfo = loadOutMsgQueueInfo(slice1)
 
-let before_split: number = slice.loadUint(1)
+    let before_split: number = slice.loadUint(1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let accounts: ShardAccounts = loadShardAccounts(slice2)
+    let accounts: ShardAccounts = loadShardAccounts(slice2)
 
-let slice3 = slice.loadRef().beginParse()
+    let slice3 = slice.loadRef().beginParse()
 
-let overload_history: number = slice3.loadUint(64)
+    let overload_history: number = slice3.loadUint(64)
 
-let underload_history: number = slice3.loadUint(64)
+    let underload_history: number = slice3.loadUint(64)
 
-let total_balance: CurrencyCollection = loadCurrencyCollection(slice3)
+    let total_balance: CurrencyCollection = loadCurrencyCollection(slice3)
 
-let total_validator_fees: CurrencyCollection = loadCurrencyCollection(slice3)
+    let total_validator_fees: CurrencyCollection = loadCurrencyCollection(slice3)
 
-let libraries: HashmapE<LibDescr> = loadHashmapE<LibDescr>(slice3, 256, loadLibDescr)
+    let libraries: HashmapE<LibDescr> = loadHashmapE<LibDescr>(slice3, 256, loadLibDescr)
 
-let master_ref: Maybe<BlkMasterInfo> = loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo)
+    let master_ref: Maybe<BlkMasterInfo> = loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo)
 
-let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadMcStateExtra(slice1)
+    return loadMcStateExtra(slice1)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'ShardStateUnsplit',
@@ -8271,8 +8271,8 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
 
 export function loadShardState(slice: Slice): ShardState {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x81e52440))) {
-slice.loadUint(32)
-let anon0: ShardStateUnsplit = loadShardStateUnsplit(slice)
+    slice.loadUint(32)
+    let anon0: ShardStateUnsplit = loadShardStateUnsplit(slice)
 
     return {
     kind: 'ShardState__',
@@ -8282,14 +8282,14 @@ let anon0: ShardStateUnsplit = loadShardStateUnsplit(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x5f327da5))) {
-slice.loadUint(32)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let slice1 = slice.loadRef().beginParse()
 
-let left: ShardStateUnsplit = loadShardStateUnsplit(slice1)
+    let left: ShardStateUnsplit = loadShardStateUnsplit(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let right: ShardStateUnsplit = loadShardStateUnsplit(slice2)
+    let right: ShardStateUnsplit = loadShardStateUnsplit(slice2)
 
     return {
     kind: 'ShardState_split_state',
@@ -8342,12 +8342,12 @@ export function storeShardState(shardState: ShardState): (builder: Builder) => v
 
 export function loadLibDescr(slice: Slice): LibDescr {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(2)
+    let slice1 = slice.loadRef().beginParse()
 
-let lib: Slice = slice1
+    let lib: Slice = slice1
 
-let publishers: Hashmap<True> = loadHashmap<True>(slice, 256, loadTrue)
+    let publishers: Hashmap<True> = loadHashmap<True>(slice, 256, loadTrue)
 
     return {
     kind: 'LibDescr',
@@ -8381,76 +8381,76 @@ export function storeLibDescr(libDescr: LibDescr): (builder: Builder) => void {
 
 export function loadBlockInfo(slice: Slice): BlockInfo {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9bc7a987))) {
-slice.loadUint(32)
-let version: number = slice.loadUint(32)
+    slice.loadUint(32)
+    let version: number = slice.loadUint(32)
 
-let not_master: number = slice.loadUint(1)
+    let not_master: number = slice.loadUint(1)
 
-let after_merge: number = slice.loadUint(1)
+    let after_merge: number = slice.loadUint(1)
 
-let before_split: number = slice.loadUint(1)
+    let before_split: number = slice.loadUint(1)
 
-let after_split: number = slice.loadUint(1)
+    let after_split: number = slice.loadUint(1)
 
-let want_split: Bool = loadBool(slice)
+    let want_split: Bool = loadBool(slice)
 
-let want_merge: Bool = loadBool(slice)
+    let want_merge: Bool = loadBool(slice)
 
-let key_block: Bool = loadBool(slice)
+    let key_block: Bool = loadBool(slice)
 
-let vert_seqno_incr: number = slice.loadUint(1)
+    let vert_seqno_incr: number = slice.loadUint(1)
 
-let flags: number = slice.loadUint(8)
+    let flags: number = slice.loadUint(8)
 
-let seq_no: number = slice.loadUint(32)
+    let seq_no: number = slice.loadUint(32)
 
-let vert_seq_no: number = slice.loadUint(32)
+    let vert_seq_no: number = slice.loadUint(32)
 
-let shard: ShardIdent = loadShardIdent(slice)
+    let shard: ShardIdent = loadShardIdent(slice)
 
-let gen_utime: number = slice.loadUint(32)
+    let gen_utime: number = slice.loadUint(32)
 
-let start_lt: number = slice.loadUint(64)
+    let start_lt: number = slice.loadUint(64)
 
-let end_lt: number = slice.loadUint(64)
+    let end_lt: number = slice.loadUint(64)
 
-let gen_validator_list_hash_short: number = slice.loadUint(32)
+    let gen_validator_list_hash_short: number = slice.loadUint(32)
 
-let gen_catchain_seqno: number = slice.loadUint(32)
+    let gen_catchain_seqno: number = slice.loadUint(32)
 
-let min_ref_mc_seqno: number = slice.loadUint(32)
+    let min_ref_mc_seqno: number = slice.loadUint(32)
 
-let prev_key_block_seqno: number = slice.loadUint(32)
+    let prev_key_block_seqno: number = slice.loadUint(32)
 
-let gen_software: GlobalVersion | undefined = ((flags & (1 << 0)) ? loadGlobalVersion(slice) : undefined)
+    let gen_software: GlobalVersion | undefined = ((flags & (1 << 0)) ? loadGlobalVersion(slice) : undefined)
 
-let master_ref: BlkMasterInfo | undefined = (not_master ? ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
-
-
-        return loadBlkMasterInfo(slice1)
-
-    })
-    (slice) : undefined)
-
-let slice1 = slice.loadRef().beginParse()
-
-let prev_ref: BlkPrevInfo = loadBlkPrevInfo(slice1, after_merge)
-
-let prev_vert_ref: BlkPrevInfo | undefined = (vert_seqno_incr ? ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let master_ref: BlkMasterInfo | undefined = (not_master ? ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadBlkPrevInfo(slice1, 0)
+    return loadBlkMasterInfo(slice1)
 
-    })
-    (slice) : undefined)
+})
+(slice) : undefined)
+
+    let slice1 = slice.loadRef().beginParse()
+
+    let prev_ref: BlkPrevInfo = loadBlkPrevInfo(slice1, after_merge)
+
+    let prev_vert_ref: BlkPrevInfo | undefined = (vert_seqno_incr ? ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
+
+
+    return loadBlkPrevInfo(slice1, 0)
+
+})
+(slice) : undefined)
 
     if ((!(flags <= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(vert_seq_no >= vert_seqno_incr))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'BlockInfo',
@@ -8532,7 +8532,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
     builder.storeUint(blockInfo.prev_key_block_seqno, 32)
 
     if ((blockInfo.gen_software != undefined)) {
-    storeGlobalVersion(blockInfo.gen_software)(builder)
+        storeGlobalVersion(blockInfo.gen_software)(builder)
     }
 
     if ((blockInfo.master_ref != undefined)) {
@@ -8563,11 +8563,11 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
     }
 
     if ((!(blockInfo.flags <= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(blockInfo.vert_seq_no >= blockInfo.vert_seqno_incr))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -8577,7 +8577,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
 
 export function loadBlkPrevInfo(slice: Slice, arg0: number): BlkPrevInfo {
     if ((arg0 == 0)) {
-let prev: ExtBlkRef = loadExtBlkRef(slice)
+    let prev: ExtBlkRef = loadExtBlkRef(slice)
 
     return {
     kind: 'BlkPrevInfo_prev_blk_info',
@@ -8587,13 +8587,13 @@ let prev: ExtBlkRef = loadExtBlkRef(slice)
 }
 ;
     if ((arg0 == 1)) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let prev1: ExtBlkRef = loadExtBlkRef(slice1)
+    let prev1: ExtBlkRef = loadExtBlkRef(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let prev2: ExtBlkRef = loadExtBlkRef(slice2)
+    let prev2: ExtBlkRef = loadExtBlkRef(slice2)
 
     return {
     kind: 'BlkPrevInfo_prev_blks_info',
@@ -8642,24 +8642,24 @@ export function storeBlkPrevInfo(blkPrevInfo: BlkPrevInfo): (builder: Builder) =
 
 export function loadBlock(slice: Slice): Block {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x11ef55aa))) {
-slice.loadUint(32)
-let global_id: number = slice.loadInt(32)
+    slice.loadUint(32)
+    let global_id: number = slice.loadInt(32)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let info: BlockInfo = loadBlockInfo(slice1)
+    let info: BlockInfo = loadBlockInfo(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let value_flow: ValueFlow = loadValueFlow(slice2)
+    let value_flow: ValueFlow = loadValueFlow(slice2)
 
-let slice3 = slice.loadRef().beginParse()
+    let slice3 = slice.loadRef().beginParse()
 
-let state_update: MERKLE_UPDATE<ShardState> = loadMERKLE_UPDATE<ShardState>(slice3, loadShardState)
+    let state_update: MERKLE_UPDATE<ShardState> = loadMERKLE_UPDATE<ShardState>(slice3, loadShardState)
 
-let slice4 = slice.loadRef().beginParse()
+    let slice4 = slice.loadRef().beginParse()
 
-let extra: BlockExtra = loadBlockExtra(slice4)
+    let extra: BlockExtra = loadBlockExtra(slice4)
 
     return {
     kind: 'Block',
@@ -8717,31 +8717,31 @@ export function storeBlock(block: Block): (builder: Builder) => void {
 
 export function loadBlockExtra(slice: Slice): BlockExtra {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x8e7f7ff8))) {
-slice.loadUint(32)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let slice1 = slice.loadRef().beginParse()
 
-let in_msg_descr: InMsgDescr = loadInMsgDescr(slice1)
+    let in_msg_descr: InMsgDescr = loadInMsgDescr(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let out_msg_descr: OutMsgDescr = loadOutMsgDescr(slice2)
+    let out_msg_descr: OutMsgDescr = loadOutMsgDescr(slice2)
 
-let slice3 = slice.loadRef().beginParse()
+    let slice3 = slice.loadRef().beginParse()
 
-let account_blocks: ShardAccountBlocks = loadShardAccountBlocks(slice3)
+    let account_blocks: ShardAccountBlocks = loadShardAccountBlocks(slice3)
 
-let rand_seed: BitString = slice.loadBits(256)
+    let rand_seed: BitString = slice.loadBits(256)
 
-let created_by: BitString = slice.loadBits(256)
+    let created_by: BitString = slice.loadBits(256)
 
-let custom: Maybe<McBlockExtra> = loadMaybe<McBlockExtra>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let custom: Maybe<McBlockExtra> = loadMaybe<McBlockExtra>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadMcBlockExtra(slice1)
+    return loadMcBlockExtra(slice1)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'BlockExtra',
@@ -8811,28 +8811,28 @@ export function storeBlockExtra(blockExtra: BlockExtra): (builder: Builder) => v
 
 export function loadValueFlow(slice: Slice): ValueFlow {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x98055e37))) {
-slice.loadUint(32)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let slice1 = slice.loadRef().beginParse()
 
-let from_prev_blk: CurrencyCollection = loadCurrencyCollection(slice1)
+    let from_prev_blk: CurrencyCollection = loadCurrencyCollection(slice1)
 
-let to_next_blk: CurrencyCollection = loadCurrencyCollection(slice1)
+    let to_next_blk: CurrencyCollection = loadCurrencyCollection(slice1)
 
-let imported: CurrencyCollection = loadCurrencyCollection(slice1)
+    let imported: CurrencyCollection = loadCurrencyCollection(slice1)
 
-let exported: CurrencyCollection = loadCurrencyCollection(slice1)
+    let exported: CurrencyCollection = loadCurrencyCollection(slice1)
 
-let fees_collected: CurrencyCollection = loadCurrencyCollection(slice)
+    let fees_collected: CurrencyCollection = loadCurrencyCollection(slice)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let fees_imported: CurrencyCollection = loadCurrencyCollection(slice2)
+    let fees_imported: CurrencyCollection = loadCurrencyCollection(slice2)
 
-let recovered: CurrencyCollection = loadCurrencyCollection(slice2)
+    let recovered: CurrencyCollection = loadCurrencyCollection(slice2)
 
-let created: CurrencyCollection = loadCurrencyCollection(slice2)
+    let created: CurrencyCollection = loadCurrencyCollection(slice2)
 
-let minted: CurrencyCollection = loadCurrencyCollection(slice2)
+    let minted: CurrencyCollection = loadCurrencyCollection(slice2)
 
     return {
     kind: 'ValueFlow',
@@ -8893,8 +8893,8 @@ export function storeValueFlow(valueFlow: ValueFlow): (builder: Builder) => void
 export function loadBinTree<X>(slice: Slice, loadX: (slice: Slice) => X
 ): BinTree<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let leaf: X = loadX(slice)
+    slice.loadUint(1)
+    let leaf: X = loadX(slice)
 
     return {
     kind: 'BinTree_bt_leaf',
@@ -8904,14 +8904,14 @@ let leaf: X = loadX(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let left: BinTree<X> = loadBinTree<X>(slice1, loadX)
+    let left: BinTree<X> = loadBinTree<X>(slice1, loadX)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let right: BinTree<X> = loadBinTree<X>(slice2, loadX)
+    let right: BinTree<X> = loadBinTree<X>(slice2, loadX)
 
     return {
     kind: 'BinTree_bt_fork',
@@ -8966,7 +8966,7 @@ export function storeBinTree<X>(binTree: BinTree<X>, storeX: (x: X) => (builder:
 
 export function loadFutureSplitMerge(slice: Slice): FutureSplitMerge {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'FutureSplitMerge_fsm_none',
 }
@@ -8974,10 +8974,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
-slice.loadUint(2)
-let split_utime: number = slice.loadUint(32)
+    slice.loadUint(2)
+    let split_utime: number = slice.loadUint(32)
 
-let interval: number = slice.loadUint(32)
+    let interval: number = slice.loadUint(32)
 
     return {
     kind: 'FutureSplitMerge_fsm_split',
@@ -8988,10 +8988,10 @@ let interval: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
-slice.loadUint(2)
-let merge_utime: number = slice.loadUint(32)
+    slice.loadUint(2)
+    let merge_utime: number = slice.loadUint(32)
 
-let interval: number = slice.loadUint(32)
+    let interval: number = slice.loadUint(32)
 
     return {
     kind: 'FutureSplitMerge_fsm_merge',
@@ -9044,47 +9044,47 @@ export function storeFutureSplitMerge(futureSplitMerge: FutureSplitMerge): (buil
 
 export function loadShardDescr(slice: Slice): ShardDescr {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0xb))) {
-slice.loadUint(4)
-let seq_no: number = slice.loadUint(32)
+    slice.loadUint(4)
+    let seq_no: number = slice.loadUint(32)
 
-let reg_mc_seqno: number = slice.loadUint(32)
+    let reg_mc_seqno: number = slice.loadUint(32)
 
-let start_lt: number = slice.loadUint(64)
+    let start_lt: number = slice.loadUint(64)
 
-let end_lt: number = slice.loadUint(64)
+    let end_lt: number = slice.loadUint(64)
 
-let root_hash: BitString = slice.loadBits(256)
+    let root_hash: BitString = slice.loadBits(256)
 
-let file_hash: BitString = slice.loadBits(256)
+    let file_hash: BitString = slice.loadBits(256)
 
-let before_split: Bool = loadBool(slice)
+    let before_split: Bool = loadBool(slice)
 
-let before_merge: Bool = loadBool(slice)
+    let before_merge: Bool = loadBool(slice)
 
-let want_split: Bool = loadBool(slice)
+    let want_split: Bool = loadBool(slice)
 
-let want_merge: Bool = loadBool(slice)
+    let want_merge: Bool = loadBool(slice)
 
-let nx_cc_updated: Bool = loadBool(slice)
+    let nx_cc_updated: Bool = loadBool(slice)
 
-let flags: number = slice.loadUint(3)
+    let flags: number = slice.loadUint(3)
 
-let next_catchain_seqno: number = slice.loadUint(32)
+    let next_catchain_seqno: number = slice.loadUint(32)
 
-let next_validator_shard: number = slice.loadUint(64)
+    let next_validator_shard: number = slice.loadUint(64)
 
-let min_ref_mc_seqno: number = slice.loadUint(32)
+    let min_ref_mc_seqno: number = slice.loadUint(32)
 
-let gen_utime: number = slice.loadUint(32)
+    let gen_utime: number = slice.loadUint(32)
 
-let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice)
+    let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice)
 
-let fees_collected: CurrencyCollection = loadCurrencyCollection(slice)
+    let fees_collected: CurrencyCollection = loadCurrencyCollection(slice)
 
-let funds_created: CurrencyCollection = loadCurrencyCollection(slice)
+    let funds_created: CurrencyCollection = loadCurrencyCollection(slice)
 
     if ((!(flags == 0))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ShardDescr_shard_descr',
@@ -9112,49 +9112,49 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0xa))) {
-slice.loadUint(4)
-let seq_no: number = slice.loadUint(32)
+    slice.loadUint(4)
+    let seq_no: number = slice.loadUint(32)
 
-let reg_mc_seqno: number = slice.loadUint(32)
+    let reg_mc_seqno: number = slice.loadUint(32)
 
-let start_lt: number = slice.loadUint(64)
+    let start_lt: number = slice.loadUint(64)
 
-let end_lt: number = slice.loadUint(64)
+    let end_lt: number = slice.loadUint(64)
 
-let root_hash: BitString = slice.loadBits(256)
+    let root_hash: BitString = slice.loadBits(256)
 
-let file_hash: BitString = slice.loadBits(256)
+    let file_hash: BitString = slice.loadBits(256)
 
-let before_split: Bool = loadBool(slice)
+    let before_split: Bool = loadBool(slice)
 
-let before_merge: Bool = loadBool(slice)
+    let before_merge: Bool = loadBool(slice)
 
-let want_split: Bool = loadBool(slice)
+    let want_split: Bool = loadBool(slice)
 
-let want_merge: Bool = loadBool(slice)
+    let want_merge: Bool = loadBool(slice)
 
-let nx_cc_updated: Bool = loadBool(slice)
+    let nx_cc_updated: Bool = loadBool(slice)
 
-let flags: number = slice.loadUint(3)
+    let flags: number = slice.loadUint(3)
 
-let next_catchain_seqno: number = slice.loadUint(32)
+    let next_catchain_seqno: number = slice.loadUint(32)
 
-let next_validator_shard: number = slice.loadUint(64)
+    let next_validator_shard: number = slice.loadUint(64)
 
-let min_ref_mc_seqno: number = slice.loadUint(32)
+    let min_ref_mc_seqno: number = slice.loadUint(32)
 
-let gen_utime: number = slice.loadUint(32)
+    let gen_utime: number = slice.loadUint(32)
 
-let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice)
+    let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let fees_collected: CurrencyCollection = loadCurrencyCollection(slice1)
+    let fees_collected: CurrencyCollection = loadCurrencyCollection(slice1)
 
-let funds_created: CurrencyCollection = loadCurrencyCollection(slice1)
+    let funds_created: CurrencyCollection = loadCurrencyCollection(slice1)
 
     if ((!(flags == 0))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ShardDescr_shard_descr_new',
@@ -9229,7 +9229,7 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
     storeCurrencyCollection(shardDescr.funds_created)(builder)
 
     if ((!(shardDescr.flags == 0))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -9284,7 +9284,7 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
     builder.storeRef(cell1)
 
     if ((!(shardDescr.flags == 0))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -9297,15 +9297,15 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
 
 export function loadShardHashes(slice: Slice): ShardHashes {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd7c80ab1))) {
-slice.loadUint(32)
-let anon0: HashmapE<BinTree<ShardDescr>> = loadHashmapE<BinTree<ShardDescr>>(slice, 32, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let anon0: HashmapE<BinTree<ShardDescr>> = loadHashmapE<BinTree<ShardDescr>>(slice, 32, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadBinTree<ShardDescr>(slice1, loadShardDescr)
+    return loadBinTree<ShardDescr>(slice1, loadShardDescr)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'ShardHashes',
@@ -9347,10 +9347,10 @@ export function loadBinTreeAug<X, Y>(slice: Slice, loadX: (slice: Slice) => X
 , loadY: (slice: Slice) => Y
 ): BinTreeAug<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
-let extra: Y = loadY(slice)
+    slice.loadUint(1)
+    let extra: Y = loadY(slice)
 
-let leaf: X = loadX(slice)
+    let leaf: X = loadX(slice)
 
     return {
     kind: 'BinTreeAug_bta_leaf',
@@ -9361,16 +9361,16 @@ let leaf: X = loadX(slice)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(1)
+    let slice1 = slice.loadRef().beginParse()
 
-let left: BinTreeAug<X, Y> = loadBinTreeAug<X, Y>(slice1, loadX, loadY)
+    let left: BinTreeAug<X, Y> = loadBinTreeAug<X, Y>(slice1, loadX, loadY)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let right: BinTreeAug<X, Y> = loadBinTreeAug<X, Y>(slice2, loadX, loadY)
+    let right: BinTreeAug<X, Y> = loadBinTreeAug<X, Y>(slice2, loadX, loadY)
 
-let extra: Y = loadY(slice)
+    let extra: Y = loadY(slice)
 
     return {
     kind: 'BinTreeAug_bta_fork',
@@ -9432,10 +9432,10 @@ export function storeBinTreeAug<X, Y>(binTreeAug: BinTreeAug<X, Y>, storeX: (x: 
 
 export function loadShardFeeCreated(slice: Slice): ShardFeeCreated {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xe537952e))) {
-slice.loadUint(32)
-let fees: CurrencyCollection = loadCurrencyCollection(slice)
+    slice.loadUint(32)
+    let fees: CurrencyCollection = loadCurrencyCollection(slice)
 
-let create: CurrencyCollection = loadCurrencyCollection(slice)
+    let create: CurrencyCollection = loadCurrencyCollection(slice)
 
     return {
     kind: 'ShardFeeCreated',
@@ -9464,8 +9464,8 @@ export function storeShardFeeCreated(shardFeeCreated: ShardFeeCreated): (builder
 
 export function loadShardFees(slice: Slice): ShardFees {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xfea0d880))) {
-slice.loadUint(32)
-let anon0: HashmapAugE<ShardFeeCreated, ShardFeeCreated> = loadHashmapAugE<ShardFeeCreated, ShardFeeCreated>(slice, 96, loadShardFeeCreated, loadShardFeeCreated)
+    slice.loadUint(32)
+    let anon0: HashmapAugE<ShardFeeCreated, ShardFeeCreated> = loadHashmapAugE<ShardFeeCreated, ShardFeeCreated>(slice, 96, loadShardFeeCreated, loadShardFeeCreated)
 
     return {
     kind: 'ShardFees',
@@ -9491,19 +9491,19 @@ export function storeShardFees(shardFees: ShardFees): (builder: Builder) => void
 
 export function loadConfigParams(slice: Slice): ConfigParams {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x88116702))) {
-slice.loadUint(32)
-let config_addr: BitString = slice.loadBits(256)
+    slice.loadUint(32)
+    let config_addr: BitString = slice.loadBits(256)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let config: Hashmap<Slice> = loadHashmap<Slice>(slice1, 32, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let config: Hashmap<Slice> = loadHashmap<Slice>(slice1, 32, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return slice1
+    return slice1
 
-    })
-    )
+})
+)
 
     return {
     kind: 'ConfigParams',
@@ -9611,10 +9611,10 @@ export function storeValidatorBaseInfo(validatorBaseInfo: ValidatorBaseInfo): (b
 
 export function loadKeyMaxLt(slice: Slice): KeyMaxLt {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9a6d79a5))) {
-slice.loadUint(32)
-let key: Bool = loadBool(slice)
+    slice.loadUint(32)
+    let key: Bool = loadBool(slice)
 
-let max_end_lt: number = slice.loadUint(64)
+    let max_end_lt: number = slice.loadUint(64)
 
     return {
     kind: 'KeyMaxLt',
@@ -9643,10 +9643,10 @@ export function storeKeyMaxLt(keyMaxLt: KeyMaxLt): (builder: Builder) => void {
 
 export function loadKeyExtBlkRef(slice: Slice): KeyExtBlkRef {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xafeab488))) {
-slice.loadUint(32)
-let key: Bool = loadBool(slice)
+    slice.loadUint(32)
+    let key: Bool = loadBool(slice)
 
-let blk_ref: ExtBlkRef = loadExtBlkRef(slice)
+    let blk_ref: ExtBlkRef = loadExtBlkRef(slice)
 
     return {
     kind: 'KeyExtBlkRef',
@@ -9675,8 +9675,8 @@ export function storeKeyExtBlkRef(keyExtBlkRef: KeyExtBlkRef): (builder: Builder
 
 export function loadOldMcBlocksInfo(slice: Slice): OldMcBlocksInfo {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xf385c1e3))) {
-slice.loadUint(32)
-let anon0: HashmapAugE<KeyExtBlkRef, KeyMaxLt> = loadHashmapAugE<KeyExtBlkRef, KeyMaxLt>(slice, 32, loadKeyExtBlkRef, loadKeyMaxLt)
+    slice.loadUint(32)
+    let anon0: HashmapAugE<KeyExtBlkRef, KeyMaxLt> = loadHashmapAugE<KeyExtBlkRef, KeyMaxLt>(slice, 32, loadKeyExtBlkRef, loadKeyMaxLt)
 
     return {
     kind: 'OldMcBlocksInfo',
@@ -9741,10 +9741,10 @@ export function storeCounters(counters: Counters): (builder: Builder) => void {
 
 export function loadCreatorStats(slice: Slice): CreatorStats {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0x4))) {
-slice.loadUint(4)
-let mc_blocks: Counters = loadCounters(slice)
+    slice.loadUint(4)
+    let mc_blocks: Counters = loadCounters(slice)
 
-let shard_blocks: Counters = loadCounters(slice)
+    let shard_blocks: Counters = loadCounters(slice)
 
     return {
     kind: 'CreatorStats',
@@ -9773,8 +9773,8 @@ export function storeCreatorStats(creatorStats: CreatorStats): (builder: Builder
 
 export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x17))) {
-slice.loadUint(8)
-let counters: HashmapE<CreatorStats> = loadHashmapE<CreatorStats>(slice, 256, loadCreatorStats)
+    slice.loadUint(8)
+    let counters: HashmapE<CreatorStats> = loadHashmapE<CreatorStats>(slice, 256, loadCreatorStats)
 
     return {
     kind: 'BlockCreateStats_block_create_stats',
@@ -9784,12 +9784,12 @@ let counters: HashmapE<CreatorStats> = loadHashmapE<CreatorStats>(slice, 256, lo
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x34))) {
-slice.loadUint(8)
-let counters: HashmapAugE<CreatorStats, number> = loadHashmapAugE<CreatorStats, number>(slice, 256, loadCreatorStats, ((slice: Slice) => {
-        return slice.loadUint(32)
+    slice.loadUint(8)
+    let counters: HashmapAugE<CreatorStats, number> = loadHashmapAugE<CreatorStats, number>(slice, 256, loadCreatorStats, ((slice: Slice) => {
+    return slice.loadUint(32)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'BlockCreateStats_block_create_stats_ext',
@@ -9837,26 +9837,26 @@ export function storeBlockCreateStats(blockCreateStats: BlockCreateStats): (buil
 
 export function loadMcStateExtra(slice: Slice): McStateExtra {
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0xcc26))) {
-slice.loadUint(16)
-let shard_hashes: ShardHashes = loadShardHashes(slice)
+    slice.loadUint(16)
+    let shard_hashes: ShardHashes = loadShardHashes(slice)
 
-let config: ConfigParams = loadConfigParams(slice)
+    let config: ConfigParams = loadConfigParams(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let flags: number = slice1.loadUint(16)
+    let flags: number = slice1.loadUint(16)
 
-let validator_info: ValidatorInfo = loadValidatorInfo(slice1)
+    let validator_info: ValidatorInfo = loadValidatorInfo(slice1)
 
-let prev_blocks: OldMcBlocksInfo = loadOldMcBlocksInfo(slice1)
+    let prev_blocks: OldMcBlocksInfo = loadOldMcBlocksInfo(slice1)
 
-let after_key_block: Bool = loadBool(slice1)
+    let after_key_block: Bool = loadBool(slice1)
 
-let last_key_block: Maybe<ExtBlkRef> = loadMaybe<ExtBlkRef>(slice1, loadExtBlkRef)
+    let last_key_block: Maybe<ExtBlkRef> = loadMaybe<ExtBlkRef>(slice1, loadExtBlkRef)
 
-let block_create_stats: BlockCreateStats | undefined = ((flags & (1 << 0)) ? loadBlockCreateStats(slice1) : undefined)
+    let block_create_stats: BlockCreateStats | undefined = ((flags & (1 << 0)) ? loadBlockCreateStats(slice1) : undefined)
 
-let global_balance: CurrencyCollection = loadCurrencyCollection(slice)
+    let global_balance: CurrencyCollection = loadCurrencyCollection(slice)
 
     return {
     kind: 'McStateExtra',
@@ -9899,7 +9899,7 @@ export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder
     storeMaybe<ExtBlkRef>(mcStateExtra.last_key_block, storeExtBlkRef)(cell1)
 
     if ((mcStateExtra.block_create_stats != undefined)) {
-    storeBlockCreateStats(mcStateExtra.block_create_stats)(cell1)
+        storeBlockCreateStats(mcStateExtra.block_create_stats)(cell1)
     }
 
     builder.storeRef(cell1)
@@ -9913,8 +9913,8 @@ export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder
 
 export function loadSigPubKey(slice: Slice): SigPubKey {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x8e81278a))) {
-slice.loadUint(32)
-let pubkey: BitString = slice.loadBits(256)
+    slice.loadUint(32)
+    let pubkey: BitString = slice.loadBits(256)
 
     return {
     kind: 'SigPubKey',
@@ -9940,10 +9940,10 @@ export function storeSigPubKey(sigPubKey: SigPubKey): (builder: Builder) => void
 
 export function loadCryptoSignatureSimple(slice: Slice): CryptoSignatureSimple {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0x5))) {
-slice.loadUint(4)
-let R: BitString = slice.loadBits(256)
+    slice.loadUint(4)
+    let R: BitString = slice.loadBits(256)
 
-let s: BitString = slice.loadBits(256)
+    let s: BitString = slice.loadBits(256)
 
     return {
     kind: 'CryptoSignatureSimple',
@@ -9972,8 +9972,8 @@ export function storeCryptoSignatureSimple(cryptoSignatureSimple: CryptoSignatur
 
 export function loadCryptoSignature(slice: Slice): CryptoSignature {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xdaa99887))) {
-slice.loadUint(32)
-let anon0: CryptoSignatureSimple = loadCryptoSignatureSimple(slice)
+    slice.loadUint(32)
+    let anon0: CryptoSignatureSimple = loadCryptoSignatureSimple(slice)
 
     return {
     kind: 'CryptoSignature__',
@@ -9983,12 +9983,12 @@ let anon0: CryptoSignatureSimple = loadCryptoSignatureSimple(slice)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0xf))) {
-slice.loadUint(4)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(4)
+    let slice1 = slice.loadRef().beginParse()
 
-let signed_cert: SignedCertificate = loadSignedCertificate(slice1)
+    let signed_cert: SignedCertificate = loadSignedCertificate(slice1)
 
-let temp_key_signature: CryptoSignatureSimple = loadCryptoSignatureSimple(slice)
+    let temp_key_signature: CryptoSignatureSimple = loadCryptoSignatureSimple(slice)
 
     return {
     kind: 'CryptoSignature_chained_signature',
@@ -10063,12 +10063,12 @@ export function storeCryptoSignaturePair(cryptoSignaturePair: CryptoSignaturePai
 
 export function loadCertificate(slice: Slice): Certificate {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0x4))) {
-slice.loadUint(4)
-let temp_key: SigPubKey = loadSigPubKey(slice)
+    slice.loadUint(4)
+    let temp_key: SigPubKey = loadSigPubKey(slice)
 
-let valid_since: number = slice.loadUint(32)
+    let valid_since: number = slice.loadUint(32)
 
-let valid_until: number = slice.loadUint(32)
+    let valid_until: number = slice.loadUint(32)
 
     return {
     kind: 'Certificate',
@@ -10100,8 +10100,8 @@ export function storeCertificate(certificate: Certificate): (builder: Builder) =
 
 export function loadCertificateEnv(slice: Slice): CertificateEnv {
     if (((slice.remainingBits >= 28) && (slice.preloadUint(28) == 0xa419b7d))) {
-slice.loadUint(28)
-let certificate: Certificate = loadCertificate(slice)
+    slice.loadUint(28)
+    let certificate: Certificate = loadCertificate(slice)
 
     return {
     kind: 'CertificateEnv',
@@ -10154,36 +10154,36 @@ export function storeSignedCertificate(signedCertificate: SignedCertificate): (b
 
 export function loadMcBlockExtra(slice: Slice): McBlockExtra {
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0xcca5))) {
-slice.loadUint(16)
-let key_block: number = slice.loadUint(1)
+    slice.loadUint(16)
+    let key_block: number = slice.loadUint(1)
 
-let shard_hashes: ShardHashes = loadShardHashes(slice)
+    let shard_hashes: ShardHashes = loadShardHashes(slice)
 
-let shard_fees: ShardFees = loadShardFees(slice)
+    let shard_fees: ShardFees = loadShardFees(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let prev_blk_signatures: HashmapE<CryptoSignaturePair> = loadHashmapE<CryptoSignaturePair>(slice1, 16, loadCryptoSignaturePair)
+    let prev_blk_signatures: HashmapE<CryptoSignaturePair> = loadHashmapE<CryptoSignaturePair>(slice1, 16, loadCryptoSignaturePair)
 
-let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
-
-
-        return loadInMsg(slice1)
-
-    })
-    )
-
-let mint_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadInMsg(slice1)
+    return loadInMsg(slice1)
 
-    })
-    )
+})
+)
 
-let config: ConfigParams | undefined = (key_block ? loadConfigParams(slice) : undefined)
+    let mint_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
+
+
+    return loadInMsg(slice1)
+
+})
+)
+
+    let config: ConfigParams | undefined = (key_block ? loadConfigParams(slice) : undefined)
 
     return {
     kind: 'McBlockExtra',
@@ -10252,7 +10252,7 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
     builder.storeRef(cell1)
 
     if ((mcBlockExtra.config != undefined)) {
-    storeConfigParams(mcBlockExtra.config)(builder)
+        storeConfigParams(mcBlockExtra.config)(builder)
     }
 
 })
@@ -10262,10 +10262,10 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
 
 export function loadValidatorDescr(slice: Slice): ValidatorDescr {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x53))) {
-slice.loadUint(8)
-let public_key: SigPubKey = loadSigPubKey(slice)
+    slice.loadUint(8)
+    let public_key: SigPubKey = loadSigPubKey(slice)
 
-let weight: number = slice.loadUint(64)
+    let weight: number = slice.loadUint(64)
 
     return {
     kind: 'ValidatorDescr_validator',
@@ -10276,12 +10276,12 @@ let weight: number = slice.loadUint(64)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x73))) {
-slice.loadUint(8)
-let public_key: SigPubKey = loadSigPubKey(slice)
+    slice.loadUint(8)
+    let public_key: SigPubKey = loadSigPubKey(slice)
 
-let weight: number = slice.loadUint(64)
+    let weight: number = slice.loadUint(64)
 
-let adnl_addr: BitString = slice.loadBits(256)
+    let adnl_addr: BitString = slice.loadBits(256)
 
     return {
     kind: 'ValidatorDescr_validator_addr',
@@ -10329,22 +10329,22 @@ export function storeValidatorDescr(validatorDescr: ValidatorDescr): (builder: B
 
 export function loadValidatorSet(slice: Slice): ValidatorSet {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x11))) {
-slice.loadUint(8)
-let utime_since: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let utime_since: number = slice.loadUint(32)
 
-let utime_until: number = slice.loadUint(32)
+    let utime_until: number = slice.loadUint(32)
 
-let total: number = slice.loadUint(16)
+    let total: number = slice.loadUint(16)
 
-let main: number = slice.loadUint(16)
+    let main: number = slice.loadUint(16)
 
-let list: Hashmap<ValidatorDescr> = loadHashmap<ValidatorDescr>(slice, 16, loadValidatorDescr)
+    let list: Hashmap<ValidatorDescr> = loadHashmap<ValidatorDescr>(slice, 16, loadValidatorDescr)
 
     if ((!(main <= total))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(main >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ValidatorSet_validators',
@@ -10358,24 +10358,24 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x12))) {
-slice.loadUint(8)
-let utime_since: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let utime_since: number = slice.loadUint(32)
 
-let utime_until: number = slice.loadUint(32)
+    let utime_until: number = slice.loadUint(32)
 
-let total: number = slice.loadUint(16)
+    let total: number = slice.loadUint(16)
 
-let main: number = slice.loadUint(16)
+    let main: number = slice.loadUint(16)
 
-let total_weight: number = slice.loadUint(64)
+    let total_weight: number = slice.loadUint(64)
 
-let list: HashmapE<ValidatorDescr> = loadHashmapE<ValidatorDescr>(slice, 16, loadValidatorDescr)
+    let list: HashmapE<ValidatorDescr> = loadHashmapE<ValidatorDescr>(slice, 16, loadValidatorDescr)
 
     if ((!(main <= total))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(main >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ValidatorSet_validators_ext',
@@ -10409,11 +10409,11 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
     storeHashmap<ValidatorDescr>(validatorSet.list, storeValidatorDescr)(builder)
 
     if ((!(validatorSet.main <= validatorSet.total))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(validatorSet.main >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -10437,11 +10437,11 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
     storeHashmapE<ValidatorDescr>(validatorSet.list, storeValidatorDescr)(builder)
 
     if ((!(validatorSet.main <= validatorSet.total))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(validatorSet.main >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -10454,8 +10454,8 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 
 export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xbc7f2648) && (arg0 == 0)))) {
-slice.loadUint(32)
-let config_addr: BitString = slice.loadBits(256)
+    slice.loadUint(32)
+    let config_addr: BitString = slice.loadBits(256)
 
     return {
     kind: 'ConfigParam__',
@@ -10465,8 +10465,8 @@ let config_addr: BitString = slice.loadBits(256)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x84659d0d) && (arg0 == 1)))) {
-slice.loadUint(32)
-let elector_addr: BitString = slice.loadBits(256)
+    slice.loadUint(32)
+    let elector_addr: BitString = slice.loadBits(256)
 
     return {
     kind: 'ConfigParam__1',
@@ -10476,8 +10476,8 @@ let elector_addr: BitString = slice.loadBits(256)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x8648b2c4) && (arg0 == 2)))) {
-slice.loadUint(32)
-let minter_addr: BitString = slice.loadBits(256)
+    slice.loadUint(32)
+    let minter_addr: BitString = slice.loadBits(256)
 
     return {
     kind: 'ConfigParam__2',
@@ -10487,8 +10487,8 @@ let minter_addr: BitString = slice.loadBits(256)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x8a752dc5) && (arg0 == 3)))) {
-slice.loadUint(32)
-let fee_collector_addr: BitString = slice.loadBits(256)
+    slice.loadUint(32)
+    let fee_collector_addr: BitString = slice.loadBits(256)
 
     return {
     kind: 'ConfigParam__3',
@@ -10498,8 +10498,8 @@ let fee_collector_addr: BitString = slice.loadBits(256)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x8ceae93f) && (arg0 == 4)))) {
-slice.loadUint(32)
-let dns_root_addr: BitString = slice.loadBits(256)
+    slice.loadUint(32)
+    let dns_root_addr: BitString = slice.loadBits(256)
 
     return {
     kind: 'ConfigParam__4',
@@ -10509,10 +10509,10 @@ let dns_root_addr: BitString = slice.loadBits(256)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xb2571db5) && (arg0 == 6)))) {
-slice.loadUint(32)
-let mint_new_price: Grams = loadGrams(slice)
+    slice.loadUint(32)
+    let mint_new_price: Grams = loadGrams(slice)
 
-let mint_add_price: Grams = loadGrams(slice)
+    let mint_add_price: Grams = loadGrams(slice)
 
     return {
     kind: 'ConfigParam__5',
@@ -10523,8 +10523,8 @@ let mint_add_price: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xd2115c6f) && (arg0 == 7)))) {
-slice.loadUint(32)
-let to_mint: ExtraCurrencyCollection = loadExtraCurrencyCollection(slice)
+    slice.loadUint(32)
+    let to_mint: ExtraCurrencyCollection = loadExtraCurrencyCollection(slice)
 
     return {
     kind: 'ConfigParam__6',
@@ -10534,8 +10534,8 @@ let to_mint: ExtraCurrencyCollection = loadExtraCurrencyCollection(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xb19d2da6) && (arg0 == 8)))) {
-slice.loadUint(32)
-let anon0: GlobalVersion = loadGlobalVersion(slice)
+    slice.loadUint(32)
+    let anon0: GlobalVersion = loadGlobalVersion(slice)
 
     return {
     kind: 'ConfigParam__7',
@@ -10545,8 +10545,8 @@ let anon0: GlobalVersion = loadGlobalVersion(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x8f3b81de) && (arg0 == 9)))) {
-slice.loadUint(32)
-let mandatory_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue)
+    slice.loadUint(32)
+    let mandatory_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue)
 
     return {
     kind: 'ConfigParam__8',
@@ -10556,8 +10556,8 @@ let mandatory_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xfbcb8998) && (arg0 == 10)))) {
-slice.loadUint(32)
-let critical_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue)
+    slice.loadUint(32)
+    let critical_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue)
 
     return {
     kind: 'ConfigParam__9',
@@ -10567,8 +10567,8 @@ let critical_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x9358b12f) && (arg0 == 11)))) {
-slice.loadUint(32)
-let anon0: ConfigVotingSetup = loadConfigVotingSetup(slice)
+    slice.loadUint(32)
+    let anon0: ConfigVotingSetup = loadConfigVotingSetup(slice)
 
     return {
     kind: 'ConfigParam__10',
@@ -10578,8 +10578,8 @@ let anon0: ConfigVotingSetup = loadConfigVotingSetup(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x9059857d) && (arg0 == 12)))) {
-slice.loadUint(32)
-let workchains: HashmapE<WorkchainDescr> = loadHashmapE<WorkchainDescr>(slice, 32, loadWorkchainDescr)
+    slice.loadUint(32)
+    let workchains: HashmapE<WorkchainDescr> = loadHashmapE<WorkchainDescr>(slice, 32, loadWorkchainDescr)
 
     return {
     kind: 'ConfigParam__11',
@@ -10589,8 +10589,8 @@ let workchains: HashmapE<WorkchainDescr> = loadHashmapE<WorkchainDescr>(slice, 3
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xe8ae7dd3) && (arg0 == 13)))) {
-slice.loadUint(32)
-let anon0: ComplaintPricing = loadComplaintPricing(slice)
+    slice.loadUint(32)
+    let anon0: ComplaintPricing = loadComplaintPricing(slice)
 
     return {
     kind: 'ConfigParam__12',
@@ -10600,8 +10600,8 @@ let anon0: ComplaintPricing = loadComplaintPricing(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xf282db94) && (arg0 == 14)))) {
-slice.loadUint(32)
-let anon0: BlockCreateFees = loadBlockCreateFees(slice)
+    slice.loadUint(32)
+    let anon0: BlockCreateFees = loadBlockCreateFees(slice)
 
     return {
     kind: 'ConfigParam__13',
@@ -10611,14 +10611,14 @@ let anon0: BlockCreateFees = loadBlockCreateFees(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xed67ebd2) && (arg0 == 15)))) {
-slice.loadUint(32)
-let validators_elected_for: number = slice.loadUint(32)
+    slice.loadUint(32)
+    let validators_elected_for: number = slice.loadUint(32)
 
-let elections_start_before: number = slice.loadUint(32)
+    let elections_start_before: number = slice.loadUint(32)
 
-let elections_end_before: number = slice.loadUint(32)
+    let elections_end_before: number = slice.loadUint(32)
 
-let stake_held_for: number = slice.loadUint(32)
+    let stake_held_for: number = slice.loadUint(32)
 
     return {
     kind: 'ConfigParam__14',
@@ -10631,21 +10631,21 @@ let stake_held_for: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xe8298d51) && (arg0 == 16)))) {
-slice.loadUint(32)
-let max_validators: number = slice.loadUint(16)
+    slice.loadUint(32)
+    let max_validators: number = slice.loadUint(16)
 
-let max_main_validators: number = slice.loadUint(16)
+    let max_main_validators: number = slice.loadUint(16)
 
-let min_validators: number = slice.loadUint(16)
+    let min_validators: number = slice.loadUint(16)
 
     if ((!(max_validators >= max_main_validators))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(max_main_validators >= min_validators))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(min_validators >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ConfigParam__15',
@@ -10657,14 +10657,14 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xa81c566c) && (arg0 == 17)))) {
-slice.loadUint(32)
-let min_stake: Grams = loadGrams(slice)
+    slice.loadUint(32)
+    let min_stake: Grams = loadGrams(slice)
 
-let max_stake: Grams = loadGrams(slice)
+    let max_stake: Grams = loadGrams(slice)
 
-let min_total_stake: Grams = loadGrams(slice)
+    let min_total_stake: Grams = loadGrams(slice)
 
-let max_stake_factor: number = slice.loadUint(32)
+    let max_stake_factor: number = slice.loadUint(32)
 
     return {
     kind: 'ConfigParam__16',
@@ -10677,8 +10677,8 @@ let max_stake_factor: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xeab9843a) && (arg0 == 18)))) {
-slice.loadUint(32)
-let anon0: Hashmap<StoragePrices> = loadHashmap<StoragePrices>(slice, 32, loadStoragePrices)
+    slice.loadUint(32)
+    let anon0: Hashmap<StoragePrices> = loadHashmap<StoragePrices>(slice, 32, loadStoragePrices)
 
     return {
     kind: 'ConfigParam__17',
@@ -10688,8 +10688,8 @@ let anon0: Hashmap<StoragePrices> = loadHashmap<StoragePrices>(slice, 32, loadSt
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xf666426a) && (arg0 == 28)))) {
-slice.loadUint(32)
-let anon0: CatchainConfig = loadCatchainConfig(slice)
+    slice.loadUint(32)
+    let anon0: CatchainConfig = loadCatchainConfig(slice)
 
     return {
     kind: 'ConfigParam__24',
@@ -10699,8 +10699,8 @@ let anon0: CatchainConfig = loadCatchainConfig(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xf5b85ad3) && (arg0 == 29)))) {
-slice.loadUint(32)
-let anon0: ConsensusConfig = loadConsensusConfig(slice)
+    slice.loadUint(32)
+    let anon0: ConsensusConfig = loadConsensusConfig(slice)
 
     return {
     kind: 'ConfigParam__25',
@@ -10710,8 +10710,8 @@ let anon0: ConsensusConfig = loadConsensusConfig(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x849fe3cc) && (arg0 == 31)))) {
-slice.loadUint(32)
-let fundamental_smc_addr: HashmapE<True> = loadHashmapE<True>(slice, 256, loadTrue)
+    slice.loadUint(32)
+    let fundamental_smc_addr: HashmapE<True> = loadHashmapE<True>(slice, 256, loadTrue)
 
     return {
     kind: 'ConfigParam__26',
@@ -10721,8 +10721,8 @@ let fundamental_smc_addr: HashmapE<True> = loadHashmapE<True>(slice, 256, loadTr
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xcfc8ceeb) && (arg0 == 32)))) {
-slice.loadUint(32)
-let prev_validators: ValidatorSet = loadValidatorSet(slice)
+    slice.loadUint(32)
+    let prev_validators: ValidatorSet = loadValidatorSet(slice)
 
     return {
     kind: 'ConfigParam__27',
@@ -10732,8 +10732,8 @@ let prev_validators: ValidatorSet = loadValidatorSet(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xa1a5d63c) && (arg0 == 33)))) {
-slice.loadUint(32)
-let prev_temp_validators: ValidatorSet = loadValidatorSet(slice)
+    slice.loadUint(32)
+    let prev_temp_validators: ValidatorSet = loadValidatorSet(slice)
 
     return {
     kind: 'ConfigParam__28',
@@ -10743,8 +10743,8 @@ let prev_temp_validators: ValidatorSet = loadValidatorSet(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xfd569be3) && (arg0 == 34)))) {
-slice.loadUint(32)
-let cur_validators: ValidatorSet = loadValidatorSet(slice)
+    slice.loadUint(32)
+    let cur_validators: ValidatorSet = loadValidatorSet(slice)
 
     return {
     kind: 'ConfigParam__29',
@@ -10754,8 +10754,8 @@ let cur_validators: ValidatorSet = loadValidatorSet(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xc271315a) && (arg0 == 35)))) {
-slice.loadUint(32)
-let cur_temp_validators: ValidatorSet = loadValidatorSet(slice)
+    slice.loadUint(32)
+    let cur_temp_validators: ValidatorSet = loadValidatorSet(slice)
 
     return {
     kind: 'ConfigParam__30',
@@ -10765,8 +10765,8 @@ let cur_temp_validators: ValidatorSet = loadValidatorSet(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x85d02f6c) && (arg0 == 36)))) {
-slice.loadUint(32)
-let next_validators: ValidatorSet = loadValidatorSet(slice)
+    slice.loadUint(32)
+    let next_validators: ValidatorSet = loadValidatorSet(slice)
 
     return {
     kind: 'ConfigParam__31',
@@ -10776,8 +10776,8 @@ let next_validators: ValidatorSet = loadValidatorSet(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xffa3b0f8) && (arg0 == 37)))) {
-slice.loadUint(32)
-let next_temp_validators: ValidatorSet = loadValidatorSet(slice)
+    slice.loadUint(32)
+    let next_temp_validators: ValidatorSet = loadValidatorSet(slice)
 
     return {
     kind: 'ConfigParam__32',
@@ -10787,8 +10787,8 @@ let next_temp_validators: ValidatorSet = loadValidatorSet(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x86dfef76) && (arg0 == 39)))) {
-slice.loadUint(32)
-let anon0: HashmapE<ValidatorSignedTempKey> = loadHashmapE<ValidatorSignedTempKey>(slice, 256, loadValidatorSignedTempKey)
+    slice.loadUint(32)
+    let anon0: HashmapE<ValidatorSignedTempKey> = loadHashmapE<ValidatorSignedTempKey>(slice, 256, loadValidatorSignedTempKey)
 
     return {
     kind: 'ConfigParam__33',
@@ -10798,8 +10798,8 @@ let anon0: HashmapE<ValidatorSignedTempKey> = loadHashmapE<ValidatorSignedTempKe
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x8517b916) && (arg0 == 40)))) {
-slice.loadUint(32)
-let anon0: MisbehaviourPunishmentConfig = loadMisbehaviourPunishmentConfig(slice)
+    slice.loadUint(32)
+    let anon0: MisbehaviourPunishmentConfig = loadMisbehaviourPunishmentConfig(slice)
 
     return {
     kind: 'ConfigParam__34',
@@ -10809,8 +10809,8 @@ let anon0: MisbehaviourPunishmentConfig = loadMisbehaviourPunishmentConfig(slice
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0xbd424af1) && (arg0 == 71)))) {
-slice.loadUint(32)
-let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
+    slice.loadUint(32)
+    let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
 
     return {
     kind: 'ConfigParam__35',
@@ -10820,8 +10820,8 @@ let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x966f1932) && (arg0 == 72)))) {
-slice.loadUint(32)
-let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
+    slice.loadUint(32)
+    let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
 
     return {
     kind: 'ConfigParam__36',
@@ -10831,8 +10831,8 @@ let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && ((slice.preloadUint(32) == 0x8f742873) && (arg0 == 73)))) {
-slice.loadUint(32)
-let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
+    slice.loadUint(32)
+    let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
 
     return {
     kind: 'ConfigParam__37',
@@ -10842,7 +10842,7 @@ let anon0: OracleBridgeParams = loadOracleBridgeParams(slice)
 }
 ;
     if ((arg0 == 20)) {
-let anon0: GasLimitsPrices = loadGasLimitsPrices(slice)
+    let anon0: GasLimitsPrices = loadGasLimitsPrices(slice)
 
     return {
     kind: 'ConfigParam_config_mc_gas_prices',
@@ -10852,7 +10852,7 @@ let anon0: GasLimitsPrices = loadGasLimitsPrices(slice)
 }
 ;
     if ((arg0 == 21)) {
-let anon0: GasLimitsPrices = loadGasLimitsPrices(slice)
+    let anon0: GasLimitsPrices = loadGasLimitsPrices(slice)
 
     return {
     kind: 'ConfigParam_config_gas_prices',
@@ -10862,7 +10862,7 @@ let anon0: GasLimitsPrices = loadGasLimitsPrices(slice)
 }
 ;
     if ((arg0 == 22)) {
-let anon0: BlockLimits = loadBlockLimits(slice)
+    let anon0: BlockLimits = loadBlockLimits(slice)
 
     return {
     kind: 'ConfigParam_config_mc_block_limits',
@@ -10872,7 +10872,7 @@ let anon0: BlockLimits = loadBlockLimits(slice)
 }
 ;
     if ((arg0 == 23)) {
-let anon0: BlockLimits = loadBlockLimits(slice)
+    let anon0: BlockLimits = loadBlockLimits(slice)
 
     return {
     kind: 'ConfigParam_config_block_limits',
@@ -10882,7 +10882,7 @@ let anon0: BlockLimits = loadBlockLimits(slice)
 }
 ;
     if ((arg0 == 24)) {
-let anon0: MsgForwardPrices = loadMsgForwardPrices(slice)
+    let anon0: MsgForwardPrices = loadMsgForwardPrices(slice)
 
     return {
     kind: 'ConfigParam_config_mc_fwd_prices',
@@ -10892,7 +10892,7 @@ let anon0: MsgForwardPrices = loadMsgForwardPrices(slice)
 }
 ;
     if ((arg0 == 25)) {
-let anon0: MsgForwardPrices = loadMsgForwardPrices(slice)
+    let anon0: MsgForwardPrices = loadMsgForwardPrices(slice)
 
     return {
     kind: 'ConfigParam_config_fwd_prices',
@@ -11075,15 +11075,15 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     builder.storeUint(configParam.min_validators, 16)
 
     if ((!(configParam.max_validators >= configParam.max_main_validators))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(configParam.max_main_validators >= configParam.min_validators))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(configParam.min_validators >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -11310,10 +11310,10 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
 
 export function loadGlobalVersion(slice: Slice): GlobalVersion {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xc4))) {
-slice.loadUint(8)
-let version: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let version: number = slice.loadUint(32)
 
-let capabilities: number = slice.loadUint(64)
+    let capabilities: number = slice.loadUint(64)
 
     return {
     kind: 'GlobalVersion',
@@ -11342,22 +11342,22 @@ export function storeGlobalVersion(globalVersion: GlobalVersion): (builder: Buil
 
 export function loadConfigProposalSetup(slice: Slice): ConfigProposalSetup {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x36))) {
-slice.loadUint(8)
-let min_tot_rounds: number = slice.loadUint(8)
+    slice.loadUint(8)
+    let min_tot_rounds: number = slice.loadUint(8)
 
-let max_tot_rounds: number = slice.loadUint(8)
+    let max_tot_rounds: number = slice.loadUint(8)
 
-let min_wins: number = slice.loadUint(8)
+    let min_wins: number = slice.loadUint(8)
 
-let max_losses: number = slice.loadUint(8)
+    let max_losses: number = slice.loadUint(8)
 
-let min_store_sec: number = slice.loadUint(32)
+    let min_store_sec: number = slice.loadUint(32)
 
-let max_store_sec: number = slice.loadUint(32)
+    let max_store_sec: number = slice.loadUint(32)
 
-let bit_price: number = slice.loadUint(32)
+    let bit_price: number = slice.loadUint(32)
 
-let _cell_price: number = slice.loadUint(32)
+    let _cell_price: number = slice.loadUint(32)
 
     return {
     kind: 'ConfigProposalSetup',
@@ -11404,14 +11404,14 @@ export function storeConfigProposalSetup(configProposalSetup: ConfigProposalSetu
 
 export function loadConfigVotingSetup(slice: Slice): ConfigVotingSetup {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x91))) {
-slice.loadUint(8)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(8)
+    let slice1 = slice.loadRef().beginParse()
 
-let normal_params: ConfigProposalSetup = loadConfigProposalSetup(slice1)
+    let normal_params: ConfigProposalSetup = loadConfigProposalSetup(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let critical_params: ConfigProposalSetup = loadConfigProposalSetup(slice2)
+    let critical_params: ConfigProposalSetup = loadConfigProposalSetup(slice2)
 
     return {
     kind: 'ConfigVotingSetup',
@@ -11450,23 +11450,23 @@ export function storeConfigVotingSetup(configVotingSetup: ConfigVotingSetup): (b
 
 export function loadConfigProposal(slice: Slice): ConfigProposal {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xf3))) {
-slice.loadUint(8)
-let param_id: number = slice.loadInt(32)
+    slice.loadUint(8)
+    let param_id: number = slice.loadInt(32)
 
-let param_value: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let param_value: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return slice1
+    return slice1
 
-    })
-    )
+})
+)
 
-let if_hash_equal: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
-        return slice.loadUint(256)
+    let if_hash_equal: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
+    return slice.loadUint(256)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'ConfigProposal',
@@ -11520,26 +11520,26 @@ export function storeConfigProposal(configProposal: ConfigProposal): (builder: B
 
 export function loadConfigProposalStatus(slice: Slice): ConfigProposalStatus {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xce))) {
-slice.loadUint(8)
-let expires: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let expires: number = slice.loadUint(32)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let proposal: ConfigProposal = loadConfigProposal(slice1)
+    let proposal: ConfigProposal = loadConfigProposal(slice1)
 
-let is_critical: Bool = loadBool(slice)
+    let is_critical: Bool = loadBool(slice)
 
-let voters: HashmapE<True> = loadHashmapE<True>(slice, 16, loadTrue)
+    let voters: HashmapE<True> = loadHashmapE<True>(slice, 16, loadTrue)
 
-let remaining_weight: number = slice.loadInt(64)
+    let remaining_weight: number = slice.loadInt(64)
 
-let validator_set_id: number = slice.loadUint(256)
+    let validator_set_id: number = slice.loadUint(256)
 
-let rounds_remaining: number = slice.loadUint(8)
+    let rounds_remaining: number = slice.loadUint(8)
 
-let wins: number = slice.loadUint(8)
+    let wins: number = slice.loadUint(8)
 
-let losses: number = slice.loadUint(8)
+    let losses: number = slice.loadUint(8)
 
     return {
     kind: 'ConfigProposalStatus',
@@ -11594,10 +11594,10 @@ export function storeConfigProposalStatus(configProposalStatus: ConfigProposalSt
 
 export function loadWorkchainFormat(slice: Slice, arg0: number): WorkchainFormat {
     if (((slice.remainingBits >= 4) && ((slice.preloadUint(4) == 0x1) && (arg0 == 1)))) {
-slice.loadUint(4)
-let vm_version: number = slice.loadInt(32)
+    slice.loadUint(4)
+    let vm_version: number = slice.loadInt(32)
 
-let vm_mode: number = slice.loadUint(64)
+    let vm_mode: number = slice.loadUint(64)
 
     return {
     kind: 'WorkchainFormat_wfmt_basic',
@@ -11608,29 +11608,29 @@ let vm_mode: number = slice.loadUint(64)
 }
 ;
     if (((slice.remainingBits >= 4) && ((slice.preloadUint(4) == 0x0) && (arg0 == 0)))) {
-slice.loadUint(4)
-let min_addr_len: number = slice.loadUint(12)
+    slice.loadUint(4)
+    let min_addr_len: number = slice.loadUint(12)
 
-let max_addr_len: number = slice.loadUint(12)
+    let max_addr_len: number = slice.loadUint(12)
 
-let addr_len_step: number = slice.loadUint(12)
+    let addr_len_step: number = slice.loadUint(12)
 
-let workchain_type_id: number = slice.loadUint(32)
+    let workchain_type_id: number = slice.loadUint(32)
 
     if ((!(min_addr_len >= 64))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(min_addr_len <= max_addr_len))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(max_addr_len <= 1023))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(addr_len_step <= 1023))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(workchain_type_id >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'WorkchainFormat_wfmt_ext',
@@ -11672,23 +11672,23 @@ export function storeWorkchainFormat(workchainFormat: WorkchainFormat): (builder
     builder.storeUint(workchainFormat.workchain_type_id, 32)
 
     if ((!(workchainFormat.min_addr_len >= 64))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(workchainFormat.min_addr_len <= workchainFormat.max_addr_len))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(workchainFormat.max_addr_len <= 1023))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(workchainFormat.addr_len_step <= 1023))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(workchainFormat.workchain_type_id >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -11701,36 +11701,36 @@ export function storeWorkchainFormat(workchainFormat: WorkchainFormat): (builder
 
 export function loadWorkchainDescr(slice: Slice): WorkchainDescr {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xa6))) {
-slice.loadUint(8)
-let enabled_since: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let enabled_since: number = slice.loadUint(32)
 
-let actual_min_split: number = slice.loadUint(8)
+    let actual_min_split: number = slice.loadUint(8)
 
-let min_split: number = slice.loadUint(8)
+    let min_split: number = slice.loadUint(8)
 
-let max_split: number = slice.loadUint(8)
+    let max_split: number = slice.loadUint(8)
 
-let basic: number = slice.loadUint(1)
+    let basic: number = slice.loadUint(1)
 
-let active: Bool = loadBool(slice)
+    let active: Bool = loadBool(slice)
 
-let accept_msgs: Bool = loadBool(slice)
+    let accept_msgs: Bool = loadBool(slice)
 
-let flags: number = slice.loadUint(13)
+    let flags: number = slice.loadUint(13)
 
-let zerostate_root_hash: BitString = slice.loadBits(256)
+    let zerostate_root_hash: BitString = slice.loadBits(256)
 
-let zerostate_file_hash: BitString = slice.loadBits(256)
+    let zerostate_file_hash: BitString = slice.loadBits(256)
 
-let version: number = slice.loadUint(32)
+    let version: number = slice.loadUint(32)
 
-let format: WorkchainFormat = loadWorkchainFormat(slice, basic)
+    let format: WorkchainFormat = loadWorkchainFormat(slice, basic)
 
     if ((!(actual_min_split <= min_split))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(flags == 0))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'WorkchainDescr',
@@ -11783,11 +11783,11 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
     storeWorkchainFormat(workchainDescr.format)(builder)
 
     if ((!(workchainDescr.actual_min_split <= workchainDescr.min_split))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(workchainDescr.flags == 0))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -11797,12 +11797,12 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
 
 export function loadComplaintPricing(slice: Slice): ComplaintPricing {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x1a))) {
-slice.loadUint(8)
-let deposit: Grams = loadGrams(slice)
+    slice.loadUint(8)
+    let deposit: Grams = loadGrams(slice)
 
-let bit_price: Grams = loadGrams(slice)
+    let bit_price: Grams = loadGrams(slice)
 
-let _cell_price: Grams = loadGrams(slice)
+    let _cell_price: Grams = loadGrams(slice)
 
     return {
     kind: 'ComplaintPricing',
@@ -11834,10 +11834,10 @@ export function storeComplaintPricing(complaintPricing: ComplaintPricing): (buil
 
 export function loadBlockCreateFees(slice: Slice): BlockCreateFees {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x6b))) {
-slice.loadUint(8)
-let masterchain_block_fee: Grams = loadGrams(slice)
+    slice.loadUint(8)
+    let masterchain_block_fee: Grams = loadGrams(slice)
 
-let basechain_block_fee: Grams = loadGrams(slice)
+    let basechain_block_fee: Grams = loadGrams(slice)
 
     return {
     kind: 'BlockCreateFees',
@@ -11866,16 +11866,16 @@ export function storeBlockCreateFees(blockCreateFees: BlockCreateFees): (builder
 
 export function loadStoragePrices(slice: Slice): StoragePrices {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xcc))) {
-slice.loadUint(8)
-let utime_since: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let utime_since: number = slice.loadUint(32)
 
-let bit_price_ps: number = slice.loadUint(64)
+    let bit_price_ps: number = slice.loadUint(64)
 
-let _cell_price_ps: number = slice.loadUint(64)
+    let _cell_price_ps: number = slice.loadUint(64)
 
-let mc_bit_price_ps: number = slice.loadUint(64)
+    let mc_bit_price_ps: number = slice.loadUint(64)
 
-let mc_cell_price_ps: number = slice.loadUint(64)
+    let mc_cell_price_ps: number = slice.loadUint(64)
 
     return {
     kind: 'StoragePrices',
@@ -11913,18 +11913,18 @@ export function storeStoragePrices(storagePrices: StoragePrices): (builder: Buil
 
 export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xdd))) {
-slice.loadUint(8)
-let gas_price: number = slice.loadUint(64)
+    slice.loadUint(8)
+    let gas_price: number = slice.loadUint(64)
 
-let gas_limit: number = slice.loadUint(64)
+    let gas_limit: number = slice.loadUint(64)
 
-let gas_credit: number = slice.loadUint(64)
+    let gas_credit: number = slice.loadUint(64)
 
-let block_gas_limit: number = slice.loadUint(64)
+    let block_gas_limit: number = slice.loadUint(64)
 
-let freeze_due_limit: number = slice.loadUint(64)
+    let freeze_due_limit: number = slice.loadUint(64)
 
-let delete_due_limit: number = slice.loadUint(64)
+    let delete_due_limit: number = slice.loadUint(64)
 
     return {
     kind: 'GasLimitsPrices_gas_prices',
@@ -11939,20 +11939,20 @@ let delete_due_limit: number = slice.loadUint(64)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xde))) {
-slice.loadUint(8)
-let gas_price: number = slice.loadUint(64)
+    slice.loadUint(8)
+    let gas_price: number = slice.loadUint(64)
 
-let gas_limit: number = slice.loadUint(64)
+    let gas_limit: number = slice.loadUint(64)
 
-let special_gas_limit: number = slice.loadUint(64)
+    let special_gas_limit: number = slice.loadUint(64)
 
-let gas_credit: number = slice.loadUint(64)
+    let gas_credit: number = slice.loadUint(64)
 
-let block_gas_limit: number = slice.loadUint(64)
+    let block_gas_limit: number = slice.loadUint(64)
 
-let freeze_due_limit: number = slice.loadUint(64)
+    let freeze_due_limit: number = slice.loadUint(64)
 
-let delete_due_limit: number = slice.loadUint(64)
+    let delete_due_limit: number = slice.loadUint(64)
 
     return {
     kind: 'GasLimitsPrices_gas_prices_ext',
@@ -11968,12 +11968,12 @@ let delete_due_limit: number = slice.loadUint(64)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd1))) {
-slice.loadUint(8)
-let flat_gas_limit: number = slice.loadUint(64)
+    slice.loadUint(8)
+    let flat_gas_limit: number = slice.loadUint(64)
 
-let flat_gas_price: number = slice.loadUint(64)
+    let flat_gas_price: number = slice.loadUint(64)
 
-let other: GasLimitsPrices = loadGasLimitsPrices(slice)
+    let other: GasLimitsPrices = loadGasLimitsPrices(slice)
 
     return {
     kind: 'GasLimitsPrices_gas_flat_pfx',
@@ -12051,18 +12051,18 @@ export function storeGasLimitsPrices(gasLimitsPrices: GasLimitsPrices): (builder
 
 export function loadParamLimits(slice: Slice): ParamLimits {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xc3))) {
-slice.loadUint(8)
-let underload: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let underload: number = slice.loadUint(32)
 
-let soft_limit: number = slice.loadUint(32)
+    let soft_limit: number = slice.loadUint(32)
 
-let hard_limit: number = slice.loadUint(32)
+    let hard_limit: number = slice.loadUint(32)
 
     if ((!(underload <= soft_limit))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(soft_limit <= hard_limit))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ParamLimits',
@@ -12088,11 +12088,11 @@ export function storeParamLimits(paramLimits: ParamLimits): (builder: Builder) =
     builder.storeUint(paramLimits.hard_limit, 32)
 
     if ((!(paramLimits.underload <= paramLimits.soft_limit))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(paramLimits.soft_limit <= paramLimits.hard_limit))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -12102,12 +12102,12 @@ export function storeParamLimits(paramLimits: ParamLimits): (builder: Builder) =
 
 export function loadBlockLimits(slice: Slice): BlockLimits {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x5d))) {
-slice.loadUint(8)
-let bytes: ParamLimits = loadParamLimits(slice)
+    slice.loadUint(8)
+    let bytes: ParamLimits = loadParamLimits(slice)
 
-let gas: ParamLimits = loadParamLimits(slice)
+    let gas: ParamLimits = loadParamLimits(slice)
 
-let lt_delta: ParamLimits = loadParamLimits(slice)
+    let lt_delta: ParamLimits = loadParamLimits(slice)
 
     return {
     kind: 'BlockLimits',
@@ -12139,18 +12139,18 @@ export function storeBlockLimits(blockLimits: BlockLimits): (builder: Builder) =
 
 export function loadMsgForwardPrices(slice: Slice): MsgForwardPrices {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xea))) {
-slice.loadUint(8)
-let lump_price: number = slice.loadUint(64)
+    slice.loadUint(8)
+    let lump_price: number = slice.loadUint(64)
 
-let bit_price: number = slice.loadUint(64)
+    let bit_price: number = slice.loadUint(64)
 
-let _cell_price: number = slice.loadUint(64)
+    let _cell_price: number = slice.loadUint(64)
 
-let ihr_price_factor: number = slice.loadUint(32)
+    let ihr_price_factor: number = slice.loadUint(32)
 
-let first_frac: number = slice.loadUint(16)
+    let first_frac: number = slice.loadUint(16)
 
-let next_frac: number = slice.loadUint(16)
+    let next_frac: number = slice.loadUint(16)
 
     return {
     kind: 'MsgForwardPrices',
@@ -12191,14 +12191,14 @@ export function storeMsgForwardPrices(msgForwardPrices: MsgForwardPrices): (buil
 
 export function loadCatchainConfig(slice: Slice): CatchainConfig {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xc1))) {
-slice.loadUint(8)
-let mc_catchain_lifetime: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let mc_catchain_lifetime: number = slice.loadUint(32)
 
-let shard_catchain_lifetime: number = slice.loadUint(32)
+    let shard_catchain_lifetime: number = slice.loadUint(32)
 
-let shard_validators_lifetime: number = slice.loadUint(32)
+    let shard_validators_lifetime: number = slice.loadUint(32)
 
-let shard_validators_num: number = slice.loadUint(32)
+    let shard_validators_num: number = slice.loadUint(32)
 
     return {
     kind: 'CatchainConfig_catchain_config',
@@ -12211,21 +12211,21 @@ let shard_validators_num: number = slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xc2))) {
-slice.loadUint(8)
-let flags: number = slice.loadUint(7)
+    slice.loadUint(8)
+    let flags: number = slice.loadUint(7)
 
-let shuffle_mc_validators: Bool = loadBool(slice)
+    let shuffle_mc_validators: Bool = loadBool(slice)
 
-let mc_catchain_lifetime: number = slice.loadUint(32)
+    let mc_catchain_lifetime: number = slice.loadUint(32)
 
-let shard_catchain_lifetime: number = slice.loadUint(32)
+    let shard_catchain_lifetime: number = slice.loadUint(32)
 
-let shard_validators_lifetime: number = slice.loadUint(32)
+    let shard_validators_lifetime: number = slice.loadUint(32)
 
-let shard_validators_num: number = slice.loadUint(32)
+    let shard_validators_num: number = slice.loadUint(32)
 
     if ((!(flags == 0))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'CatchainConfig_catchain_config_new',
@@ -12277,7 +12277,7 @@ export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: B
     builder.storeUint(catchainConfig.shard_validators_num, 32)
 
     if ((!(catchainConfig.flags == 0))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -12290,25 +12290,25 @@ export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: B
 
 export function loadConsensusConfig(slice: Slice): ConsensusConfig {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd6))) {
-slice.loadUint(8)
-let round_candidates: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let round_candidates: number = slice.loadUint(32)
 
-let next_candidate_delay_ms: number = slice.loadUint(32)
+    let next_candidate_delay_ms: number = slice.loadUint(32)
 
-let consensus_timeout_ms: number = slice.loadUint(32)
+    let consensus_timeout_ms: number = slice.loadUint(32)
 
-let fast_attempts: number = slice.loadUint(32)
+    let fast_attempts: number = slice.loadUint(32)
 
-let attempt_duration: number = slice.loadUint(32)
+    let attempt_duration: number = slice.loadUint(32)
 
-let catchain_max_deps: number = slice.loadUint(32)
+    let catchain_max_deps: number = slice.loadUint(32)
 
-let max_block_bytes: number = slice.loadUint(32)
+    let max_block_bytes: number = slice.loadUint(32)
 
-let max_collated_bytes: number = slice.loadUint(32)
+    let max_collated_bytes: number = slice.loadUint(32)
 
     if ((!(round_candidates >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ConsensusConfig_consensus_config',
@@ -12325,32 +12325,32 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd7))) {
-slice.loadUint(8)
-let flags: number = slice.loadUint(7)
+    slice.loadUint(8)
+    let flags: number = slice.loadUint(7)
 
-let new_catchain_ids: Bool = loadBool(slice)
+    let new_catchain_ids: Bool = loadBool(slice)
 
-let round_candidates: number = slice.loadUint(8)
+    let round_candidates: number = slice.loadUint(8)
 
-let next_candidate_delay_ms: number = slice.loadUint(32)
+    let next_candidate_delay_ms: number = slice.loadUint(32)
 
-let consensus_timeout_ms: number = slice.loadUint(32)
+    let consensus_timeout_ms: number = slice.loadUint(32)
 
-let fast_attempts: number = slice.loadUint(32)
+    let fast_attempts: number = slice.loadUint(32)
 
-let attempt_duration: number = slice.loadUint(32)
+    let attempt_duration: number = slice.loadUint(32)
 
-let catchain_max_deps: number = slice.loadUint(32)
+    let catchain_max_deps: number = slice.loadUint(32)
 
-let max_block_bytes: number = slice.loadUint(32)
+    let max_block_bytes: number = slice.loadUint(32)
 
-let max_collated_bytes: number = slice.loadUint(32)
+    let max_collated_bytes: number = slice.loadUint(32)
 
     if ((!(flags == 0))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(round_candidates >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ConsensusConfig_consensus_config_new',
@@ -12369,34 +12369,34 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd8))) {
-slice.loadUint(8)
-let flags: number = slice.loadUint(7)
+    slice.loadUint(8)
+    let flags: number = slice.loadUint(7)
 
-let new_catchain_ids: Bool = loadBool(slice)
+    let new_catchain_ids: Bool = loadBool(slice)
 
-let round_candidates: number = slice.loadUint(8)
+    let round_candidates: number = slice.loadUint(8)
 
-let next_candidate_delay_ms: number = slice.loadUint(32)
+    let next_candidate_delay_ms: number = slice.loadUint(32)
 
-let consensus_timeout_ms: number = slice.loadUint(32)
+    let consensus_timeout_ms: number = slice.loadUint(32)
 
-let fast_attempts: number = slice.loadUint(32)
+    let fast_attempts: number = slice.loadUint(32)
 
-let attempt_duration: number = slice.loadUint(32)
+    let attempt_duration: number = slice.loadUint(32)
 
-let catchain_max_deps: number = slice.loadUint(32)
+    let catchain_max_deps: number = slice.loadUint(32)
 
-let max_block_bytes: number = slice.loadUint(32)
+    let max_block_bytes: number = slice.loadUint(32)
 
-let max_collated_bytes: number = slice.loadUint(32)
+    let max_collated_bytes: number = slice.loadUint(32)
 
-let proto_version: number = slice.loadUint(16)
+    let proto_version: number = slice.loadUint(16)
 
     if ((!(flags == 0))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(round_candidates >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ConsensusConfig_consensus_config_v3',
@@ -12416,36 +12416,36 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd9))) {
-slice.loadUint(8)
-let flags: number = slice.loadUint(7)
+    slice.loadUint(8)
+    let flags: number = slice.loadUint(7)
 
-let new_catchain_ids: Bool = loadBool(slice)
+    let new_catchain_ids: Bool = loadBool(slice)
 
-let round_candidates: number = slice.loadUint(8)
+    let round_candidates: number = slice.loadUint(8)
 
-let next_candidate_delay_ms: number = slice.loadUint(32)
+    let next_candidate_delay_ms: number = slice.loadUint(32)
 
-let consensus_timeout_ms: number = slice.loadUint(32)
+    let consensus_timeout_ms: number = slice.loadUint(32)
 
-let fast_attempts: number = slice.loadUint(32)
+    let fast_attempts: number = slice.loadUint(32)
 
-let attempt_duration: number = slice.loadUint(32)
+    let attempt_duration: number = slice.loadUint(32)
 
-let catchain_max_deps: number = slice.loadUint(32)
+    let catchain_max_deps: number = slice.loadUint(32)
 
-let max_block_bytes: number = slice.loadUint(32)
+    let max_block_bytes: number = slice.loadUint(32)
 
-let max_collated_bytes: number = slice.loadUint(32)
+    let max_collated_bytes: number = slice.loadUint(32)
 
-let proto_version: number = slice.loadUint(16)
+    let proto_version: number = slice.loadUint(16)
 
-let catchain_max_blocks_coeff: number = slice.loadUint(32)
+    let catchain_max_blocks_coeff: number = slice.loadUint(32)
 
     if ((!(flags == 0))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(round_candidates >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'ConsensusConfig_consensus_config_v4',
@@ -12491,7 +12491,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
     builder.storeUint(consensusConfig.max_collated_bytes, 32)
 
     if ((!(consensusConfig.round_candidates >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -12523,11 +12523,11 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
     builder.storeUint(consensusConfig.max_collated_bytes, 32)
 
     if ((!(consensusConfig.flags == 0))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(consensusConfig.round_candidates >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -12561,11 +12561,11 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
     builder.storeUint(consensusConfig.proto_version, 16)
 
     if ((!(consensusConfig.flags == 0))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(consensusConfig.round_candidates >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -12601,11 +12601,11 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
     builder.storeUint(consensusConfig.catchain_max_blocks_coeff, 32)
 
     if ((!(consensusConfig.flags == 0))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(consensusConfig.round_candidates >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -12618,14 +12618,14 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
 
 export function loadValidatorTempKey(slice: Slice): ValidatorTempKey {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0x3))) {
-slice.loadUint(4)
-let adnl_addr: BitString = slice.loadBits(256)
+    slice.loadUint(4)
+    let adnl_addr: BitString = slice.loadBits(256)
 
-let temp_public_key: SigPubKey = loadSigPubKey(slice)
+    let temp_public_key: SigPubKey = loadSigPubKey(slice)
 
-let seqno: number = slice.loadUint(32)
+    let seqno: number = slice.loadUint(32)
 
-let valid_until: number = slice.loadUint(32)
+    let valid_until: number = slice.loadUint(32)
 
     return {
     kind: 'ValidatorTempKey',
@@ -12660,12 +12660,12 @@ export function storeValidatorTempKey(validatorTempKey: ValidatorTempKey): (buil
 
 export function loadValidatorSignedTempKey(slice: Slice): ValidatorSignedTempKey {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0x4))) {
-slice.loadUint(4)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(4)
+    let slice1 = slice.loadRef().beginParse()
 
-let key: ValidatorTempKey = loadValidatorTempKey(slice1)
+    let key: ValidatorTempKey = loadValidatorTempKey(slice1)
 
-let signature: CryptoSignature = loadCryptoSignature(slice)
+    let signature: CryptoSignature = loadCryptoSignature(slice)
 
     return {
     kind: 'ValidatorSignedTempKey',
@@ -12699,28 +12699,28 @@ export function storeValidatorSignedTempKey(validatorSignedTempKey: ValidatorSig
 
 export function loadMisbehaviourPunishmentConfig(slice: Slice): MisbehaviourPunishmentConfig {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x01))) {
-slice.loadUint(8)
-let default_flat_fine: Grams = loadGrams(slice)
+    slice.loadUint(8)
+    let default_flat_fine: Grams = loadGrams(slice)
 
-let default_proportional_fine: number = slice.loadUint(32)
+    let default_proportional_fine: number = slice.loadUint(32)
 
-let severity_flat_mult: number = slice.loadUint(16)
+    let severity_flat_mult: number = slice.loadUint(16)
 
-let severity_proportional_mult: number = slice.loadUint(16)
+    let severity_proportional_mult: number = slice.loadUint(16)
 
-let unpunishable_interval: number = slice.loadUint(16)
+    let unpunishable_interval: number = slice.loadUint(16)
 
-let long_interval: number = slice.loadUint(16)
+    let long_interval: number = slice.loadUint(16)
 
-let long_flat_mult: number = slice.loadUint(16)
+    let long_flat_mult: number = slice.loadUint(16)
 
-let long_proportional_mult: number = slice.loadUint(16)
+    let long_proportional_mult: number = slice.loadUint(16)
 
-let medium_interval: number = slice.loadUint(16)
+    let medium_interval: number = slice.loadUint(16)
 
-let medium_flat_mult: number = slice.loadUint(16)
+    let medium_flat_mult: number = slice.loadUint(16)
 
-let medium_proportional_mult: number = slice.loadUint(16)
+    let medium_proportional_mult: number = slice.loadUint(16)
 
     return {
     kind: 'MisbehaviourPunishmentConfig',
@@ -12860,10 +12860,10 @@ export function storeBlockSignaturesPure(blockSignaturesPure: BlockSignaturesPur
 
 export function loadBlockSignatures(slice: Slice): BlockSignatures {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x11))) {
-slice.loadUint(8)
-let validator_info: ValidatorBaseInfo = loadValidatorBaseInfo(slice)
+    slice.loadUint(8)
+    let validator_info: ValidatorBaseInfo = loadValidatorBaseInfo(slice)
 
-let pure_signatures: BlockSignaturesPure = loadBlockSignaturesPure(slice)
+    let pure_signatures: BlockSignaturesPure = loadBlockSignaturesPure(slice)
 
     return {
     kind: 'BlockSignatures',
@@ -12892,21 +12892,21 @@ export function storeBlockSignatures(blockSignatures: BlockSignatures): (builder
 
 export function loadBlockProof(slice: Slice): BlockProof {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xc3))) {
-slice.loadUint(8)
-let proof_for: BlockIdExt = loadBlockIdExt(slice)
+    slice.loadUint(8)
+    let proof_for: BlockIdExt = loadBlockIdExt(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let root: Slice = slice1
+    let root: Slice = slice1
 
-let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadBlockSignatures(slice1)
+    return loadBlockSignatures(slice1)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'BlockProof',
@@ -12964,18 +12964,18 @@ export function loadProofChain(slice: Slice, arg0: number): ProofChain {
 }
 ;
     if (true) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let root: Slice = slice1
+    let root: Slice = slice1
 
-let prev: ProofChain | undefined = ((arg0 - 1) ? ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let prev: ProofChain | undefined = ((arg0 - 1) ? ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadProofChain(slice1, (arg0 - 1))
+    return loadProofChain(slice1, (arg0 - 1))
 
-    })
-    (slice) : undefined)
+})
+(slice) : undefined)
 
     return {
     kind: 'ProofChain_chain_link',
@@ -13026,27 +13026,27 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
 
 export function loadTopBlockDescr(slice: Slice): TopBlockDescr {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd5))) {
-slice.loadUint(8)
-let proof_for: BlockIdExt = loadBlockIdExt(slice)
+    slice.loadUint(8)
+    let proof_for: BlockIdExt = loadBlockIdExt(slice)
 
-let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadBlockSignatures(slice1)
+    return loadBlockSignatures(slice1)
 
-    })
-    )
+})
+)
 
-let len: number = slice.loadUint(8)
+    let len: number = slice.loadUint(8)
 
-let chain: ProofChain = loadProofChain(slice, len)
+    let chain: ProofChain = loadProofChain(slice, len)
 
     if ((!(len >= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(len <= 8))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'TopBlockDescr',
@@ -13089,11 +13089,11 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
     storeProofChain(topBlockDescr.chain)(builder)
 
     if ((!(topBlockDescr.len >= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(topBlockDescr.len <= 8))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -13103,15 +13103,15 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
 
 export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x4ac789f3))) {
-slice.loadUint(32)
-let collection: HashmapE<TopBlockDescr> = loadHashmapE<TopBlockDescr>(slice, 96, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let collection: HashmapE<TopBlockDescr> = loadHashmapE<TopBlockDescr>(slice, 96, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return loadTopBlockDescr(slice1)
+    return loadTopBlockDescr(slice1)
 
-    })
-    )
+})
+)
 
     return {
     kind: 'TopBlockDescrSet',
@@ -13151,18 +13151,18 @@ export function storeTopBlockDescrSet(topBlockDescrSet: TopBlockDescrSet): (buil
 
 export function loadProducerInfo(slice: Slice): ProducerInfo {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x34))) {
-slice.loadUint(8)
-let utime: number = slice.loadUint(32)
+    slice.loadUint(8)
+    let utime: number = slice.loadUint(32)
 
-let mc_blk_ref: ExtBlkRef = loadExtBlkRef(slice)
+    let mc_blk_ref: ExtBlkRef = loadExtBlkRef(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let state_proof: MERKLE_PROOF<Block> = loadMERKLE_PROOF<Block>(slice1, loadBlock)
+    let state_proof: MERKLE_PROOF<Block> = loadMERKLE_PROOF<Block>(slice1, loadBlock)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let prod_proof: MERKLE_PROOF<ShardState> = loadMERKLE_PROOF<ShardState>(slice2, loadShardState)
+    let prod_proof: MERKLE_PROOF<ShardState> = loadMERKLE_PROOF<ShardState>(slice2, loadShardState)
 
     return {
     kind: 'ProducerInfo',
@@ -13207,12 +13207,12 @@ export function storeProducerInfo(producerInfo: ProducerInfo): (builder: Builder
 
 export function loadComplaintDescr(slice: Slice): ComplaintDescr {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9c436252))) {
-slice.loadUint(32)
-let from_utime: number = slice.loadUint(32)
+    slice.loadUint(32)
+    let from_utime: number = slice.loadUint(32)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let prod_info: ProducerInfo = loadProducerInfo(slice1)
+    let prod_info: ProducerInfo = loadProducerInfo(slice1)
 
     return {
     kind: 'ComplaintDescr_no_blk_gen',
@@ -13223,14 +13223,14 @@ let prod_info: ProducerInfo = loadProducerInfo(slice1)
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x987f1ab7))) {
-slice.loadUint(32)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let slice1 = slice.loadRef().beginParse()
 
-let prod_info_old: ProducerInfo = loadProducerInfo(slice1)
+    let prod_info_old: ProducerInfo = loadProducerInfo(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let prod_info_new: ProducerInfo = loadProducerInfo(slice2)
+    let prod_info_new: ProducerInfo = loadProducerInfo(slice2)
 
     return {
     kind: 'ComplaintDescr_no_blk_gen_diff',
@@ -13290,24 +13290,24 @@ export function storeComplaintDescr(complaintDescr: ComplaintDescr): (builder: B
 
 export function loadValidatorComplaint(slice: Slice): ValidatorComplaint {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xbc))) {
-slice.loadUint(8)
-let validator_pubkey: BitString = slice.loadBits(256)
+    slice.loadUint(8)
+    let validator_pubkey: BitString = slice.loadBits(256)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let description: ComplaintDescr = loadComplaintDescr(slice1)
+    let description: ComplaintDescr = loadComplaintDescr(slice1)
 
-let created_at: number = slice.loadUint(32)
+    let created_at: number = slice.loadUint(32)
 
-let severity: number = slice.loadUint(8)
+    let severity: number = slice.loadUint(8)
 
-let reward_addr: number = slice.loadUint(256)
+    let reward_addr: number = slice.loadUint(256)
 
-let paid: Grams = loadGrams(slice)
+    let paid: Grams = loadGrams(slice)
 
-let suggested_fine: Grams = loadGrams(slice)
+    let suggested_fine: Grams = loadGrams(slice)
 
-let suggested_fine_part: number = slice.loadUint(32)
+    let suggested_fine_part: number = slice.loadUint(32)
 
     return {
     kind: 'ValidatorComplaint',
@@ -13359,16 +13359,16 @@ export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint):
 
 export function loadValidatorComplaintStatus(slice: Slice): ValidatorComplaintStatus {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x2d))) {
-slice.loadUint(8)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(8)
+    let slice1 = slice.loadRef().beginParse()
 
-let complaint: ValidatorComplaint = loadValidatorComplaint(slice1)
+    let complaint: ValidatorComplaint = loadValidatorComplaint(slice1)
 
-let voters: HashmapE<True> = loadHashmapE<True>(slice, 16, loadTrue)
+    let voters: HashmapE<True> = loadHashmapE<True>(slice, 16, loadTrue)
 
-let vset_id: number = slice.loadUint(256)
+    let vset_id: number = slice.loadUint(256)
 
-let weight_remaining: number = slice.loadInt(64)
+    let weight_remaining: number = slice.loadInt(64)
 
     return {
     kind: 'ValidatorComplaintStatus',
@@ -13408,7 +13408,7 @@ export function storeValidatorComplaintStatus(validatorComplaintStatus: Validato
 
 export function loadVmStackValue(slice: Slice): VmStackValue {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x00))) {
-slice.loadUint(8)
+    slice.loadUint(8)
     return {
     kind: 'VmStackValue_vm_stk_null',
 }
@@ -13416,8 +13416,8 @@ slice.loadUint(8)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x01))) {
-slice.loadUint(8)
-let value: number = slice.loadInt(64)
+    slice.loadUint(8)
+    let value: number = slice.loadInt(64)
 
     return {
     kind: 'VmStackValue_vm_stk_tinyint',
@@ -13427,8 +13427,8 @@ let value: number = slice.loadInt(64)
 }
 ;
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x0201))) {
-slice.loadUint(16)
-let value: number = slice.loadInt(257)
+    slice.loadUint(16)
+    let value: number = slice.loadInt(257)
 
     return {
     kind: 'VmStackValue_vm_stk_int',
@@ -13438,7 +13438,7 @@ let value: number = slice.loadInt(257)
 }
 ;
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x02ff))) {
-slice.loadUint(16)
+    slice.loadUint(16)
     return {
     kind: 'VmStackValue_vm_stk_nan',
 }
@@ -13446,10 +13446,10 @@ slice.loadUint(16)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
-slice.loadUint(8)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(8)
+    let slice1 = slice.loadRef().beginParse()
 
-let _cell: Slice = slice1
+    let _cell: Slice = slice1
 
     return {
     kind: 'VmStackValue_vm_stk_cell',
@@ -13459,8 +13459,8 @@ let _cell: Slice = slice1
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x04))) {
-slice.loadUint(8)
-let _: VmCellSlice = loadVmCellSlice(slice)
+    slice.loadUint(8)
+    let _: VmCellSlice = loadVmCellSlice(slice)
 
     return {
     kind: 'VmStackValue_vm_stk_slice',
@@ -13470,10 +13470,10 @@ let _: VmCellSlice = loadVmCellSlice(slice)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x05))) {
-slice.loadUint(8)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(8)
+    let slice1 = slice.loadRef().beginParse()
 
-let _cell: Slice = slice1
+    let _cell: Slice = slice1
 
     return {
     kind: 'VmStackValue_vm_stk_builder',
@@ -13483,8 +13483,8 @@ let _cell: Slice = slice1
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x06))) {
-slice.loadUint(8)
-let cont: VmCont = loadVmCont(slice)
+    slice.loadUint(8)
+    let cont: VmCont = loadVmCont(slice)
 
     return {
     kind: 'VmStackValue_vm_stk_cont',
@@ -13494,10 +13494,10 @@ let cont: VmCont = loadVmCont(slice)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x07))) {
-slice.loadUint(8)
-let len: number = slice.loadUint(16)
+    slice.loadUint(8)
+    let len: number = slice.loadUint(16)
 
-let data: VmTuple = loadVmTuple(slice, len)
+    let data: VmTuple = loadVmTuple(slice, len)
 
     return {
     kind: 'VmStackValue_vm_stk_tuple',
@@ -13616,24 +13616,24 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
 
 export function loadVmCellSlice(slice: Slice): VmCellSlice {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd6a63245))) {
-slice.loadUint(32)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let slice1 = slice.loadRef().beginParse()
 
-let _cell: Slice = slice1
+    let _cell: Slice = slice1
 
-let st_bits: number = slice.loadUint(10)
+    let st_bits: number = slice.loadUint(10)
 
-let end_bits: number = slice.loadUint(10)
+    let end_bits: number = slice.loadUint(10)
 
-let st_ref: number = slice.loadUint(bitLen(4))
+    let st_ref: number = slice.loadUint(bitLen(4))
 
-let end_ref: number = slice.loadUint(bitLen(4))
+    let end_ref: number = slice.loadUint(bitLen(4))
 
     if ((!(st_bits <= end_bits))) {
-throw new Error('')
+        throw new Error('')
     }
     if ((!(st_ref <= end_ref))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'VmCellSlice',
@@ -13670,11 +13670,11 @@ export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) =
     builder.storeUint(vmCellSlice.end_ref, bitLen(4))
 
     if ((!(vmCellSlice.st_bits <= vmCellSlice.end_bits))) {
-    throw new Error('')
+        throw new Error('')
     }
 
     if ((!(vmCellSlice.st_ref <= vmCellSlice.end_ref))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -13691,9 +13691,9 @@ export function loadVmTupleRef(slice: Slice, arg0: number): VmTupleRef {
 }
 ;
     if ((arg0 == 1)) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let entry: VmStackValue = loadVmStackValue(slice1)
+    let entry: VmStackValue = loadVmStackValue(slice1)
 
     return {
     kind: 'VmTupleRef_vm_tupref_single',
@@ -13703,9 +13703,9 @@ let entry: VmStackValue = loadVmStackValue(slice1)
 }
 ;
     if (true) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let ref: VmTuple = loadVmTuple(slice1, ((arg0 - 2) + 2))
+    let ref: VmTuple = loadVmTuple(slice1, ((arg0 - 2) + 2))
 
     return {
     kind: 'VmTupleRef_vm_tupref_any',
@@ -13765,11 +13765,11 @@ export function loadVmTuple(slice: Slice, arg0: number): VmTuple {
 }
 ;
     if (true) {
-let head: VmTupleRef = loadVmTupleRef(slice, (arg0 - 1))
+    let head: VmTupleRef = loadVmTupleRef(slice, (arg0 - 1))
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let tail: VmStackValue = loadVmStackValue(slice1)
+    let tail: VmStackValue = loadVmStackValue(slice1)
 
     return {
     kind: 'VmTuple_vm_tuple_tcons',
@@ -13846,11 +13846,11 @@ export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
 }
 ;
     if (true) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let rest: VmStackList = loadVmStackList(slice1, (arg0 - 1))
+    let rest: VmStackList = loadVmStackList(slice1, (arg0 - 1))
 
-let tos: VmStackValue = loadVmStackValue(slice)
+    let tos: VmStackValue = loadVmStackValue(slice)
 
     return {
     kind: 'VmStackList_vm_stk_cons',
@@ -13893,8 +13893,8 @@ export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) =
 
 export function loadVmSaveList(slice: Slice): VmSaveList {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xeed28f11))) {
-slice.loadUint(32)
-let cregs: HashmapE<VmStackValue> = loadHashmapE<VmStackValue>(slice, 4, loadVmStackValue)
+    slice.loadUint(32)
+    let cregs: HashmapE<VmStackValue> = loadHashmapE<VmStackValue>(slice, 4, loadVmStackValue)
 
     return {
     kind: 'VmSaveList',
@@ -13967,15 +13967,15 @@ export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) =
 
 export function loadVmLibraries(slice: Slice): VmLibraries {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xe9be85ef))) {
-slice.loadUint(32)
-let libraries: HashmapE<Slice> = loadHashmapE<Slice>(slice, 256, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(32)
+    let libraries: HashmapE<Slice> = loadHashmapE<Slice>(slice, 256, ((slice: Slice) => {
+    let slice1 = slice.loadRef().beginParse()
 
 
-        return slice1
+    return slice1
 
-    })
-    )
+})
+)
 
     return {
     kind: 'VmLibraries',
@@ -14078,10 +14078,10 @@ export function storeVmControlData(vmControlData: VmControlData): (builder: Buil
 
 export function loadVmCont(slice: Slice): VmCont {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-slice.loadUint(2)
-let cdata: VmControlData = loadVmControlData(slice)
+    slice.loadUint(2)
+    let cdata: VmControlData = loadVmControlData(slice)
 
-let code: VmCellSlice = loadVmCellSlice(slice)
+    let code: VmCellSlice = loadVmCellSlice(slice)
 
     return {
     kind: 'VmCont_vmc_std',
@@ -14092,12 +14092,12 @@ let code: VmCellSlice = loadVmCellSlice(slice)
 }
 ;
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
-slice.loadUint(2)
-let cdata: VmControlData = loadVmControlData(slice)
+    slice.loadUint(2)
+    let cdata: VmControlData = loadVmControlData(slice)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let next: VmCont = loadVmCont(slice1)
+    let next: VmCont = loadVmCont(slice1)
 
     return {
     kind: 'VmCont_vmc_envelope',
@@ -14108,8 +14108,8 @@ let next: VmCont = loadVmCont(slice1)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1000))) {
-slice.loadUint(4)
-let exit_code: number = slice.loadInt(32)
+    slice.loadUint(4)
+    let exit_code: number = slice.loadInt(32)
 
     return {
     kind: 'VmCont_vmc_quit',
@@ -14119,7 +14119,7 @@ let exit_code: number = slice.loadInt(32)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1001))) {
-slice.loadUint(4)
+    slice.loadUint(4)
     return {
     kind: 'VmCont_vmc_quit_exc',
 }
@@ -14127,16 +14127,16 @@ slice.loadUint(4)
 }
 ;
     if (((slice.remainingBits >= 5) && (slice.preloadUint(5) == 0b10100))) {
-slice.loadUint(5)
-let count: number = slice.loadUint(63)
+    slice.loadUint(5)
+    let count: number = slice.loadUint(63)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let body: VmCont = loadVmCont(slice1)
+    let body: VmCont = loadVmCont(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let after: VmCont = loadVmCont(slice2)
+    let after: VmCont = loadVmCont(slice2)
 
     return {
     kind: 'VmCont_vmc_repeat',
@@ -14148,14 +14148,14 @@ let after: VmCont = loadVmCont(slice2)
 }
 ;
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110000))) {
-slice.loadUint(6)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(6)
+    let slice1 = slice.loadRef().beginParse()
 
-let body: VmCont = loadVmCont(slice1)
+    let body: VmCont = loadVmCont(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let after: VmCont = loadVmCont(slice2)
+    let after: VmCont = loadVmCont(slice2)
 
     return {
     kind: 'VmCont_vmc_until',
@@ -14166,10 +14166,10 @@ let after: VmCont = loadVmCont(slice2)
 }
 ;
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110001))) {
-slice.loadUint(6)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(6)
+    let slice1 = slice.loadRef().beginParse()
 
-let body: VmCont = loadVmCont(slice1)
+    let body: VmCont = loadVmCont(slice1)
 
     return {
     kind: 'VmCont_vmc_again',
@@ -14179,18 +14179,18 @@ let body: VmCont = loadVmCont(slice1)
 }
 ;
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110010))) {
-slice.loadUint(6)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(6)
+    let slice1 = slice.loadRef().beginParse()
 
-let cond: VmCont = loadVmCont(slice1)
+    let cond: VmCont = loadVmCont(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let body: VmCont = loadVmCont(slice2)
+    let body: VmCont = loadVmCont(slice2)
 
-let slice3 = slice.loadRef().beginParse()
+    let slice3 = slice.loadRef().beginParse()
 
-let after: VmCont = loadVmCont(slice3)
+    let after: VmCont = loadVmCont(slice3)
 
     return {
     kind: 'VmCont_vmc_while_cond',
@@ -14202,18 +14202,18 @@ let after: VmCont = loadVmCont(slice3)
 }
 ;
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110011))) {
-slice.loadUint(6)
-let slice1 = slice.loadRef().beginParse()
+    slice.loadUint(6)
+    let slice1 = slice.loadRef().beginParse()
 
-let cond: VmCont = loadVmCont(slice1)
+    let cond: VmCont = loadVmCont(slice1)
 
-let slice2 = slice.loadRef().beginParse()
+    let slice2 = slice.loadRef().beginParse()
 
-let body: VmCont = loadVmCont(slice2)
+    let body: VmCont = loadVmCont(slice2)
 
-let slice3 = slice.loadRef().beginParse()
+    let slice3 = slice.loadRef().beginParse()
 
-let after: VmCont = loadVmCont(slice3)
+    let after: VmCont = loadVmCont(slice3)
 
     return {
     kind: 'VmCont_vmc_while_body',
@@ -14225,12 +14225,12 @@ let after: VmCont = loadVmCont(slice3)
 }
 ;
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1111))) {
-slice.loadUint(4)
-let value: number = slice.loadInt(32)
+    slice.loadUint(4)
+    let value: number = slice.loadInt(32)
 
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let next: VmCont = loadVmCont(slice1)
+    let next: VmCont = loadVmCont(slice1)
 
     return {
     kind: 'VmCont_vmc_pushint',
@@ -14434,8 +14434,8 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
 
 export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xafbffed3))) {
-slice.loadUint(32)
-let anon0: HashmapE<DNSRecord> = loadHashmapE<DNSRecord>(slice, 256, loadDNSRecord)
+    slice.loadUint(32)
+    let anon0: HashmapE<DNSRecord> = loadHashmapE<DNSRecord>(slice, 256, loadDNSRecord)
 
     return {
     kind: 'DNS_RecordSet',
@@ -14468,9 +14468,9 @@ export function loadTextChunkRef(slice: Slice, arg0: number): TextChunkRef {
 }
 ;
     if (true) {
-let slice1 = slice.loadRef().beginParse()
+    let slice1 = slice.loadRef().beginParse()
 
-let ref: TextChunks = loadTextChunks(slice1, ((arg0 - 1) + 1))
+    let ref: TextChunks = loadTextChunks(slice1, ((arg0 - 1) + 1))
 
     return {
     kind: 'TextChunkRef_chunk_ref',
@@ -14517,11 +14517,11 @@ export function loadTextChunks(slice: Slice, arg0: number): TextChunks {
 }
 ;
     if (true) {
-let len: number = slice.loadUint(8)
+    let len: number = slice.loadUint(8)
 
-let data: BitString = slice.loadBits((len * 8))
+    let data: BitString = slice.loadBits((len * 8))
 
-let next: TextChunkRef = loadTextChunkRef(slice, (arg0 - 1))
+    let next: TextChunkRef = loadTextChunkRef(slice, (arg0 - 1))
 
     return {
     kind: 'TextChunks_text_chunk',
@@ -14589,8 +14589,8 @@ export function storeText(text: Text): (builder: Builder) => void {
 
 export function loadDNSRecord(slice: Slice): DNSRecord {
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x1eda))) {
-slice.loadUint(16)
-let _: Text = loadText(slice)
+    slice.loadUint(16)
+    let _: Text = loadText(slice)
 
     return {
     kind: 'DNSRecord_dns_text',
@@ -14600,8 +14600,8 @@ let _: Text = loadText(slice)
 }
 ;
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0xba93))) {
-slice.loadUint(16)
-let resolver: MsgAddressInt = loadMsgAddressInt(slice)
+    slice.loadUint(16)
+    let resolver: MsgAddressInt = loadMsgAddressInt(slice)
 
     return {
     kind: 'DNSRecord_dns_next_resolver',
@@ -14611,15 +14611,15 @@ let resolver: MsgAddressInt = loadMsgAddressInt(slice)
 }
 ;
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0xad01))) {
-slice.loadUint(16)
-let adnl_addr: BitString = slice.loadBits(256)
+    slice.loadUint(16)
+    let adnl_addr: BitString = slice.loadBits(256)
 
-let flags: number = slice.loadUint(8)
+    let flags: number = slice.loadUint(8)
 
-let proto_list: ProtoList | undefined = ((flags & (1 << 0)) ? loadProtoList(slice) : undefined)
+    let proto_list: ProtoList | undefined = ((flags & (1 << 0)) ? loadProtoList(slice) : undefined)
 
     if ((!(flags <= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'DNSRecord_dns_adnl_address',
@@ -14631,15 +14631,15 @@ throw new Error('')
 }
 ;
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x9fd3))) {
-slice.loadUint(16)
-let smc_addr: MsgAddressInt = loadMsgAddressInt(slice)
+    slice.loadUint(16)
+    let smc_addr: MsgAddressInt = loadMsgAddressInt(slice)
 
-let flags: number = slice.loadUint(8)
+    let flags: number = slice.loadUint(8)
 
-let cap_list: SmcCapList | undefined = ((flags & (1 << 0)) ? loadSmcCapList(slice) : undefined)
+    let cap_list: SmcCapList | undefined = ((flags & (1 << 0)) ? loadSmcCapList(slice) : undefined)
 
     if ((!(flags <= 1))) {
-throw new Error('')
+        throw new Error('')
     }
     return {
     kind: 'DNSRecord_dns_smc_address',
@@ -14684,11 +14684,11 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
     builder.storeUint(dNSRecord.flags, 8)
 
     if ((dNSRecord.proto_list != undefined)) {
-    storeProtoList(dNSRecord.proto_list)(builder)
+        storeProtoList(dNSRecord.proto_list)(builder)
     }
 
     if ((!(dNSRecord.flags <= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -14704,11 +14704,11 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
     builder.storeUint(dNSRecord.flags, 8)
 
     if ((dNSRecord.cap_list != undefined)) {
-    storeSmcCapList(dNSRecord.cap_list)(builder)
+        storeSmcCapList(dNSRecord.cap_list)(builder)
     }
 
     if ((!(dNSRecord.flags <= 1))) {
-    throw new Error('')
+        throw new Error('')
     }
 
 })
@@ -14721,7 +14721,7 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
 
 export function loadProtoList(slice: Slice): ProtoList {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'ProtoList_proto_list_nil',
 }
@@ -14729,10 +14729,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let head: Protocol = loadProtocol(slice)
+    slice.loadUint(1)
+    let head: Protocol = loadProtocol(slice)
 
-let tail: ProtoList = loadProtoList(slice)
+    let tail: ProtoList = loadProtoList(slice)
 
     return {
     kind: 'ProtoList_proto_list_next',
@@ -14773,7 +14773,7 @@ export function storeProtoList(protoList: ProtoList): (builder: Builder) => void
 
 export function loadProtocol(slice: Slice): Protocol {
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x4854))) {
-slice.loadUint(16)
+    slice.loadUint(16)
     return {
     kind: 'Protocol',
 }
@@ -14795,7 +14795,7 @@ export function storeProtocol(protocol: Protocol): (builder: Builder) => void {
 
 export function loadSmcCapList(slice: Slice): SmcCapList {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-slice.loadUint(1)
+    slice.loadUint(1)
     return {
     kind: 'SmcCapList_cap_list_nil',
 }
@@ -14803,10 +14803,10 @@ slice.loadUint(1)
 }
 ;
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-slice.loadUint(1)
-let head: SmcCapability = loadSmcCapability(slice)
+    slice.loadUint(1)
+    let head: SmcCapability = loadSmcCapability(slice)
 
-let tail: SmcCapList = loadSmcCapList(slice)
+    let tail: SmcCapList = loadSmcCapList(slice)
 
     return {
     kind: 'SmcCapList_cap_list_next',
@@ -14847,7 +14847,7 @@ export function storeSmcCapList(smcCapList: SmcCapList): (builder: Builder) => v
 
 export function loadSmcCapability(slice: Slice): SmcCapability {
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x5371))) {
-slice.loadUint(16)
+    slice.loadUint(16)
     return {
     kind: 'SmcCapability_cap_method_seqno',
 }
@@ -14855,7 +14855,7 @@ slice.loadUint(16)
 }
 ;
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x71f4))) {
-slice.loadUint(16)
+    slice.loadUint(16)
     return {
     kind: 'SmcCapability_cap_method_pubkey',
 }
@@ -14863,7 +14863,7 @@ slice.loadUint(16)
 }
 ;
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x2177))) {
-slice.loadUint(16)
+    slice.loadUint(16)
     return {
     kind: 'SmcCapability_cap_is_wallet',
 }
@@ -14871,8 +14871,8 @@ slice.loadUint(16)
 }
 ;
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xff))) {
-slice.loadUint(8)
-let name: Text = loadText(slice)
+    slice.loadUint(8)
+    let name: Text = loadText(slice)
 
     return {
     kind: 'SmcCapability_cap_name',
@@ -15005,20 +15005,20 @@ export function storeChanConfig(chanConfig: ChanConfig): (builder: Builder) => v
 
 export function loadChanState(slice: Slice): ChanState {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b000))) {
-slice.loadUint(3)
-let signed_A: Bool = loadBool(slice)
+    slice.loadUint(3)
+    let signed_A: Bool = loadBool(slice)
 
-let signed_B: Bool = loadBool(slice)
+    let signed_B: Bool = loadBool(slice)
 
-let min_A: Grams = loadGrams(slice)
+    let min_A: Grams = loadGrams(slice)
 
-let min_B: Grams = loadGrams(slice)
+    let min_B: Grams = loadGrams(slice)
 
-let expire_at: number = slice.loadUint(32)
+    let expire_at: number = slice.loadUint(32)
 
-let A: Grams = loadGrams(slice)
+    let A: Grams = loadGrams(slice)
 
-let B: Grams = loadGrams(slice)
+    let B: Grams = loadGrams(slice)
 
     return {
     kind: 'ChanState_chan_state_init',
@@ -15034,20 +15034,20 @@ let B: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b001))) {
-slice.loadUint(3)
-let signed_A: Bool = loadBool(slice)
+    slice.loadUint(3)
+    let signed_A: Bool = loadBool(slice)
 
-let signed_B: Bool = loadBool(slice)
+    let signed_B: Bool = loadBool(slice)
 
-let promise_A: Grams = loadGrams(slice)
+    let promise_A: Grams = loadGrams(slice)
 
-let promise_B: Grams = loadGrams(slice)
+    let promise_B: Grams = loadGrams(slice)
 
-let expire_at: number = slice.loadUint(32)
+    let expire_at: number = slice.loadUint(32)
 
-let A: Grams = loadGrams(slice)
+    let A: Grams = loadGrams(slice)
 
-let B: Grams = loadGrams(slice)
+    let B: Grams = loadGrams(slice)
 
     return {
     kind: 'ChanState_chan_state_close',
@@ -15063,10 +15063,10 @@ let B: Grams = loadGrams(slice)
 }
 ;
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b010))) {
-slice.loadUint(3)
-let A: Grams = loadGrams(slice)
+    slice.loadUint(3)
+    let A: Grams = loadGrams(slice)
 
-let B: Grams = loadGrams(slice)
+    let B: Grams = loadGrams(slice)
 
     return {
     kind: 'ChanState_chan_state_payout',
@@ -15224,16 +15224,16 @@ export function storeChanSignedPromise(chanSignedPromise: ChanSignedPromise): (b
 
 export function loadChanMsg(slice: Slice): ChanMsg {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x27317822))) {
-slice.loadUint(32)
-let inc_A: Grams = loadGrams(slice)
+    slice.loadUint(32)
+    let inc_A: Grams = loadGrams(slice)
 
-let inc_B: Grams = loadGrams(slice)
+    let inc_B: Grams = loadGrams(slice)
 
-let min_A: Grams = loadGrams(slice)
+    let min_A: Grams = loadGrams(slice)
 
-let min_B: Grams = loadGrams(slice)
+    let min_B: Grams = loadGrams(slice)
 
-let channel_id: number = slice.loadUint(64)
+    let channel_id: number = slice.loadUint(64)
 
     return {
     kind: 'ChanMsg_chan_msg_init',
@@ -15247,12 +15247,12 @@ let channel_id: number = slice.loadUint(64)
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xf28ae183))) {
-slice.loadUint(32)
-let extra_A: Grams = loadGrams(slice)
+    slice.loadUint(32)
+    let extra_A: Grams = loadGrams(slice)
 
-let extra_B: Grams = loadGrams(slice)
+    let extra_B: Grams = loadGrams(slice)
 
-let promise: ChanSignedPromise = loadChanSignedPromise(slice)
+    let promise: ChanSignedPromise = loadChanSignedPromise(slice)
 
     return {
     kind: 'ChanMsg_chan_msg_close',
@@ -15264,7 +15264,7 @@ let promise: ChanSignedPromise = loadChanSignedPromise(slice)
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x43278a28))) {
-slice.loadUint(32)
+    slice.loadUint(32)
     return {
     kind: 'ChanMsg_chan_msg_timeout',
 }
@@ -15272,7 +15272,7 @@ slice.loadUint(32)
 }
 ;
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x37fe7810))) {
-slice.loadUint(32)
+    slice.loadUint(32)
     return {
     kind: 'ChanMsg_chan_msg_payout',
 }
@@ -15413,8 +15413,8 @@ export function storeChanSignedMsg(chanSignedMsg: ChanSignedMsg): (builder: Buil
 
 export function loadChanOp(slice: Slice): ChanOp {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x912838d1))) {
-slice.loadUint(32)
-let msg: ChanSignedMsg = loadChanSignedMsg(slice)
+    slice.loadUint(32)
+    let msg: ChanSignedMsg = loadChanSignedMsg(slice)
 
     return {
     kind: 'ChanOp',
