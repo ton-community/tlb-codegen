@@ -2486,8 +2486,7 @@ export function storeBoolTrue(boolTrue: BoolTrue): (builder: Builder) => void {
 
 }
 
-export function loadMaybe<X>(slice: Slice, loadX: (slice: Slice) => X
-): Maybe<X> {
+export function loadMaybe<X>(slice: Slice, loadX: (slice: Slice) => X): Maybe<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         return {
@@ -2507,9 +2506,7 @@ export function loadMaybe<X>(slice: Slice, loadX: (slice: Slice) => X
     throw new Error('');
 }
 
-export function storeMaybe<X>(maybe: Maybe<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeMaybe<X>(maybe: Maybe<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((maybe.kind == 'Maybe_nothing')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -2526,9 +2523,7 @@ export function storeMaybe<X>(maybe: Maybe<X>, storeX: (x: X) => (builder: Build
     throw new Error('');
 }
 
-export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X
-, loadY: (slice: Slice) => Y
-): Either<X, Y> {
+export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         let value: X = loadX(slice);
@@ -2550,11 +2545,7 @@ export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X
     throw new Error('');
 }
 
-export function storeEither<X, Y>(either: Either<X, Y>, storeX: (x: X) => (builder: Builder) => void
-
-, storeY: (y: Y) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeEither<X, Y>(either: Either<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
     if ((either.kind == 'Either_left')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -2572,9 +2563,7 @@ export function storeEither<X, Y>(either: Either<X, Y>, storeX: (x: X) => (build
     throw new Error('');
 }
 
-export function loadBoth<X, Y>(slice: Slice, loadX: (slice: Slice) => X
-, loadY: (slice: Slice) => Y
-): Both<X, Y> {
+export function loadBoth<X, Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Both<X, Y> {
     let first: X = loadX(slice);
     let second: Y = loadY(slice);
     return {
@@ -2585,11 +2574,7 @@ export function loadBoth<X, Y>(slice: Slice, loadX: (slice: Slice) => X
 
 }
 
-export function storeBoth<X, Y>(both: Both<X, Y>, storeX: (x: X) => (builder: Builder) => void
-
-, storeY: (y: Y) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeBoth<X, Y>(both: Both<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeX(both.first)(builder);
         storeY(both.second)(builder);
@@ -2629,8 +2614,7 @@ export function hashmap_get_l(label: HmLabel): number {
     throw new Error('');
 }
 
-export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
-): Hashmap<X> {
+export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
     let label: HmLabel = loadHmLabel(slice, n);
     let l = hashmap_get_l(label);
     let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
@@ -2645,9 +2629,7 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
 
 }
 
-export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHmLabel(hashmap.label)(builder);
         storeHashmapNode<X>(hashmap.node, storeX)(builder);
@@ -2655,8 +2637,7 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
 
 }
 
-export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
-): HashmapNode<X> {
+export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): HashmapNode<X> {
     if ((arg0 == 0)) {
         let value: X = loadX(slice);
         return {
@@ -2681,9 +2662,7 @@ export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Sl
     throw new Error('');
 }
 
-export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((hashmapNode.kind == 'HashmapNode_hmn_leaf')) {
         return ((builder: Builder) => {
             storeX(hashmapNode.value)(builder);
@@ -2853,8 +2832,7 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
     throw new Error('');
 }
 
-export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
-): HashmapE<X> {
+export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapE<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         return {
@@ -2877,9 +2855,7 @@ export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) =
     throw new Error('');
 }
 
-export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((hashmapE.kind == 'HashmapE_hme_empty')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -2936,9 +2912,7 @@ export function hashmapAug_get_l(label: HmLabel): number {
     throw new Error('');
 }
 
-export function loadHashmapAug<X, Y>(slice: Slice, n: number, loadX: (slice: Slice) => X
-, loadY: (slice: Slice) => Y
-): HashmapAug<X, Y> {
+export function loadHashmapAug<X, Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAug<X, Y> {
     let label: HmLabel = loadHmLabel(slice, n);
     let l = hashmapAug_get_l(label);
     let node: HashmapAugNode<X, Y> = loadHashmapAugNode<X, Y>(slice, (n - l), loadX, loadY);
@@ -2953,11 +2927,7 @@ export function loadHashmapAug<X, Y>(slice: Slice, n: number, loadX: (slice: Sli
 
 }
 
-export function storeHashmapAug<X, Y>(hashmapAug: HashmapAug<X, Y>, storeX: (x: X) => (builder: Builder) => void
-
-, storeY: (y: Y) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmapAug<X, Y>(hashmapAug: HashmapAug<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHmLabel(hashmapAug.label)(builder);
         storeHashmapAugNode<X, Y>(hashmapAug.node, storeX, storeY)(builder);
@@ -2965,9 +2935,7 @@ export function storeHashmapAug<X, Y>(hashmapAug: HashmapAug<X, Y>, storeX: (x: 
 
 }
 
-export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
-, loadY: (slice: Slice) => Y
-): HashmapAugNode<X, Y> {
+export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugNode<X, Y> {
     if ((arg0 == 0)) {
         let extra: Y = loadY(slice);
         let value: X = loadX(slice);
@@ -2996,11 +2964,7 @@ export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (sli
     throw new Error('');
 }
 
-export function storeHashmapAugNode<X, Y>(hashmapAugNode: HashmapAugNode<X, Y>, storeX: (x: X) => (builder: Builder) => void
-
-, storeY: (y: Y) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmapAugNode<X, Y>(hashmapAugNode: HashmapAugNode<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
     if ((hashmapAugNode.kind == 'HashmapAugNode_ahmn_leaf')) {
         return ((builder: Builder) => {
             storeY(hashmapAugNode.extra)(builder);
@@ -3023,9 +2987,7 @@ export function storeHashmapAugNode<X, Y>(hashmapAugNode: HashmapAugNode<X, Y>, 
     throw new Error('');
 }
 
-export function loadHashmapAugE<X, Y>(slice: Slice, n: number, loadX: (slice: Slice) => X
-, loadY: (slice: Slice) => Y
-): HashmapAugE<X, Y> {
+export function loadHashmapAugE<X, Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugE<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         let extra: Y = loadY(slice);
@@ -3052,11 +3014,7 @@ export function loadHashmapAugE<X, Y>(slice: Slice, n: number, loadX: (slice: Sl
     throw new Error('');
 }
 
-export function storeHashmapAugE<X, Y>(hashmapAugE: HashmapAugE<X, Y>, storeX: (x: X) => (builder: Builder) => void
-
-, storeY: (y: Y) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmapAugE<X, Y>(hashmapAugE: HashmapAugE<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
     if ((hashmapAugE.kind == 'HashmapAugE_ahme_empty')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -3093,8 +3051,7 @@ export function varHashmap_get_l(label: HmLabel): number {
     throw new Error('');
 }
 
-export function loadVarHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
-): VarHashmap<X> {
+export function loadVarHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): VarHashmap<X> {
     let label: HmLabel = loadHmLabel(slice, n);
     let l = varHashmap_get_l(label);
     let node: VarHashmapNode<X> = loadVarHashmapNode<X>(slice, (n - l), loadX);
@@ -3109,9 +3066,7 @@ export function loadVarHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice)
 
 }
 
-export function storeVarHashmap<X>(varHashmap: VarHashmap<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeVarHashmap<X>(varHashmap: VarHashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHmLabel(varHashmap.label)(builder);
         storeVarHashmapNode<X>(varHashmap.node, storeX)(builder);
@@ -3119,8 +3074,7 @@ export function storeVarHashmap<X>(varHashmap: VarHashmap<X>, storeX: (x: X) => 
 
 }
 
-export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
-): VarHashmapNode<X> {
+export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): VarHashmapNode<X> {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
         slice.loadUint(2);
         let value: X = loadX(slice);
@@ -3165,9 +3119,7 @@ export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice:
     throw new Error('');
 }
 
-export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((varHashmapNode.kind == 'VarHashmapNode_vhmn_leaf')) {
         return ((builder: Builder) => {
             builder.storeUint(0b00, 2);
@@ -3202,8 +3154,7 @@ export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX
     throw new Error('');
 }
 
-export function loadVarHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
-): VarHashmapE<X> {
+export function loadVarHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): VarHashmapE<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         return {
@@ -3226,9 +3177,7 @@ export function loadVarHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice
     throw new Error('');
 }
 
-export function storeVarHashmapE<X>(varHashmapE: VarHashmapE<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeVarHashmapE<X>(varHashmapE: VarHashmapE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((varHashmapE.kind == 'VarHashmapE_vhme_empty')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -3263,8 +3212,7 @@ export function pfxHashmap_get_l(label: HmLabel): number {
     throw new Error('');
 }
 
-export function loadPfxHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
-): PfxHashmap<X> {
+export function loadPfxHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): PfxHashmap<X> {
     let label: HmLabel = loadHmLabel(slice, n);
     let l = pfxHashmap_get_l(label);
     let node: PfxHashmapNode<X> = loadPfxHashmapNode<X>(slice, (n - l), loadX);
@@ -3279,9 +3227,7 @@ export function loadPfxHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice)
 
 }
 
-export function storePfxHashmap<X>(pfxHashmap: PfxHashmap<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storePfxHashmap<X>(pfxHashmap: PfxHashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHmLabel(pfxHashmap.label)(builder);
         storePfxHashmapNode<X>(pfxHashmap.node, storeX)(builder);
@@ -3289,8 +3235,7 @@ export function storePfxHashmap<X>(pfxHashmap: PfxHashmap<X>, storeX: (x: X) => 
 
 }
 
-export function loadPfxHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
-): PfxHashmapNode<X> {
+export function loadPfxHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): PfxHashmapNode<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         let value: X = loadX(slice);
@@ -3318,9 +3263,7 @@ export function loadPfxHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice:
     throw new Error('');
 }
 
-export function storePfxHashmapNode<X>(pfxHashmapNode: PfxHashmapNode<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storePfxHashmapNode<X>(pfxHashmapNode: PfxHashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((pfxHashmapNode.kind == 'PfxHashmapNode_phmn_leaf')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -3343,8 +3286,7 @@ export function storePfxHashmapNode<X>(pfxHashmapNode: PfxHashmapNode<X>, storeX
     throw new Error('');
 }
 
-export function loadPfxHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
-): PfxHashmapE<X> {
+export function loadPfxHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): PfxHashmapE<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         return {
@@ -3367,9 +3309,7 @@ export function loadPfxHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice
     throw new Error('');
 }
 
-export function storePfxHashmapE<X>(pfxHashmapE: PfxHashmapE<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storePfxHashmapE<X>(pfxHashmapE: PfxHashmapE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((pfxHashmapE.kind == 'PfxHashmapE_phme_empty')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -3935,8 +3875,7 @@ export function storeSimpleLib(simpleLib: SimpleLib): (builder: Builder) => void
 
 }
 
-export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X
-): Message<X> {
+export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X): Message<X> {
     let info: CommonMsgInfo = loadCommonMsgInfo(slice);
     let init: Maybe<Either<StateInit, StateInit>> = loadMaybe<Either<StateInit, StateInit>>(slice, ((slice: Slice) => {
     return loadEither<StateInit, StateInit>(slice, loadStateInit, ((slice: Slice) => {
@@ -3960,9 +3899,7 @@ export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X
 
 }
 
-export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeCommonMsgInfo(message.info)(builder);
         storeMaybe<Either<StateInit, StateInit>>(message.init, ((arg: Either<StateInit, StateInit>) => {
@@ -3999,8 +3936,7 @@ export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder:
 
 }
 
-export function loadMessageRelaxed<X>(slice: Slice, loadX: (slice: Slice) => X
-): MessageRelaxed<X> {
+export function loadMessageRelaxed<X>(slice: Slice, loadX: (slice: Slice) => X): MessageRelaxed<X> {
     let info: CommonMsgInfoRelaxed = loadCommonMsgInfoRelaxed(slice);
     let init: Maybe<Either<StateInit, StateInit>> = loadMaybe<Either<StateInit, StateInit>>(slice, ((slice: Slice) => {
     return loadEither<StateInit, StateInit>(slice, loadStateInit, ((slice: Slice) => {
@@ -4024,9 +3960,7 @@ export function loadMessageRelaxed<X>(slice: Slice, loadX: (slice: Slice) => X
 
 }
 
-export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeCommonMsgInfoRelaxed(messageRelaxed.info)(builder);
         storeMaybe<Either<StateInit, StateInit>>(messageRelaxed.init, ((arg: Either<StateInit, StateInit>) => {
@@ -5284,8 +5218,7 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
 
 }
 
-export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X
-): MERKLE_UPDATE<X> {
+export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): MERKLE_UPDATE<X> {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x02))) {
         slice.loadUint(8);
         let old_hash: BitString = slice.loadBits(256);
@@ -5306,9 +5239,7 @@ export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X
     throw new Error('');
 }
 
-export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x02, 8);
         builder.storeBits(mERKLE_UPDATE.old_hash);
@@ -5323,8 +5254,7 @@ export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (
 
 }
 
-export function loadHASH_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X
-): HASH_UPDATE<X> {
+export function loadHASH_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): HASH_UPDATE<X> {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x72))) {
         slice.loadUint(8);
         let old_hash: BitString = slice.loadBits(256);
@@ -5339,9 +5269,7 @@ export function loadHASH_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X
     throw new Error('');
 }
 
-export function storeHASH_UPDATE<X>(hASH_UPDATE: HASH_UPDATE<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHASH_UPDATE<X>(hASH_UPDATE: HASH_UPDATE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x72, 8);
         builder.storeBits(hASH_UPDATE.old_hash);
@@ -5350,8 +5278,7 @@ export function storeHASH_UPDATE<X>(hASH_UPDATE: HASH_UPDATE<X>, storeX: (x: X) 
 
 }
 
-export function loadMERKLE_PROOF<X>(slice: Slice, loadX: (slice: Slice) => X
-): MERKLE_PROOF<X> {
+export function loadMERKLE_PROOF<X>(slice: Slice, loadX: (slice: Slice) => X): MERKLE_PROOF<X> {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
         slice.loadUint(8);
         let virtual_hash: BitString = slice.loadBits(256);
@@ -5369,9 +5296,7 @@ export function loadMERKLE_PROOF<X>(slice: Slice, loadX: (slice: Slice) => X
     throw new Error('');
 }
 
-export function storeMERKLE_PROOF<X>(mERKLE_PROOF: MERKLE_PROOF<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeMERKLE_PROOF<X>(mERKLE_PROOF: MERKLE_PROOF<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x03, 8);
         builder.storeBits(mERKLE_PROOF.virtual_hash);
@@ -6944,8 +6869,7 @@ export function storeValueFlow(valueFlow: ValueFlow): (builder: Builder) => void
 
 }
 
-export function loadBinTree<X>(slice: Slice, loadX: (slice: Slice) => X
-): BinTree<X> {
+export function loadBinTree<X>(slice: Slice, loadX: (slice: Slice) => X): BinTree<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         let leaf: X = loadX(slice);
@@ -6971,9 +6895,7 @@ export function loadBinTree<X>(slice: Slice, loadX: (slice: Slice) => X
     throw new Error('');
 }
 
-export function storeBinTree<X>(binTree: BinTree<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeBinTree<X>(binTree: BinTree<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((binTree.kind == 'BinTree_bt_leaf')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -7254,9 +7176,7 @@ export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) =
 
 }
 
-export function loadBinTreeAug<X, Y>(slice: Slice, loadX: (slice: Slice) => X
-, loadY: (slice: Slice) => Y
-): BinTreeAug<X, Y> {
+export function loadBinTreeAug<X, Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): BinTreeAug<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         let extra: Y = loadY(slice);
@@ -7286,11 +7206,7 @@ export function loadBinTreeAug<X, Y>(slice: Slice, loadX: (slice: Slice) => X
     throw new Error('');
 }
 
-export function storeBinTreeAug<X, Y>(binTreeAug: BinTreeAug<X, Y>, storeX: (x: X) => (builder: Builder) => void
-
-, storeY: (y: Y) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeBinTreeAug<X, Y>(binTreeAug: BinTreeAug<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
     if ((binTreeAug.kind == 'BinTreeAug_bta_leaf')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
