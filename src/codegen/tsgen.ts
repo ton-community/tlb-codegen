@@ -389,7 +389,7 @@ export function toCode(node: TheNode, printContext: PrintContext): string {
     }
 
     if (node.type == "StructDeclaration") {
-        result += currentTabs + `export type ${toCode(node.name, printContext)}${toCode(node.typeParametersExpression, printContext)} = {
+        result += currentTabs + `export interface ${toCode(node.name, printContext)}${toCode(node.typeParametersExpression, printContext)} {
   ${toCodeArray(node.fields, '\n', '\t', printContext, ';')}
   ${currentTabs}};`
     }

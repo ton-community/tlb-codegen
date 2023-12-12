@@ -5,7 +5,7 @@ import { BitString } from 'ton'
 export function bitLen(n: number) {
   	return n.toString(2).length;;
   }
-export type Simple = {
+export interface Simple {
   	kind: 'Simple';
 	a: number;
 	b: number;
@@ -26,13 +26,13 @@ export function storeSimple(simple: Simple): (builder: Builder) => void {
   	});
   }
 export type TwoConstructors = TwoConstructors_bool_false | TwoConstructors_bool_true;
-export type TwoConstructors_bool_false = {
+export interface TwoConstructors_bool_false {
   	kind: 'TwoConstructors_bool_false';
 	a: number;
 	b: number;
 	c: number;
   };
-export type TwoConstructors_bool_true = {
+export interface TwoConstructors_bool_true {
   	kind: 'TwoConstructors_bool_true';
 	b: number;
   };
@@ -76,7 +76,7 @@ export function storeTwoConstructors(twoConstructors: TwoConstructors): (builder
   	};
 	throw new Error('');
   }
-export type FixedIntParam = {
+export interface FixedIntParam {
   	kind: 'FixedIntParam';
 	y: number;
   };
@@ -92,7 +92,7 @@ export function storeFixedIntParam(fixedIntParam: FixedIntParam): (builder: Buil
   		builder.storeUint(fixedIntParam.y, 5);
   	});
   }
-export type TypedField = {
+export interface TypedField {
   	kind: 'TypedField';
 	y: FixedIntParam;
 	c: number;
@@ -112,7 +112,7 @@ export function storeTypedField(typedField: TypedField): (builder: Builder) => v
 		builder.storeUint(typedField.c, 32);
   	});
   }
-export type SharpConstructor = {
+export interface SharpConstructor {
   	kind: 'SharpConstructor';
 	y: FixedIntParam;
 	c: number;
@@ -133,10 +133,10 @@ export function storeSharpConstructor(sharpConstructor: SharpConstructor): (buil
   	});
   }
 export type Maybe<TheType> = Maybe_nothing<TheType> | Maybe_just<TheType>;
-export type Maybe_nothing<TheType> = {
+export interface Maybe_nothing<TheType> {
   	kind: 'Maybe_nothing';
   };
-export type Maybe_just<TheType> = {
+export interface Maybe_just<TheType> {
   	kind: 'Maybe_just';
 	value: TheType;
   };
@@ -171,7 +171,7 @@ export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theTyp
   	};
 	throw new Error('');
   }
-export type TypedParam = {
+export interface TypedParam {
   	kind: 'TypedParam';
 	x: Maybe<SharpConstructor>;
   };
@@ -188,11 +188,11 @@ export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => v
   	});
   }
 export type Either<X,Y> = Either_left<X,Y> | Either_right<X,Y>;
-export type Either_left<X,Y> = {
+export interface Either_left<X,Y> {
   	kind: 'Either_left';
 	value: X;
   };
-export type Either_right<X,Y> = {
+export interface Either_right<X,Y> {
   	kind: 'Either_right';
 	value: Y;
   };
@@ -230,7 +230,7 @@ export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder
   	};
 	throw new Error('');
   }
-export type BitLenArg = {
+export interface BitLenArg {
   	kind: 'BitLenArg';
 	x: number;
 	value: number;
@@ -248,7 +248,7 @@ export function storeBitLenArg(bitLenArg: BitLenArg): (builder: Builder) => void
   		builder.storeUint(bitLenArg.value, bitLenArg.x);
   	});
   }
-export type BitLenArgUser = {
+export interface BitLenArgUser {
   	kind: 'BitLenArgUser';
 	t: BitLenArg;
   };
@@ -264,7 +264,7 @@ export function storeBitLenArgUser(bitLenArgUser: BitLenArgUser): (builder: Buil
   		storeBitLenArg(bitLenArgUser.t)(builder);
   	});
   }
-export type ExprArg = {
+export interface ExprArg {
   	kind: 'ExprArg';
 	x: number;
 	value: number;
@@ -282,7 +282,7 @@ export function storeExprArg(exprArg: ExprArg): (builder: Builder) => void {
   		builder.storeUint(exprArg.value, exprArg.x);
   	});
   }
-export type ExprArgUser = {
+export interface ExprArgUser {
   	kind: 'ExprArgUser';
 	t: ExprArg;
   };
@@ -298,7 +298,7 @@ export function storeExprArgUser(exprArgUser: ExprArgUser): (builder: Builder) =
   		storeExprArg(exprArgUser.t)(builder);
   	});
   }
-export type ComplexTypedField = {
+export interface ComplexTypedField {
   	kind: 'ComplexTypedField';
 	a: ExprArgUser;
   };
@@ -314,7 +314,7 @@ export function storeComplexTypedField(complexTypedField: ComplexTypedField): (b
   		storeExprArgUser(complexTypedField.a)(builder);
   	});
   }
-export type CellTypedField = {
+export interface CellTypedField {
   	kind: 'CellTypedField';
 	a: ExprArgUser;
   };
@@ -333,7 +333,7 @@ export function storeCellTypedField(_cellTypedField: CellTypedField): (builder: 
 		builder.storeRef(cell1);
   	});
   }
-export type CellsSimple = {
+export interface CellsSimple {
   	kind: 'CellsSimple';
 	t: number;
 	q: number;
@@ -388,7 +388,7 @@ export function storeCellsSimple(_cellsSimple: CellsSimple): (builder: Builder) 
 		builder.storeRef(cell2);
   	});
   }
-export type IntBits<Arg> = {
+export interface IntBits<Arg> {
   	kind: 'IntBits';
 	d: number;
 	g: BitString;
@@ -416,7 +416,7 @@ export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) =>
 		builder.storeSlice(intBits.x);
   	});
   }
-export type IntBitsInside = {
+export interface IntBitsInside {
   	kind: 'IntBitsInside';
 	x: number;
 	a: IntBits<number>;
@@ -440,7 +440,7 @@ export function storeIntBitsInside(intBitsInside: IntBitsInside): (builder: Buil
   		}))(builder);
   	});
   }
-export type IntBitsOutside = {
+export interface IntBitsOutside {
   	kind: 'IntBitsOutside';
 	x: IntBitsInside;
   };
@@ -456,7 +456,7 @@ export function storeIntBitsOutside(intBitsOutside: IntBitsOutside): (builder: B
   		storeIntBitsInside(intBitsOutside.x)(builder);
   	});
   }
-export type IntBitsParametrized = {
+export interface IntBitsParametrized {
   	kind: 'IntBitsParametrized';
 	e: number;
 	h: number;
@@ -494,7 +494,7 @@ export function storeIntBitsParametrized(intBitsParametrized: IntBitsParametrize
 		builder.storeSlice(intBitsParametrized.tc);
   	});
   }
-export type IntBitsParametrizedInside = {
+export interface IntBitsParametrizedInside {
   	kind: 'IntBitsParametrizedInside';
 	x: number;
 	a: IntBitsParametrized;
@@ -512,7 +512,7 @@ export function storeIntBitsParametrizedInside(intBitsParametrizedInside: IntBit
   		storeIntBitsParametrized(intBitsParametrizedInside.a)(builder);
   	});
   }
-export type IntBitsParametrizedOutside = {
+export interface IntBitsParametrizedOutside {
   	kind: 'IntBitsParametrizedOutside';
 	x: IntBitsParametrizedInside;
   };
@@ -528,7 +528,7 @@ export function storeIntBitsParametrizedOutside(intBitsParametrizedOutside: IntB
   		storeIntBitsParametrizedInside(intBitsParametrizedOutside.x)(builder);
   	});
   }
-export type LessThan = {
+export interface LessThan {
   	kind: 'LessThan';
 	x: number;
 	y: number;
@@ -548,7 +548,7 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
 		builder.storeUint(lessThan.y, bitLen(4));
   	});
   }
-export type OneComb<A> = {
+export interface OneComb<A> {
   	kind: 'OneComb';
 	t: number;
 	x: A;
@@ -568,7 +568,7 @@ export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder:
 		storeA(oneComb.x)(builder);
   	});
   }
-export type ManyComb = {
+export interface ManyComb {
   	kind: 'ManyComb';
 	y: OneComb<OneComb<OneComb<number>>>;
   };
@@ -613,10 +613,10 @@ export function unary_unary_succ_get_n(x: Unary): number {
 	throw new Error('');
   }
 export type Unary = Unary_unary_zero | Unary_unary_succ;
-export type Unary_unary_zero = {
+export interface Unary_unary_zero {
   	kind: 'Unary_unary_zero';
   };
-export type Unary_unary_succ = {
+export interface Unary_unary_succ {
   	kind: 'Unary_unary_succ';
 	n: number;
 	x: Unary;
@@ -655,22 +655,22 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
 	throw new Error('');
   }
 export type ParamConst = ParamConst_b | ParamConst_c | ParamConst_a | ParamConst_d;
-export type ParamConst_b = {
+export interface ParamConst_b {
   	kind: 'ParamConst_b';
 	m: number;
 	k: number;
   };
-export type ParamConst_c = {
+export interface ParamConst_c {
   	kind: 'ParamConst_c';
 	n: number;
 	m: number;
 	k: number;
   };
-export type ParamConst_a = {
+export interface ParamConst_a {
   	kind: 'ParamConst_a';
 	n: number;
   };
-export type ParamConst_d = {
+export interface ParamConst_d {
   	kind: 'ParamConst_d';
 	n: number;
 	m: number;
@@ -788,18 +788,18 @@ export function paramDifNames_d_get_m(x: ParamDifNames): number {
 	throw new Error('');
   }
 export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c | ParamDifNames_d;
-export type ParamDifNames_a = {
+export interface ParamDifNames_a {
   	kind: 'ParamDifNames_a';
   };
-export type ParamDifNames_b = {
+export interface ParamDifNames_b {
   	kind: 'ParamDifNames_b';
   };
-export type ParamDifNames_c = {
+export interface ParamDifNames_c {
   	kind: 'ParamDifNames_c';
 	n: number;
 	x: ParamDifNames;
   };
-export type ParamDifNames_d = {
+export interface ParamDifNames_d {
   	kind: 'ParamDifNames_d';
 	m: number;
 	x: ParamDifNames;
@@ -881,7 +881,7 @@ export function paramDifNamesUser_get_k(x: ParamDifNames): number {
   	};
 	throw new Error('');
   }
-export type ParamDifNamesUser = {
+export interface ParamDifNamesUser {
   	kind: 'ParamDifNamesUser';
 	k: number;
 	x: ParamDifNames;
@@ -905,7 +905,7 @@ export function storeParamDifNamesUser(paramDifNamesUser: ParamDifNamesUser): (b
 		storeParamDifNames(paramDifNamesUser.x)(builder);
   	});
   }
-export type NegationFromImplicit = {
+export interface NegationFromImplicit {
   	kind: 'NegationFromImplicit';
 	y: number;
 	t: number;
@@ -942,7 +942,7 @@ export function unaryUserCheckOrder_get_l(label: Unary): number {
   	};
 	throw new Error('');
   }
-export type UnaryUserCheckOrder = {
+export interface UnaryUserCheckOrder {
   	kind: 'UnaryUserCheckOrder';
 	l: number;
 	m: number;
@@ -963,7 +963,7 @@ export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrde
   		storeUnary(unaryUserCheckOrder.label)(builder);
   	});
   }
-export type CombArgCellRef<X> = {
+export interface CombArgCellRef<X> {
   	kind: 'CombArgCellRef';
 	info: number;
 	init: Maybe<Either<X,number>>;
@@ -1024,7 +1024,7 @@ export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX
   		}))(builder);
   	});
   }
-export type CombArgCellRefUser = {
+export interface CombArgCellRefUser {
   	kind: 'CombArgCellRefUser';
 	x: CombArgCellRef<number>;
   };
@@ -1046,7 +1046,7 @@ export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser):
   		}))(builder);
   	});
   }
-export type MathExprAsCombArg = {
+export interface MathExprAsCombArg {
   	kind: 'MathExprAsCombArg';
 	n: number;
 	ref: BitLenArg;
@@ -1067,7 +1067,7 @@ export function storeMathExprAsCombArg(mathExprAsCombArg: MathExprAsCombArg): (b
 		builder.storeRef(cell1);
   	});
   }
-export type EmptyTag = {
+export interface EmptyTag {
   	kind: 'EmptyTag';
 	a: number;
   };
@@ -1088,7 +1088,7 @@ export function storeEmptyTag(emptyTag: EmptyTag): (builder: Builder) => void {
 		builder.storeUint(emptyTag.a, 32);
   	});
   }
-export type SharpTag = {
+export interface SharpTag {
   	kind: 'SharpTag';
 	x: number;
   };
@@ -1109,7 +1109,7 @@ export function storeSharpTag(sharpTag: SharpTag): (builder: Builder) => void {
 		builder.storeUint(sharpTag.x, 32);
   	});
   }
-export type DollarTag = {
+export interface DollarTag {
   	kind: 'DollarTag';
 	x: number;
   };
@@ -1130,7 +1130,7 @@ export function storeDollarTag(dollarTag: DollarTag): (builder: Builder) => void
 		builder.storeUint(dollarTag.x, 32);
   	});
   }
-export type TupleCheck = {
+export interface TupleCheck {
   	kind: 'TupleCheck';
 	s: Array<number>;
   };
@@ -1165,7 +1165,7 @@ export function hashmap_get_l(label: HmLabel): number {
   	};
 	throw new Error('');
   }
-export type Hashmap<X> = {
+export interface Hashmap<X> {
   	kind: 'Hashmap';
 	n: number;
 	l: number;
@@ -1193,11 +1193,11 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
   	});
   }
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
-export type HashmapNode_hmn_leaf<X> = {
+export interface HashmapNode_hmn_leaf<X> {
   	kind: 'HashmapNode_hmn_leaf';
 	value: X;
   };
-export type HashmapNode_hmn_fork<X> = {
+export interface HashmapNode_hmn_fork<X> {
   	kind: 'HashmapNode_hmn_fork';
 	n: number;
 	left: Hashmap<X>;
@@ -1254,20 +1254,20 @@ export function hmLabel_hml_short_get_n(len: Unary): number {
 	throw new Error('');
   }
 export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
-export type HmLabel_hml_short = {
+export interface HmLabel_hml_short {
   	kind: 'HmLabel_hml_short';
 	m: number;
 	n: number;
 	len: Unary;
 	s: Array<BitString>;
   };
-export type HmLabel_hml_long = {
+export interface HmLabel_hml_long {
   	kind: 'HmLabel_hml_long';
 	m: number;
 	n: number;
 	s: Array<BitString>;
   };
-export type HmLabel_hml_same = {
+export interface HmLabel_hml_same {
   	kind: 'HmLabel_hml_same';
 	m: number;
 	v: BitString;
@@ -1350,11 +1350,11 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 	throw new Error('');
   }
 export type HashmapE<X> = HashmapE_hme_empty<X> | HashmapE_hme_root<X>;
-export type HashmapE_hme_empty<X> = {
+export interface HashmapE_hme_empty<X> {
   	kind: 'HashmapE_hme_empty';
 	n: number;
   };
-export type HashmapE_hme_root<X> = {
+export interface HashmapE_hme_root<X> {
   	kind: 'HashmapE_hme_root';
 	n: number;
 	root: Hashmap<X>;
@@ -1395,7 +1395,7 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
   	};
 	throw new Error('');
   }
-export type HashmapEUser = {
+export interface HashmapEUser {
   	kind: 'HashmapEUser';
 	x: HashmapE<number>;
   };
@@ -1417,7 +1417,7 @@ export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder
   		}))(builder);
   	});
   }
-export type ConditionalField = {
+export interface ConditionalField {
   	kind: 'ConditionalField';
 	a: number;
 	b: number | undefined;
@@ -1444,7 +1444,7 @@ export function storeConditionalField(conditionalField: ConditionalField): (buil
   		};
   	});
   }
-export type BitSelection = {
+export interface BitSelection {
   	kind: 'BitSelection';
 	a: number;
 	b: number | undefined;
@@ -1471,7 +1471,7 @@ export function storeBitSelection(bitSelection: BitSelection): (builder: Builder
   		};
   	});
   }
-export type ImplicitCondition = {
+export interface ImplicitCondition {
   	kind: 'ImplicitCondition';
 	flags: number;
   };
@@ -1499,15 +1499,15 @@ export function storeImplicitCondition(implicitCondition: ImplicitCondition): (b
   	});
   }
 export type MultipleEmptyConstructor = MultipleEmptyConstructor__ | MultipleEmptyConstructor__1 | MultipleEmptyConstructor_a;
-export type MultipleEmptyConstructor__ = {
+export interface MultipleEmptyConstructor__ {
   	kind: 'MultipleEmptyConstructor__';
 	a: number;
   };
-export type MultipleEmptyConstructor__1 = {
+export interface MultipleEmptyConstructor__1 {
   	kind: 'MultipleEmptyConstructor__1';
 	b: number;
   };
-export type MultipleEmptyConstructor_a = {
+export interface MultipleEmptyConstructor_a {
   	kind: 'MultipleEmptyConstructor_a';
 	x: number;
   };
@@ -1557,7 +1557,7 @@ export function storeMultipleEmptyConstructor(multipleEmptyConstructor: Multiple
   	};
 	throw new Error('');
   }
-export type True = {
+export interface True {
   	kind: 'True';
   };
 export function loadTrue(slice: Slice): True {
@@ -1571,11 +1571,11 @@ export function storeTrue(true0: True): (builder: Builder) => void {
   	});
   }
 export type ParamNamedArgInSecondConstr = ParamNamedArgInSecondConstr_a | ParamNamedArgInSecondConstr_b;
-export type ParamNamedArgInSecondConstr_a = {
+export interface ParamNamedArgInSecondConstr_a {
   	kind: 'ParamNamedArgInSecondConstr_a';
 	n: number;
   };
-export type ParamNamedArgInSecondConstr_b = {
+export interface ParamNamedArgInSecondConstr_b {
   	kind: 'ParamNamedArgInSecondConstr_b';
 	n: number;
   };
@@ -1609,7 +1609,7 @@ export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: Pa
   	};
 	throw new Error('');
   }
-export type RefCombinatorAny = {
+export interface RefCombinatorAny {
   	kind: 'RefCombinatorAny';
 	msg: Maybe<Slice>;
   };
@@ -1634,7 +1634,7 @@ export function storeRefCombinatorAny(refCombinatorAny: RefCombinatorAny): (buil
 		builder.storeRef(cell1);
   	});
   }
-export type EqualityExpression = {
+export interface EqualityExpression {
   	kind: 'EqualityExpression';
 	n: number;
   };
@@ -1656,7 +1656,7 @@ export function storeEqualityExpression(equalityExpression: EqualityExpression):
   		};
   	});
   }
-export type ConditionalRef = {
+export interface ConditionalRef {
   	kind: 'ConditionalRef';
 	x: number;
 	y: Simple | undefined;
@@ -1683,7 +1683,7 @@ export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: B
   		};
   	});
   }
-export type LoadFromNegationOutsideExpr = {
+export interface LoadFromNegationOutsideExpr {
   	kind: 'LoadFromNegationOutsideExpr';
 	seq_no: number;
 	prev_seq_no: number;
@@ -1706,7 +1706,7 @@ export function storeLoadFromNegationOutsideExpr(loadFromNegationOutsideExpr: Lo
 		builder.storeUint(loadFromNegationOutsideExpr.seq_no, 32);
   	});
   }
-export type AnonymousData = {
+export interface AnonymousData {
   	kind: 'AnonymousData';
 	anon0: number;
   };
@@ -1722,7 +1722,7 @@ export function storeAnonymousData(anonymousData: AnonymousData): (builder: Buil
   		builder.storeUint(anonymousData.anon0, 1);
   	});
   }
-export type FalseAnonField = {
+export interface FalseAnonField {
   	kind: 'FalseAnonField';
 	value: number;
   };
@@ -1744,11 +1744,11 @@ export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: B
   	});
   }
 export type ConstructorOrder = ConstructorOrder__ | ConstructorOrder_a;
-export type ConstructorOrder__ = {
+export interface ConstructorOrder__ {
   	kind: 'ConstructorOrder__';
 	anon0: Simple;
   };
-export type ConstructorOrder_a = {
+export interface ConstructorOrder_a {
   	kind: 'ConstructorOrder_a';
 	a: Simple;
   };
@@ -1787,11 +1787,11 @@ export function storeConstructorOrder(constructorOrder: ConstructorOrder): (buil
 	throw new Error('');
   }
 export type CheckCrc32 = CheckCrc32_a | CheckCrc32_b;
-export type CheckCrc32_a = {
+export interface CheckCrc32_a {
   	kind: 'CheckCrc32_a';
 	a: number;
   };
-export type CheckCrc32_b = {
+export interface CheckCrc32_b {
   	kind: 'CheckCrc32_b';
 	b: number;
 	c: number;
@@ -1833,7 +1833,7 @@ export function storeCheckCrc32(checkCrc32: CheckCrc32): (builder: Builder) => v
   	};
 	throw new Error('');
   }
-export type CheckKeyword = {
+export interface CheckKeyword {
   	kind: 'CheckKeyword';
 	const0: number;
   };

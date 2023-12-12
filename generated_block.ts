@@ -5,7 +5,7 @@ import { BitString } from 'ton'
 export function bitLen(n: number) {
   	return n.toString(2).length;;
   }
-export type Unit = {
+export interface Unit {
   	kind: 'Unit';
   };
 export function loadUnit(slice: Slice): Unit {
@@ -18,7 +18,7 @@ export function storeUnit(unit: Unit): (builder: Builder) => void {
   
   	});
   }
-export type True = {
+export interface True {
   	kind: 'True';
   };
 export function loadTrue(slice: Slice): True {
@@ -32,10 +32,10 @@ export function storeTrue(true0: True): (builder: Builder) => void {
   	});
   }
 export type Bool = Bool_bool_false | Bool_bool_true;
-export type Bool_bool_false = {
+export interface Bool_bool_false {
   	kind: 'Bool_bool_false';
   };
-export type Bool_bool_true = {
+export interface Bool_bool_true {
   	kind: 'Bool_bool_true';
   };
 export function loadBool(slice: Slice): Bool {
@@ -66,7 +66,7 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type BoolFalse = {
+export interface BoolFalse {
   	kind: 'BoolFalse';
   };
 export function loadBoolFalse(slice: Slice): BoolFalse {
@@ -83,7 +83,7 @@ export function storeBoolFalse(boolFalse: BoolFalse): (builder: Builder) => void
   		builder.storeUint(0b0, 1);
   	});
   }
-export type BoolTrue = {
+export interface BoolTrue {
   	kind: 'BoolTrue';
   };
 export function loadBoolTrue(slice: Slice): BoolTrue {
@@ -101,10 +101,10 @@ export function storeBoolTrue(boolTrue: BoolTrue): (builder: Builder) => void {
   	});
   }
 export type Maybe<X> = Maybe_nothing<X> | Maybe_just<X>;
-export type Maybe_nothing<X> = {
+export interface Maybe_nothing<X> {
   	kind: 'Maybe_nothing';
   };
-export type Maybe_just<X> = {
+export interface Maybe_just<X> {
   	kind: 'Maybe_just';
 	value: X;
   };
@@ -140,11 +140,11 @@ export function storeMaybe<X>(maybe: Maybe<X>, storeX: (x: X) => (builder: Build
 	throw new Error('');
   }
 export type Either<X,Y> = Either_left<X,Y> | Either_right<X,Y>;
-export type Either_left<X,Y> = {
+export interface Either_left<X,Y> {
   	kind: 'Either_left';
 	value: X;
   };
-export type Either_right<X,Y> = {
+export interface Either_right<X,Y> {
   	kind: 'Either_right';
 	value: Y;
   };
@@ -182,7 +182,7 @@ export function storeEither<X,Y>(either: Either<X,Y>, storeX: (x: X) => (builder
   	};
 	throw new Error('');
   }
-export type Both<X,Y> = {
+export interface Both<X,Y> {
   	kind: 'Both';
 	first: X;
 	second: Y;
@@ -202,7 +202,7 @@ export function storeBoth<X,Y>(both: Both<X,Y>, storeX: (x: X) => (builder: Buil
 		storeY(both.second)(builder);
   	});
   }
-export type Bit = {
+export interface Bit {
   	kind: 'Bit';
 	anon0: number;
   };
@@ -233,7 +233,7 @@ export function hashmap_get_l(label: HmLabel): number {
   	};
 	throw new Error('');
   }
-export type Hashmap<X> = {
+export interface Hashmap<X> {
   	kind: 'Hashmap';
 	n: number;
 	l: number;
@@ -261,11 +261,11 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
   	});
   }
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
-export type HashmapNode_hmn_leaf<X> = {
+export interface HashmapNode_hmn_leaf<X> {
   	kind: 'HashmapNode_hmn_leaf';
 	value: X;
   };
-export type HashmapNode_hmn_fork<X> = {
+export interface HashmapNode_hmn_fork<X> {
   	kind: 'HashmapNode_hmn_fork';
 	n: number;
 	left: Hashmap<X>;
@@ -322,20 +322,20 @@ export function hmLabel_hml_short_get_n(len: Unary): number {
 	throw new Error('');
   }
 export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
-export type HmLabel_hml_short = {
+export interface HmLabel_hml_short {
   	kind: 'HmLabel_hml_short';
 	m: number;
 	n: number;
 	len: Unary;
 	s: Array<BitString>;
   };
-export type HmLabel_hml_long = {
+export interface HmLabel_hml_long {
   	kind: 'HmLabel_hml_long';
 	m: number;
 	n: number;
 	s: Array<BitString>;
   };
-export type HmLabel_hml_same = {
+export interface HmLabel_hml_same {
   	kind: 'HmLabel_hml_same';
 	m: number;
 	v: BitString;
@@ -428,10 +428,10 @@ export function unary_unary_succ_get_n(x: Unary): number {
 	throw new Error('');
   }
 export type Unary = Unary_unary_zero | Unary_unary_succ;
-export type Unary_unary_zero = {
+export interface Unary_unary_zero {
   	kind: 'Unary_unary_zero';
   };
-export type Unary_unary_succ = {
+export interface Unary_unary_succ {
   	kind: 'Unary_unary_succ';
 	n: number;
 	x: Unary;
@@ -470,11 +470,11 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
 	throw new Error('');
   }
 export type HashmapE<X> = HashmapE_hme_empty<X> | HashmapE_hme_root<X>;
-export type HashmapE_hme_empty<X> = {
+export interface HashmapE_hme_empty<X> {
   	kind: 'HashmapE_hme_empty';
 	n: number;
   };
-export type HashmapE_hme_root<X> = {
+export interface HashmapE_hme_root<X> {
   	kind: 'HashmapE_hme_root';
 	n: number;
 	root: Hashmap<X>;
@@ -515,7 +515,7 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
   	};
 	throw new Error('');
   }
-export type BitstringSet = {
+export interface BitstringSet {
   	kind: 'BitstringSet';
 	n: number;
 	_: Hashmap<True>;
@@ -553,7 +553,7 @@ export function hashmapAug_get_l(label: HmLabel): number {
   	};
 	throw new Error('');
   }
-export type HashmapAug<X,Y> = {
+export interface HashmapAug<X,Y> {
   	kind: 'HashmapAug';
 	n: number;
 	l: number;
@@ -581,12 +581,12 @@ export function storeHashmapAug<X,Y>(hashmapAug: HashmapAug<X,Y>, storeX: (x: X)
   	});
   }
 export type HashmapAugNode<X,Y> = HashmapAugNode_ahmn_leaf<X,Y> | HashmapAugNode_ahmn_fork<X,Y>;
-export type HashmapAugNode_ahmn_leaf<X,Y> = {
+export interface HashmapAugNode_ahmn_leaf<X,Y> {
   	kind: 'HashmapAugNode_ahmn_leaf';
 	extra: Y;
 	value: X;
   };
-export type HashmapAugNode_ahmn_fork<X,Y> = {
+export interface HashmapAugNode_ahmn_fork<X,Y> {
   	kind: 'HashmapAugNode_ahmn_fork';
 	n: number;
 	left: HashmapAug<X,Y>;
@@ -640,12 +640,12 @@ export function storeHashmapAugNode<X,Y>(hashmapAugNode: HashmapAugNode<X,Y>, st
 	throw new Error('');
   }
 export type HashmapAugE<X,Y> = HashmapAugE_ahme_empty<X,Y> | HashmapAugE_ahme_root<X,Y>;
-export type HashmapAugE_ahme_empty<X,Y> = {
+export interface HashmapAugE_ahme_empty<X,Y> {
   	kind: 'HashmapAugE_ahme_empty';
 	n: number;
 	extra: Y;
   };
-export type HashmapAugE_ahme_root<X,Y> = {
+export interface HashmapAugE_ahme_root<X,Y> {
   	kind: 'HashmapAugE_ahme_root';
 	n: number;
 	root: HashmapAug<X,Y>;
@@ -708,7 +708,7 @@ export function varHashmap_get_l(label: HmLabel): number {
   	};
 	throw new Error('');
   }
-export type VarHashmap<X> = {
+export interface VarHashmap<X> {
   	kind: 'VarHashmap';
 	n: number;
 	l: number;
@@ -736,19 +736,19 @@ export function storeVarHashmap<X>(varHashmap: VarHashmap<X>, storeX: (x: X) => 
   	});
   }
 export type VarHashmapNode<X> = VarHashmapNode_vhmn_leaf<X> | VarHashmapNode_vhmn_fork<X> | VarHashmapNode_vhmn_cont<X>;
-export type VarHashmapNode_vhmn_leaf<X> = {
+export interface VarHashmapNode_vhmn_leaf<X> {
   	kind: 'VarHashmapNode_vhmn_leaf';
 	n: number;
 	value: X;
   };
-export type VarHashmapNode_vhmn_fork<X> = {
+export interface VarHashmapNode_vhmn_fork<X> {
   	kind: 'VarHashmapNode_vhmn_fork';
 	n: number;
 	left: VarHashmap<X>;
 	right: VarHashmap<X>;
 	value: Maybe<X>;
   };
-export type VarHashmapNode_vhmn_cont<X> = {
+export interface VarHashmapNode_vhmn_cont<X> {
   	kind: 'VarHashmapNode_vhmn_cont';
 	n: number;
 	branch: BitString;
@@ -828,11 +828,11 @@ export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX
 	throw new Error('');
   }
 export type VarHashmapE<X> = VarHashmapE_vhme_empty<X> | VarHashmapE_vhme_root<X>;
-export type VarHashmapE_vhme_empty<X> = {
+export interface VarHashmapE_vhme_empty<X> {
   	kind: 'VarHashmapE_vhme_empty';
 	n: number;
   };
-export type VarHashmapE_vhme_root<X> = {
+export interface VarHashmapE_vhme_root<X> {
   	kind: 'VarHashmapE_vhme_root';
 	n: number;
 	root: VarHashmap<X>;
@@ -888,7 +888,7 @@ export function pfxHashmap_get_l(label: HmLabel): number {
   	};
 	throw new Error('');
   }
-export type PfxHashmap<X> = {
+export interface PfxHashmap<X> {
   	kind: 'PfxHashmap';
 	n: number;
 	l: number;
@@ -916,12 +916,12 @@ export function storePfxHashmap<X>(pfxHashmap: PfxHashmap<X>, storeX: (x: X) => 
   	});
   }
 export type PfxHashmapNode<X> = PfxHashmapNode_phmn_leaf<X> | PfxHashmapNode_phmn_fork<X>;
-export type PfxHashmapNode_phmn_leaf<X> = {
+export interface PfxHashmapNode_phmn_leaf<X> {
   	kind: 'PfxHashmapNode_phmn_leaf';
 	n: number;
 	value: X;
   };
-export type PfxHashmapNode_phmn_fork<X> = {
+export interface PfxHashmapNode_phmn_fork<X> {
   	kind: 'PfxHashmapNode_phmn_fork';
 	n: number;
 	left: PfxHashmap<X>;
@@ -973,11 +973,11 @@ export function storePfxHashmapNode<X>(pfxHashmapNode: PfxHashmapNode<X>, storeX
 	throw new Error('');
   }
 export type PfxHashmapE<X> = PfxHashmapE_phme_empty<X> | PfxHashmapE_phme_root<X>;
-export type PfxHashmapE_phme_empty<X> = {
+export interface PfxHashmapE_phme_empty<X> {
   	kind: 'PfxHashmapE_phme_empty';
 	n: number;
   };
-export type PfxHashmapE_phme_root<X> = {
+export interface PfxHashmapE_phme_root<X> {
   	kind: 'PfxHashmapE_phme_root';
 	n: number;
 	root: PfxHashmap<X>;
@@ -1019,10 +1019,10 @@ export function storePfxHashmapE<X>(pfxHashmapE: PfxHashmapE<X>, storeX: (x: X) 
 	throw new Error('');
   }
 export type MsgAddressExt = MsgAddressExt_addr_none | MsgAddressExt_addr_extern;
-export type MsgAddressExt_addr_none = {
+export interface MsgAddressExt_addr_none {
   	kind: 'MsgAddressExt_addr_none';
   };
-export type MsgAddressExt_addr_extern = {
+export interface MsgAddressExt_addr_extern {
   	kind: 'MsgAddressExt_addr_extern';
 	len: number;
 	external_address: BitString;
@@ -1061,7 +1061,7 @@ export function storeMsgAddressExt(msgAddressExt: MsgAddressExt): (builder: Buil
   	};
 	throw new Error('');
   }
-export type Anycast = {
+export interface Anycast {
   	kind: 'Anycast';
 	depth: number;
 	rewrite_pfx: BitString;
@@ -1088,13 +1088,13 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
   	});
   }
 export type MsgAddressInt = MsgAddressInt_addr_std | MsgAddressInt_addr_var;
-export type MsgAddressInt_addr_std = {
+export interface MsgAddressInt_addr_std {
   	kind: 'MsgAddressInt_addr_std';
 	anycast: Maybe<Anycast>;
 	workchain_id: number;
 	address: BitString;
   };
-export type MsgAddressInt_addr_var = {
+export interface MsgAddressInt_addr_var {
   	kind: 'MsgAddressInt_addr_var';
 	anycast: Maybe<Anycast>;
 	addr_len: number;
@@ -1151,11 +1151,11 @@ export function storeMsgAddressInt(msgAddressInt: MsgAddressInt): (builder: Buil
 	throw new Error('');
   }
 export type MsgAddress = MsgAddress__ | MsgAddress__1;
-export type MsgAddress__ = {
+export interface MsgAddress__ {
   	kind: 'MsgAddress__';
 	_: MsgAddressInt;
   };
-export type MsgAddress__1 = {
+export interface MsgAddress__1 {
   	kind: 'MsgAddress__1';
 	_: MsgAddressExt;
   };
@@ -1193,7 +1193,7 @@ export function storeMsgAddress(msgAddress: MsgAddress): (builder: Builder) => v
   	};
 	throw new Error('');
   }
-export type VarUInteger = {
+export interface VarUInteger {
   	kind: 'VarUInteger';
 	n: number;
 	len: number;
@@ -1215,7 +1215,7 @@ export function storeVarUInteger(varUInteger: VarUInteger): (builder: Builder) =
 		builder.storeUint(varUInteger.value, (varUInteger.len * 8));
   	});
   }
-export type VarInteger = {
+export interface VarInteger {
   	kind: 'VarInteger';
 	n: number;
 	len: number;
@@ -1237,7 +1237,7 @@ export function storeVarInteger(varInteger: VarInteger): (builder: Builder) => v
 		builder.storeInt(varInteger.value, (varInteger.len * 8));
   	});
   }
-export type Grams = {
+export interface Grams {
   	kind: 'Grams';
 	amount: VarUInteger;
   };
@@ -1253,7 +1253,7 @@ export function storeGrams(grams: Grams): (builder: Builder) => void {
   		storeVarUInteger(grams.amount)(builder);
   	});
   }
-export type ExtraCurrencyCollection = {
+export interface ExtraCurrencyCollection {
   	kind: 'ExtraCurrencyCollection';
 	dict: HashmapE<VarUInteger>;
   };
@@ -1275,7 +1275,7 @@ export function storeExtraCurrencyCollection(extraCurrencyCollection: ExtraCurre
   		}))(builder);
   	});
   }
-export type CurrencyCollection = {
+export interface CurrencyCollection {
   	kind: 'CurrencyCollection';
 	grams: Grams;
 	other: ExtraCurrencyCollection;
@@ -1296,7 +1296,7 @@ export function storeCurrencyCollection(currencyCollection: CurrencyCollection):
   	});
   }
 export type CommonMsgInfo = CommonMsgInfo_int_msg_info | CommonMsgInfo_ext_in_msg_info | CommonMsgInfo_ext_out_msg_info;
-export type CommonMsgInfo_int_msg_info = {
+export interface CommonMsgInfo_int_msg_info {
   	kind: 'CommonMsgInfo_int_msg_info';
 	ihr_disabled: Bool;
 	bounce: Bool;
@@ -1309,13 +1309,13 @@ export type CommonMsgInfo_int_msg_info = {
 	created_lt: number;
 	created_at: number;
   };
-export type CommonMsgInfo_ext_in_msg_info = {
+export interface CommonMsgInfo_ext_in_msg_info {
   	kind: 'CommonMsgInfo_ext_in_msg_info';
 	src: MsgAddressExt;
 	dest: MsgAddressInt;
 	import_fee: Grams;
   };
-export type CommonMsgInfo_ext_out_msg_info = {
+export interface CommonMsgInfo_ext_out_msg_info {
   	kind: 'CommonMsgInfo_ext_out_msg_info';
 	src: MsgAddressInt;
 	dest: MsgAddressExt;
@@ -1413,7 +1413,7 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
 	throw new Error('');
   }
 export type CommonMsgInfoRelaxed = CommonMsgInfoRelaxed_int_msg_info | CommonMsgInfoRelaxed_ext_out_msg_info;
-export type CommonMsgInfoRelaxed_int_msg_info = {
+export interface CommonMsgInfoRelaxed_int_msg_info {
   	kind: 'CommonMsgInfoRelaxed_int_msg_info';
 	ihr_disabled: Bool;
 	bounce: Bool;
@@ -1426,7 +1426,7 @@ export type CommonMsgInfoRelaxed_int_msg_info = {
 	created_lt: number;
 	created_at: number;
   };
-export type CommonMsgInfoRelaxed_ext_out_msg_info = {
+export interface CommonMsgInfoRelaxed_ext_out_msg_info {
   	kind: 'CommonMsgInfoRelaxed_ext_out_msg_info';
 	src: MsgAddress;
 	dest: MsgAddressExt;
@@ -1503,7 +1503,7 @@ export function storeCommonMsgInfoRelaxed(commonMsgInfoRelaxed: CommonMsgInfoRel
   	};
 	throw new Error('');
   }
-export type TickTock = {
+export interface TickTock {
   	kind: 'TickTock';
 	tick: Bool;
 	tock: Bool;
@@ -1523,7 +1523,7 @@ export function storeTickTock(tickTock: TickTock): (builder: Builder) => void {
 		storeBool(tickTock.tock)(builder);
   	});
   }
-export type StateInit = {
+export interface StateInit {
   	kind: 'StateInit';
 	split_depth: Maybe<number>;
 	special: Maybe<TickTock>;
@@ -1584,7 +1584,7 @@ export function storeStateInit(stateInit: StateInit): (builder: Builder) => void
 		storeHashmapE<SimpleLib>(stateInit.library, storeSimpleLib)(builder);
   	});
   }
-export type SimpleLib = {
+export interface SimpleLib {
   	kind: 'SimpleLib';
 	public0: Bool;
 	root: Slice;
@@ -1607,7 +1607,7 @@ export function storeSimpleLib(simpleLib: SimpleLib): (builder: Builder) => void
 		builder.storeRef(cell1);
   	});
   }
-export type Message<X> = {
+export interface Message<X> {
   	kind: 'Message';
 	info: CommonMsgInfo;
 	init: Maybe<Either<StateInit,StateInit>>;
@@ -1655,7 +1655,7 @@ export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder:
   		}))(builder);
   	});
   }
-export type MessageRelaxed<X> = {
+export interface MessageRelaxed<X> {
   	kind: 'MessageRelaxed';
 	info: CommonMsgInfoRelaxed;
 	init: Maybe<Either<StateInit,StateInit>>;
@@ -1703,7 +1703,7 @@ export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX
   		}))(builder);
   	});
   }
-export type MessageAny = {
+export interface MessageAny {
   	kind: 'MessageAny';
 	anon0: Message<Slice>;
   };
@@ -1731,16 +1731,16 @@ export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => v
   	});
   }
 export type IntermediateAddress = IntermediateAddress_interm_addr_regular | IntermediateAddress_interm_addr_simple | IntermediateAddress_interm_addr_ext;
-export type IntermediateAddress_interm_addr_regular = {
+export interface IntermediateAddress_interm_addr_regular {
   	kind: 'IntermediateAddress_interm_addr_regular';
 	use_dest_bits: number;
   };
-export type IntermediateAddress_interm_addr_simple = {
+export interface IntermediateAddress_interm_addr_simple {
   	kind: 'IntermediateAddress_interm_addr_simple';
 	workchain_id: number;
 	addr_pfx: number;
   };
-export type IntermediateAddress_interm_addr_ext = {
+export interface IntermediateAddress_interm_addr_ext {
   	kind: 'IntermediateAddress_interm_addr_ext';
 	workchain_id: number;
 	addr_pfx: number;
@@ -1799,7 +1799,7 @@ export function storeIntermediateAddress(intermediateAddress: IntermediateAddres
   	};
 	throw new Error('');
   }
-export type MsgEnvelope = {
+export interface MsgEnvelope {
   	kind: 'MsgEnvelope';
 	cur_addr: IntermediateAddress;
 	next_addr: IntermediateAddress;
@@ -1842,43 +1842,43 @@ export function storeMsgEnvelope(msgEnvelope: MsgEnvelope): (builder: Builder) =
   	});
   }
 export type InMsg = InMsg_msg_import_ext | InMsg_msg_import_ihr | InMsg_msg_import_imm | InMsg_msg_import_fin | InMsg_msg_import_tr | InMsg_msg_discard_fin | InMsg_msg_discard_tr;
-export type InMsg_msg_import_ext = {
+export interface InMsg_msg_import_ext {
   	kind: 'InMsg_msg_import_ext';
 	msg: Message<Slice>;
 	transaction: Transaction;
   };
-export type InMsg_msg_import_ihr = {
+export interface InMsg_msg_import_ihr {
   	kind: 'InMsg_msg_import_ihr';
 	msg: Message<Slice>;
 	transaction: Transaction;
 	ihr_fee: Grams;
 	proof_created: Slice;
   };
-export type InMsg_msg_import_imm = {
+export interface InMsg_msg_import_imm {
   	kind: 'InMsg_msg_import_imm';
 	in_msg: MsgEnvelope;
 	transaction: Transaction;
 	fwd_fee: Grams;
   };
-export type InMsg_msg_import_fin = {
+export interface InMsg_msg_import_fin {
   	kind: 'InMsg_msg_import_fin';
 	in_msg: MsgEnvelope;
 	transaction: Transaction;
 	fwd_fee: Grams;
   };
-export type InMsg_msg_import_tr = {
+export interface InMsg_msg_import_tr {
   	kind: 'InMsg_msg_import_tr';
 	in_msg: MsgEnvelope;
 	out_msg: MsgEnvelope;
 	transit_fee: Grams;
   };
-export type InMsg_msg_discard_fin = {
+export interface InMsg_msg_discard_fin {
   	kind: 'InMsg_msg_discard_fin';
 	in_msg: MsgEnvelope;
 	transaction_id: number;
 	fwd_fee: Grams;
   };
-export type InMsg_msg_discard_tr = {
+export interface InMsg_msg_discard_tr {
   	kind: 'InMsg_msg_discard_tr';
 	in_msg: MsgEnvelope;
 	transaction_id: number;
@@ -2088,7 +2088,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type ImportFees = {
+export interface ImportFees {
   	kind: 'ImportFees';
 	fees_collected: Grams;
 	value_imported: CurrencyCollection;
@@ -2108,7 +2108,7 @@ export function storeImportFees(importFees: ImportFees): (builder: Builder) => v
 		storeCurrencyCollection(importFees.value_imported)(builder);
   	});
   }
-export type InMsgDescr = {
+export interface InMsgDescr {
   	kind: 'InMsgDescr';
 	anon0: HashmapAugE<InMsg,ImportFees>;
   };
@@ -2130,45 +2130,45 @@ export function storeInMsgDescr(inMsgDescr: InMsgDescr): (builder: Builder) => v
   	});
   }
 export type OutMsg = OutMsg_msg_export_ext | OutMsg_msg_export_imm | OutMsg_msg_export_new | OutMsg_msg_export_tr | OutMsg_msg_export_deq | OutMsg_msg_export_deq_short | OutMsg_msg_export_tr_req | OutMsg_msg_export_deq_imm;
-export type OutMsg_msg_export_ext = {
+export interface OutMsg_msg_export_ext {
   	kind: 'OutMsg_msg_export_ext';
 	msg: Message<Slice>;
 	transaction: Transaction;
   };
-export type OutMsg_msg_export_imm = {
+export interface OutMsg_msg_export_imm {
   	kind: 'OutMsg_msg_export_imm';
 	out_msg: MsgEnvelope;
 	transaction: Transaction;
 	reimport: InMsg;
   };
-export type OutMsg_msg_export_new = {
+export interface OutMsg_msg_export_new {
   	kind: 'OutMsg_msg_export_new';
 	out_msg: MsgEnvelope;
 	transaction: Transaction;
   };
-export type OutMsg_msg_export_tr = {
+export interface OutMsg_msg_export_tr {
   	kind: 'OutMsg_msg_export_tr';
 	out_msg: MsgEnvelope;
 	imported: InMsg;
   };
-export type OutMsg_msg_export_deq = {
+export interface OutMsg_msg_export_deq {
   	kind: 'OutMsg_msg_export_deq';
 	out_msg: MsgEnvelope;
 	import_block_lt: number;
   };
-export type OutMsg_msg_export_deq_short = {
+export interface OutMsg_msg_export_deq_short {
   	kind: 'OutMsg_msg_export_deq_short';
 	msg_env_hash: BitString;
 	next_workchain: number;
 	next_addr_pfx: number;
 	import_block_lt: number;
   };
-export type OutMsg_msg_export_tr_req = {
+export interface OutMsg_msg_export_tr_req {
   	kind: 'OutMsg_msg_export_tr_req';
 	out_msg: MsgEnvelope;
 	imported: InMsg;
   };
-export type OutMsg_msg_export_deq_imm = {
+export interface OutMsg_msg_export_deq_imm {
   	kind: 'OutMsg_msg_export_deq_imm';
 	out_msg: MsgEnvelope;
 	reimport: InMsg;
@@ -2372,7 +2372,7 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type EnqueuedMsg = {
+export interface EnqueuedMsg {
   	kind: 'EnqueuedMsg';
 	enqueued_lt: number;
 	out_msg: MsgEnvelope;
@@ -2400,7 +2400,7 @@ export function storeEnqueuedMsg(enqueuedMsg: EnqueuedMsg): (builder: Builder) =
 		builder.storeRef(cell1);
   	});
   }
-export type OutMsgDescr = {
+export interface OutMsgDescr {
   	kind: 'OutMsgDescr';
 	anon0: HashmapAugE<OutMsg,CurrencyCollection>;
   };
@@ -2421,7 +2421,7 @@ export function storeOutMsgDescr(outMsgDescr: OutMsgDescr): (builder: Builder) =
 		storeHashmapAugE<OutMsg,CurrencyCollection>(outMsgDescr.anon0, storeOutMsg, storeCurrencyCollection)(builder);
   	});
   }
-export type OutMsgQueue = {
+export interface OutMsgQueue {
   	kind: 'OutMsgQueue';
 	anon0: HashmapAugE<EnqueuedMsg,number>;
   };
@@ -2448,7 +2448,7 @@ export function storeOutMsgQueue(outMsgQueue: OutMsgQueue): (builder: Builder) =
   		}))(builder);
   	});
   }
-export type ProcessedUpto = {
+export interface ProcessedUpto {
   	kind: 'ProcessedUpto';
 	last_msg_lt: number;
 	last_msg_hash: BitString;
@@ -2468,7 +2468,7 @@ export function storeProcessedUpto(processedUpto: ProcessedUpto): (builder: Buil
 		builder.storeBits(processedUpto.last_msg_hash);
   	});
   }
-export type ProcessedInfo = {
+export interface ProcessedInfo {
   	kind: 'ProcessedInfo';
 	anon0: HashmapE<ProcessedUpto>;
   };
@@ -2489,7 +2489,7 @@ export function storeProcessedInfo(processedInfo: ProcessedInfo): (builder: Buil
 		storeHashmapE<ProcessedUpto>(processedInfo.anon0, storeProcessedUpto)(builder);
   	});
   }
-export type IhrPendingSince = {
+export interface IhrPendingSince {
   	kind: 'IhrPendingSince';
 	import_lt: number;
   };
@@ -2505,7 +2505,7 @@ export function storeIhrPendingSince(ihrPendingSince: IhrPendingSince): (builder
   		builder.storeUint(ihrPendingSince.import_lt, 64);
   	});
   }
-export type IhrPendingInfo = {
+export interface IhrPendingInfo {
   	kind: 'IhrPendingInfo';
 	anon0: HashmapE<IhrPendingSince>;
   };
@@ -2526,7 +2526,7 @@ export function storeIhrPendingInfo(ihrPendingInfo: IhrPendingInfo): (builder: B
 		storeHashmapE<IhrPendingSince>(ihrPendingInfo.anon0, storeIhrPendingSince)(builder);
   	});
   }
-export type OutMsgQueueInfo = {
+export interface OutMsgQueueInfo {
   	kind: 'OutMsgQueueInfo';
 	out_queue: OutMsgQueue;
 	proc_info: ProcessedInfo;
@@ -2555,7 +2555,7 @@ export function storeOutMsgQueueInfo(outMsgQueueInfo: OutMsgQueueInfo): (builder
 		storeIhrPendingInfo(outMsgQueueInfo.ihr_pending)(builder);
   	});
   }
-export type StorageUsed = {
+export interface StorageUsed {
   	kind: 'StorageUsed';
 	_cells: VarUInteger;
 	bits: VarUInteger;
@@ -2579,7 +2579,7 @@ export function storeStorageUsed(storageUsed: StorageUsed): (builder: Builder) =
 		storeVarUInteger(storageUsed.public_cells)(builder);
   	});
   }
-export type StorageUsedShort = {
+export interface StorageUsedShort {
   	kind: 'StorageUsedShort';
 	_cells: VarUInteger;
 	bits: VarUInteger;
@@ -2599,7 +2599,7 @@ export function storeStorageUsedShort(storageUsedShort: StorageUsedShort): (buil
 		storeVarUInteger(storageUsedShort.bits)(builder);
   	});
   }
-export type StorageInfo = {
+export interface StorageInfo {
   	kind: 'StorageInfo';
 	used: StorageUsed;
 	last_paid: number;
@@ -2624,10 +2624,10 @@ export function storeStorageInfo(storageInfo: StorageInfo): (builder: Builder) =
   	});
   }
 export type Account = Account_account_none | Account_account;
-export type Account_account_none = {
+export interface Account_account_none {
   	kind: 'Account_account_none';
   };
-export type Account_account = {
+export interface Account_account {
   	kind: 'Account_account';
 	addr: MsgAddressInt;
 	storage_stat: StorageInfo;
@@ -2670,7 +2670,7 @@ export function storeAccount(account: Account): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type AccountStorage = {
+export interface AccountStorage {
   	kind: 'AccountStorage';
 	last_trans_lt: number;
 	balance: CurrencyCollection;
@@ -2695,14 +2695,14 @@ export function storeAccountStorage(accountStorage: AccountStorage): (builder: B
   	});
   }
 export type AccountState = AccountState_account_uninit | AccountState_account_active | AccountState_account_frozen;
-export type AccountState_account_uninit = {
+export interface AccountState_account_uninit {
   	kind: 'AccountState_account_uninit';
   };
-export type AccountState_account_active = {
+export interface AccountState_account_active {
   	kind: 'AccountState_account_active';
 	_: StateInit;
   };
-export type AccountState_account_frozen = {
+export interface AccountState_account_frozen {
   	kind: 'AccountState_account_frozen';
 	state_hash: BitString;
   };
@@ -2752,16 +2752,16 @@ export function storeAccountState(accountState: AccountState): (builder: Builder
 	throw new Error('');
   }
 export type AccountStatus = AccountStatus_acc_state_uninit | AccountStatus_acc_state_frozen | AccountStatus_acc_state_active | AccountStatus_acc_state_nonexist;
-export type AccountStatus_acc_state_uninit = {
+export interface AccountStatus_acc_state_uninit {
   	kind: 'AccountStatus_acc_state_uninit';
   };
-export type AccountStatus_acc_state_frozen = {
+export interface AccountStatus_acc_state_frozen {
   	kind: 'AccountStatus_acc_state_frozen';
   };
-export type AccountStatus_acc_state_active = {
+export interface AccountStatus_acc_state_active {
   	kind: 'AccountStatus_acc_state_active';
   };
-export type AccountStatus_acc_state_nonexist = {
+export interface AccountStatus_acc_state_nonexist {
   	kind: 'AccountStatus_acc_state_nonexist';
   };
 export function loadAccountStatus(slice: Slice): AccountStatus {
@@ -2814,7 +2814,7 @@ export function storeAccountStatus(accountStatus: AccountStatus): (builder: Buil
   	};
 	throw new Error('');
   }
-export type ShardAccount = {
+export interface ShardAccount {
   	kind: 'ShardAccount';
 	account: Account;
 	last_trans_hash: BitString;
@@ -2841,7 +2841,7 @@ export function storeShardAccount(shardAccount: ShardAccount): (builder: Builder
 		builder.storeUint(shardAccount.last_trans_lt, 64);
   	});
   }
-export type DepthBalanceInfo = {
+export interface DepthBalanceInfo {
   	kind: 'DepthBalanceInfo';
 	split_depth: number;
 	balance: CurrencyCollection;
@@ -2861,7 +2861,7 @@ export function storeDepthBalanceInfo(depthBalanceInfo: DepthBalanceInfo): (buil
 		storeCurrencyCollection(depthBalanceInfo.balance)(builder);
   	});
   }
-export type ShardAccounts = {
+export interface ShardAccounts {
   	kind: 'ShardAccounts';
 	anon0: HashmapAugE<ShardAccount,DepthBalanceInfo>;
   };
@@ -2882,7 +2882,7 @@ export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Buil
 		storeHashmapAugE<ShardAccount,DepthBalanceInfo>(shardAccounts.anon0, storeShardAccount, storeDepthBalanceInfo)(builder);
   	});
   }
-export type Transaction = {
+export interface Transaction {
   	kind: 'Transaction';
 	account_addr: BitString;
 	lt: number;
@@ -2990,7 +2990,7 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
 		builder.storeRef(cell3);
   	});
   }
-export type MERKLE_UPDATE<X> = {
+export interface MERKLE_UPDATE<X> {
   	kind: 'MERKLE_UPDATE';
 	old_hash: BitString;
 	new_hash: BitString;
@@ -3029,7 +3029,7 @@ export function storeMERKLE_UPDATE<X>(mERKLE_UPDATE: MERKLE_UPDATE<X>, storeX: (
 		builder.storeRef(cell2);
   	});
   }
-export type HASH_UPDATE<X> = {
+export interface HASH_UPDATE<X> {
   	kind: 'HASH_UPDATE';
 	old_hash: BitString;
 	new_hash: BitString;
@@ -3054,7 +3054,7 @@ export function storeHASH_UPDATE<X>(hASH_UPDATE: HASH_UPDATE<X>, storeX: (x: X) 
 		builder.storeBits(hASH_UPDATE.new_hash);
   	});
   }
-export type MERKLE_PROOF<X> = {
+export interface MERKLE_PROOF<X> {
   	kind: 'MERKLE_PROOF';
 	virtual_hash: BitString;
 	depth: number;
@@ -3086,7 +3086,7 @@ export function storeMERKLE_PROOF<X>(mERKLE_PROOF: MERKLE_PROOF<X>, storeX: (x: 
 		builder.storeRef(cell1);
   	});
   }
-export type AccountBlock = {
+export interface AccountBlock {
   	kind: 'AccountBlock';
 	account_addr: BitString;
 	transactions: HashmapAug<Transaction,CurrencyCollection>;
@@ -3127,7 +3127,7 @@ export function storeAccountBlock(accountBlock: AccountBlock): (builder: Builder
 		builder.storeRef(cell1);
   	});
   }
-export type ShardAccountBlocks = {
+export interface ShardAccountBlocks {
   	kind: 'ShardAccountBlocks';
 	anon0: HashmapAugE<AccountBlock,CurrencyCollection>;
   };
@@ -3148,7 +3148,7 @@ export function storeShardAccountBlocks(shardAccountBlocks: ShardAccountBlocks):
 		storeHashmapAugE<AccountBlock,CurrencyCollection>(shardAccountBlocks.anon0, storeAccountBlock, storeCurrencyCollection)(builder);
   	});
   }
-export type TrStoragePhase = {
+export interface TrStoragePhase {
   	kind: 'TrStoragePhase';
 	storage_fees_collected: Grams;
 	storage_fees_due: Maybe<Grams>;
@@ -3173,13 +3173,13 @@ export function storeTrStoragePhase(trStoragePhase: TrStoragePhase): (builder: B
   	});
   }
 export type AccStatusChange = AccStatusChange_acst_unchanged | AccStatusChange_acst_frozen | AccStatusChange_acst_deleted;
-export type AccStatusChange_acst_unchanged = {
+export interface AccStatusChange_acst_unchanged {
   	kind: 'AccStatusChange_acst_unchanged';
   };
-export type AccStatusChange_acst_frozen = {
+export interface AccStatusChange_acst_frozen {
   	kind: 'AccStatusChange_acst_frozen';
   };
-export type AccStatusChange_acst_deleted = {
+export interface AccStatusChange_acst_deleted {
   	kind: 'AccStatusChange_acst_deleted';
   };
 export function loadAccStatusChange(slice: Slice): AccStatusChange {
@@ -3221,7 +3221,7 @@ export function storeAccStatusChange(accStatusChange: AccStatusChange): (builder
   	};
 	throw new Error('');
   }
-export type TrCreditPhase = {
+export interface TrCreditPhase {
   	kind: 'TrCreditPhase';
 	due_fees_collected: Maybe<Grams>;
 	credit: CurrencyCollection;
@@ -3242,11 +3242,11 @@ export function storeTrCreditPhase(trCreditPhase: TrCreditPhase): (builder: Buil
   	});
   }
 export type TrComputePhase = TrComputePhase_tr_phase_compute_skipped | TrComputePhase_tr_phase_compute_vm;
-export type TrComputePhase_tr_phase_compute_skipped = {
+export interface TrComputePhase_tr_phase_compute_skipped {
   	kind: 'TrComputePhase_tr_phase_compute_skipped';
 	reason: ComputeSkipReason;
   };
-export type TrComputePhase_tr_phase_compute_vm = {
+export interface TrComputePhase_tr_phase_compute_vm {
   	kind: 'TrComputePhase_tr_phase_compute_vm';
 	success: Bool;
 	msg_state_used: Bool;
@@ -3348,13 +3348,13 @@ export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: B
 	throw new Error('');
   }
 export type ComputeSkipReason = ComputeSkipReason_cskip_no_state | ComputeSkipReason_cskip_bad_state | ComputeSkipReason_cskip_no_gas;
-export type ComputeSkipReason_cskip_no_state = {
+export interface ComputeSkipReason_cskip_no_state {
   	kind: 'ComputeSkipReason_cskip_no_state';
   };
-export type ComputeSkipReason_cskip_bad_state = {
+export interface ComputeSkipReason_cskip_bad_state {
   	kind: 'ComputeSkipReason_cskip_bad_state';
   };
-export type ComputeSkipReason_cskip_no_gas = {
+export interface ComputeSkipReason_cskip_no_gas {
   	kind: 'ComputeSkipReason_cskip_no_gas';
   };
 export function loadComputeSkipReason(slice: Slice): ComputeSkipReason {
@@ -3396,7 +3396,7 @@ export function storeComputeSkipReason(computeSkipReason: ComputeSkipReason): (b
   	};
 	throw new Error('');
   }
-export type TrActionPhase = {
+export interface TrActionPhase {
   	kind: 'TrActionPhase';
 	success: Bool;
 	valid: Bool;
@@ -3471,15 +3471,15 @@ export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Buil
   	});
   }
 export type TrBouncePhase = TrBouncePhase_tr_phase_bounce_negfunds | TrBouncePhase_tr_phase_bounce_nofunds | TrBouncePhase_tr_phase_bounce_ok;
-export type TrBouncePhase_tr_phase_bounce_negfunds = {
+export interface TrBouncePhase_tr_phase_bounce_negfunds {
   	kind: 'TrBouncePhase_tr_phase_bounce_negfunds';
   };
-export type TrBouncePhase_tr_phase_bounce_nofunds = {
+export interface TrBouncePhase_tr_phase_bounce_nofunds {
   	kind: 'TrBouncePhase_tr_phase_bounce_nofunds';
 	msg_size: StorageUsedShort;
 	req_fwd_fees: Grams;
   };
-export type TrBouncePhase_tr_phase_bounce_ok = {
+export interface TrBouncePhase_tr_phase_bounce_ok {
   	kind: 'TrBouncePhase_tr_phase_bounce_ok';
 	msg_size: StorageUsedShort;
 	msg_fees: Grams;
@@ -3540,7 +3540,7 @@ export function storeTrBouncePhase(trBouncePhase: TrBouncePhase): (builder: Buil
 	throw new Error('');
   }
 export type TransactionDescr = TransactionDescr_trans_ord | TransactionDescr_trans_storage | TransactionDescr_trans_tick_tock | TransactionDescr_trans_split_prepare | TransactionDescr_trans_split_install | TransactionDescr_trans_merge_prepare | TransactionDescr_trans_merge_install;
-export type TransactionDescr_trans_ord = {
+export interface TransactionDescr_trans_ord {
   	kind: 'TransactionDescr_trans_ord';
 	credit_first: Bool;
 	storage_ph: Maybe<TrStoragePhase>;
@@ -3551,11 +3551,11 @@ export type TransactionDescr_trans_ord = {
 	bounce: Maybe<TrBouncePhase>;
 	destroyed: Bool;
   };
-export type TransactionDescr_trans_storage = {
+export interface TransactionDescr_trans_storage {
   	kind: 'TransactionDescr_trans_storage';
 	storage_ph: TrStoragePhase;
   };
-export type TransactionDescr_trans_tick_tock = {
+export interface TransactionDescr_trans_tick_tock {
   	kind: 'TransactionDescr_trans_tick_tock';
 	is_tock: Bool;
 	storage_ph: TrStoragePhase;
@@ -3564,7 +3564,7 @@ export type TransactionDescr_trans_tick_tock = {
 	aborted: Bool;
 	destroyed: Bool;
   };
-export type TransactionDescr_trans_split_prepare = {
+export interface TransactionDescr_trans_split_prepare {
   	kind: 'TransactionDescr_trans_split_prepare';
 	split_info: SplitMergeInfo;
 	storage_ph: Maybe<TrStoragePhase>;
@@ -3573,19 +3573,19 @@ export type TransactionDescr_trans_split_prepare = {
 	aborted: Bool;
 	destroyed: Bool;
   };
-export type TransactionDescr_trans_split_install = {
+export interface TransactionDescr_trans_split_install {
   	kind: 'TransactionDescr_trans_split_install';
 	split_info: SplitMergeInfo;
 	prepare_transaction: Transaction;
 	installed: Bool;
   };
-export type TransactionDescr_trans_merge_prepare = {
+export interface TransactionDescr_trans_merge_prepare {
   	kind: 'TransactionDescr_trans_merge_prepare';
 	split_info: SplitMergeInfo;
 	storage_ph: TrStoragePhase;
 	aborted: Bool;
   };
-export type TransactionDescr_trans_merge_install = {
+export interface TransactionDescr_trans_merge_install {
   	kind: 'TransactionDescr_trans_merge_install';
 	split_info: SplitMergeInfo;
 	prepare_transaction: Transaction;
@@ -3826,7 +3826,7 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
   	};
 	throw new Error('');
   }
-export type SplitMergeInfo = {
+export interface SplitMergeInfo {
   	kind: 'SplitMergeInfo';
 	cur_shard_pfx_len: number;
 	acc_split_depth: number;
@@ -3854,7 +3854,7 @@ export function storeSplitMergeInfo(splitMergeInfo: SplitMergeInfo): (builder: B
 		builder.storeBits(splitMergeInfo.sibling_addr);
   	});
   }
-export type SmartContractInfo = {
+export interface SmartContractInfo {
   	kind: 'SmartContractInfo';
 	actions: number;
 	msgs_sent: number;
@@ -3904,10 +3904,10 @@ export function storeSmartContractInfo(smartContractInfo: SmartContractInfo): (b
   	});
   }
 export type OutList = OutList_out_list_empty | OutList_out_list;
-export type OutList_out_list_empty = {
+export interface OutList_out_list_empty {
   	kind: 'OutList_out_list_empty';
   };
-export type OutList_out_list = {
+export interface OutList_out_list {
   	kind: 'OutList_out_list';
 	n: number;
 	prev: OutList;
@@ -3949,21 +3949,21 @@ export function storeOutList(outList: OutList): (builder: Builder) => void {
 	throw new Error('');
   }
 export type OutAction = OutAction_action_send_msg | OutAction_action_set_code | OutAction_action_reserve_currency | OutAction_action_change_library;
-export type OutAction_action_send_msg = {
+export interface OutAction_action_send_msg {
   	kind: 'OutAction_action_send_msg';
 	mode: number;
 	out_msg: MessageRelaxed<Slice>;
   };
-export type OutAction_action_set_code = {
+export interface OutAction_action_set_code {
   	kind: 'OutAction_action_set_code';
 	new_code: Slice;
   };
-export type OutAction_action_reserve_currency = {
+export interface OutAction_action_reserve_currency {
   	kind: 'OutAction_action_reserve_currency';
 	mode: number;
 	currency: CurrencyCollection;
   };
-export type OutAction_action_change_library = {
+export interface OutAction_action_change_library {
   	kind: 'OutAction_action_change_library';
 	mode: number;
 	libref: LibRef;
@@ -4058,11 +4058,11 @@ export function storeOutAction(outAction: OutAction): (builder: Builder) => void
 	throw new Error('');
   }
 export type LibRef = LibRef_libref_hash | LibRef_libref_ref;
-export type LibRef_libref_hash = {
+export interface LibRef_libref_hash {
   	kind: 'LibRef_libref_hash';
 	lib_hash: BitString;
   };
-export type LibRef_libref_ref = {
+export interface LibRef_libref_ref {
   	kind: 'LibRef_libref_ref';
 	library: Slice;
   };
@@ -4103,7 +4103,7 @@ export function storeLibRef(libRef: LibRef): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type OutListNode = {
+export interface OutListNode {
   	kind: 'OutListNode';
 	prev: Slice;
 	action: OutAction;
@@ -4126,7 +4126,7 @@ export function storeOutListNode(outListNode: OutListNode): (builder: Builder) =
 		storeOutAction(outListNode.action)(builder);
   	});
   }
-export type ShardIdent = {
+export interface ShardIdent {
   	kind: 'ShardIdent';
 	shard_pfx_bits: number;
 	workchain_id: number;
@@ -4155,7 +4155,7 @@ export function storeShardIdent(shardIdent: ShardIdent): (builder: Builder) => v
 		builder.storeUint(shardIdent.shard_prefix, 64);
   	});
   }
-export type ExtBlkRef = {
+export interface ExtBlkRef {
   	kind: 'ExtBlkRef';
 	end_lt: number;
 	seq_no: number;
@@ -4183,7 +4183,7 @@ export function storeExtBlkRef(extBlkRef: ExtBlkRef): (builder: Builder) => void
 		builder.storeBits(extBlkRef.file_hash);
   	});
   }
-export type BlockIdExt = {
+export interface BlockIdExt {
   	kind: 'BlockIdExt';
 	shard_id: ShardIdent;
 	seq_no: number;
@@ -4211,7 +4211,7 @@ export function storeBlockIdExt(blockIdExt: BlockIdExt): (builder: Builder) => v
 		builder.storeBits(blockIdExt.file_hash);
   	});
   }
-export type BlkMasterInfo = {
+export interface BlkMasterInfo {
   	kind: 'BlkMasterInfo';
 	master: ExtBlkRef;
   };
@@ -4227,7 +4227,7 @@ export function storeBlkMasterInfo(blkMasterInfo: BlkMasterInfo): (builder: Buil
   		storeExtBlkRef(blkMasterInfo.master)(builder);
   	});
   }
-export type ShardStateUnsplit = {
+export interface ShardStateUnsplit {
   	kind: 'ShardStateUnsplit';
 	global_id: number;
 	shard_id: ShardIdent;
@@ -4331,11 +4331,11 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
   	});
   }
 export type ShardState = ShardState__ | ShardState_split_state;
-export type ShardState__ = {
+export interface ShardState__ {
   	kind: 'ShardState__';
 	anon0: ShardStateUnsplit;
   };
-export type ShardState_split_state = {
+export interface ShardState_split_state {
   	kind: 'ShardState_split_state';
 	left: ShardStateUnsplit;
 	right: ShardStateUnsplit;
@@ -4383,7 +4383,7 @@ export function storeShardState(shardState: ShardState): (builder: Builder) => v
   	};
 	throw new Error('');
   }
-export type LibDescr = {
+export interface LibDescr {
   	kind: 'LibDescr';
 	lib: Slice;
 	publishers: Hashmap<True>;
@@ -4411,7 +4411,7 @@ export function storeLibDescr(libDescr: LibDescr): (builder: Builder) => void {
 		storeHashmap<True>(libDescr.publishers, storeTrue)(builder);
   	});
   }
-export type BlockInfo = {
+export interface BlockInfo {
   	kind: 'BlockInfo';
 	version: number;
 	not_master: number;
@@ -4558,11 +4558,11 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
   	});
   }
 export type BlkPrevInfo = BlkPrevInfo_prev_blk_info | BlkPrevInfo_prev_blks_info;
-export type BlkPrevInfo_prev_blk_info = {
+export interface BlkPrevInfo_prev_blk_info {
   	kind: 'BlkPrevInfo_prev_blk_info';
 	prev: ExtBlkRef;
   };
-export type BlkPrevInfo_prev_blks_info = {
+export interface BlkPrevInfo_prev_blks_info {
   	kind: 'BlkPrevInfo_prev_blks_info';
 	prev1: ExtBlkRef;
 	prev2: ExtBlkRef;
@@ -4606,7 +4606,7 @@ export function storeBlkPrevInfo(blkPrevInfo: BlkPrevInfo): (builder: Builder) =
   	};
 	throw new Error('');
   }
-export type Block = {
+export interface Block {
   	kind: 'Block';
 	global_id: number;
 	info: BlockInfo;
@@ -4655,7 +4655,7 @@ export function storeBlock(block: Block): (builder: Builder) => void {
 		builder.storeRef(cell4);
   	});
   }
-export type BlockExtra = {
+export interface BlockExtra {
   	kind: 'BlockExtra';
 	in_msg_descr: InMsgDescr;
 	out_msg_descr: OutMsgDescr;
@@ -4714,7 +4714,7 @@ export function storeBlockExtra(blockExtra: BlockExtra): (builder: Builder) => v
   		}))(builder);
   	});
   }
-export type ValueFlow = {
+export interface ValueFlow {
   	kind: 'ValueFlow';
 	from_prev_blk: CurrencyCollection;
 	to_next_blk: CurrencyCollection;
@@ -4774,11 +4774,11 @@ export function storeValueFlow(valueFlow: ValueFlow): (builder: Builder) => void
   	});
   }
 export type BinTree<X> = BinTree_bt_leaf<X> | BinTree_bt_fork<X>;
-export type BinTree_bt_leaf<X> = {
+export interface BinTree_bt_leaf<X> {
   	kind: 'BinTree_bt_leaf';
 	leaf: X;
   };
-export type BinTree_bt_fork<X> = {
+export interface BinTree_bt_fork<X> {
   	kind: 'BinTree_bt_fork';
 	left: BinTree<X>;
 	right: BinTree<X>;
@@ -4827,15 +4827,15 @@ export function storeBinTree<X>(binTree: BinTree<X>, storeX: (x: X) => (builder:
 	throw new Error('');
   }
 export type FutureSplitMerge = FutureSplitMerge_fsm_none | FutureSplitMerge_fsm_split | FutureSplitMerge_fsm_merge;
-export type FutureSplitMerge_fsm_none = {
+export interface FutureSplitMerge_fsm_none {
   	kind: 'FutureSplitMerge_fsm_none';
   };
-export type FutureSplitMerge_fsm_split = {
+export interface FutureSplitMerge_fsm_split {
   	kind: 'FutureSplitMerge_fsm_split';
 	split_utime: number;
 	interval: number;
   };
-export type FutureSplitMerge_fsm_merge = {
+export interface FutureSplitMerge_fsm_merge {
   	kind: 'FutureSplitMerge_fsm_merge';
 	merge_utime: number;
 	interval: number;
@@ -4892,7 +4892,7 @@ export function storeFutureSplitMerge(futureSplitMerge: FutureSplitMerge): (buil
 	throw new Error('');
   }
 export type ShardDescr = ShardDescr_shard_descr | ShardDescr_shard_descr_new;
-export type ShardDescr_shard_descr = {
+export interface ShardDescr_shard_descr {
   	kind: 'ShardDescr_shard_descr';
 	seq_no: number;
 	reg_mc_seqno: number;
@@ -4914,7 +4914,7 @@ export type ShardDescr_shard_descr = {
 	fees_collected: CurrencyCollection;
 	funds_created: CurrencyCollection;
   };
-export type ShardDescr_shard_descr_new = {
+export interface ShardDescr_shard_descr_new {
   	kind: 'ShardDescr_shard_descr_new';
 	seq_no: number;
 	reg_mc_seqno: number;
@@ -5093,7 +5093,7 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
   	};
 	throw new Error('');
   }
-export type ShardHashes = {
+export interface ShardHashes {
   	kind: 'ShardHashes';
 	anon0: HashmapE<BinTree<ShardDescr>>;
   };
@@ -5124,12 +5124,12 @@ export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) =
   	});
   }
 export type BinTreeAug<X,Y> = BinTreeAug_bta_leaf<X,Y> | BinTreeAug_bta_fork<X,Y>;
-export type BinTreeAug_bta_leaf<X,Y> = {
+export interface BinTreeAug_bta_leaf<X,Y> {
   	kind: 'BinTreeAug_bta_leaf';
 	extra: Y;
 	leaf: X;
   };
-export type BinTreeAug_bta_fork<X,Y> = {
+export interface BinTreeAug_bta_fork<X,Y> {
   	kind: 'BinTreeAug_bta_fork';
 	left: BinTreeAug<X,Y>;
 	right: BinTreeAug<X,Y>;
@@ -5184,7 +5184,7 @@ export function storeBinTreeAug<X,Y>(binTreeAug: BinTreeAug<X,Y>, storeX: (x: X)
   	};
 	throw new Error('');
   }
-export type ShardFeeCreated = {
+export interface ShardFeeCreated {
   	kind: 'ShardFeeCreated';
 	fees: CurrencyCollection;
 	create: CurrencyCollection;
@@ -5209,7 +5209,7 @@ export function storeShardFeeCreated(shardFeeCreated: ShardFeeCreated): (builder
 		storeCurrencyCollection(shardFeeCreated.create)(builder);
   	});
   }
-export type ShardFees = {
+export interface ShardFees {
   	kind: 'ShardFees';
 	anon0: HashmapAugE<ShardFeeCreated,ShardFeeCreated>;
   };
@@ -5230,7 +5230,7 @@ export function storeShardFees(shardFees: ShardFees): (builder: Builder) => void
 		storeHashmapAugE<ShardFeeCreated,ShardFeeCreated>(shardFees.anon0, storeShardFeeCreated, storeShardFeeCreated)(builder);
   	});
   }
-export type ConfigParams = {
+export interface ConfigParams {
   	kind: 'ConfigParams';
 	config_addr: BitString;
 	config: Hashmap<Slice>;
@@ -5267,7 +5267,7 @@ export function storeConfigParams(configParams: ConfigParams): (builder: Builder
 		builder.storeRef(cell1);
   	});
   }
-export type ValidatorInfo = {
+export interface ValidatorInfo {
   	kind: 'ValidatorInfo';
 	validator_list_hash_short: number;
 	catchain_seqno: number;
@@ -5291,7 +5291,7 @@ export function storeValidatorInfo(validatorInfo: ValidatorInfo): (builder: Buil
 		storeBool(validatorInfo.nx_cc_updated)(builder);
   	});
   }
-export type ValidatorBaseInfo = {
+export interface ValidatorBaseInfo {
   	kind: 'ValidatorBaseInfo';
 	validator_list_hash_short: number;
 	catchain_seqno: number;
@@ -5311,7 +5311,7 @@ export function storeValidatorBaseInfo(validatorBaseInfo: ValidatorBaseInfo): (b
 		builder.storeUint(validatorBaseInfo.catchain_seqno, 32);
   	});
   }
-export type KeyMaxLt = {
+export interface KeyMaxLt {
   	kind: 'KeyMaxLt';
 	key: Bool;
 	max_end_lt: number;
@@ -5336,7 +5336,7 @@ export function storeKeyMaxLt(keyMaxLt: KeyMaxLt): (builder: Builder) => void {
 		builder.storeUint(keyMaxLt.max_end_lt, 64);
   	});
   }
-export type KeyExtBlkRef = {
+export interface KeyExtBlkRef {
   	kind: 'KeyExtBlkRef';
 	key: Bool;
 	blk_ref: ExtBlkRef;
@@ -5361,7 +5361,7 @@ export function storeKeyExtBlkRef(keyExtBlkRef: KeyExtBlkRef): (builder: Builder
 		storeExtBlkRef(keyExtBlkRef.blk_ref)(builder);
   	});
   }
-export type OldMcBlocksInfo = {
+export interface OldMcBlocksInfo {
   	kind: 'OldMcBlocksInfo';
 	anon0: HashmapAugE<KeyExtBlkRef,KeyMaxLt>;
   };
@@ -5382,7 +5382,7 @@ export function storeOldMcBlocksInfo(oldMcBlocksInfo: OldMcBlocksInfo): (builder
 		storeHashmapAugE<KeyExtBlkRef,KeyMaxLt>(oldMcBlocksInfo.anon0, storeKeyExtBlkRef, storeKeyMaxLt)(builder);
   	});
   }
-export type Counters = {
+export interface Counters {
   	kind: 'Counters';
 	last_updated: number;
 	total: number;
@@ -5410,7 +5410,7 @@ export function storeCounters(counters: Counters): (builder: Builder) => void {
 		builder.storeUint(counters.cnt65536, 64);
   	});
   }
-export type CreatorStats = {
+export interface CreatorStats {
   	kind: 'CreatorStats';
 	mc_blocks: Counters;
 	shard_blocks: Counters;
@@ -5436,11 +5436,11 @@ export function storeCreatorStats(creatorStats: CreatorStats): (builder: Builder
   	});
   }
 export type BlockCreateStats = BlockCreateStats_block_create_stats | BlockCreateStats_block_create_stats_ext;
-export type BlockCreateStats_block_create_stats = {
+export interface BlockCreateStats_block_create_stats {
   	kind: 'BlockCreateStats_block_create_stats';
 	counters: HashmapE<CreatorStats>;
   };
-export type BlockCreateStats_block_create_stats_ext = {
+export interface BlockCreateStats_block_create_stats_ext {
   	kind: 'BlockCreateStats_block_create_stats_ext';
 	counters: HashmapAugE<CreatorStats,number>;
   };
@@ -5484,7 +5484,7 @@ export function storeBlockCreateStats(blockCreateStats: BlockCreateStats): (buil
   	};
 	throw new Error('');
   }
-export type McStateExtra = {
+export interface McStateExtra {
   	kind: 'McStateExtra';
 	shard_hashes: ShardHashes;
 	config: ConfigParams;
@@ -5542,7 +5542,7 @@ export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder
 		storeCurrencyCollection(mcStateExtra.global_balance)(builder);
   	});
   }
-export type SigPubKey = {
+export interface SigPubKey {
   	kind: 'SigPubKey';
 	pubkey: BitString;
   };
@@ -5563,7 +5563,7 @@ export function storeSigPubKey(sigPubKey: SigPubKey): (builder: Builder) => void
 		builder.storeBits(sigPubKey.pubkey);
   	});
   }
-export type CryptoSignatureSimple = {
+export interface CryptoSignatureSimple {
   	kind: 'CryptoSignatureSimple';
 	R: BitString;
 	s: BitString;
@@ -5589,11 +5589,11 @@ export function storeCryptoSignatureSimple(cryptoSignatureSimple: CryptoSignatur
   	});
   }
 export type CryptoSignature = CryptoSignature__ | CryptoSignature_chained_signature;
-export type CryptoSignature__ = {
+export interface CryptoSignature__ {
   	kind: 'CryptoSignature__';
 	anon0: CryptoSignatureSimple;
   };
-export type CryptoSignature_chained_signature = {
+export interface CryptoSignature_chained_signature {
   	kind: 'CryptoSignature_chained_signature';
 	signed_cert: SignedCertificate;
 	temp_key_signature: CryptoSignatureSimple;
@@ -5638,7 +5638,7 @@ export function storeCryptoSignature(cryptoSignature: CryptoSignature): (builder
   	};
 	throw new Error('');
   }
-export type CryptoSignaturePair = {
+export interface CryptoSignaturePair {
   	kind: 'CryptoSignaturePair';
 	node_id_short: BitString;
 	sign: CryptoSignature;
@@ -5658,7 +5658,7 @@ export function storeCryptoSignaturePair(cryptoSignaturePair: CryptoSignaturePai
 		storeCryptoSignature(cryptoSignaturePair.sign)(builder);
   	});
   }
-export type Certificate = {
+export interface Certificate {
   	kind: 'Certificate';
 	temp_key: SigPubKey;
 	valid_since: number;
@@ -5687,7 +5687,7 @@ export function storeCertificate(certificate: Certificate): (builder: Builder) =
 		builder.storeUint(certificate.valid_until, 32);
   	});
   }
-export type CertificateEnv = {
+export interface CertificateEnv {
   	kind: 'CertificateEnv';
 	certificate: Certificate;
   };
@@ -5708,7 +5708,7 @@ export function storeCertificateEnv(certificateEnv: CertificateEnv): (builder: B
 		storeCertificate(certificateEnv.certificate)(builder);
   	});
   }
-export type SignedCertificate = {
+export interface SignedCertificate {
   	kind: 'SignedCertificate';
 	certificate: Certificate;
 	certificate_signature: CryptoSignature;
@@ -5728,7 +5728,7 @@ export function storeSignedCertificate(signedCertificate: SignedCertificate): (b
 		storeCryptoSignature(signedCertificate.certificate_signature)(builder);
   	});
   }
-export type McBlockExtra = {
+export interface McBlockExtra {
   	kind: 'McBlockExtra';
 	key_block: number;
 	shard_hashes: ShardHashes;
@@ -5797,12 +5797,12 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
   	});
   }
 export type ValidatorDescr = ValidatorDescr_validator | ValidatorDescr_validator_addr;
-export type ValidatorDescr_validator = {
+export interface ValidatorDescr_validator {
   	kind: 'ValidatorDescr_validator';
 	public_key: SigPubKey;
 	weight: number;
   };
-export type ValidatorDescr_validator_addr = {
+export interface ValidatorDescr_validator_addr {
   	kind: 'ValidatorDescr_validator_addr';
 	public_key: SigPubKey;
 	weight: number;
@@ -5852,7 +5852,7 @@ export function storeValidatorDescr(validatorDescr: ValidatorDescr): (builder: B
 	throw new Error('');
   }
 export type ValidatorSet = ValidatorSet_validators | ValidatorSet_validators_ext;
-export type ValidatorSet_validators = {
+export interface ValidatorSet_validators {
   	kind: 'ValidatorSet_validators';
 	utime_since: number;
 	utime_until: number;
@@ -5860,7 +5860,7 @@ export type ValidatorSet_validators = {
 	main: number;
 	list: Hashmap<ValidatorDescr>;
   };
-export type ValidatorSet_validators_ext = {
+export interface ValidatorSet_validators_ext {
   	kind: 'ValidatorSet_validators_ext';
 	utime_since: number;
 	utime_until: number;
@@ -5955,164 +5955,164 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 	throw new Error('');
   }
 export type ConfigParam = ConfigParam__ | ConfigParam__1 | ConfigParam__2 | ConfigParam__3 | ConfigParam__4 | ConfigParam__5 | ConfigParam__6 | ConfigParam__7 | ConfigParam__8 | ConfigParam__9 | ConfigParam__10 | ConfigParam__11 | ConfigParam__12 | ConfigParam__13 | ConfigParam__14 | ConfigParam__15 | ConfigParam__16 | ConfigParam__17 | ConfigParam__24 | ConfigParam__25 | ConfigParam__26 | ConfigParam__27 | ConfigParam__28 | ConfigParam__29 | ConfigParam__30 | ConfigParam__31 | ConfigParam__32 | ConfigParam__33 | ConfigParam__34 | ConfigParam__35 | ConfigParam__36 | ConfigParam__37 | ConfigParam_config_mc_gas_prices | ConfigParam_config_gas_prices | ConfigParam_config_mc_block_limits | ConfigParam_config_block_limits | ConfigParam_config_mc_fwd_prices | ConfigParam_config_fwd_prices;
-export type ConfigParam__ = {
+export interface ConfigParam__ {
   	kind: 'ConfigParam__';
 	config_addr: BitString;
   };
-export type ConfigParam__1 = {
+export interface ConfigParam__1 {
   	kind: 'ConfigParam__1';
 	elector_addr: BitString;
   };
-export type ConfigParam__2 = {
+export interface ConfigParam__2 {
   	kind: 'ConfigParam__2';
 	minter_addr: BitString;
   };
-export type ConfigParam__3 = {
+export interface ConfigParam__3 {
   	kind: 'ConfigParam__3';
 	fee_collector_addr: BitString;
   };
-export type ConfigParam__4 = {
+export interface ConfigParam__4 {
   	kind: 'ConfigParam__4';
 	dns_root_addr: BitString;
   };
-export type ConfigParam__5 = {
+export interface ConfigParam__5 {
   	kind: 'ConfigParam__5';
 	mint_new_price: Grams;
 	mint_add_price: Grams;
   };
-export type ConfigParam__6 = {
+export interface ConfigParam__6 {
   	kind: 'ConfigParam__6';
 	to_mint: ExtraCurrencyCollection;
   };
-export type ConfigParam__7 = {
+export interface ConfigParam__7 {
   	kind: 'ConfigParam__7';
 	anon0: GlobalVersion;
   };
-export type ConfigParam__8 = {
+export interface ConfigParam__8 {
   	kind: 'ConfigParam__8';
 	mandatory_params: Hashmap<True>;
   };
-export type ConfigParam__9 = {
+export interface ConfigParam__9 {
   	kind: 'ConfigParam__9';
 	critical_params: Hashmap<True>;
   };
-export type ConfigParam__10 = {
+export interface ConfigParam__10 {
   	kind: 'ConfigParam__10';
 	anon0: ConfigVotingSetup;
   };
-export type ConfigParam__11 = {
+export interface ConfigParam__11 {
   	kind: 'ConfigParam__11';
 	workchains: HashmapE<WorkchainDescr>;
   };
-export type ConfigParam__12 = {
+export interface ConfigParam__12 {
   	kind: 'ConfigParam__12';
 	anon0: ComplaintPricing;
   };
-export type ConfigParam__13 = {
+export interface ConfigParam__13 {
   	kind: 'ConfigParam__13';
 	anon0: BlockCreateFees;
   };
-export type ConfigParam__14 = {
+export interface ConfigParam__14 {
   	kind: 'ConfigParam__14';
 	validators_elected_for: number;
 	elections_start_before: number;
 	elections_end_before: number;
 	stake_held_for: number;
   };
-export type ConfigParam__15 = {
+export interface ConfigParam__15 {
   	kind: 'ConfigParam__15';
 	max_validators: number;
 	max_main_validators: number;
 	min_validators: number;
   };
-export type ConfigParam__16 = {
+export interface ConfigParam__16 {
   	kind: 'ConfigParam__16';
 	min_stake: Grams;
 	max_stake: Grams;
 	min_total_stake: Grams;
 	max_stake_factor: number;
   };
-export type ConfigParam__17 = {
+export interface ConfigParam__17 {
   	kind: 'ConfigParam__17';
 	anon0: Hashmap<StoragePrices>;
   };
-export type ConfigParam__24 = {
+export interface ConfigParam__24 {
   	kind: 'ConfigParam__24';
 	anon0: CatchainConfig;
   };
-export type ConfigParam__25 = {
+export interface ConfigParam__25 {
   	kind: 'ConfigParam__25';
 	anon0: ConsensusConfig;
   };
-export type ConfigParam__26 = {
+export interface ConfigParam__26 {
   	kind: 'ConfigParam__26';
 	fundamental_smc_addr: HashmapE<True>;
   };
-export type ConfigParam__27 = {
+export interface ConfigParam__27 {
   	kind: 'ConfigParam__27';
 	prev_validators: ValidatorSet;
   };
-export type ConfigParam__28 = {
+export interface ConfigParam__28 {
   	kind: 'ConfigParam__28';
 	prev_temp_validators: ValidatorSet;
   };
-export type ConfigParam__29 = {
+export interface ConfigParam__29 {
   	kind: 'ConfigParam__29';
 	cur_validators: ValidatorSet;
   };
-export type ConfigParam__30 = {
+export interface ConfigParam__30 {
   	kind: 'ConfigParam__30';
 	cur_temp_validators: ValidatorSet;
   };
-export type ConfigParam__31 = {
+export interface ConfigParam__31 {
   	kind: 'ConfigParam__31';
 	next_validators: ValidatorSet;
   };
-export type ConfigParam__32 = {
+export interface ConfigParam__32 {
   	kind: 'ConfigParam__32';
 	next_temp_validators: ValidatorSet;
   };
-export type ConfigParam__33 = {
+export interface ConfigParam__33 {
   	kind: 'ConfigParam__33';
 	anon0: HashmapE<ValidatorSignedTempKey>;
   };
-export type ConfigParam__34 = {
+export interface ConfigParam__34 {
   	kind: 'ConfigParam__34';
 	anon0: MisbehaviourPunishmentConfig;
   };
-export type ConfigParam__35 = {
+export interface ConfigParam__35 {
   	kind: 'ConfigParam__35';
 	anon0: OracleBridgeParams;
   };
-export type ConfigParam__36 = {
+export interface ConfigParam__36 {
   	kind: 'ConfigParam__36';
 	anon0: OracleBridgeParams;
   };
-export type ConfigParam__37 = {
+export interface ConfigParam__37 {
   	kind: 'ConfigParam__37';
 	anon0: OracleBridgeParams;
   };
-export type ConfigParam_config_mc_gas_prices = {
+export interface ConfigParam_config_mc_gas_prices {
   	kind: 'ConfigParam_config_mc_gas_prices';
 	anon0: GasLimitsPrices;
   };
-export type ConfigParam_config_gas_prices = {
+export interface ConfigParam_config_gas_prices {
   	kind: 'ConfigParam_config_gas_prices';
 	anon0: GasLimitsPrices;
   };
-export type ConfigParam_config_mc_block_limits = {
+export interface ConfigParam_config_mc_block_limits {
   	kind: 'ConfigParam_config_mc_block_limits';
 	anon0: BlockLimits;
   };
-export type ConfigParam_config_block_limits = {
+export interface ConfigParam_config_block_limits {
   	kind: 'ConfigParam_config_block_limits';
 	anon0: BlockLimits;
   };
-export type ConfigParam_config_mc_fwd_prices = {
+export interface ConfigParam_config_mc_fwd_prices {
   	kind: 'ConfigParam_config_mc_fwd_prices';
 	anon0: MsgForwardPrices;
   };
-export type ConfigParam_config_fwd_prices = {
+export interface ConfigParam_config_fwd_prices {
   	kind: 'ConfigParam_config_fwd_prices';
 	anon0: MsgForwardPrices;
   };
@@ -6687,7 +6687,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
   	};
 	throw new Error('');
   }
-export type GlobalVersion = {
+export interface GlobalVersion {
   	kind: 'GlobalVersion';
 	version: number;
 	capabilities: number;
@@ -6712,7 +6712,7 @@ export function storeGlobalVersion(globalVersion: GlobalVersion): (builder: Buil
 		builder.storeUint(globalVersion.capabilities, 64);
   	});
   }
-export type ConfigProposalSetup = {
+export interface ConfigProposalSetup {
   	kind: 'ConfigProposalSetup';
 	min_tot_rounds: number;
 	max_tot_rounds: number;
@@ -6761,7 +6761,7 @@ export function storeConfigProposalSetup(configProposalSetup: ConfigProposalSetu
 		builder.storeUint(configProposalSetup._cell_price, 32);
   	});
   }
-export type ConfigVotingSetup = {
+export interface ConfigVotingSetup {
   	kind: 'ConfigVotingSetup';
 	normal_params: ConfigProposalSetup;
 	critical_params: ConfigProposalSetup;
@@ -6792,7 +6792,7 @@ export function storeConfigVotingSetup(configVotingSetup: ConfigVotingSetup): (b
 		builder.storeRef(cell2);
   	});
   }
-export type ConfigProposal = {
+export interface ConfigProposal {
   	kind: 'ConfigProposal';
 	param_id: number;
 	param_value: Maybe<Slice>;
@@ -6836,7 +6836,7 @@ export function storeConfigProposal(configProposal: ConfigProposal): (builder: B
   		}))(builder);
   	});
   }
-export type ConfigProposalStatus = {
+export interface ConfigProposalStatus {
   	kind: 'ConfigProposalStatus';
 	expires: number;
 	proposal: ConfigProposal;
@@ -6893,12 +6893,12 @@ export function storeConfigProposalStatus(configProposalStatus: ConfigProposalSt
   	});
   }
 export type WorkchainFormat = WorkchainFormat_wfmt_basic | WorkchainFormat_wfmt_ext;
-export type WorkchainFormat_wfmt_basic = {
+export interface WorkchainFormat_wfmt_basic {
   	kind: 'WorkchainFormat_wfmt_basic';
 	vm_version: number;
 	vm_mode: number;
   };
-export type WorkchainFormat_wfmt_ext = {
+export interface WorkchainFormat_wfmt_ext {
   	kind: 'WorkchainFormat_wfmt_ext';
 	min_addr_len: number;
 	max_addr_len: number;
@@ -6981,7 +6981,7 @@ export function storeWorkchainFormat(workchainFormat: WorkchainFormat): (builder
   	};
 	throw new Error('');
   }
-export type WorkchainDescr = {
+export interface WorkchainDescr {
   	kind: 'WorkchainDescr';
 	enabled_since: number;
 	actual_min_split: number;
@@ -7058,7 +7058,7 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
   		};
   	});
   }
-export type ComplaintPricing = {
+export interface ComplaintPricing {
   	kind: 'ComplaintPricing';
 	deposit: Grams;
 	bit_price: Grams;
@@ -7087,7 +7087,7 @@ export function storeComplaintPricing(complaintPricing: ComplaintPricing): (buil
 		storeGrams(complaintPricing._cell_price)(builder);
   	});
   }
-export type BlockCreateFees = {
+export interface BlockCreateFees {
   	kind: 'BlockCreateFees';
 	masterchain_block_fee: Grams;
 	basechain_block_fee: Grams;
@@ -7112,7 +7112,7 @@ export function storeBlockCreateFees(blockCreateFees: BlockCreateFees): (builder
 		storeGrams(blockCreateFees.basechain_block_fee)(builder);
   	});
   }
-export type StoragePrices = {
+export interface StoragePrices {
   	kind: 'StoragePrices';
 	utime_since: number;
 	bit_price_ps: number;
@@ -7150,7 +7150,7 @@ export function storeStoragePrices(storagePrices: StoragePrices): (builder: Buil
   	});
   }
 export type GasLimitsPrices = GasLimitsPrices_gas_prices | GasLimitsPrices_gas_prices_ext | GasLimitsPrices_gas_flat_pfx;
-export type GasLimitsPrices_gas_prices = {
+export interface GasLimitsPrices_gas_prices {
   	kind: 'GasLimitsPrices_gas_prices';
 	gas_price: number;
 	gas_limit: number;
@@ -7159,7 +7159,7 @@ export type GasLimitsPrices_gas_prices = {
 	freeze_due_limit: number;
 	delete_due_limit: number;
   };
-export type GasLimitsPrices_gas_prices_ext = {
+export interface GasLimitsPrices_gas_prices_ext {
   	kind: 'GasLimitsPrices_gas_prices_ext';
 	gas_price: number;
 	gas_limit: number;
@@ -7169,7 +7169,7 @@ export type GasLimitsPrices_gas_prices_ext = {
 	freeze_due_limit: number;
 	delete_due_limit: number;
   };
-export type GasLimitsPrices_gas_flat_pfx = {
+export interface GasLimitsPrices_gas_flat_pfx {
   	kind: 'GasLimitsPrices_gas_flat_pfx';
 	flat_gas_limit: number;
 	flat_gas_price: number;
@@ -7262,7 +7262,7 @@ export function storeGasLimitsPrices(gasLimitsPrices: GasLimitsPrices): (builder
   	};
 	throw new Error('');
   }
-export type ParamLimits = {
+export interface ParamLimits {
   	kind: 'ParamLimits';
 	underload: number;
 	soft_limit: number;
@@ -7303,7 +7303,7 @@ export function storeParamLimits(paramLimits: ParamLimits): (builder: Builder) =
   		};
   	});
   }
-export type BlockLimits = {
+export interface BlockLimits {
   	kind: 'BlockLimits';
 	bytes: ParamLimits;
 	gas: ParamLimits;
@@ -7332,7 +7332,7 @@ export function storeBlockLimits(blockLimits: BlockLimits): (builder: Builder) =
 		storeParamLimits(blockLimits.lt_delta)(builder);
   	});
   }
-export type MsgForwardPrices = {
+export interface MsgForwardPrices {
   	kind: 'MsgForwardPrices';
 	lump_price: number;
 	bit_price: number;
@@ -7374,14 +7374,14 @@ export function storeMsgForwardPrices(msgForwardPrices: MsgForwardPrices): (buil
   	});
   }
 export type CatchainConfig = CatchainConfig_catchain_config | CatchainConfig_catchain_config_new;
-export type CatchainConfig_catchain_config = {
+export interface CatchainConfig_catchain_config {
   	kind: 'CatchainConfig_catchain_config';
 	mc_catchain_lifetime: number;
 	shard_catchain_lifetime: number;
 	shard_validators_lifetime: number;
 	shard_validators_num: number;
   };
-export type CatchainConfig_catchain_config_new = {
+export interface CatchainConfig_catchain_config_new {
   	kind: 'CatchainConfig_catchain_config_new';
 	flags: number;
 	shuffle_mc_validators: Bool;
@@ -7455,7 +7455,7 @@ export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: B
 	throw new Error('');
   }
 export type ConsensusConfig = ConsensusConfig_consensus_config | ConsensusConfig_consensus_config_new | ConsensusConfig_consensus_config_v3 | ConsensusConfig_consensus_config_v4;
-export type ConsensusConfig_consensus_config = {
+export interface ConsensusConfig_consensus_config {
   	kind: 'ConsensusConfig_consensus_config';
 	round_candidates: number;
 	next_candidate_delay_ms: number;
@@ -7466,7 +7466,7 @@ export type ConsensusConfig_consensus_config = {
 	max_block_bytes: number;
 	max_collated_bytes: number;
   };
-export type ConsensusConfig_consensus_config_new = {
+export interface ConsensusConfig_consensus_config_new {
   	kind: 'ConsensusConfig_consensus_config_new';
 	flags: number;
 	new_catchain_ids: Bool;
@@ -7479,7 +7479,7 @@ export type ConsensusConfig_consensus_config_new = {
 	max_block_bytes: number;
 	max_collated_bytes: number;
   };
-export type ConsensusConfig_consensus_config_v3 = {
+export interface ConsensusConfig_consensus_config_v3 {
   	kind: 'ConsensusConfig_consensus_config_v3';
 	flags: number;
 	new_catchain_ids: Bool;
@@ -7493,7 +7493,7 @@ export type ConsensusConfig_consensus_config_v3 = {
 	max_collated_bytes: number;
 	proto_version: number;
   };
-export type ConsensusConfig_consensus_config_v4 = {
+export interface ConsensusConfig_consensus_config_v4 {
   	kind: 'ConsensusConfig_consensus_config_v4';
 	flags: number;
 	new_catchain_ids: Bool;
@@ -7723,7 +7723,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
   	};
 	throw new Error('');
   }
-export type ValidatorTempKey = {
+export interface ValidatorTempKey {
   	kind: 'ValidatorTempKey';
 	adnl_addr: BitString;
 	temp_public_key: SigPubKey;
@@ -7756,7 +7756,7 @@ export function storeValidatorTempKey(validatorTempKey: ValidatorTempKey): (buil
 		builder.storeUint(validatorTempKey.valid_until, 32);
   	});
   }
-export type ValidatorSignedTempKey = {
+export interface ValidatorSignedTempKey {
   	kind: 'ValidatorSignedTempKey';
 	key: ValidatorTempKey;
 	signature: CryptoSignature;
@@ -7784,7 +7784,7 @@ export function storeValidatorSignedTempKey(validatorSignedTempKey: ValidatorSig
 		storeCryptoSignature(validatorSignedTempKey.signature)(builder);
   	});
   }
-export type MisbehaviourPunishmentConfig = {
+export interface MisbehaviourPunishmentConfig {
   	kind: 'MisbehaviourPunishmentConfig';
 	default_flat_fine: Grams;
 	default_proportional_fine: number;
@@ -7845,7 +7845,7 @@ export function storeMisbehaviourPunishmentConfig(misbehaviourPunishmentConfig: 
 		builder.storeUint(misbehaviourPunishmentConfig.medium_proportional_mult, 16);
   	});
   }
-export type OracleBridgeParams = {
+export interface OracleBridgeParams {
   	kind: 'OracleBridgeParams';
 	bridge_address: BitString;
 	oracle_mutlisig_address: BitString;
@@ -7879,7 +7879,7 @@ export function storeOracleBridgeParams(oracleBridgeParams: OracleBridgeParams):
 		builder.storeBits(oracleBridgeParams.external_chain_address);
   	});
   }
-export type BlockSignaturesPure = {
+export interface BlockSignaturesPure {
   	kind: 'BlockSignaturesPure';
 	sig_count: number;
 	sig_weight: number;
@@ -7903,7 +7903,7 @@ export function storeBlockSignaturesPure(blockSignaturesPure: BlockSignaturesPur
 		storeHashmapE<CryptoSignaturePair>(blockSignaturesPure.signatures, storeCryptoSignaturePair)(builder);
   	});
   }
-export type BlockSignatures = {
+export interface BlockSignatures {
   	kind: 'BlockSignatures';
 	validator_info: ValidatorBaseInfo;
 	pure_signatures: BlockSignaturesPure;
@@ -7928,7 +7928,7 @@ export function storeBlockSignatures(blockSignatures: BlockSignatures): (builder
 		storeBlockSignaturesPure(blockSignatures.pure_signatures)(builder);
   	});
   }
-export type BlockProof = {
+export interface BlockProof {
   	kind: 'BlockProof';
 	proof_for: BlockIdExt;
 	root: Slice;
@@ -7970,10 +7970,10 @@ export function storeBlockProof(blockProof: BlockProof): (builder: Builder) => v
   	});
   }
 export type ProofChain = ProofChain_chain_empty | ProofChain_chain_link;
-export type ProofChain_chain_empty = {
+export interface ProofChain_chain_empty {
   	kind: 'ProofChain_chain_empty';
   };
-export type ProofChain_chain_link = {
+export interface ProofChain_chain_link {
   	kind: 'ProofChain_chain_link';
 	n: number;
 	root: Slice;
@@ -8021,7 +8021,7 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
   	};
 	throw new Error('');
   }
-export type TopBlockDescr = {
+export interface TopBlockDescr {
   	kind: 'TopBlockDescr';
 	proof_for: BlockIdExt;
 	signatures: Maybe<BlockSignatures>;
@@ -8075,7 +8075,7 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
   		};
   	});
   }
-export type TopBlockDescrSet = {
+export interface TopBlockDescrSet {
   	kind: 'TopBlockDescrSet';
 	collection: HashmapE<TopBlockDescr>;
   };
@@ -8105,7 +8105,7 @@ export function storeTopBlockDescrSet(topBlockDescrSet: TopBlockDescrSet): (buil
   		}))(builder);
   	});
   }
-export type ProducerInfo = {
+export interface ProducerInfo {
   	kind: 'ProducerInfo';
 	utime: number;
 	mc_blk_ref: ExtBlkRef;
@@ -8145,12 +8145,12 @@ export function storeProducerInfo(producerInfo: ProducerInfo): (builder: Builder
   	});
   }
 export type ComplaintDescr = ComplaintDescr_no_blk_gen | ComplaintDescr_no_blk_gen_diff;
-export type ComplaintDescr_no_blk_gen = {
+export interface ComplaintDescr_no_blk_gen {
   	kind: 'ComplaintDescr_no_blk_gen';
 	from_utime: number;
 	prod_info: ProducerInfo;
   };
-export type ComplaintDescr_no_blk_gen_diff = {
+export interface ComplaintDescr_no_blk_gen_diff {
   	kind: 'ComplaintDescr_no_blk_gen_diff';
 	prod_info_old: ProducerInfo;
 	prod_info_new: ProducerInfo;
@@ -8204,7 +8204,7 @@ export function storeComplaintDescr(complaintDescr: ComplaintDescr): (builder: B
   	};
 	throw new Error('');
   }
-export type ValidatorComplaint = {
+export interface ValidatorComplaint {
   	kind: 'ValidatorComplaint';
 	validator_pubkey: BitString;
 	description: ComplaintDescr;
@@ -8256,7 +8256,7 @@ export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint):
 		builder.storeUint(validatorComplaint.suggested_fine_part, 32);
   	});
   }
-export type ValidatorComplaintStatus = {
+export interface ValidatorComplaintStatus {
   	kind: 'ValidatorComplaintStatus';
 	complaint: ValidatorComplaint;
 	voters: HashmapE<True>;
@@ -8293,37 +8293,37 @@ export function storeValidatorComplaintStatus(validatorComplaintStatus: Validato
   	});
   }
 export type VmStackValue = VmStackValue_vm_stk_null | VmStackValue_vm_stk_tinyint | VmStackValue_vm_stk_int | VmStackValue_vm_stk_nan | VmStackValue_vm_stk_cell | VmStackValue_vm_stk_slice | VmStackValue_vm_stk_builder | VmStackValue_vm_stk_cont | VmStackValue_vm_stk_tuple;
-export type VmStackValue_vm_stk_null = {
+export interface VmStackValue_vm_stk_null {
   	kind: 'VmStackValue_vm_stk_null';
   };
-export type VmStackValue_vm_stk_tinyint = {
+export interface VmStackValue_vm_stk_tinyint {
   	kind: 'VmStackValue_vm_stk_tinyint';
 	value: number;
   };
-export type VmStackValue_vm_stk_int = {
+export interface VmStackValue_vm_stk_int {
   	kind: 'VmStackValue_vm_stk_int';
 	value: number;
   };
-export type VmStackValue_vm_stk_nan = {
+export interface VmStackValue_vm_stk_nan {
   	kind: 'VmStackValue_vm_stk_nan';
   };
-export type VmStackValue_vm_stk_cell = {
+export interface VmStackValue_vm_stk_cell {
   	kind: 'VmStackValue_vm_stk_cell';
 	_cell: Slice;
   };
-export type VmStackValue_vm_stk_slice = {
+export interface VmStackValue_vm_stk_slice {
   	kind: 'VmStackValue_vm_stk_slice';
 	_: VmCellSlice;
   };
-export type VmStackValue_vm_stk_builder = {
+export interface VmStackValue_vm_stk_builder {
   	kind: 'VmStackValue_vm_stk_builder';
 	_cell: Slice;
   };
-export type VmStackValue_vm_stk_cont = {
+export interface VmStackValue_vm_stk_cont {
   	kind: 'VmStackValue_vm_stk_cont';
 	cont: VmCont;
   };
-export type VmStackValue_vm_stk_tuple = {
+export interface VmStackValue_vm_stk_tuple {
   	kind: 'VmStackValue_vm_stk_tuple';
 	len: number;
 	data: VmTuple;
@@ -8463,7 +8463,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
   	};
 	throw new Error('');
   }
-export type VmCellSlice = {
+export interface VmCellSlice {
   	kind: 'VmCellSlice';
 	_cell: Slice;
 	st_bits: number;
@@ -8516,14 +8516,14 @@ export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) =
   	});
   }
 export type VmTupleRef = VmTupleRef_vm_tupref_nil | VmTupleRef_vm_tupref_single | VmTupleRef_vm_tupref_any;
-export type VmTupleRef_vm_tupref_nil = {
+export interface VmTupleRef_vm_tupref_nil {
   	kind: 'VmTupleRef_vm_tupref_nil';
   };
-export type VmTupleRef_vm_tupref_single = {
+export interface VmTupleRef_vm_tupref_single {
   	kind: 'VmTupleRef_vm_tupref_single';
 	entry: VmStackValue;
   };
-export type VmTupleRef_vm_tupref_any = {
+export interface VmTupleRef_vm_tupref_any {
   	kind: 'VmTupleRef_vm_tupref_any';
 	n: number;
 	ref: VmTuple;
@@ -8576,10 +8576,10 @@ export function storeVmTupleRef(vmTupleRef: VmTupleRef): (builder: Builder) => v
 	throw new Error('');
   }
 export type VmTuple = VmTuple_vm_tuple_nil | VmTuple_vm_tuple_tcons;
-export type VmTuple_vm_tuple_nil = {
+export interface VmTuple_vm_tuple_nil {
   	kind: 'VmTuple_vm_tuple_nil';
   };
-export type VmTuple_vm_tuple_tcons = {
+export interface VmTuple_vm_tuple_tcons {
   	kind: 'VmTuple_vm_tuple_tcons';
 	n: number;
 	head: VmTupleRef;
@@ -8620,7 +8620,7 @@ export function storeVmTuple(vmTuple: VmTuple): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type VmStack = {
+export interface VmStack {
   	kind: 'VmStack';
 	depth: number;
 	stack: VmStackList;
@@ -8641,10 +8641,10 @@ export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
   	});
   }
 export type VmStackList = VmStackList_vm_stk_nil | VmStackList_vm_stk_cons;
-export type VmStackList_vm_stk_nil = {
+export interface VmStackList_vm_stk_nil {
   	kind: 'VmStackList_vm_stk_nil';
   };
-export type VmStackList_vm_stk_cons = {
+export interface VmStackList_vm_stk_cons {
   	kind: 'VmStackList_vm_stk_cons';
 	n: number;
 	rest: VmStackList;
@@ -8685,7 +8685,7 @@ export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) =
   	};
 	throw new Error('');
   }
-export type VmSaveList = {
+export interface VmSaveList {
   	kind: 'VmSaveList';
 	cregs: HashmapE<VmStackValue>;
   };
@@ -8706,7 +8706,7 @@ export function storeVmSaveList(vmSaveList: VmSaveList): (builder: Builder) => v
 		storeHashmapE<VmStackValue>(vmSaveList.cregs, storeVmStackValue)(builder);
   	});
   }
-export type VmGasLimits = {
+export interface VmGasLimits {
   	kind: 'VmGasLimits';
 	remaining: number;
 	max_limit: number;
@@ -8737,7 +8737,7 @@ export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) =
 		builder.storeRef(cell1);
   	});
   }
-export type VmLibraries = {
+export interface VmLibraries {
   	kind: 'VmLibraries';
 	libraries: HashmapE<Slice>;
   };
@@ -8767,7 +8767,7 @@ export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) =
   		}))(builder);
   	});
   }
-export type VmControlData = {
+export interface VmControlData {
   	kind: 'VmControlData';
 	nargs: Maybe<number>;
 	stack: Maybe<VmStack>;
@@ -8808,51 +8808,51 @@ export function storeVmControlData(vmControlData: VmControlData): (builder: Buil
   	});
   }
 export type VmCont = VmCont_vmc_std | VmCont_vmc_envelope | VmCont_vmc_quit | VmCont_vmc_quit_exc | VmCont_vmc_repeat | VmCont_vmc_until | VmCont_vmc_again | VmCont_vmc_while_cond | VmCont_vmc_while_body | VmCont_vmc_pushint;
-export type VmCont_vmc_std = {
+export interface VmCont_vmc_std {
   	kind: 'VmCont_vmc_std';
 	cdata: VmControlData;
 	code: VmCellSlice;
   };
-export type VmCont_vmc_envelope = {
+export interface VmCont_vmc_envelope {
   	kind: 'VmCont_vmc_envelope';
 	cdata: VmControlData;
 	next: VmCont;
   };
-export type VmCont_vmc_quit = {
+export interface VmCont_vmc_quit {
   	kind: 'VmCont_vmc_quit';
 	exit_code: number;
   };
-export type VmCont_vmc_quit_exc = {
+export interface VmCont_vmc_quit_exc {
   	kind: 'VmCont_vmc_quit_exc';
   };
-export type VmCont_vmc_repeat = {
+export interface VmCont_vmc_repeat {
   	kind: 'VmCont_vmc_repeat';
 	count: number;
 	body: VmCont;
 	after: VmCont;
   };
-export type VmCont_vmc_until = {
+export interface VmCont_vmc_until {
   	kind: 'VmCont_vmc_until';
 	body: VmCont;
 	after: VmCont;
   };
-export type VmCont_vmc_again = {
+export interface VmCont_vmc_again {
   	kind: 'VmCont_vmc_again';
 	body: VmCont;
   };
-export type VmCont_vmc_while_cond = {
+export interface VmCont_vmc_while_cond {
   	kind: 'VmCont_vmc_while_cond';
 	cond: VmCont;
 	body: VmCont;
 	after: VmCont;
   };
-export type VmCont_vmc_while_body = {
+export interface VmCont_vmc_while_body {
   	kind: 'VmCont_vmc_while_body';
 	cond: VmCont;
 	body: VmCont;
 	after: VmCont;
   };
-export type VmCont_vmc_pushint = {
+export interface VmCont_vmc_pushint {
   	kind: 'VmCont_vmc_pushint';
 	value: number;
 	next: VmCont;
@@ -9069,7 +9069,7 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type DNS_RecordSet = {
+export interface DNS_RecordSet {
   	kind: 'DNS_RecordSet';
 	anon0: HashmapE<DNSRecord>;
   };
@@ -9091,10 +9091,10 @@ export function storeDNS_RecordSet(dNS_RecordSet: DNS_RecordSet): (builder: Buil
   	});
   }
 export type TextChunkRef = TextChunkRef_chunk_ref_empty | TextChunkRef_chunk_ref;
-export type TextChunkRef_chunk_ref_empty = {
+export interface TextChunkRef_chunk_ref_empty {
   	kind: 'TextChunkRef_chunk_ref_empty';
   };
-export type TextChunkRef_chunk_ref = {
+export interface TextChunkRef_chunk_ref {
   	kind: 'TextChunkRef_chunk_ref';
 	n: number;
 	ref: TextChunks;
@@ -9132,10 +9132,10 @@ export function storeTextChunkRef(textChunkRef: TextChunkRef): (builder: Builder
 	throw new Error('');
   }
 export type TextChunks = TextChunks_text_chunk_empty | TextChunks_text_chunk;
-export type TextChunks_text_chunk_empty = {
+export interface TextChunks_text_chunk_empty {
   	kind: 'TextChunks_text_chunk_empty';
   };
-export type TextChunks_text_chunk = {
+export interface TextChunks_text_chunk {
   	kind: 'TextChunks_text_chunk';
 	n: number;
 	len: number;
@@ -9177,7 +9177,7 @@ export function storeTextChunks(textChunks: TextChunks): (builder: Builder) => v
   	};
 	throw new Error('');
   }
-export type Text = {
+export interface Text {
   	kind: 'Text';
 	chunks: number;
 	rest: TextChunks;
@@ -9198,21 +9198,21 @@ export function storeText(text: Text): (builder: Builder) => void {
   	});
   }
 export type DNSRecord = DNSRecord_dns_text | DNSRecord_dns_next_resolver | DNSRecord_dns_adnl_address | DNSRecord_dns_smc_address;
-export type DNSRecord_dns_text = {
+export interface DNSRecord_dns_text {
   	kind: 'DNSRecord_dns_text';
 	_: Text;
   };
-export type DNSRecord_dns_next_resolver = {
+export interface DNSRecord_dns_next_resolver {
   	kind: 'DNSRecord_dns_next_resolver';
 	resolver: MsgAddressInt;
   };
-export type DNSRecord_dns_adnl_address = {
+export interface DNSRecord_dns_adnl_address {
   	kind: 'DNSRecord_dns_adnl_address';
 	adnl_addr: BitString;
 	flags: number;
 	proto_list: ProtoList | undefined;
   };
-export type DNSRecord_dns_smc_address = {
+export interface DNSRecord_dns_smc_address {
   	kind: 'DNSRecord_dns_smc_address';
 	smc_addr: MsgAddressInt;
 	flags: number;
@@ -9309,10 +9309,10 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
 	throw new Error('');
   }
 export type ProtoList = ProtoList_proto_list_nil | ProtoList_proto_list_next;
-export type ProtoList_proto_list_nil = {
+export interface ProtoList_proto_list_nil {
   	kind: 'ProtoList_proto_list_nil';
   };
-export type ProtoList_proto_list_next = {
+export interface ProtoList_proto_list_next {
   	kind: 'ProtoList_proto_list_next';
 	head: Protocol;
 	tail: ProtoList;
@@ -9351,7 +9351,7 @@ export function storeProtoList(protoList: ProtoList): (builder: Builder) => void
   	};
 	throw new Error('');
   }
-export type Protocol = {
+export interface Protocol {
   	kind: 'Protocol';
   };
 export function loadProtocol(slice: Slice): Protocol {
@@ -9369,10 +9369,10 @@ export function storeProtocol(protocol: Protocol): (builder: Builder) => void {
   	});
   }
 export type SmcCapList = SmcCapList_cap_list_nil | SmcCapList_cap_list_next;
-export type SmcCapList_cap_list_nil = {
+export interface SmcCapList_cap_list_nil {
   	kind: 'SmcCapList_cap_list_nil';
   };
-export type SmcCapList_cap_list_next = {
+export interface SmcCapList_cap_list_next {
   	kind: 'SmcCapList_cap_list_next';
 	head: SmcCapability;
 	tail: SmcCapList;
@@ -9412,16 +9412,16 @@ export function storeSmcCapList(smcCapList: SmcCapList): (builder: Builder) => v
 	throw new Error('');
   }
 export type SmcCapability = SmcCapability_cap_method_seqno | SmcCapability_cap_method_pubkey | SmcCapability_cap_is_wallet | SmcCapability_cap_name;
-export type SmcCapability_cap_method_seqno = {
+export interface SmcCapability_cap_method_seqno {
   	kind: 'SmcCapability_cap_method_seqno';
   };
-export type SmcCapability_cap_method_pubkey = {
+export interface SmcCapability_cap_method_pubkey {
   	kind: 'SmcCapability_cap_method_pubkey';
   };
-export type SmcCapability_cap_is_wallet = {
+export interface SmcCapability_cap_is_wallet {
   	kind: 'SmcCapability_cap_is_wallet';
   };
-export type SmcCapability_cap_name = {
+export interface SmcCapability_cap_name {
   	kind: 'SmcCapability_cap_name';
 	name: Text;
   };
@@ -9478,7 +9478,7 @@ export function storeSmcCapability(smcCapability: SmcCapability): (builder: Buil
   	};
 	throw new Error('');
   }
-export type ChanConfig = {
+export interface ChanConfig {
   	kind: 'ChanConfig';
 	init_timeout: number;
 	close_timeout: number;
@@ -9529,7 +9529,7 @@ export function storeChanConfig(chanConfig: ChanConfig): (builder: Builder) => v
   	});
   }
 export type ChanState = ChanState_chan_state_init | ChanState_chan_state_close | ChanState_chan_state_payout;
-export type ChanState_chan_state_init = {
+export interface ChanState_chan_state_init {
   	kind: 'ChanState_chan_state_init';
 	signed_A: Bool;
 	signed_B: Bool;
@@ -9539,7 +9539,7 @@ export type ChanState_chan_state_init = {
 	A: Grams;
 	B: Grams;
   };
-export type ChanState_chan_state_close = {
+export interface ChanState_chan_state_close {
   	kind: 'ChanState_chan_state_close';
 	signed_A: Bool;
 	signed_B: Bool;
@@ -9549,7 +9549,7 @@ export type ChanState_chan_state_close = {
 	A: Grams;
 	B: Grams;
   };
-export type ChanState_chan_state_payout = {
+export interface ChanState_chan_state_payout {
   	kind: 'ChanState_chan_state_payout';
 	A: Grams;
 	B: Grams;
@@ -9641,7 +9641,7 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
   	};
 	throw new Error('');
   }
-export type ChanPromise = {
+export interface ChanPromise {
   	kind: 'ChanPromise';
 	channel_id: number;
 	promise_A: Grams;
@@ -9665,7 +9665,7 @@ export function storeChanPromise(chanPromise: ChanPromise): (builder: Builder) =
 		storeGrams(chanPromise.promise_B)(builder);
   	});
   }
-export type ChanSignedPromise = {
+export interface ChanSignedPromise {
   	kind: 'ChanSignedPromise';
 	sig: Maybe<BitString>;
 	promise: ChanPromise;
@@ -9695,7 +9695,7 @@ export function storeChanSignedPromise(chanSignedPromise: ChanSignedPromise): (b
   	});
   }
 export type ChanMsg = ChanMsg_chan_msg_init | ChanMsg_chan_msg_close | ChanMsg_chan_msg_timeout | ChanMsg_chan_msg_payout;
-export type ChanMsg_chan_msg_init = {
+export interface ChanMsg_chan_msg_init {
   	kind: 'ChanMsg_chan_msg_init';
 	inc_A: Grams;
 	inc_B: Grams;
@@ -9703,16 +9703,16 @@ export type ChanMsg_chan_msg_init = {
 	min_B: Grams;
 	channel_id: number;
   };
-export type ChanMsg_chan_msg_close = {
+export interface ChanMsg_chan_msg_close {
   	kind: 'ChanMsg_chan_msg_close';
 	extra_A: Grams;
 	extra_B: Grams;
 	promise: ChanSignedPromise;
   };
-export type ChanMsg_chan_msg_timeout = {
+export interface ChanMsg_chan_msg_timeout {
   	kind: 'ChanMsg_chan_msg_timeout';
   };
-export type ChanMsg_chan_msg_payout = {
+export interface ChanMsg_chan_msg_payout {
   	kind: 'ChanMsg_chan_msg_payout';
   };
 export function loadChanMsg(slice: Slice): ChanMsg {
@@ -9789,7 +9789,7 @@ export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
   	};
 	throw new Error('');
   }
-export type ChanSignedMsg = {
+export interface ChanSignedMsg {
   	kind: 'ChanSignedMsg';
 	sig_A: Maybe<BitString>;
 	sig_B: Maybe<BitString>;
@@ -9831,7 +9831,7 @@ export function storeChanSignedMsg(chanSignedMsg: ChanSignedMsg): (builder: Buil
 		storeChanMsg(chanSignedMsg.msg)(builder);
   	});
   }
-export type ChanOp = {
+export interface ChanOp {
   	kind: 'ChanOp';
 	msg: ChanSignedMsg;
   };
@@ -9852,7 +9852,7 @@ export function storeChanOp(chanOp: ChanOp): (builder: Builder) => void {
 		storeChanSignedMsg(chanOp.msg)(builder);
   	});
   }
-export type ChanData = {
+export interface ChanData {
   	kind: 'ChanData';
 	config: ChanConfig;
 	state: ChanState;
