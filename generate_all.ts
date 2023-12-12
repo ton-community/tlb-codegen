@@ -26,7 +26,3 @@ function generateCode(filename: string) {
 // generateCode('my')
 generateCode('block')
 generateCode('test')
-
-// let cb = new CodeBuilder();
-
-// fs.writeFile('tmp.ts', cb.render(), () => { });
