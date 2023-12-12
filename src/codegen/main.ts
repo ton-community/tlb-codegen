@@ -1,5 +1,5 @@
 import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr, CompareExpr, Expression as ParserExpression } from '../../src/ast/nodes'
-import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, GenDeclaration, toCodeArray, TypeWithParameters, ArrowFunctionExpression, tUnionTypeExpression, tUnaryOpExpression, StructDeclaration, FunctionDeclaration } from './tsgen'
+import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, GenDeclaration, TypeWithParameters, ArrowFunctionExpression, tUnionTypeExpression, tUnaryOpExpression, StructDeclaration, FunctionDeclaration } from './tsgen'
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable, TLBConstructorTag } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression, getStringDeclaration } from './util'
@@ -7,6 +7,7 @@ import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
 import { handleField } from './field'
 import { getParamVarExpr, getSubStructName, goodVariableName } from './helpers'
+import { CodeBuilder } from './CodeBuilder'
 
 export function generate(tree: Program, input: string) {
   let jsCodeDeclarations: GenDeclaration[] = []
@@ -177,7 +178,7 @@ export function generate(tree: Program, input: string) {
   });
 
   jsCodeDeclarations.forEach(element => {
-    generatedCode += toCode(element, { tabs: 0 }) + '\n';
+    generatedCode += toCode(element, new CodeBuilder()) + '\n';
   });
   return generatedCode;
 }

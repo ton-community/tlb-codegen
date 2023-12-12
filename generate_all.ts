@@ -6,6 +6,7 @@ import { parse } from './src'
 import { ast } from './src'
 import { generate } from './src/codegen/main'
 import { Program } from './src/ast/nodes'
+import { CodeBuilder } from './src/codegen/CodeBuilder'
 
 
 const fixturesDir = path.resolve(__dirname, 'tests/fixtures')
@@ -25,3 +26,7 @@ function generateCode(filename: string) {
 // generateCode('my')
 generateCode('block')
 generateCode('test')
+
+// let cb = new CodeBuilder();
+
+// fs.writeFile('tmp.ts', cb.render(), () => { });
