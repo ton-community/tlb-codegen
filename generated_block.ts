@@ -2602,14 +2602,17 @@ export function hashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_long')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_same')) {
         let n = label.n;
         return n
+
     }
     throw new Error('');
 }
@@ -2686,10 +2689,12 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
 export function hmLabel_hml_short_get_n(len: Unary): number {
     if ((len.kind == 'Unary_unary_zero')) {
         return 0
+
     }
     if ((len.kind == 'Unary_unary_succ')) {
         let n = len.n;
         return (n + 1)
+
     }
     throw new Error('');
 }
@@ -2700,9 +2705,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         let len: Unary = loadUnary(slice);
         let n = hmLabel_hml_short_get_n(len);
         let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-    return slice.loadBits(1)
-})
-);
+            return slice.loadBits(1)
+
+        }));
         if ((!(n <= m))) {
             throw new Error('');
         }
@@ -2719,9 +2724,9 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         slice.loadUint(2);
         let n: number = slice.loadUint(bitLen(m));
         let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-    return slice.loadBits(1)
-})
-);
+            return slice.loadBits(1)
+
+        }));
         return {
             kind: 'HmLabel_hml_long',
             m: m,
@@ -2751,9 +2756,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
             builder.storeUint(0b0, 1);
             storeUnary(hmLabel.len)(builder);
             hmLabel.s.forEach(((arg: BitString) => {
-            builder.storeBits(arg);
-        })
-        );
+                builder.storeBits(arg);
+            }));
             if ((!(hmLabel.n <= hmLabel.m))) {
                 throw new Error('');
             }
@@ -2765,9 +2769,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
             builder.storeUint(0b10, 2);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
             hmLabel.s.forEach(((arg: BitString) => {
-            builder.storeBits(arg);
-        })
-        );
+                builder.storeBits(arg);
+            }));
         })
 
     }
@@ -2785,10 +2788,12 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 export function unary_unary_succ_get_n(x: Unary): number {
     if ((x.kind == 'Unary_unary_zero')) {
         return 0
+
     }
     if ((x.kind == 'Unary_unary_succ')) {
         let n = x.n;
         return (n + 1)
+
     }
     throw new Error('');
 }
@@ -2900,14 +2905,17 @@ export function hashmapAug_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_long')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_same')) {
         let n = label.n;
         return n
+
     }
     throw new Error('');
 }
@@ -3039,14 +3047,17 @@ export function varHashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_long')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_same')) {
         let n = label.n;
         return n
+
     }
     throw new Error('');
 }
@@ -3200,14 +3211,17 @@ export function pfxHashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_long')) {
         let n = label.n;
         return n
+
     }
     if ((label.kind == 'HmLabel_hml_same')) {
         let n = label.n;
         return n
+
     }
     throw new Error('');
 }
@@ -3546,9 +3560,9 @@ export function storeGrams(grams: Grams): (builder: Builder) => void {
 
 export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollection {
     let dict: HashmapE<VarUInteger> = loadHashmapE<VarUInteger>(slice, 32, ((slice: Slice) => {
-    return loadVarUInteger(slice, 32)
-})
-);
+        return loadVarUInteger(slice, 32)
+
+    }));
     return {
         kind: 'ExtraCurrencyCollection',
         dict: dict,
@@ -3559,12 +3573,11 @@ export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollecti
 export function storeExtraCurrencyCollection(extraCurrencyCollection: ExtraCurrencyCollection): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHashmapE<VarUInteger>(extraCurrencyCollection.dict, ((arg: VarUInteger) => {
-        return ((builder: Builder) => {
-            storeVarUInteger(arg)(builder);
-        })
+            return ((builder: Builder) => {
+                storeVarUInteger(arg)(builder);
+            })
 
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -3785,20 +3798,20 @@ export function loadStateInit(slice: Slice): StateInit {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x91231967))) {
         slice.loadUint(32);
         let split_depth: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
-    return slice.loadUint(5)
-})
-);
+            return slice.loadUint(5)
+
+        }));
         let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock);
         let code: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return slice1
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return slice1
+
+        }));
         let data: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return slice1
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return slice1
+
+        }));
         let library: HashmapE<SimpleLib> = loadHashmapE<SimpleLib>(slice, 256, loadSimpleLib);
         return {
             kind: 'StateInit',
@@ -3817,37 +3830,30 @@ export function storeStateInit(stateInit: StateInit): (builder: Builder) => void
     return ((builder: Builder) => {
         builder.storeUint(0x91231967, 32);
         storeMaybe<number>(stateInit.split_depth, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeUint(arg, 5);
-        })
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 5);
+            })
 
-    })
-    )(builder);
+        }))(builder);
         storeMaybe<TickTock>(stateInit.special, storeTickTock)(builder);
         storeMaybe<Slice>(stateInit.code, ((arg: Slice) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeSlice(arg);
+                builder.storeRef(cell1);
 
-            cell1.storeSlice(arg);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
         storeMaybe<Slice>(stateInit.data, ((arg: Slice) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeSlice(arg);
+                builder.storeRef(cell1);
 
-            cell1.storeSlice(arg);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
         storeHashmapE<SimpleLib>(stateInit.library, storeSimpleLib)(builder);
     })
 
@@ -3878,18 +3884,18 @@ export function storeSimpleLib(simpleLib: SimpleLib): (builder: Builder) => void
 export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X): Message<X> {
     let info: CommonMsgInfo = loadCommonMsgInfo(slice);
     let init: Maybe<Either<StateInit, StateInit>> = loadMaybe<Either<StateInit, StateInit>>(slice, ((slice: Slice) => {
-    return loadEither<StateInit, StateInit>(slice, loadStateInit, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return loadStateInit(slice1)
-    })
-    )
-})
-);
+        return loadEither<StateInit, StateInit>(slice, loadStateInit, ((slice: Slice) => {
+            let slice1 = slice.loadRef().beginParse();
+            return loadStateInit(slice1)
+
+        }))
+
+    }));
     let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadX(slice1)
-})
-);
+        let slice1 = slice.loadRef().beginParse();
+        return loadX(slice1)
+
+    }));
     return {
         kind: 'Message',
         info: info,
@@ -3903,35 +3909,28 @@ export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder:
     return ((builder: Builder) => {
         storeCommonMsgInfo(message.info)(builder);
         storeMaybe<Either<StateInit, StateInit>>(message.init, ((arg: Either<StateInit, StateInit>) => {
-        return ((builder: Builder) => {
-            storeEither<StateInit, StateInit>(arg, storeStateInit, ((arg: StateInit) => {
+            return ((builder: Builder) => {
+                storeEither<StateInit, StateInit>(arg, storeStateInit, ((arg: StateInit) => {
+                    return ((builder: Builder) => {
+                        let cell1 = beginCell();
+                        storeStateInit(arg)(cell1);
+                        builder.storeRef(cell1);
+
+                    })
+
+                }))(builder);
+            })
+
+        }))(builder);
+        storeEither<X, X>(message.body, storeX, ((arg: X) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-
-                storeStateInit(arg)(cell1);
-
+                storeX(arg)(cell1);
                 builder.storeRef(cell1);
 
             })
 
-        })
-        )(builder);
-        })
-
-    })
-    )(builder);
-        storeEither<X, X>(message.body, storeX, ((arg: X) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
-
-            storeX(arg)(cell1);
-
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -3939,18 +3938,18 @@ export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder:
 export function loadMessageRelaxed<X>(slice: Slice, loadX: (slice: Slice) => X): MessageRelaxed<X> {
     let info: CommonMsgInfoRelaxed = loadCommonMsgInfoRelaxed(slice);
     let init: Maybe<Either<StateInit, StateInit>> = loadMaybe<Either<StateInit, StateInit>>(slice, ((slice: Slice) => {
-    return loadEither<StateInit, StateInit>(slice, loadStateInit, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return loadStateInit(slice1)
-    })
-    )
-})
-);
+        return loadEither<StateInit, StateInit>(slice, loadStateInit, ((slice: Slice) => {
+            let slice1 = slice.loadRef().beginParse();
+            return loadStateInit(slice1)
+
+        }))
+
+    }));
     let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadX(slice1)
-})
-);
+        let slice1 = slice.loadRef().beginParse();
+        return loadX(slice1)
+
+    }));
     return {
         kind: 'MessageRelaxed',
         info: info,
@@ -3964,35 +3963,28 @@ export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX
     return ((builder: Builder) => {
         storeCommonMsgInfoRelaxed(messageRelaxed.info)(builder);
         storeMaybe<Either<StateInit, StateInit>>(messageRelaxed.init, ((arg: Either<StateInit, StateInit>) => {
-        return ((builder: Builder) => {
-            storeEither<StateInit, StateInit>(arg, storeStateInit, ((arg: StateInit) => {
+            return ((builder: Builder) => {
+                storeEither<StateInit, StateInit>(arg, storeStateInit, ((arg: StateInit) => {
+                    return ((builder: Builder) => {
+                        let cell1 = beginCell();
+                        storeStateInit(arg)(cell1);
+                        builder.storeRef(cell1);
+
+                    })
+
+                }))(builder);
+            })
+
+        }))(builder);
+        storeEither<X, X>(messageRelaxed.body, storeX, ((arg: X) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-
-                storeStateInit(arg)(cell1);
-
+                storeX(arg)(cell1);
                 builder.storeRef(cell1);
 
             })
 
-        })
-        )(builder);
-        })
-
-    })
-    )(builder);
-        storeEither<X, X>(messageRelaxed.body, storeX, ((arg: X) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
-
-            storeX(arg)(cell1);
-
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -4001,9 +3993,9 @@ export function loadMessageAny(slice: Slice): MessageAny {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9c54aa4b))) {
         slice.loadUint(32);
         let anon0: Message<Slice> = loadMessage<Slice>(slice, ((slice: Slice) => {
-    return slice
-})
-);
+            return slice
+
+        }));
         return {
             kind: 'MessageAny',
             anon0: anon0,
@@ -4017,12 +4009,11 @@ export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => v
     return ((builder: Builder) => {
         builder.storeUint(0x9c54aa4b, 32);
         storeMessage<Slice>(messageAny.anon0, ((arg: Slice) => {
-        return ((builder: Builder) => {
-            builder.storeSlice(arg);
-        })
+            return ((builder: Builder) => {
+                builder.storeSlice(arg);
+            })
 
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -4097,9 +4088,9 @@ export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
         let fwd_fee_remaining: Grams = loadGrams(slice);
         let slice1 = slice.loadRef().beginParse();
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-    return slice
-})
-);
+            return slice
+
+        }));
         return {
             kind: 'MsgEnvelope',
             cur_addr: cur_addr,
@@ -4120,12 +4111,11 @@ export function storeMsgEnvelope(msgEnvelope: MsgEnvelope): (builder: Builder) =
         storeGrams(msgEnvelope.fwd_fee_remaining)(builder);
         let cell1 = beginCell();
         storeMessage<Slice>(msgEnvelope.msg, ((arg: Slice) => {
-        return ((builder: Builder) => {
-            cell1.storeSlice(arg);
-        })
+            return ((builder: Builder) => {
+                cell1.storeSlice(arg);
+            })
 
-    })
-    )(cell1);
+        }))(cell1);
         builder.storeRef(cell1);
     })
 
@@ -4136,9 +4126,9 @@ export function loadInMsg(slice: Slice): InMsg {
         slice.loadUint(3);
         let slice1 = slice.loadRef().beginParse();
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-    return slice
-})
-);
+            return slice
+
+        }));
         let slice2 = slice.loadRef().beginParse();
         let transaction: Transaction = loadTransaction(slice2);
         return {
@@ -4152,9 +4142,9 @@ export function loadInMsg(slice: Slice): InMsg {
         slice.loadUint(3);
         let slice1 = slice.loadRef().beginParse();
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-    return slice
-})
-);
+            return slice
+
+        }));
         let slice2 = slice.loadRef().beginParse();
         let transaction: Transaction = loadTransaction(slice2);
         let ihr_fee: Grams = loadGrams(slice);
@@ -4254,12 +4244,11 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             builder.storeUint(0b000, 3);
             let cell1 = beginCell();
             storeMessage<Slice>(inMsg.msg, ((arg: Slice) => {
-            return ((builder: Builder) => {
-                cell1.storeSlice(arg);
-            })
+                return ((builder: Builder) => {
+                    cell1.storeSlice(arg);
+                })
 
-        })
-        )(cell1);
+            }))(cell1);
             builder.storeRef(cell1);
             let cell2 = beginCell();
             storeTransaction(inMsg.transaction)(cell2);
@@ -4272,12 +4261,11 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             builder.storeUint(0b010, 3);
             let cell1 = beginCell();
             storeMessage<Slice>(inMsg.msg, ((arg: Slice) => {
-            return ((builder: Builder) => {
-                cell1.storeSlice(arg);
-            })
+                return ((builder: Builder) => {
+                    cell1.storeSlice(arg);
+                })
 
-        })
-        )(cell1);
+            }))(cell1);
             builder.storeRef(cell1);
             let cell2 = beginCell();
             storeTransaction(inMsg.transaction)(cell2);
@@ -4401,9 +4389,9 @@ export function loadOutMsg(slice: Slice): OutMsg {
         slice.loadUint(3);
         let slice1 = slice.loadRef().beginParse();
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-    return slice
-})
-);
+            return slice
+
+        }));
         let slice2 = slice.loadRef().beginParse();
         let transaction: Transaction = loadTransaction(slice2);
         return {
@@ -4517,12 +4505,11 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
             builder.storeUint(0b000, 3);
             let cell1 = beginCell();
             storeMessage<Slice>(outMsg.msg, ((arg: Slice) => {
-            return ((builder: Builder) => {
-                cell1.storeSlice(arg);
-            })
+                return ((builder: Builder) => {
+                    cell1.storeSlice(arg);
+                })
 
-        })
-        )(cell1);
+            }))(cell1);
             builder.storeRef(cell1);
             let cell2 = beginCell();
             storeTransaction(outMsg.transaction)(cell2);
@@ -4668,9 +4655,9 @@ export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xcf5f0da2))) {
         slice.loadUint(32);
         let anon0: HashmapAugE<EnqueuedMsg, number> = loadHashmapAugE<EnqueuedMsg, number>(slice, 352, loadEnqueuedMsg, ((slice: Slice) => {
-    return slice.loadUint(64)
-})
-);
+            return slice.loadUint(64)
+
+        }));
         return {
             kind: 'OutMsgQueue',
             anon0: anon0,
@@ -4684,12 +4671,11 @@ export function storeOutMsgQueue(outMsgQueue: OutMsgQueue): (builder: Builder) =
     return ((builder: Builder) => {
         builder.storeUint(0xcf5f0da2, 32);
         storeHashmapAugE<EnqueuedMsg, number>(outMsgQueue.anon0, storeEnqueuedMsg, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeUint(arg, 64);
-        })
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 64);
+            })
 
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -5117,21 +5103,21 @@ export function loadTransaction(slice: Slice): Transaction {
         let end_status: AccountStatus = loadAccountStatus(slice);
         let slice1 = slice.loadRef().beginParse();
         let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadMessage<Slice>(slice1, ((slice: Slice) => {
-        return slice
-    })
-    )
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadMessage<Slice>(slice1, ((slice: Slice) => {
+                return slice
+
+            }))
+
+        }));
         let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadMessage<Slice>(slice1, ((slice: Slice) => {
-        return slice
-    })
-    )
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadMessage<Slice>(slice1, ((slice: Slice) => {
+                return slice
+
+            }))
+
+        }));
         let total_fees: CurrencyCollection = loadCurrencyCollection(slice);
         let slice2 = slice.loadRef().beginParse();
         let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount);
@@ -5171,41 +5157,33 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
         storeAccountStatus(transaction.end_status)(builder);
         let cell1 = beginCell();
         storeMaybe<Message<Slice>>(transaction.in_msg, ((arg: Message<Slice>) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeMessage<Slice>(arg, ((arg: Slice) => {
+                    return ((builder: Builder) => {
+                        cell1.storeSlice(arg);
+                    })
 
-            storeMessage<Slice>(arg, ((arg: Slice) => {
-                return ((builder: Builder) => {
-                    cell1.storeSlice(arg);
-                })
+                }))(cell1);
+                builder.storeRef(cell1);
 
             })
-            )(cell1);
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(cell1);
+        }))(cell1);
         storeHashmapE<Message<Slice>>(transaction.out_msgs, ((arg: Message<Slice>) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeMessage<Slice>(arg, ((arg: Slice) => {
+                    return ((builder: Builder) => {
+                        cell1.storeSlice(arg);
+                    })
 
-            storeMessage<Slice>(arg, ((arg: Slice) => {
-                return ((builder: Builder) => {
-                    cell1.storeSlice(arg);
-                })
+                }))(cell1);
+                builder.storeRef(cell1);
 
             })
-            )(cell1);
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(cell1);
+        }))(cell1);
         builder.storeRef(cell1);
         storeCurrencyCollection(transaction.total_fees)(builder);
         let cell2 = beginCell();
@@ -5313,10 +5291,10 @@ export function loadAccountBlock(slice: Slice): AccountBlock {
         slice.loadUint(4);
         let account_addr: BitString = slice.loadBits(256);
         let transactions: HashmapAug<Transaction, CurrencyCollection> = loadHashmapAug<Transaction, CurrencyCollection>(slice, 64, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadTransaction(slice1)
-})
-, loadCurrencyCollection);
+            let slice1 = slice.loadRef().beginParse();
+            return loadTransaction(slice1)
+
+        }), loadCurrencyCollection);
         let slice1 = slice.loadRef().beginParse();
         let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice1, loadAccount);
         return {
@@ -5335,17 +5313,14 @@ export function storeAccountBlock(accountBlock: AccountBlock): (builder: Builder
         builder.storeUint(0x5, 4);
         builder.storeBits(accountBlock.account_addr);
         storeHashmapAug<Transaction, CurrencyCollection>(accountBlock.transactions, ((arg: Transaction) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeTransaction(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeTransaction(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    , storeCurrencyCollection)(builder);
+        }), storeCurrencyCollection)(builder);
         let cell1 = beginCell();
         storeHASH_UPDATE<Account>(accountBlock.state_update, storeAccount)(cell1);
         builder.storeRef(cell1);
@@ -5482,15 +5457,15 @@ export function loadTrComputePhase(slice: Slice): TrComputePhase {
         let gas_used: VarUInteger = loadVarUInteger(slice1, 7);
         let gas_limit: VarUInteger = loadVarUInteger(slice1, 7);
         let gas_credit: Maybe<VarUInteger> = loadMaybe<VarUInteger>(slice1, ((slice: Slice) => {
-    return loadVarUInteger(slice, 3)
-})
-);
+            return loadVarUInteger(slice, 3)
+
+        }));
         let mode: number = slice1.loadInt(8);
         let exit_code: number = slice1.loadInt(32);
         let exit_arg: Maybe<number> = loadMaybe<number>(slice1, ((slice: Slice) => {
-    return slice1.loadInt(32)
-})
-);
+            return slice1.loadInt(32)
+
+        }));
         let vm_steps: number = slice1.loadUint(32);
         let vm_init_state_hash: BitString = slice1.loadBits(256);
         let vm_final_state_hash: BitString = slice1.loadBits(256);
@@ -5534,21 +5509,19 @@ export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: B
             storeVarUInteger(trComputePhase.gas_used)(cell1);
             storeVarUInteger(trComputePhase.gas_limit)(cell1);
             storeMaybe<VarUInteger>(trComputePhase.gas_credit, ((arg: VarUInteger) => {
-            return ((builder: Builder) => {
-                storeVarUInteger(arg)(builder);
-            })
+                return ((builder: Builder) => {
+                    storeVarUInteger(arg)(builder);
+                })
 
-        })
-        )(cell1);
+            }))(cell1);
             cell1.storeInt(trComputePhase.mode, 8);
             cell1.storeInt(trComputePhase.exit_code, 32);
             storeMaybe<number>(trComputePhase.exit_arg, ((arg: number) => {
-            return ((builder: Builder) => {
-                cell1.storeInt(arg, 32);
-            })
+                return ((builder: Builder) => {
+                    cell1.storeInt(arg, 32);
+                })
 
-        })
-        )(cell1);
+            }))(cell1);
             cell1.storeUint(trComputePhase.vm_steps, 32);
             cell1.storeBits(trComputePhase.vm_init_state_hash);
             cell1.storeBits(trComputePhase.vm_final_state_hash);
@@ -5615,9 +5588,9 @@ export function loadTrActionPhase(slice: Slice): TrActionPhase {
     let total_action_fees: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
     let result_code: number = slice.loadInt(32);
     let result_arg: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
-    return slice.loadInt(32)
-})
-);
+        return slice.loadInt(32)
+
+    }));
     let tot_actions: number = slice.loadUint(16);
     let spec_actions: number = slice.loadUint(16);
     let skipped_actions: number = slice.loadUint(16);
@@ -5654,12 +5627,11 @@ export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Buil
         storeMaybe<Grams>(trActionPhase.total_action_fees, storeGrams)(builder);
         builder.storeInt(trActionPhase.result_code, 32);
         storeMaybe<number>(trActionPhase.result_arg, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeInt(arg, 32);
-        })
+            return ((builder: Builder) => {
+                builder.storeInt(arg, 32);
+            })
 
-    })
-    )(builder);
+        }))(builder);
         builder.storeUint(trActionPhase.tot_actions, 16);
         builder.storeUint(trActionPhase.spec_actions, 16);
         builder.storeUint(trActionPhase.skipped_actions, 16);
@@ -5740,10 +5712,10 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadTrActionPhase(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadTrActionPhase(slice1)
+
+        }));
         let aborted: Bool = loadBool(slice);
         let bounce: Maybe<TrBouncePhase> = loadMaybe<TrBouncePhase>(slice, loadTrBouncePhase);
         let destroyed: Bool = loadBool(slice);
@@ -5775,10 +5747,10 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         let storage_ph: TrStoragePhase = loadTrStoragePhase(slice);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadTrActionPhase(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadTrActionPhase(slice1)
+
+        }));
         let aborted: Bool = loadBool(slice);
         let destroyed: Bool = loadBool(slice);
         return {
@@ -5798,10 +5770,10 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadTrActionPhase(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadTrActionPhase(slice1)
+
+        }));
         let aborted: Bool = loadBool(slice);
         let destroyed: Bool = loadBool(slice);
         return {
@@ -5851,10 +5823,10 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadTrActionPhase(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadTrActionPhase(slice1)
+
+        }));
         let aborted: Bool = loadBool(slice);
         let destroyed: Bool = loadBool(slice);
         return {
@@ -5882,17 +5854,14 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
             storeMaybe<TrCreditPhase>(transactionDescr.credit_ph, storeTrCreditPhase)(builder);
             storeTrComputePhase(transactionDescr.compute_ph)(builder);
             storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
-            return ((builder: Builder) => {
-                let cell1 = beginCell();
+                return ((builder: Builder) => {
+                    let cell1 = beginCell();
+                    storeTrActionPhase(arg)(cell1);
+                    builder.storeRef(cell1);
 
-                storeTrActionPhase(arg)(cell1);
+                })
 
-                builder.storeRef(cell1);
-
-            })
-
-        })
-        )(builder);
+            }))(builder);
             storeBool(transactionDescr.aborted)(builder);
             storeMaybe<TrBouncePhase>(transactionDescr.bounce, storeTrBouncePhase)(builder);
             storeBool(transactionDescr.destroyed)(builder);
@@ -5913,17 +5882,14 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
             storeTrStoragePhase(transactionDescr.storage_ph)(builder);
             storeTrComputePhase(transactionDescr.compute_ph)(builder);
             storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
-            return ((builder: Builder) => {
-                let cell1 = beginCell();
+                return ((builder: Builder) => {
+                    let cell1 = beginCell();
+                    storeTrActionPhase(arg)(cell1);
+                    builder.storeRef(cell1);
 
-                storeTrActionPhase(arg)(cell1);
+                })
 
-                builder.storeRef(cell1);
-
-            })
-
-        })
-        )(builder);
+            }))(builder);
             storeBool(transactionDescr.aborted)(builder);
             storeBool(transactionDescr.destroyed)(builder);
         })
@@ -5936,17 +5902,14 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
             storeMaybe<TrStoragePhase>(transactionDescr.storage_ph, storeTrStoragePhase)(builder);
             storeTrComputePhase(transactionDescr.compute_ph)(builder);
             storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
-            return ((builder: Builder) => {
-                let cell1 = beginCell();
+                return ((builder: Builder) => {
+                    let cell1 = beginCell();
+                    storeTrActionPhase(arg)(cell1);
+                    builder.storeRef(cell1);
 
-                storeTrActionPhase(arg)(cell1);
+                })
 
-                builder.storeRef(cell1);
-
-            })
-
-        })
-        )(builder);
+            }))(builder);
             storeBool(transactionDescr.aborted)(builder);
             storeBool(transactionDescr.destroyed)(builder);
         })
@@ -5983,17 +5946,14 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
             storeMaybe<TrCreditPhase>(transactionDescr.credit_ph, storeTrCreditPhase)(builder);
             storeTrComputePhase(transactionDescr.compute_ph)(builder);
             storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
-            return ((builder: Builder) => {
-                let cell1 = beginCell();
+                return ((builder: Builder) => {
+                    let cell1 = beginCell();
+                    storeTrActionPhase(arg)(cell1);
+                    builder.storeRef(cell1);
 
-                storeTrActionPhase(arg)(cell1);
+                })
 
-                builder.storeRef(cell1);
-
-            })
-
-        })
-        )(builder);
+            }))(builder);
             storeBool(transactionDescr.aborted)(builder);
             storeBool(transactionDescr.destroyed)(builder);
         })
@@ -6115,9 +6075,9 @@ export function loadOutAction(slice: Slice): OutAction {
         let mode: number = slice.loadUint(8);
         let slice1 = slice.loadRef().beginParse();
         let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, ((slice: Slice) => {
-    return slice
-})
-);
+            return slice
+
+        }));
         return {
             kind: 'OutAction_action_send_msg',
             mode: mode,
@@ -6170,12 +6130,11 @@ export function storeOutAction(outAction: OutAction): (builder: Builder) => void
             builder.storeUint(outAction.mode, 8);
             let cell1 = beginCell();
             storeMessageRelaxed<Slice>(outAction.out_msg, ((arg: Slice) => {
-            return ((builder: Builder) => {
-                cell1.storeSlice(arg);
-            })
+                return ((builder: Builder) => {
+                    cell1.storeSlice(arg);
+                })
 
-        })
-        )(cell1);
+            }))(cell1);
             builder.storeRef(cell1);
         })
 
@@ -6392,10 +6351,10 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
         let libraries: HashmapE<LibDescr> = loadHashmapE<LibDescr>(slice3, 256, loadLibDescr);
         let master_ref: Maybe<BlkMasterInfo> = loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo);
         let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadMcStateExtra(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadMcStateExtra(slice1)
+
+        }));
         return {
             kind: 'ShardStateUnsplit',
             global_id: global_id,
@@ -6447,17 +6406,14 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
         storeMaybe<BlkMasterInfo>(shardStateUnsplit.master_ref, storeBlkMasterInfo)(cell3);
         builder.storeRef(cell3);
         storeMaybe<McStateExtra>(shardStateUnsplit.custom, ((arg: McStateExtra) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeMcStateExtra(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeMcStateExtra(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -6563,17 +6519,17 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
         let prev_key_block_seqno: number = slice.loadUint(32);
         let gen_software: GlobalVersion | undefined = ((flags & (1 << 0)) ? loadGlobalVersion(slice) : undefined);
         let master_ref: BlkMasterInfo | undefined = (not_master ? ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadBlkMasterInfo(slice1)
-})
-(slice) : undefined);
+            let slice1 = slice.loadRef().beginParse();
+            return loadBlkMasterInfo(slice1)
+
+        })(slice) : undefined);
         let slice1 = slice.loadRef().beginParse();
         let prev_ref: BlkPrevInfo = loadBlkPrevInfo(slice1, after_merge);
         let prev_vert_ref: BlkPrevInfo | undefined = (vert_seqno_incr ? ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadBlkPrevInfo(slice1, 0)
-})
-(slice) : undefined);
+            let slice1 = slice.loadRef().beginParse();
+            return loadBlkPrevInfo(slice1, 0)
+
+        })(slice) : undefined);
         if ((!(flags <= 1))) {
             throw new Error('');
         }
@@ -6641,9 +6597,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
         }
         if ((blockInfo.master_ref != undefined)) {
             let cell1 = beginCell();
-
             storeBlkMasterInfo(blockInfo.master_ref)(cell1);
-
             builder.storeRef(cell1);
 
         }
@@ -6652,9 +6606,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
         builder.storeRef(cell1);
         if ((blockInfo.prev_vert_ref != undefined)) {
             let cell1 = beginCell();
-
             storeBlkPrevInfo(blockInfo.prev_vert_ref)(cell1);
-
             builder.storeRef(cell1);
 
         }
@@ -6770,10 +6722,10 @@ export function loadBlockExtra(slice: Slice): BlockExtra {
         let rand_seed: BitString = slice.loadBits(256);
         let created_by: BitString = slice.loadBits(256);
         let custom: Maybe<McBlockExtra> = loadMaybe<McBlockExtra>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadMcBlockExtra(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadMcBlockExtra(slice1)
+
+        }));
         return {
             kind: 'BlockExtra',
             in_msg_descr: in_msg_descr,
@@ -6803,17 +6755,14 @@ export function storeBlockExtra(blockExtra: BlockExtra): (builder: Builder) => v
         builder.storeBits(blockExtra.rand_seed);
         builder.storeBits(blockExtra.created_by);
         storeMaybe<McBlockExtra>(blockExtra.custom, ((arg: McBlockExtra) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeMcBlockExtra(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeMcBlockExtra(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -7144,10 +7093,10 @@ export function loadShardHashes(slice: Slice): ShardHashes {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xd7c80ab1))) {
         slice.loadUint(32);
         let anon0: HashmapE<BinTree<ShardDescr>> = loadHashmapE<BinTree<ShardDescr>>(slice, 32, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadBinTree<ShardDescr>(slice1, loadShardDescr)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadBinTree<ShardDescr>(slice1, loadShardDescr)
+
+        }));
         return {
             kind: 'ShardHashes',
             anon0: anon0,
@@ -7161,17 +7110,14 @@ export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) =
     return ((builder: Builder) => {
         builder.storeUint(0xd7c80ab1, 32);
         storeHashmapE<BinTree<ShardDescr>>(shardHashes.anon0, ((arg: BinTree<ShardDescr>) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeBinTree<ShardDescr>(arg, storeShardDescr)(cell1);
+                builder.storeRef(cell1);
 
-            storeBinTree<ShardDescr>(arg, storeShardDescr)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -7282,10 +7228,10 @@ export function loadConfigParams(slice: Slice): ConfigParams {
         let config_addr: BitString = slice.loadBits(256);
         let slice1 = slice.loadRef().beginParse();
         let config: Hashmap<Slice> = loadHashmap<Slice>(slice1, 32, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return slice1
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return slice1
+
+        }));
         return {
             kind: 'ConfigParams',
             config_addr: config_addr,
@@ -7302,17 +7248,14 @@ export function storeConfigParams(configParams: ConfigParams): (builder: Builder
         builder.storeBits(configParams.config_addr);
         let cell1 = beginCell();
         storeHashmap<Slice>(configParams.config, ((arg: Slice) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeSlice(arg);
+                builder.storeRef(cell1);
 
-            cell1.storeSlice(arg);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(cell1);
+        }))(cell1);
         builder.storeRef(cell1);
     })
 
@@ -7490,9 +7433,9 @@ export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x34))) {
         slice.loadUint(8);
         let counters: HashmapAugE<CreatorStats, number> = loadHashmapAugE<CreatorStats, number>(slice, 256, loadCreatorStats, ((slice: Slice) => {
-    return slice.loadUint(32)
-})
-);
+            return slice.loadUint(32)
+
+        }));
         return {
             kind: 'BlockCreateStats_block_create_stats_ext',
             counters: counters,
@@ -7514,12 +7457,11 @@ export function storeBlockCreateStats(blockCreateStats: BlockCreateStats): (buil
         return ((builder: Builder) => {
             builder.storeUint(0x34, 8);
             storeHashmapAugE<CreatorStats, number>(blockCreateStats.counters, storeCreatorStats, ((arg: number) => {
-            return ((builder: Builder) => {
-                builder.storeUint(arg, 32);
-            })
+                return ((builder: Builder) => {
+                    builder.storeUint(arg, 32);
+                })
 
-        })
-        )(builder);
+            }))(builder);
         })
 
     }
@@ -7762,15 +7704,15 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
         let slice1 = slice.loadRef().beginParse();
         let prev_blk_signatures: HashmapE<CryptoSignaturePair> = loadHashmapE<CryptoSignaturePair>(slice1, 16, loadCryptoSignaturePair);
         let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadInMsg(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadInMsg(slice1)
+
+        }));
         let mint_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadInMsg(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadInMsg(slice1)
+
+        }));
         let config: ConfigParams | undefined = (key_block ? loadConfigParams(slice) : undefined);
         return {
             kind: 'McBlockExtra',
@@ -7796,29 +7738,23 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
         let cell1 = beginCell();
         storeHashmapE<CryptoSignaturePair>(mcBlockExtra.prev_blk_signatures, storeCryptoSignaturePair)(cell1);
         storeMaybe<InMsg>(mcBlockExtra.recover_create_msg, ((arg: InMsg) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeInMsg(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeInMsg(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(cell1);
+        }))(cell1);
         storeMaybe<InMsg>(mcBlockExtra.mint_msg, ((arg: InMsg) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeInMsg(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeInMsg(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(cell1);
+        }))(cell1);
         builder.storeRef(cell1);
         if ((mcBlockExtra.config != undefined)) {
             storeConfigParams(mcBlockExtra.config)(builder);
@@ -8717,14 +8653,14 @@ export function loadConfigProposal(slice: Slice): ConfigProposal {
         slice.loadUint(8);
         let param_id: number = slice.loadInt(32);
         let param_value: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return slice1
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return slice1
+
+        }));
         let if_hash_equal: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
-    return slice.loadUint(256)
-})
-);
+            return slice.loadUint(256)
+
+        }));
         return {
             kind: 'ConfigProposal',
             param_id: param_id,
@@ -8741,24 +8677,20 @@ export function storeConfigProposal(configProposal: ConfigProposal): (builder: B
         builder.storeUint(0xf3, 8);
         builder.storeInt(configProposal.param_id, 32);
         storeMaybe<Slice>(configProposal.param_value, ((arg: Slice) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeSlice(arg);
+                builder.storeRef(cell1);
 
-            cell1.storeSlice(arg);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
         storeMaybe<number>(configProposal.if_hash_equal, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeUint(arg, 256);
-        })
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 256);
+            })
 
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -9647,9 +9579,9 @@ export function loadOracleBridgeParams(slice: Slice): OracleBridgeParams {
     let bridge_address: BitString = slice.loadBits(256);
     let oracle_mutlisig_address: BitString = slice.loadBits(256);
     let oracles: HashmapE<number> = loadHashmapE<number>(slice, 256, ((slice: Slice) => {
-    return slice.loadUint(256)
-})
-);
+        return slice.loadUint(256)
+
+    }));
     let external_chain_address: BitString = slice.loadBits(256);
     return {
         kind: 'OracleBridgeParams',
@@ -9666,12 +9598,11 @@ export function storeOracleBridgeParams(oracleBridgeParams: OracleBridgeParams):
         builder.storeBits(oracleBridgeParams.bridge_address);
         builder.storeBits(oracleBridgeParams.oracle_mutlisig_address);
         storeHashmapE<number>(oracleBridgeParams.oracles, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeUint(arg, 256);
-        })
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 256);
+            })
 
-    })
-    )(builder);
+        }))(builder);
         builder.storeBits(oracleBridgeParams.external_chain_address);
     })
 
@@ -9730,10 +9661,10 @@ export function loadBlockProof(slice: Slice): BlockProof {
         let slice1 = slice.loadRef().beginParse();
         let root: Slice = slice1;
         let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadBlockSignatures(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadBlockSignatures(slice1)
+
+        }));
         return {
             kind: 'BlockProof',
             proof_for: proof_for,
@@ -9753,17 +9684,14 @@ export function storeBlockProof(blockProof: BlockProof): (builder: Builder) => v
         cell1.storeSlice(blockProof.root);
         builder.storeRef(cell1);
         storeMaybe<BlockSignatures>(blockProof.signatures, ((arg: BlockSignatures) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeBlockSignatures(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeBlockSignatures(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -9779,10 +9707,10 @@ export function loadProofChain(slice: Slice, arg0: number): ProofChain {
         let slice1 = slice.loadRef().beginParse();
         let root: Slice = slice1;
         let prev: ProofChain | undefined = ((arg0 - 1) ? ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadProofChain(slice1, (arg0 - 1))
-})
-(slice) : undefined);
+            let slice1 = slice.loadRef().beginParse();
+            return loadProofChain(slice1, (arg0 - 1))
+
+        })(slice) : undefined);
         return {
             kind: 'ProofChain_chain_link',
             n: (arg0 - 1),
@@ -9807,9 +9735,7 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
             builder.storeRef(cell1);
             if ((proofChain.prev != undefined)) {
                 let cell1 = beginCell();
-
                 storeProofChain(proofChain.prev)(cell1);
-
                 builder.storeRef(cell1);
 
             }
@@ -9824,10 +9750,10 @@ export function loadTopBlockDescr(slice: Slice): TopBlockDescr {
         slice.loadUint(8);
         let proof_for: BlockIdExt = loadBlockIdExt(slice);
         let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadBlockSignatures(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadBlockSignatures(slice1)
+
+        }));
         let len: number = slice.loadUint(8);
         let chain: ProofChain = loadProofChain(slice, len);
         if ((!(len >= 1))) {
@@ -9853,17 +9779,14 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
         builder.storeUint(0xd5, 8);
         storeBlockIdExt(topBlockDescr.proof_for)(builder);
         storeMaybe<BlockSignatures>(topBlockDescr.signatures, ((arg: BlockSignatures) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeBlockSignatures(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeBlockSignatures(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
         builder.storeUint(topBlockDescr.len, 8);
         storeProofChain(topBlockDescr.chain)(builder);
         if ((!(topBlockDescr.len >= 1))) {
@@ -9880,10 +9803,10 @@ export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x4ac789f3))) {
         slice.loadUint(32);
         let collection: HashmapE<TopBlockDescr> = loadHashmapE<TopBlockDescr>(slice, 96, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return loadTopBlockDescr(slice1)
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return loadTopBlockDescr(slice1)
+
+        }));
         return {
             kind: 'TopBlockDescrSet',
             collection: collection,
@@ -9897,17 +9820,14 @@ export function storeTopBlockDescrSet(topBlockDescrSet: TopBlockDescrSet): (buil
     return ((builder: Builder) => {
         builder.storeUint(0x4ac789f3, 32);
         storeHashmapE<TopBlockDescr>(topBlockDescrSet.collection, ((arg: TopBlockDescr) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeTopBlockDescr(arg)(cell1);
+                builder.storeRef(cell1);
 
-            storeTopBlockDescr(arg)(cell1);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -10490,10 +10410,10 @@ export function loadVmLibraries(slice: Slice): VmLibraries {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xe9be85ef))) {
         slice.loadUint(32);
         let libraries: HashmapE<Slice> = loadHashmapE<Slice>(slice, 256, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return slice1
-})
-);
+            let slice1 = slice.loadRef().beginParse();
+            return slice1
+
+        }));
         return {
             kind: 'VmLibraries',
             libraries: libraries,
@@ -10507,32 +10427,29 @@ export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) =
     return ((builder: Builder) => {
         builder.storeUint(0xe9be85ef, 32);
         storeHashmapE<Slice>(vmLibraries.libraries, ((arg: Slice) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeSlice(arg);
+                builder.storeRef(cell1);
 
-            cell1.storeSlice(arg);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
 
 export function loadVmControlData(slice: Slice): VmControlData {
     let nargs: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
-    return slice.loadUint(13)
-})
-);
+        return slice.loadUint(13)
+
+    }));
     let stack: Maybe<VmStack> = loadMaybe<VmStack>(slice, loadVmStack);
     let save: VmSaveList = loadVmSaveList(slice);
     let cp: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
-    return slice.loadInt(16)
-})
-);
+        return slice.loadInt(16)
+
+    }));
     return {
         kind: 'VmControlData',
         nargs: nargs,
@@ -10546,21 +10463,19 @@ export function loadVmControlData(slice: Slice): VmControlData {
 export function storeVmControlData(vmControlData: VmControlData): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeMaybe<number>(vmControlData.nargs, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeUint(arg, 13);
-        })
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 13);
+            })
 
-    })
-    )(builder);
+        }))(builder);
         storeMaybe<VmStack>(vmControlData.stack, storeVmStack)(builder);
         storeVmSaveList(vmControlData.save)(builder);
         storeMaybe<number>(vmControlData.cp, ((arg: number) => {
-        return ((builder: Builder) => {
-            builder.storeInt(arg, 16);
-        })
+            return ((builder: Builder) => {
+                builder.storeInt(arg, 16);
+            })
 
-    })
-    )(builder);
+        }))(builder);
     })
 
 }
@@ -11339,10 +11254,10 @@ export function storeChanPromise(chanPromise: ChanPromise): (builder: Builder) =
 
 export function loadChanSignedPromise(slice: Slice): ChanSignedPromise {
     let sig: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return slice1.loadBits(512)
-})
-);
+        let slice1 = slice.loadRef().beginParse();
+        return slice1.loadBits(512)
+
+    }));
     let promise: ChanPromise = loadChanPromise(slice);
     return {
         kind: 'ChanSignedPromise',
@@ -11355,17 +11270,14 @@ export function loadChanSignedPromise(slice: Slice): ChanSignedPromise {
 export function storeChanSignedPromise(chanSignedPromise: ChanSignedPromise): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeMaybe<BitString>(chanSignedPromise.sig, ((arg: BitString) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeBits(arg);
+                builder.storeRef(cell1);
 
-            cell1.storeBits(arg);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
         storeChanPromise(chanSignedPromise.promise)(builder);
     })
 
@@ -11457,15 +11369,15 @@ export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
 
 export function loadChanSignedMsg(slice: Slice): ChanSignedMsg {
     let sig_A: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return slice1.loadBits(512)
-})
-);
+        let slice1 = slice.loadRef().beginParse();
+        return slice1.loadBits(512)
+
+    }));
     let sig_B: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
-    let slice1 = slice.loadRef().beginParse();
-    return slice1.loadBits(512)
-})
-);
+        let slice1 = slice.loadRef().beginParse();
+        return slice1.loadBits(512)
+
+    }));
     let msg: ChanMsg = loadChanMsg(slice);
     return {
         kind: 'ChanSignedMsg',
@@ -11479,29 +11391,23 @@ export function loadChanSignedMsg(slice: Slice): ChanSignedMsg {
 export function storeChanSignedMsg(chanSignedMsg: ChanSignedMsg): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeMaybe<BitString>(chanSignedMsg.sig_A, ((arg: BitString) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeBits(arg);
+                builder.storeRef(cell1);
 
-            cell1.storeBits(arg);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
         storeMaybe<BitString>(chanSignedMsg.sig_B, ((arg: BitString) => {
-        return ((builder: Builder) => {
-            let cell1 = beginCell();
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeBits(arg);
+                builder.storeRef(cell1);
 
-            cell1.storeBits(arg);
+            })
 
-            builder.storeRef(cell1);
-
-        })
-
-    })
-    )(builder);
+        }))(builder);
         storeChanMsg(chanSignedMsg.msg)(builder);
     })
 
