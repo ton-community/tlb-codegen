@@ -356,7 +356,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
     }
 
     if (node.type == "ArrowFunctionType") {
-        code.add(`(${toCodeArray(node.parameters, new CodeBuilder(), ', ').render()}) => ${node.returnType ? toCode(node.returnType).render() : ''}`)
+        code.add(`(${toCodeArray(node.parameters, new CodeBuilder(), ', ').render()}) => ${node.returnType ? toCode(node.returnType).render() : ''}`, false)
     }
 
     if (node.type == "TypeWithParameters") {

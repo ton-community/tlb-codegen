@@ -589,8 +589,7 @@ export function storeSharpConstructor(sharpConstructor: SharpConstructor): (buil
 
 }
 
-export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType
-): Maybe<TheType> {
+export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => TheType): Maybe<TheType> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         return {
@@ -610,9 +609,7 @@ export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => 
     throw new Error('');
 }
 
-export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theType: TheType) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theType: TheType) => (builder: Builder) => void): (builder: Builder) => void {
     if ((maybe.kind == 'Maybe_nothing')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -645,9 +642,7 @@ export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => v
 
 }
 
-export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X
-, loadY: (slice: Slice) => Y
-): Either<X, Y> {
+export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         let value: X = loadX(slice);
@@ -669,11 +664,7 @@ export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X
     throw new Error('');
 }
 
-export function storeEither<X, Y>(either: Either<X, Y>, storeX: (x: X) => (builder: Builder) => void
-
-, storeY: (y: Y) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeEither<X, Y>(either: Either<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
     if ((either.kind == 'Either_left')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -841,8 +832,7 @@ export function storeCellsSimple(_cellsSimple: CellsSimple): (builder: Builder) 
 
 }
 
-export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg
-): IntBits<Arg> {
+export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntBits<Arg> {
     let d: number = slice.loadInt(11);
     let g: BitString = slice.loadBits(2);
     let arg: Arg = loadArg(slice);
@@ -857,9 +847,7 @@ export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg
 
 }
 
-export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeInt(intBits.d, 11);
         builder.storeBits(intBits.g);
@@ -995,8 +983,7 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
 
 }
 
-export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A
-): OneComb<A> {
+export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
     let t: number = slice.loadUint(32);
     let x: A = loadA(slice);
     return {
@@ -1007,9 +994,7 @@ export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A
 
 }
 
-export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(oneComb.t, 32);
         storeA(oneComb.x)(builder);
@@ -1398,8 +1383,7 @@ export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrde
 
 }
 
-export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X
-): CombArgCellRef<X> {
+export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X): CombArgCellRef<X> {
     let info: number = slice.loadInt(32);
     let init: Maybe<Either<X, number>> = loadMaybe<Either<X, number>>(slice, ((slice: Slice) => {
     return loadEither<X, number>(slice, loadX, ((slice: Slice) => {
@@ -1429,9 +1413,7 @@ export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X
 
 }
 
-export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeInt(combArgCellRef.info, 32);
         storeMaybe<Either<X, number>>(combArgCellRef.init, ((arg: Either<X, number>) => {
@@ -1626,8 +1608,7 @@ export function hashmap_get_l(label: HmLabel): number {
     throw new Error('');
 }
 
-export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
-): Hashmap<X> {
+export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
     let label: HmLabel = loadHmLabel(slice, n);
     let l = hashmap_get_l(label);
     let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
@@ -1642,9 +1623,7 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
 
 }
 
-export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHmLabel(hashmap.label)(builder);
         storeHashmapNode<X>(hashmap.node, storeX)(builder);
@@ -1652,8 +1631,7 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
 
 }
 
-export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X
-): HashmapNode<X> {
+export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): HashmapNode<X> {
     if ((arg0 == 0)) {
         let value: X = loadX(slice);
         return {
@@ -1678,9 +1656,7 @@ export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Sl
     throw new Error('');
 }
 
-export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((hashmapNode.kind == 'HashmapNode_hmn_leaf')) {
         return ((builder: Builder) => {
             storeX(hashmapNode.value)(builder);
@@ -1800,8 +1776,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
     throw new Error('');
 }
 
-export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X
-): HashmapE<X> {
+export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): HashmapE<X> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         return {
@@ -1824,9 +1799,7 @@ export function loadHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice) =
     throw new Error('');
 }
 
-export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (builder: Builder) => void
-
-): (builder: Builder) => void {
+export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     if ((hashmapE.kind == 'HashmapE_hme_empty')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
