@@ -409,8 +409,10 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
 
     if (node.type == "StructDeclaration") {
         code.add(`export interface ${toCode(node.name).render()}${toCode(node.typeParametersExpression).render()} {`)
-        node.fields.forEach(field => {
-            code.add(`readonly ${toCode(field).render()}`)
+        code.inTab(() => {
+            node.fields.forEach(field => {
+                code.add(`readonly ${toCode(field).render()};`)
+            })
         })
         code.add('}')
     }

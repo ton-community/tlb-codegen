@@ -3,2387 +3,2387 @@ import { Slice } from 'ton'
 import { beginCell } from 'ton'
 import { BitString } from 'ton'
 export interface Unit {
-readonly kind: 'Unit'
+    readonly kind: 'Unit';
 }
 
 export interface True {
-readonly kind: 'True'
+    readonly kind: 'True';
 }
 
 export type Bool = Bool_bool_false | Bool_bool_true;
 
 export interface Bool_bool_false {
-readonly kind: 'Bool_bool_false'
+    readonly kind: 'Bool_bool_false';
 }
 
 export interface Bool_bool_true {
-readonly kind: 'Bool_bool_true'
+    readonly kind: 'Bool_bool_true';
 }
 
 export interface BoolFalse {
-readonly kind: 'BoolFalse'
+    readonly kind: 'BoolFalse';
 }
 
 export interface BoolTrue {
-readonly kind: 'BoolTrue'
+    readonly kind: 'BoolTrue';
 }
 
 export type Maybe<X> = Maybe_nothing<X> | Maybe_just<X>;
 
 export interface Maybe_nothing<X> {
-readonly kind: 'Maybe_nothing'
+    readonly kind: 'Maybe_nothing';
 }
 
 export interface Maybe_just<X> {
-readonly kind: 'Maybe_just'
-readonly value: X
+    readonly kind: 'Maybe_just';
+    readonly value: X;
 }
 
 export type Either<X, Y> = Either_left<X, Y> | Either_right<X, Y>;
 
 export interface Either_left<X, Y> {
-readonly kind: 'Either_left'
-readonly value: X
+    readonly kind: 'Either_left';
+    readonly value: X;
 }
 
 export interface Either_right<X, Y> {
-readonly kind: 'Either_right'
-readonly value: Y
+    readonly kind: 'Either_right';
+    readonly value: Y;
 }
 
 export interface Both<X, Y> {
-readonly kind: 'Both'
-readonly first: X
-readonly second: Y
+    readonly kind: 'Both';
+    readonly first: X;
+    readonly second: Y;
 }
 
 export interface Bit {
-readonly kind: 'Bit'
-readonly anon0: number
+    readonly kind: 'Bit';
+    readonly anon0: number;
 }
 
 export interface Hashmap<X> {
-readonly kind: 'Hashmap'
-readonly n: number
-readonly l: number
-readonly m: number
-readonly label: HmLabel
-readonly node: HashmapNode<X>
+    readonly kind: 'Hashmap';
+    readonly n: number;
+    readonly l: number;
+    readonly m: number;
+    readonly label: HmLabel;
+    readonly node: HashmapNode<X>;
 }
 
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 
 export interface HashmapNode_hmn_leaf<X> {
-readonly kind: 'HashmapNode_hmn_leaf'
-readonly value: X
+    readonly kind: 'HashmapNode_hmn_leaf';
+    readonly value: X;
 }
 
 export interface HashmapNode_hmn_fork<X> {
-readonly kind: 'HashmapNode_hmn_fork'
-readonly n: number
-readonly left: Hashmap<X>
-readonly right: Hashmap<X>
+    readonly kind: 'HashmapNode_hmn_fork';
+    readonly n: number;
+    readonly left: Hashmap<X>;
+    readonly right: Hashmap<X>;
 }
 
 export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
 
 export interface HmLabel_hml_short {
-readonly kind: 'HmLabel_hml_short'
-readonly m: number
-readonly n: number
-readonly len: Unary
-readonly s: Array<BitString>
+    readonly kind: 'HmLabel_hml_short';
+    readonly m: number;
+    readonly n: number;
+    readonly len: Unary;
+    readonly s: Array<BitString>;
 }
 
 export interface HmLabel_hml_long {
-readonly kind: 'HmLabel_hml_long'
-readonly m: number
-readonly n: number
-readonly s: Array<BitString>
+    readonly kind: 'HmLabel_hml_long';
+    readonly m: number;
+    readonly n: number;
+    readonly s: Array<BitString>;
 }
 
 export interface HmLabel_hml_same {
-readonly kind: 'HmLabel_hml_same'
-readonly m: number
-readonly v: BitString
-readonly n: number
+    readonly kind: 'HmLabel_hml_same';
+    readonly m: number;
+    readonly v: BitString;
+    readonly n: number;
 }
 
 export type Unary = Unary_unary_zero | Unary_unary_succ;
 
 export interface Unary_unary_zero {
-readonly kind: 'Unary_unary_zero'
+    readonly kind: 'Unary_unary_zero';
 }
 
 export interface Unary_unary_succ {
-readonly kind: 'Unary_unary_succ'
-readonly n: number
-readonly x: Unary
+    readonly kind: 'Unary_unary_succ';
+    readonly n: number;
+    readonly x: Unary;
 }
 
 export type HashmapE<X> = HashmapE_hme_empty<X> | HashmapE_hme_root<X>;
 
 export interface HashmapE_hme_empty<X> {
-readonly kind: 'HashmapE_hme_empty'
-readonly n: number
+    readonly kind: 'HashmapE_hme_empty';
+    readonly n: number;
 }
 
 export interface HashmapE_hme_root<X> {
-readonly kind: 'HashmapE_hme_root'
-readonly n: number
-readonly root: Hashmap<X>
+    readonly kind: 'HashmapE_hme_root';
+    readonly n: number;
+    readonly root: Hashmap<X>;
 }
 
 export interface BitstringSet {
-readonly kind: 'BitstringSet'
-readonly n: number
-readonly _: Hashmap<True>
+    readonly kind: 'BitstringSet';
+    readonly n: number;
+    readonly _: Hashmap<True>;
 }
 
 export interface HashmapAug<X, Y> {
-readonly kind: 'HashmapAug'
-readonly n: number
-readonly l: number
-readonly m: number
-readonly label: HmLabel
-readonly node: HashmapAugNode<X, Y>
+    readonly kind: 'HashmapAug';
+    readonly n: number;
+    readonly l: number;
+    readonly m: number;
+    readonly label: HmLabel;
+    readonly node: HashmapAugNode<X, Y>;
 }
 
 export type HashmapAugNode<X, Y> = HashmapAugNode_ahmn_leaf<X, Y> | HashmapAugNode_ahmn_fork<X, Y>;
 
 export interface HashmapAugNode_ahmn_leaf<X, Y> {
-readonly kind: 'HashmapAugNode_ahmn_leaf'
-readonly extra: Y
-readonly value: X
+    readonly kind: 'HashmapAugNode_ahmn_leaf';
+    readonly extra: Y;
+    readonly value: X;
 }
 
 export interface HashmapAugNode_ahmn_fork<X, Y> {
-readonly kind: 'HashmapAugNode_ahmn_fork'
-readonly n: number
-readonly left: HashmapAug<X, Y>
-readonly right: HashmapAug<X, Y>
-readonly extra: Y
+    readonly kind: 'HashmapAugNode_ahmn_fork';
+    readonly n: number;
+    readonly left: HashmapAug<X, Y>;
+    readonly right: HashmapAug<X, Y>;
+    readonly extra: Y;
 }
 
 export type HashmapAugE<X, Y> = HashmapAugE_ahme_empty<X, Y> | HashmapAugE_ahme_root<X, Y>;
 
 export interface HashmapAugE_ahme_empty<X, Y> {
-readonly kind: 'HashmapAugE_ahme_empty'
-readonly n: number
-readonly extra: Y
+    readonly kind: 'HashmapAugE_ahme_empty';
+    readonly n: number;
+    readonly extra: Y;
 }
 
 export interface HashmapAugE_ahme_root<X, Y> {
-readonly kind: 'HashmapAugE_ahme_root'
-readonly n: number
-readonly root: HashmapAug<X, Y>
-readonly extra: Y
+    readonly kind: 'HashmapAugE_ahme_root';
+    readonly n: number;
+    readonly root: HashmapAug<X, Y>;
+    readonly extra: Y;
 }
 
 export interface VarHashmap<X> {
-readonly kind: 'VarHashmap'
-readonly n: number
-readonly l: number
-readonly m: number
-readonly label: HmLabel
-readonly node: VarHashmapNode<X>
+    readonly kind: 'VarHashmap';
+    readonly n: number;
+    readonly l: number;
+    readonly m: number;
+    readonly label: HmLabel;
+    readonly node: VarHashmapNode<X>;
 }
 
 export type VarHashmapNode<X> = VarHashmapNode_vhmn_leaf<X> | VarHashmapNode_vhmn_fork<X> | VarHashmapNode_vhmn_cont<X>;
 
 export interface VarHashmapNode_vhmn_leaf<X> {
-readonly kind: 'VarHashmapNode_vhmn_leaf'
-readonly n: number
-readonly value: X
+    readonly kind: 'VarHashmapNode_vhmn_leaf';
+    readonly n: number;
+    readonly value: X;
 }
 
 export interface VarHashmapNode_vhmn_fork<X> {
-readonly kind: 'VarHashmapNode_vhmn_fork'
-readonly n: number
-readonly left: VarHashmap<X>
-readonly right: VarHashmap<X>
-readonly value: Maybe<X>
+    readonly kind: 'VarHashmapNode_vhmn_fork';
+    readonly n: number;
+    readonly left: VarHashmap<X>;
+    readonly right: VarHashmap<X>;
+    readonly value: Maybe<X>;
 }
 
 export interface VarHashmapNode_vhmn_cont<X> {
-readonly kind: 'VarHashmapNode_vhmn_cont'
-readonly n: number
-readonly branch: BitString
-readonly child: VarHashmap<X>
-readonly value: X
+    readonly kind: 'VarHashmapNode_vhmn_cont';
+    readonly n: number;
+    readonly branch: BitString;
+    readonly child: VarHashmap<X>;
+    readonly value: X;
 }
 
 export type VarHashmapE<X> = VarHashmapE_vhme_empty<X> | VarHashmapE_vhme_root<X>;
 
 export interface VarHashmapE_vhme_empty<X> {
-readonly kind: 'VarHashmapE_vhme_empty'
-readonly n: number
+    readonly kind: 'VarHashmapE_vhme_empty';
+    readonly n: number;
 }
 
 export interface VarHashmapE_vhme_root<X> {
-readonly kind: 'VarHashmapE_vhme_root'
-readonly n: number
-readonly root: VarHashmap<X>
+    readonly kind: 'VarHashmapE_vhme_root';
+    readonly n: number;
+    readonly root: VarHashmap<X>;
 }
 
 export interface PfxHashmap<X> {
-readonly kind: 'PfxHashmap'
-readonly n: number
-readonly l: number
-readonly m: number
-readonly label: HmLabel
-readonly node: PfxHashmapNode<X>
+    readonly kind: 'PfxHashmap';
+    readonly n: number;
+    readonly l: number;
+    readonly m: number;
+    readonly label: HmLabel;
+    readonly node: PfxHashmapNode<X>;
 }
 
 export type PfxHashmapNode<X> = PfxHashmapNode_phmn_leaf<X> | PfxHashmapNode_phmn_fork<X>;
 
 export interface PfxHashmapNode_phmn_leaf<X> {
-readonly kind: 'PfxHashmapNode_phmn_leaf'
-readonly n: number
-readonly value: X
+    readonly kind: 'PfxHashmapNode_phmn_leaf';
+    readonly n: number;
+    readonly value: X;
 }
 
 export interface PfxHashmapNode_phmn_fork<X> {
-readonly kind: 'PfxHashmapNode_phmn_fork'
-readonly n: number
-readonly left: PfxHashmap<X>
-readonly right: PfxHashmap<X>
+    readonly kind: 'PfxHashmapNode_phmn_fork';
+    readonly n: number;
+    readonly left: PfxHashmap<X>;
+    readonly right: PfxHashmap<X>;
 }
 
 export type PfxHashmapE<X> = PfxHashmapE_phme_empty<X> | PfxHashmapE_phme_root<X>;
 
 export interface PfxHashmapE_phme_empty<X> {
-readonly kind: 'PfxHashmapE_phme_empty'
-readonly n: number
+    readonly kind: 'PfxHashmapE_phme_empty';
+    readonly n: number;
 }
 
 export interface PfxHashmapE_phme_root<X> {
-readonly kind: 'PfxHashmapE_phme_root'
-readonly n: number
-readonly root: PfxHashmap<X>
+    readonly kind: 'PfxHashmapE_phme_root';
+    readonly n: number;
+    readonly root: PfxHashmap<X>;
 }
 
 export type MsgAddressExt = MsgAddressExt_addr_none | MsgAddressExt_addr_extern;
 
 export interface MsgAddressExt_addr_none {
-readonly kind: 'MsgAddressExt_addr_none'
+    readonly kind: 'MsgAddressExt_addr_none';
 }
 
 export interface MsgAddressExt_addr_extern {
-readonly kind: 'MsgAddressExt_addr_extern'
-readonly len: number
-readonly external_address: BitString
+    readonly kind: 'MsgAddressExt_addr_extern';
+    readonly len: number;
+    readonly external_address: BitString;
 }
 
 export interface Anycast {
-readonly kind: 'Anycast'
-readonly depth: number
-readonly rewrite_pfx: BitString
+    readonly kind: 'Anycast';
+    readonly depth: number;
+    readonly rewrite_pfx: BitString;
 }
 
 export type MsgAddressInt = MsgAddressInt_addr_std | MsgAddressInt_addr_var;
 
 export interface MsgAddressInt_addr_std {
-readonly kind: 'MsgAddressInt_addr_std'
-readonly anycast: Maybe<Anycast>
-readonly workchain_id: number
-readonly address: BitString
+    readonly kind: 'MsgAddressInt_addr_std';
+    readonly anycast: Maybe<Anycast>;
+    readonly workchain_id: number;
+    readonly address: BitString;
 }
 
 export interface MsgAddressInt_addr_var {
-readonly kind: 'MsgAddressInt_addr_var'
-readonly anycast: Maybe<Anycast>
-readonly addr_len: number
-readonly workchain_id: number
-readonly address: BitString
+    readonly kind: 'MsgAddressInt_addr_var';
+    readonly anycast: Maybe<Anycast>;
+    readonly addr_len: number;
+    readonly workchain_id: number;
+    readonly address: BitString;
 }
 
 export type MsgAddress = MsgAddress__ | MsgAddress__1;
 
 export interface MsgAddress__ {
-readonly kind: 'MsgAddress__'
-readonly _: MsgAddressInt
+    readonly kind: 'MsgAddress__';
+    readonly _: MsgAddressInt;
 }
 
 export interface MsgAddress__1 {
-readonly kind: 'MsgAddress__1'
-readonly _: MsgAddressExt
+    readonly kind: 'MsgAddress__1';
+    readonly _: MsgAddressExt;
 }
 
 export interface VarUInteger {
-readonly kind: 'VarUInteger'
-readonly n: number
-readonly len: number
-readonly value: number
+    readonly kind: 'VarUInteger';
+    readonly n: number;
+    readonly len: number;
+    readonly value: number;
 }
 
 export interface VarInteger {
-readonly kind: 'VarInteger'
-readonly n: number
-readonly len: number
-readonly value: number
+    readonly kind: 'VarInteger';
+    readonly n: number;
+    readonly len: number;
+    readonly value: number;
 }
 
 export interface Grams {
-readonly kind: 'Grams'
-readonly amount: VarUInteger
+    readonly kind: 'Grams';
+    readonly amount: VarUInteger;
 }
 
 export interface ExtraCurrencyCollection {
-readonly kind: 'ExtraCurrencyCollection'
-readonly dict: HashmapE<VarUInteger>
+    readonly kind: 'ExtraCurrencyCollection';
+    readonly dict: HashmapE<VarUInteger>;
 }
 
 export interface CurrencyCollection {
-readonly kind: 'CurrencyCollection'
-readonly grams: Grams
-readonly other: ExtraCurrencyCollection
+    readonly kind: 'CurrencyCollection';
+    readonly grams: Grams;
+    readonly other: ExtraCurrencyCollection;
 }
 
 export type CommonMsgInfo = CommonMsgInfo_int_msg_info | CommonMsgInfo_ext_in_msg_info | CommonMsgInfo_ext_out_msg_info;
 
 export interface CommonMsgInfo_int_msg_info {
-readonly kind: 'CommonMsgInfo_int_msg_info'
-readonly ihr_disabled: Bool
-readonly bounce: Bool
-readonly bounced: Bool
-readonly src: MsgAddressInt
-readonly dest: MsgAddressInt
-readonly value: CurrencyCollection
-readonly ihr_fee: Grams
-readonly fwd_fee: Grams
-readonly created_lt: number
-readonly created_at: number
+    readonly kind: 'CommonMsgInfo_int_msg_info';
+    readonly ihr_disabled: Bool;
+    readonly bounce: Bool;
+    readonly bounced: Bool;
+    readonly src: MsgAddressInt;
+    readonly dest: MsgAddressInt;
+    readonly value: CurrencyCollection;
+    readonly ihr_fee: Grams;
+    readonly fwd_fee: Grams;
+    readonly created_lt: number;
+    readonly created_at: number;
 }
 
 export interface CommonMsgInfo_ext_in_msg_info {
-readonly kind: 'CommonMsgInfo_ext_in_msg_info'
-readonly src: MsgAddressExt
-readonly dest: MsgAddressInt
-readonly import_fee: Grams
+    readonly kind: 'CommonMsgInfo_ext_in_msg_info';
+    readonly src: MsgAddressExt;
+    readonly dest: MsgAddressInt;
+    readonly import_fee: Grams;
 }
 
 export interface CommonMsgInfo_ext_out_msg_info {
-readonly kind: 'CommonMsgInfo_ext_out_msg_info'
-readonly src: MsgAddressInt
-readonly dest: MsgAddressExt
-readonly created_lt: number
-readonly created_at: number
+    readonly kind: 'CommonMsgInfo_ext_out_msg_info';
+    readonly src: MsgAddressInt;
+    readonly dest: MsgAddressExt;
+    readonly created_lt: number;
+    readonly created_at: number;
 }
 
 export type CommonMsgInfoRelaxed = CommonMsgInfoRelaxed_int_msg_info | CommonMsgInfoRelaxed_ext_out_msg_info;
 
 export interface CommonMsgInfoRelaxed_int_msg_info {
-readonly kind: 'CommonMsgInfoRelaxed_int_msg_info'
-readonly ihr_disabled: Bool
-readonly bounce: Bool
-readonly bounced: Bool
-readonly src: MsgAddress
-readonly dest: MsgAddressInt
-readonly value: CurrencyCollection
-readonly ihr_fee: Grams
-readonly fwd_fee: Grams
-readonly created_lt: number
-readonly created_at: number
+    readonly kind: 'CommonMsgInfoRelaxed_int_msg_info';
+    readonly ihr_disabled: Bool;
+    readonly bounce: Bool;
+    readonly bounced: Bool;
+    readonly src: MsgAddress;
+    readonly dest: MsgAddressInt;
+    readonly value: CurrencyCollection;
+    readonly ihr_fee: Grams;
+    readonly fwd_fee: Grams;
+    readonly created_lt: number;
+    readonly created_at: number;
 }
 
 export interface CommonMsgInfoRelaxed_ext_out_msg_info {
-readonly kind: 'CommonMsgInfoRelaxed_ext_out_msg_info'
-readonly src: MsgAddress
-readonly dest: MsgAddressExt
-readonly created_lt: number
-readonly created_at: number
+    readonly kind: 'CommonMsgInfoRelaxed_ext_out_msg_info';
+    readonly src: MsgAddress;
+    readonly dest: MsgAddressExt;
+    readonly created_lt: number;
+    readonly created_at: number;
 }
 
 export interface TickTock {
-readonly kind: 'TickTock'
-readonly tick: Bool
-readonly tock: Bool
+    readonly kind: 'TickTock';
+    readonly tick: Bool;
+    readonly tock: Bool;
 }
 
 export interface StateInit {
-readonly kind: 'StateInit'
-readonly split_depth: Maybe<number>
-readonly special: Maybe<TickTock>
-readonly code: Maybe<Slice>
-readonly data: Maybe<Slice>
-readonly library: HashmapE<SimpleLib>
+    readonly kind: 'StateInit';
+    readonly split_depth: Maybe<number>;
+    readonly special: Maybe<TickTock>;
+    readonly code: Maybe<Slice>;
+    readonly data: Maybe<Slice>;
+    readonly library: HashmapE<SimpleLib>;
 }
 
 export interface SimpleLib {
-readonly kind: 'SimpleLib'
-readonly public0: Bool
-readonly root: Slice
+    readonly kind: 'SimpleLib';
+    readonly public0: Bool;
+    readonly root: Slice;
 }
 
 export interface Message<X> {
-readonly kind: 'Message'
-readonly info: CommonMsgInfo
-readonly init: Maybe<Either<StateInit, StateInit>>
-readonly body: Either<X, X>
+    readonly kind: 'Message';
+    readonly info: CommonMsgInfo;
+    readonly init: Maybe<Either<StateInit, StateInit>>;
+    readonly body: Either<X, X>;
 }
 
 export interface MessageRelaxed<X> {
-readonly kind: 'MessageRelaxed'
-readonly info: CommonMsgInfoRelaxed
-readonly init: Maybe<Either<StateInit, StateInit>>
-readonly body: Either<X, X>
+    readonly kind: 'MessageRelaxed';
+    readonly info: CommonMsgInfoRelaxed;
+    readonly init: Maybe<Either<StateInit, StateInit>>;
+    readonly body: Either<X, X>;
 }
 
 export interface MessageAny {
-readonly kind: 'MessageAny'
-readonly anon0: Message<Slice>
+    readonly kind: 'MessageAny';
+    readonly anon0: Message<Slice>;
 }
 
 export type IntermediateAddress = IntermediateAddress_interm_addr_regular | IntermediateAddress_interm_addr_simple | IntermediateAddress_interm_addr_ext;
 
 export interface IntermediateAddress_interm_addr_regular {
-readonly kind: 'IntermediateAddress_interm_addr_regular'
-readonly use_dest_bits: number
+    readonly kind: 'IntermediateAddress_interm_addr_regular';
+    readonly use_dest_bits: number;
 }
 
 export interface IntermediateAddress_interm_addr_simple {
-readonly kind: 'IntermediateAddress_interm_addr_simple'
-readonly workchain_id: number
-readonly addr_pfx: number
+    readonly kind: 'IntermediateAddress_interm_addr_simple';
+    readonly workchain_id: number;
+    readonly addr_pfx: number;
 }
 
 export interface IntermediateAddress_interm_addr_ext {
-readonly kind: 'IntermediateAddress_interm_addr_ext'
-readonly workchain_id: number
-readonly addr_pfx: number
+    readonly kind: 'IntermediateAddress_interm_addr_ext';
+    readonly workchain_id: number;
+    readonly addr_pfx: number;
 }
 
 export interface MsgEnvelope {
-readonly kind: 'MsgEnvelope'
-readonly cur_addr: IntermediateAddress
-readonly next_addr: IntermediateAddress
-readonly fwd_fee_remaining: Grams
-readonly msg: Message<Slice>
+    readonly kind: 'MsgEnvelope';
+    readonly cur_addr: IntermediateAddress;
+    readonly next_addr: IntermediateAddress;
+    readonly fwd_fee_remaining: Grams;
+    readonly msg: Message<Slice>;
 }
 
 export type InMsg = InMsg_msg_import_ext | InMsg_msg_import_ihr | InMsg_msg_import_imm | InMsg_msg_import_fin | InMsg_msg_import_tr | InMsg_msg_discard_fin | InMsg_msg_discard_tr;
 
 export interface InMsg_msg_import_ext {
-readonly kind: 'InMsg_msg_import_ext'
-readonly msg: Message<Slice>
-readonly transaction: Transaction
+    readonly kind: 'InMsg_msg_import_ext';
+    readonly msg: Message<Slice>;
+    readonly transaction: Transaction;
 }
 
 export interface InMsg_msg_import_ihr {
-readonly kind: 'InMsg_msg_import_ihr'
-readonly msg: Message<Slice>
-readonly transaction: Transaction
-readonly ihr_fee: Grams
-readonly proof_created: Slice
+    readonly kind: 'InMsg_msg_import_ihr';
+    readonly msg: Message<Slice>;
+    readonly transaction: Transaction;
+    readonly ihr_fee: Grams;
+    readonly proof_created: Slice;
 }
 
 export interface InMsg_msg_import_imm {
-readonly kind: 'InMsg_msg_import_imm'
-readonly in_msg: MsgEnvelope
-readonly transaction: Transaction
-readonly fwd_fee: Grams
+    readonly kind: 'InMsg_msg_import_imm';
+    readonly in_msg: MsgEnvelope;
+    readonly transaction: Transaction;
+    readonly fwd_fee: Grams;
 }
 
 export interface InMsg_msg_import_fin {
-readonly kind: 'InMsg_msg_import_fin'
-readonly in_msg: MsgEnvelope
-readonly transaction: Transaction
-readonly fwd_fee: Grams
+    readonly kind: 'InMsg_msg_import_fin';
+    readonly in_msg: MsgEnvelope;
+    readonly transaction: Transaction;
+    readonly fwd_fee: Grams;
 }
 
 export interface InMsg_msg_import_tr {
-readonly kind: 'InMsg_msg_import_tr'
-readonly in_msg: MsgEnvelope
-readonly out_msg: MsgEnvelope
-readonly transit_fee: Grams
+    readonly kind: 'InMsg_msg_import_tr';
+    readonly in_msg: MsgEnvelope;
+    readonly out_msg: MsgEnvelope;
+    readonly transit_fee: Grams;
 }
 
 export interface InMsg_msg_discard_fin {
-readonly kind: 'InMsg_msg_discard_fin'
-readonly in_msg: MsgEnvelope
-readonly transaction_id: number
-readonly fwd_fee: Grams
+    readonly kind: 'InMsg_msg_discard_fin';
+    readonly in_msg: MsgEnvelope;
+    readonly transaction_id: number;
+    readonly fwd_fee: Grams;
 }
 
 export interface InMsg_msg_discard_tr {
-readonly kind: 'InMsg_msg_discard_tr'
-readonly in_msg: MsgEnvelope
-readonly transaction_id: number
-readonly fwd_fee: Grams
-readonly proof_delivered: Slice
+    readonly kind: 'InMsg_msg_discard_tr';
+    readonly in_msg: MsgEnvelope;
+    readonly transaction_id: number;
+    readonly fwd_fee: Grams;
+    readonly proof_delivered: Slice;
 }
 
 export interface ImportFees {
-readonly kind: 'ImportFees'
-readonly fees_collected: Grams
-readonly value_imported: CurrencyCollection
+    readonly kind: 'ImportFees';
+    readonly fees_collected: Grams;
+    readonly value_imported: CurrencyCollection;
 }
 
 export interface InMsgDescr {
-readonly kind: 'InMsgDescr'
-readonly anon0: HashmapAugE<InMsg, ImportFees>
+    readonly kind: 'InMsgDescr';
+    readonly anon0: HashmapAugE<InMsg, ImportFees>;
 }
 
 export type OutMsg = OutMsg_msg_export_ext | OutMsg_msg_export_imm | OutMsg_msg_export_new | OutMsg_msg_export_tr | OutMsg_msg_export_deq | OutMsg_msg_export_deq_short | OutMsg_msg_export_tr_req | OutMsg_msg_export_deq_imm;
 
 export interface OutMsg_msg_export_ext {
-readonly kind: 'OutMsg_msg_export_ext'
-readonly msg: Message<Slice>
-readonly transaction: Transaction
+    readonly kind: 'OutMsg_msg_export_ext';
+    readonly msg: Message<Slice>;
+    readonly transaction: Transaction;
 }
 
 export interface OutMsg_msg_export_imm {
-readonly kind: 'OutMsg_msg_export_imm'
-readonly out_msg: MsgEnvelope
-readonly transaction: Transaction
-readonly reimport: InMsg
+    readonly kind: 'OutMsg_msg_export_imm';
+    readonly out_msg: MsgEnvelope;
+    readonly transaction: Transaction;
+    readonly reimport: InMsg;
 }
 
 export interface OutMsg_msg_export_new {
-readonly kind: 'OutMsg_msg_export_new'
-readonly out_msg: MsgEnvelope
-readonly transaction: Transaction
+    readonly kind: 'OutMsg_msg_export_new';
+    readonly out_msg: MsgEnvelope;
+    readonly transaction: Transaction;
 }
 
 export interface OutMsg_msg_export_tr {
-readonly kind: 'OutMsg_msg_export_tr'
-readonly out_msg: MsgEnvelope
-readonly imported: InMsg
+    readonly kind: 'OutMsg_msg_export_tr';
+    readonly out_msg: MsgEnvelope;
+    readonly imported: InMsg;
 }
 
 export interface OutMsg_msg_export_deq {
-readonly kind: 'OutMsg_msg_export_deq'
-readonly out_msg: MsgEnvelope
-readonly import_block_lt: number
+    readonly kind: 'OutMsg_msg_export_deq';
+    readonly out_msg: MsgEnvelope;
+    readonly import_block_lt: number;
 }
 
 export interface OutMsg_msg_export_deq_short {
-readonly kind: 'OutMsg_msg_export_deq_short'
-readonly msg_env_hash: BitString
-readonly next_workchain: number
-readonly next_addr_pfx: number
-readonly import_block_lt: number
+    readonly kind: 'OutMsg_msg_export_deq_short';
+    readonly msg_env_hash: BitString;
+    readonly next_workchain: number;
+    readonly next_addr_pfx: number;
+    readonly import_block_lt: number;
 }
 
 export interface OutMsg_msg_export_tr_req {
-readonly kind: 'OutMsg_msg_export_tr_req'
-readonly out_msg: MsgEnvelope
-readonly imported: InMsg
+    readonly kind: 'OutMsg_msg_export_tr_req';
+    readonly out_msg: MsgEnvelope;
+    readonly imported: InMsg;
 }
 
 export interface OutMsg_msg_export_deq_imm {
-readonly kind: 'OutMsg_msg_export_deq_imm'
-readonly out_msg: MsgEnvelope
-readonly reimport: InMsg
+    readonly kind: 'OutMsg_msg_export_deq_imm';
+    readonly out_msg: MsgEnvelope;
+    readonly reimport: InMsg;
 }
 
 export interface EnqueuedMsg {
-readonly kind: 'EnqueuedMsg'
-readonly enqueued_lt: number
-readonly out_msg: MsgEnvelope
+    readonly kind: 'EnqueuedMsg';
+    readonly enqueued_lt: number;
+    readonly out_msg: MsgEnvelope;
 }
 
 export interface OutMsgDescr {
-readonly kind: 'OutMsgDescr'
-readonly anon0: HashmapAugE<OutMsg, CurrencyCollection>
+    readonly kind: 'OutMsgDescr';
+    readonly anon0: HashmapAugE<OutMsg, CurrencyCollection>;
 }
 
 export interface OutMsgQueue {
-readonly kind: 'OutMsgQueue'
-readonly anon0: HashmapAugE<EnqueuedMsg, number>
+    readonly kind: 'OutMsgQueue';
+    readonly anon0: HashmapAugE<EnqueuedMsg, number>;
 }
 
 export interface ProcessedUpto {
-readonly kind: 'ProcessedUpto'
-readonly last_msg_lt: number
-readonly last_msg_hash: BitString
+    readonly kind: 'ProcessedUpto';
+    readonly last_msg_lt: number;
+    readonly last_msg_hash: BitString;
 }
 
 export interface ProcessedInfo {
-readonly kind: 'ProcessedInfo'
-readonly anon0: HashmapE<ProcessedUpto>
+    readonly kind: 'ProcessedInfo';
+    readonly anon0: HashmapE<ProcessedUpto>;
 }
 
 export interface IhrPendingSince {
-readonly kind: 'IhrPendingSince'
-readonly import_lt: number
+    readonly kind: 'IhrPendingSince';
+    readonly import_lt: number;
 }
 
 export interface IhrPendingInfo {
-readonly kind: 'IhrPendingInfo'
-readonly anon0: HashmapE<IhrPendingSince>
+    readonly kind: 'IhrPendingInfo';
+    readonly anon0: HashmapE<IhrPendingSince>;
 }
 
 export interface OutMsgQueueInfo {
-readonly kind: 'OutMsgQueueInfo'
-readonly out_queue: OutMsgQueue
-readonly proc_info: ProcessedInfo
-readonly ihr_pending: IhrPendingInfo
+    readonly kind: 'OutMsgQueueInfo';
+    readonly out_queue: OutMsgQueue;
+    readonly proc_info: ProcessedInfo;
+    readonly ihr_pending: IhrPendingInfo;
 }
 
 export interface StorageUsed {
-readonly kind: 'StorageUsed'
-readonly _cells: VarUInteger
-readonly bits: VarUInteger
-readonly public_cells: VarUInteger
+    readonly kind: 'StorageUsed';
+    readonly _cells: VarUInteger;
+    readonly bits: VarUInteger;
+    readonly public_cells: VarUInteger;
 }
 
 export interface StorageUsedShort {
-readonly kind: 'StorageUsedShort'
-readonly _cells: VarUInteger
-readonly bits: VarUInteger
+    readonly kind: 'StorageUsedShort';
+    readonly _cells: VarUInteger;
+    readonly bits: VarUInteger;
 }
 
 export interface StorageInfo {
-readonly kind: 'StorageInfo'
-readonly used: StorageUsed
-readonly last_paid: number
-readonly due_payment: Maybe<Grams>
+    readonly kind: 'StorageInfo';
+    readonly used: StorageUsed;
+    readonly last_paid: number;
+    readonly due_payment: Maybe<Grams>;
 }
 
 export type Account = Account_account_none | Account_account;
 
 export interface Account_account_none {
-readonly kind: 'Account_account_none'
+    readonly kind: 'Account_account_none';
 }
 
 export interface Account_account {
-readonly kind: 'Account_account'
-readonly addr: MsgAddressInt
-readonly storage_stat: StorageInfo
-readonly storage: AccountStorage
+    readonly kind: 'Account_account';
+    readonly addr: MsgAddressInt;
+    readonly storage_stat: StorageInfo;
+    readonly storage: AccountStorage;
 }
 
 export interface AccountStorage {
-readonly kind: 'AccountStorage'
-readonly last_trans_lt: number
-readonly balance: CurrencyCollection
-readonly state: AccountState
+    readonly kind: 'AccountStorage';
+    readonly last_trans_lt: number;
+    readonly balance: CurrencyCollection;
+    readonly state: AccountState;
 }
 
 export type AccountState = AccountState_account_uninit | AccountState_account_active | AccountState_account_frozen;
 
 export interface AccountState_account_uninit {
-readonly kind: 'AccountState_account_uninit'
+    readonly kind: 'AccountState_account_uninit';
 }
 
 export interface AccountState_account_active {
-readonly kind: 'AccountState_account_active'
-readonly _: StateInit
+    readonly kind: 'AccountState_account_active';
+    readonly _: StateInit;
 }
 
 export interface AccountState_account_frozen {
-readonly kind: 'AccountState_account_frozen'
-readonly state_hash: BitString
+    readonly kind: 'AccountState_account_frozen';
+    readonly state_hash: BitString;
 }
 
 export type AccountStatus = AccountStatus_acc_state_uninit | AccountStatus_acc_state_frozen | AccountStatus_acc_state_active | AccountStatus_acc_state_nonexist;
 
 export interface AccountStatus_acc_state_uninit {
-readonly kind: 'AccountStatus_acc_state_uninit'
+    readonly kind: 'AccountStatus_acc_state_uninit';
 }
 
 export interface AccountStatus_acc_state_frozen {
-readonly kind: 'AccountStatus_acc_state_frozen'
+    readonly kind: 'AccountStatus_acc_state_frozen';
 }
 
 export interface AccountStatus_acc_state_active {
-readonly kind: 'AccountStatus_acc_state_active'
+    readonly kind: 'AccountStatus_acc_state_active';
 }
 
 export interface AccountStatus_acc_state_nonexist {
-readonly kind: 'AccountStatus_acc_state_nonexist'
+    readonly kind: 'AccountStatus_acc_state_nonexist';
 }
 
 export interface ShardAccount {
-readonly kind: 'ShardAccount'
-readonly account: Account
-readonly last_trans_hash: BitString
-readonly last_trans_lt: number
+    readonly kind: 'ShardAccount';
+    readonly account: Account;
+    readonly last_trans_hash: BitString;
+    readonly last_trans_lt: number;
 }
 
 export interface DepthBalanceInfo {
-readonly kind: 'DepthBalanceInfo'
-readonly split_depth: number
-readonly balance: CurrencyCollection
+    readonly kind: 'DepthBalanceInfo';
+    readonly split_depth: number;
+    readonly balance: CurrencyCollection;
 }
 
 export interface ShardAccounts {
-readonly kind: 'ShardAccounts'
-readonly anon0: HashmapAugE<ShardAccount, DepthBalanceInfo>
+    readonly kind: 'ShardAccounts';
+    readonly anon0: HashmapAugE<ShardAccount, DepthBalanceInfo>;
 }
 
 export interface Transaction {
-readonly kind: 'Transaction'
-readonly account_addr: BitString
-readonly lt: number
-readonly prev_trans_hash: BitString
-readonly prev_trans_lt: number
-readonly now: number
-readonly outmsg_cnt: number
-readonly orig_status: AccountStatus
-readonly end_status: AccountStatus
-readonly in_msg: Maybe<Message<Slice>>
-readonly out_msgs: HashmapE<Message<Slice>>
-readonly total_fees: CurrencyCollection
-readonly state_update: HASH_UPDATE<Account>
-readonly description: TransactionDescr
+    readonly kind: 'Transaction';
+    readonly account_addr: BitString;
+    readonly lt: number;
+    readonly prev_trans_hash: BitString;
+    readonly prev_trans_lt: number;
+    readonly now: number;
+    readonly outmsg_cnt: number;
+    readonly orig_status: AccountStatus;
+    readonly end_status: AccountStatus;
+    readonly in_msg: Maybe<Message<Slice>>;
+    readonly out_msgs: HashmapE<Message<Slice>>;
+    readonly total_fees: CurrencyCollection;
+    readonly state_update: HASH_UPDATE<Account>;
+    readonly description: TransactionDescr;
 }
 
 export interface MERKLE_UPDATE<X> {
-readonly kind: 'MERKLE_UPDATE'
-readonly old_hash: BitString
-readonly new_hash: BitString
-readonly old: X
-readonly new0: X
+    readonly kind: 'MERKLE_UPDATE';
+    readonly old_hash: BitString;
+    readonly new_hash: BitString;
+    readonly old: X;
+    readonly new0: X;
 }
 
 export interface HASH_UPDATE<X> {
-readonly kind: 'HASH_UPDATE'
-readonly old_hash: BitString
-readonly new_hash: BitString
+    readonly kind: 'HASH_UPDATE';
+    readonly old_hash: BitString;
+    readonly new_hash: BitString;
 }
 
 export interface MERKLE_PROOF<X> {
-readonly kind: 'MERKLE_PROOF'
-readonly virtual_hash: BitString
-readonly depth: number
-readonly virtual_root: X
+    readonly kind: 'MERKLE_PROOF';
+    readonly virtual_hash: BitString;
+    readonly depth: number;
+    readonly virtual_root: X;
 }
 
 export interface AccountBlock {
-readonly kind: 'AccountBlock'
-readonly account_addr: BitString
-readonly transactions: HashmapAug<Transaction, CurrencyCollection>
-readonly state_update: HASH_UPDATE<Account>
+    readonly kind: 'AccountBlock';
+    readonly account_addr: BitString;
+    readonly transactions: HashmapAug<Transaction, CurrencyCollection>;
+    readonly state_update: HASH_UPDATE<Account>;
 }
 
 export interface ShardAccountBlocks {
-readonly kind: 'ShardAccountBlocks'
-readonly anon0: HashmapAugE<AccountBlock, CurrencyCollection>
+    readonly kind: 'ShardAccountBlocks';
+    readonly anon0: HashmapAugE<AccountBlock, CurrencyCollection>;
 }
 
 export interface TrStoragePhase {
-readonly kind: 'TrStoragePhase'
-readonly storage_fees_collected: Grams
-readonly storage_fees_due: Maybe<Grams>
-readonly status_change: AccStatusChange
+    readonly kind: 'TrStoragePhase';
+    readonly storage_fees_collected: Grams;
+    readonly storage_fees_due: Maybe<Grams>;
+    readonly status_change: AccStatusChange;
 }
 
 export type AccStatusChange = AccStatusChange_acst_unchanged | AccStatusChange_acst_frozen | AccStatusChange_acst_deleted;
 
 export interface AccStatusChange_acst_unchanged {
-readonly kind: 'AccStatusChange_acst_unchanged'
+    readonly kind: 'AccStatusChange_acst_unchanged';
 }
 
 export interface AccStatusChange_acst_frozen {
-readonly kind: 'AccStatusChange_acst_frozen'
+    readonly kind: 'AccStatusChange_acst_frozen';
 }
 
 export interface AccStatusChange_acst_deleted {
-readonly kind: 'AccStatusChange_acst_deleted'
+    readonly kind: 'AccStatusChange_acst_deleted';
 }
 
 export interface TrCreditPhase {
-readonly kind: 'TrCreditPhase'
-readonly due_fees_collected: Maybe<Grams>
-readonly credit: CurrencyCollection
+    readonly kind: 'TrCreditPhase';
+    readonly due_fees_collected: Maybe<Grams>;
+    readonly credit: CurrencyCollection;
 }
 
 export type TrComputePhase = TrComputePhase_tr_phase_compute_skipped | TrComputePhase_tr_phase_compute_vm;
 
 export interface TrComputePhase_tr_phase_compute_skipped {
-readonly kind: 'TrComputePhase_tr_phase_compute_skipped'
-readonly reason: ComputeSkipReason
+    readonly kind: 'TrComputePhase_tr_phase_compute_skipped';
+    readonly reason: ComputeSkipReason;
 }
 
 export interface TrComputePhase_tr_phase_compute_vm {
-readonly kind: 'TrComputePhase_tr_phase_compute_vm'
-readonly success: Bool
-readonly msg_state_used: Bool
-readonly account_activated: Bool
-readonly gas_fees: Grams
-readonly gas_used: VarUInteger
-readonly gas_limit: VarUInteger
-readonly gas_credit: Maybe<VarUInteger>
-readonly mode: number
-readonly exit_code: number
-readonly exit_arg: Maybe<number>
-readonly vm_steps: number
-readonly vm_init_state_hash: BitString
-readonly vm_final_state_hash: BitString
+    readonly kind: 'TrComputePhase_tr_phase_compute_vm';
+    readonly success: Bool;
+    readonly msg_state_used: Bool;
+    readonly account_activated: Bool;
+    readonly gas_fees: Grams;
+    readonly gas_used: VarUInteger;
+    readonly gas_limit: VarUInteger;
+    readonly gas_credit: Maybe<VarUInteger>;
+    readonly mode: number;
+    readonly exit_code: number;
+    readonly exit_arg: Maybe<number>;
+    readonly vm_steps: number;
+    readonly vm_init_state_hash: BitString;
+    readonly vm_final_state_hash: BitString;
 }
 
 export type ComputeSkipReason = ComputeSkipReason_cskip_no_state | ComputeSkipReason_cskip_bad_state | ComputeSkipReason_cskip_no_gas;
 
 export interface ComputeSkipReason_cskip_no_state {
-readonly kind: 'ComputeSkipReason_cskip_no_state'
+    readonly kind: 'ComputeSkipReason_cskip_no_state';
 }
 
 export interface ComputeSkipReason_cskip_bad_state {
-readonly kind: 'ComputeSkipReason_cskip_bad_state'
+    readonly kind: 'ComputeSkipReason_cskip_bad_state';
 }
 
 export interface ComputeSkipReason_cskip_no_gas {
-readonly kind: 'ComputeSkipReason_cskip_no_gas'
+    readonly kind: 'ComputeSkipReason_cskip_no_gas';
 }
 
 export interface TrActionPhase {
-readonly kind: 'TrActionPhase'
-readonly success: Bool
-readonly valid: Bool
-readonly no_funds: Bool
-readonly status_change: AccStatusChange
-readonly total_fwd_fees: Maybe<Grams>
-readonly total_action_fees: Maybe<Grams>
-readonly result_code: number
-readonly result_arg: Maybe<number>
-readonly tot_actions: number
-readonly spec_actions: number
-readonly skipped_actions: number
-readonly msgs_created: number
-readonly action_list_hash: BitString
-readonly tot_msg_size: StorageUsedShort
+    readonly kind: 'TrActionPhase';
+    readonly success: Bool;
+    readonly valid: Bool;
+    readonly no_funds: Bool;
+    readonly status_change: AccStatusChange;
+    readonly total_fwd_fees: Maybe<Grams>;
+    readonly total_action_fees: Maybe<Grams>;
+    readonly result_code: number;
+    readonly result_arg: Maybe<number>;
+    readonly tot_actions: number;
+    readonly spec_actions: number;
+    readonly skipped_actions: number;
+    readonly msgs_created: number;
+    readonly action_list_hash: BitString;
+    readonly tot_msg_size: StorageUsedShort;
 }
 
 export type TrBouncePhase = TrBouncePhase_tr_phase_bounce_negfunds | TrBouncePhase_tr_phase_bounce_nofunds | TrBouncePhase_tr_phase_bounce_ok;
 
 export interface TrBouncePhase_tr_phase_bounce_negfunds {
-readonly kind: 'TrBouncePhase_tr_phase_bounce_negfunds'
+    readonly kind: 'TrBouncePhase_tr_phase_bounce_negfunds';
 }
 
 export interface TrBouncePhase_tr_phase_bounce_nofunds {
-readonly kind: 'TrBouncePhase_tr_phase_bounce_nofunds'
-readonly msg_size: StorageUsedShort
-readonly req_fwd_fees: Grams
+    readonly kind: 'TrBouncePhase_tr_phase_bounce_nofunds';
+    readonly msg_size: StorageUsedShort;
+    readonly req_fwd_fees: Grams;
 }
 
 export interface TrBouncePhase_tr_phase_bounce_ok {
-readonly kind: 'TrBouncePhase_tr_phase_bounce_ok'
-readonly msg_size: StorageUsedShort
-readonly msg_fees: Grams
-readonly fwd_fees: Grams
+    readonly kind: 'TrBouncePhase_tr_phase_bounce_ok';
+    readonly msg_size: StorageUsedShort;
+    readonly msg_fees: Grams;
+    readonly fwd_fees: Grams;
 }
 
 export type TransactionDescr = TransactionDescr_trans_ord | TransactionDescr_trans_storage | TransactionDescr_trans_tick_tock | TransactionDescr_trans_split_prepare | TransactionDescr_trans_split_install | TransactionDescr_trans_merge_prepare | TransactionDescr_trans_merge_install;
 
 export interface TransactionDescr_trans_ord {
-readonly kind: 'TransactionDescr_trans_ord'
-readonly credit_first: Bool
-readonly storage_ph: Maybe<TrStoragePhase>
-readonly credit_ph: Maybe<TrCreditPhase>
-readonly compute_ph: TrComputePhase
-readonly action: Maybe<TrActionPhase>
-readonly aborted: Bool
-readonly bounce: Maybe<TrBouncePhase>
-readonly destroyed: Bool
+    readonly kind: 'TransactionDescr_trans_ord';
+    readonly credit_first: Bool;
+    readonly storage_ph: Maybe<TrStoragePhase>;
+    readonly credit_ph: Maybe<TrCreditPhase>;
+    readonly compute_ph: TrComputePhase;
+    readonly action: Maybe<TrActionPhase>;
+    readonly aborted: Bool;
+    readonly bounce: Maybe<TrBouncePhase>;
+    readonly destroyed: Bool;
 }
 
 export interface TransactionDescr_trans_storage {
-readonly kind: 'TransactionDescr_trans_storage'
-readonly storage_ph: TrStoragePhase
+    readonly kind: 'TransactionDescr_trans_storage';
+    readonly storage_ph: TrStoragePhase;
 }
 
 export interface TransactionDescr_trans_tick_tock {
-readonly kind: 'TransactionDescr_trans_tick_tock'
-readonly is_tock: Bool
-readonly storage_ph: TrStoragePhase
-readonly compute_ph: TrComputePhase
-readonly action: Maybe<TrActionPhase>
-readonly aborted: Bool
-readonly destroyed: Bool
+    readonly kind: 'TransactionDescr_trans_tick_tock';
+    readonly is_tock: Bool;
+    readonly storage_ph: TrStoragePhase;
+    readonly compute_ph: TrComputePhase;
+    readonly action: Maybe<TrActionPhase>;
+    readonly aborted: Bool;
+    readonly destroyed: Bool;
 }
 
 export interface TransactionDescr_trans_split_prepare {
-readonly kind: 'TransactionDescr_trans_split_prepare'
-readonly split_info: SplitMergeInfo
-readonly storage_ph: Maybe<TrStoragePhase>
-readonly compute_ph: TrComputePhase
-readonly action: Maybe<TrActionPhase>
-readonly aborted: Bool
-readonly destroyed: Bool
+    readonly kind: 'TransactionDescr_trans_split_prepare';
+    readonly split_info: SplitMergeInfo;
+    readonly storage_ph: Maybe<TrStoragePhase>;
+    readonly compute_ph: TrComputePhase;
+    readonly action: Maybe<TrActionPhase>;
+    readonly aborted: Bool;
+    readonly destroyed: Bool;
 }
 
 export interface TransactionDescr_trans_split_install {
-readonly kind: 'TransactionDescr_trans_split_install'
-readonly split_info: SplitMergeInfo
-readonly prepare_transaction: Transaction
-readonly installed: Bool
+    readonly kind: 'TransactionDescr_trans_split_install';
+    readonly split_info: SplitMergeInfo;
+    readonly prepare_transaction: Transaction;
+    readonly installed: Bool;
 }
 
 export interface TransactionDescr_trans_merge_prepare {
-readonly kind: 'TransactionDescr_trans_merge_prepare'
-readonly split_info: SplitMergeInfo
-readonly storage_ph: TrStoragePhase
-readonly aborted: Bool
+    readonly kind: 'TransactionDescr_trans_merge_prepare';
+    readonly split_info: SplitMergeInfo;
+    readonly storage_ph: TrStoragePhase;
+    readonly aborted: Bool;
 }
 
 export interface TransactionDescr_trans_merge_install {
-readonly kind: 'TransactionDescr_trans_merge_install'
-readonly split_info: SplitMergeInfo
-readonly prepare_transaction: Transaction
-readonly storage_ph: Maybe<TrStoragePhase>
-readonly credit_ph: Maybe<TrCreditPhase>
-readonly compute_ph: TrComputePhase
-readonly action: Maybe<TrActionPhase>
-readonly aborted: Bool
-readonly destroyed: Bool
+    readonly kind: 'TransactionDescr_trans_merge_install';
+    readonly split_info: SplitMergeInfo;
+    readonly prepare_transaction: Transaction;
+    readonly storage_ph: Maybe<TrStoragePhase>;
+    readonly credit_ph: Maybe<TrCreditPhase>;
+    readonly compute_ph: TrComputePhase;
+    readonly action: Maybe<TrActionPhase>;
+    readonly aborted: Bool;
+    readonly destroyed: Bool;
 }
 
 export interface SplitMergeInfo {
-readonly kind: 'SplitMergeInfo'
-readonly cur_shard_pfx_len: number
-readonly acc_split_depth: number
-readonly this_addr: BitString
-readonly sibling_addr: BitString
+    readonly kind: 'SplitMergeInfo';
+    readonly cur_shard_pfx_len: number;
+    readonly acc_split_depth: number;
+    readonly this_addr: BitString;
+    readonly sibling_addr: BitString;
 }
 
 export interface SmartContractInfo {
-readonly kind: 'SmartContractInfo'
-readonly actions: number
-readonly msgs_sent: number
-readonly unixtime: number
-readonly block_lt: number
-readonly trans_lt: number
-readonly rand_seed: BitString
-readonly balance_remaining: CurrencyCollection
-readonly myself: MsgAddressInt
+    readonly kind: 'SmartContractInfo';
+    readonly actions: number;
+    readonly msgs_sent: number;
+    readonly unixtime: number;
+    readonly block_lt: number;
+    readonly trans_lt: number;
+    readonly rand_seed: BitString;
+    readonly balance_remaining: CurrencyCollection;
+    readonly myself: MsgAddressInt;
 }
 
 export type OutList = OutList_out_list_empty | OutList_out_list;
 
 export interface OutList_out_list_empty {
-readonly kind: 'OutList_out_list_empty'
+    readonly kind: 'OutList_out_list_empty';
 }
 
 export interface OutList_out_list {
-readonly kind: 'OutList_out_list'
-readonly n: number
-readonly prev: OutList
-readonly action: OutAction
+    readonly kind: 'OutList_out_list';
+    readonly n: number;
+    readonly prev: OutList;
+    readonly action: OutAction;
 }
 
 export type OutAction = OutAction_action_send_msg | OutAction_action_set_code | OutAction_action_reserve_currency | OutAction_action_change_library;
 
 export interface OutAction_action_send_msg {
-readonly kind: 'OutAction_action_send_msg'
-readonly mode: number
-readonly out_msg: MessageRelaxed<Slice>
+    readonly kind: 'OutAction_action_send_msg';
+    readonly mode: number;
+    readonly out_msg: MessageRelaxed<Slice>;
 }
 
 export interface OutAction_action_set_code {
-readonly kind: 'OutAction_action_set_code'
-readonly new_code: Slice
+    readonly kind: 'OutAction_action_set_code';
+    readonly new_code: Slice;
 }
 
 export interface OutAction_action_reserve_currency {
-readonly kind: 'OutAction_action_reserve_currency'
-readonly mode: number
-readonly currency: CurrencyCollection
+    readonly kind: 'OutAction_action_reserve_currency';
+    readonly mode: number;
+    readonly currency: CurrencyCollection;
 }
 
 export interface OutAction_action_change_library {
-readonly kind: 'OutAction_action_change_library'
-readonly mode: number
-readonly libref: LibRef
+    readonly kind: 'OutAction_action_change_library';
+    readonly mode: number;
+    readonly libref: LibRef;
 }
 
 export type LibRef = LibRef_libref_hash | LibRef_libref_ref;
 
 export interface LibRef_libref_hash {
-readonly kind: 'LibRef_libref_hash'
-readonly lib_hash: BitString
+    readonly kind: 'LibRef_libref_hash';
+    readonly lib_hash: BitString;
 }
 
 export interface LibRef_libref_ref {
-readonly kind: 'LibRef_libref_ref'
-readonly library: Slice
+    readonly kind: 'LibRef_libref_ref';
+    readonly library: Slice;
 }
 
 export interface OutListNode {
-readonly kind: 'OutListNode'
-readonly prev: Slice
-readonly action: OutAction
+    readonly kind: 'OutListNode';
+    readonly prev: Slice;
+    readonly action: OutAction;
 }
 
 export interface ShardIdent {
-readonly kind: 'ShardIdent'
-readonly shard_pfx_bits: number
-readonly workchain_id: number
-readonly shard_prefix: number
+    readonly kind: 'ShardIdent';
+    readonly shard_pfx_bits: number;
+    readonly workchain_id: number;
+    readonly shard_prefix: number;
 }
 
 export interface ExtBlkRef {
-readonly kind: 'ExtBlkRef'
-readonly end_lt: number
-readonly seq_no: number
-readonly root_hash: BitString
-readonly file_hash: BitString
+    readonly kind: 'ExtBlkRef';
+    readonly end_lt: number;
+    readonly seq_no: number;
+    readonly root_hash: BitString;
+    readonly file_hash: BitString;
 }
 
 export interface BlockIdExt {
-readonly kind: 'BlockIdExt'
-readonly shard_id: ShardIdent
-readonly seq_no: number
-readonly root_hash: BitString
-readonly file_hash: BitString
+    readonly kind: 'BlockIdExt';
+    readonly shard_id: ShardIdent;
+    readonly seq_no: number;
+    readonly root_hash: BitString;
+    readonly file_hash: BitString;
 }
 
 export interface BlkMasterInfo {
-readonly kind: 'BlkMasterInfo'
-readonly master: ExtBlkRef
+    readonly kind: 'BlkMasterInfo';
+    readonly master: ExtBlkRef;
 }
 
 export interface ShardStateUnsplit {
-readonly kind: 'ShardStateUnsplit'
-readonly global_id: number
-readonly shard_id: ShardIdent
-readonly seq_no: number
-readonly vert_seq_no: number
-readonly gen_utime: number
-readonly gen_lt: number
-readonly min_ref_mc_seqno: number
-readonly out_msg_queue_info: OutMsgQueueInfo
-readonly before_split: number
-readonly accounts: ShardAccounts
-readonly overload_history: number
-readonly underload_history: number
-readonly total_balance: CurrencyCollection
-readonly total_validator_fees: CurrencyCollection
-readonly libraries: HashmapE<LibDescr>
-readonly master_ref: Maybe<BlkMasterInfo>
-readonly custom: Maybe<McStateExtra>
+    readonly kind: 'ShardStateUnsplit';
+    readonly global_id: number;
+    readonly shard_id: ShardIdent;
+    readonly seq_no: number;
+    readonly vert_seq_no: number;
+    readonly gen_utime: number;
+    readonly gen_lt: number;
+    readonly min_ref_mc_seqno: number;
+    readonly out_msg_queue_info: OutMsgQueueInfo;
+    readonly before_split: number;
+    readonly accounts: ShardAccounts;
+    readonly overload_history: number;
+    readonly underload_history: number;
+    readonly total_balance: CurrencyCollection;
+    readonly total_validator_fees: CurrencyCollection;
+    readonly libraries: HashmapE<LibDescr>;
+    readonly master_ref: Maybe<BlkMasterInfo>;
+    readonly custom: Maybe<McStateExtra>;
 }
 
 export type ShardState = ShardState__ | ShardState_split_state;
 
 export interface ShardState__ {
-readonly kind: 'ShardState__'
-readonly anon0: ShardStateUnsplit
+    readonly kind: 'ShardState__';
+    readonly anon0: ShardStateUnsplit;
 }
 
 export interface ShardState_split_state {
-readonly kind: 'ShardState_split_state'
-readonly left: ShardStateUnsplit
-readonly right: ShardStateUnsplit
+    readonly kind: 'ShardState_split_state';
+    readonly left: ShardStateUnsplit;
+    readonly right: ShardStateUnsplit;
 }
 
 export interface LibDescr {
-readonly kind: 'LibDescr'
-readonly lib: Slice
-readonly publishers: Hashmap<True>
+    readonly kind: 'LibDescr';
+    readonly lib: Slice;
+    readonly publishers: Hashmap<True>;
 }
 
 export interface BlockInfo {
-readonly kind: 'BlockInfo'
-readonly version: number
-readonly not_master: number
-readonly after_merge: number
-readonly before_split: number
-readonly after_split: number
-readonly want_split: Bool
-readonly want_merge: Bool
-readonly key_block: Bool
-readonly vert_seqno_incr: number
-readonly flags: number
-readonly seq_no: number
-readonly vert_seq_no: number
-readonly prev_seq_no: number
-readonly shard: ShardIdent
-readonly gen_utime: number
-readonly start_lt: number
-readonly end_lt: number
-readonly gen_validator_list_hash_short: number
-readonly gen_catchain_seqno: number
-readonly min_ref_mc_seqno: number
-readonly prev_key_block_seqno: number
-readonly gen_software: GlobalVersion | undefined
-readonly master_ref: BlkMasterInfo | undefined
-readonly prev_ref: BlkPrevInfo
-readonly prev_vert_ref: BlkPrevInfo | undefined
+    readonly kind: 'BlockInfo';
+    readonly version: number;
+    readonly not_master: number;
+    readonly after_merge: number;
+    readonly before_split: number;
+    readonly after_split: number;
+    readonly want_split: Bool;
+    readonly want_merge: Bool;
+    readonly key_block: Bool;
+    readonly vert_seqno_incr: number;
+    readonly flags: number;
+    readonly seq_no: number;
+    readonly vert_seq_no: number;
+    readonly prev_seq_no: number;
+    readonly shard: ShardIdent;
+    readonly gen_utime: number;
+    readonly start_lt: number;
+    readonly end_lt: number;
+    readonly gen_validator_list_hash_short: number;
+    readonly gen_catchain_seqno: number;
+    readonly min_ref_mc_seqno: number;
+    readonly prev_key_block_seqno: number;
+    readonly gen_software: GlobalVersion | undefined;
+    readonly master_ref: BlkMasterInfo | undefined;
+    readonly prev_ref: BlkPrevInfo;
+    readonly prev_vert_ref: BlkPrevInfo | undefined;
 }
 
 export type BlkPrevInfo = BlkPrevInfo_prev_blk_info | BlkPrevInfo_prev_blks_info;
 
 export interface BlkPrevInfo_prev_blk_info {
-readonly kind: 'BlkPrevInfo_prev_blk_info'
-readonly prev: ExtBlkRef
+    readonly kind: 'BlkPrevInfo_prev_blk_info';
+    readonly prev: ExtBlkRef;
 }
 
 export interface BlkPrevInfo_prev_blks_info {
-readonly kind: 'BlkPrevInfo_prev_blks_info'
-readonly prev1: ExtBlkRef
-readonly prev2: ExtBlkRef
+    readonly kind: 'BlkPrevInfo_prev_blks_info';
+    readonly prev1: ExtBlkRef;
+    readonly prev2: ExtBlkRef;
 }
 
 export interface Block {
-readonly kind: 'Block'
-readonly global_id: number
-readonly info: BlockInfo
-readonly value_flow: ValueFlow
-readonly state_update: MERKLE_UPDATE<ShardState>
-readonly extra: BlockExtra
+    readonly kind: 'Block';
+    readonly global_id: number;
+    readonly info: BlockInfo;
+    readonly value_flow: ValueFlow;
+    readonly state_update: MERKLE_UPDATE<ShardState>;
+    readonly extra: BlockExtra;
 }
 
 export interface BlockExtra {
-readonly kind: 'BlockExtra'
-readonly in_msg_descr: InMsgDescr
-readonly out_msg_descr: OutMsgDescr
-readonly account_blocks: ShardAccountBlocks
-readonly rand_seed: BitString
-readonly created_by: BitString
-readonly custom: Maybe<McBlockExtra>
+    readonly kind: 'BlockExtra';
+    readonly in_msg_descr: InMsgDescr;
+    readonly out_msg_descr: OutMsgDescr;
+    readonly account_blocks: ShardAccountBlocks;
+    readonly rand_seed: BitString;
+    readonly created_by: BitString;
+    readonly custom: Maybe<McBlockExtra>;
 }
 
 export interface ValueFlow {
-readonly kind: 'ValueFlow'
-readonly from_prev_blk: CurrencyCollection
-readonly to_next_blk: CurrencyCollection
-readonly imported: CurrencyCollection
-readonly exported: CurrencyCollection
-readonly fees_collected: CurrencyCollection
-readonly fees_imported: CurrencyCollection
-readonly recovered: CurrencyCollection
-readonly created: CurrencyCollection
-readonly minted: CurrencyCollection
+    readonly kind: 'ValueFlow';
+    readonly from_prev_blk: CurrencyCollection;
+    readonly to_next_blk: CurrencyCollection;
+    readonly imported: CurrencyCollection;
+    readonly exported: CurrencyCollection;
+    readonly fees_collected: CurrencyCollection;
+    readonly fees_imported: CurrencyCollection;
+    readonly recovered: CurrencyCollection;
+    readonly created: CurrencyCollection;
+    readonly minted: CurrencyCollection;
 }
 
 export type BinTree<X> = BinTree_bt_leaf<X> | BinTree_bt_fork<X>;
 
 export interface BinTree_bt_leaf<X> {
-readonly kind: 'BinTree_bt_leaf'
-readonly leaf: X
+    readonly kind: 'BinTree_bt_leaf';
+    readonly leaf: X;
 }
 
 export interface BinTree_bt_fork<X> {
-readonly kind: 'BinTree_bt_fork'
-readonly left: BinTree<X>
-readonly right: BinTree<X>
+    readonly kind: 'BinTree_bt_fork';
+    readonly left: BinTree<X>;
+    readonly right: BinTree<X>;
 }
 
 export type FutureSplitMerge = FutureSplitMerge_fsm_none | FutureSplitMerge_fsm_split | FutureSplitMerge_fsm_merge;
 
 export interface FutureSplitMerge_fsm_none {
-readonly kind: 'FutureSplitMerge_fsm_none'
+    readonly kind: 'FutureSplitMerge_fsm_none';
 }
 
 export interface FutureSplitMerge_fsm_split {
-readonly kind: 'FutureSplitMerge_fsm_split'
-readonly split_utime: number
-readonly interval: number
+    readonly kind: 'FutureSplitMerge_fsm_split';
+    readonly split_utime: number;
+    readonly interval: number;
 }
 
 export interface FutureSplitMerge_fsm_merge {
-readonly kind: 'FutureSplitMerge_fsm_merge'
-readonly merge_utime: number
-readonly interval: number
+    readonly kind: 'FutureSplitMerge_fsm_merge';
+    readonly merge_utime: number;
+    readonly interval: number;
 }
 
 export type ShardDescr = ShardDescr_shard_descr | ShardDescr_shard_descr_new;
 
 export interface ShardDescr_shard_descr {
-readonly kind: 'ShardDescr_shard_descr'
-readonly seq_no: number
-readonly reg_mc_seqno: number
-readonly start_lt: number
-readonly end_lt: number
-readonly root_hash: BitString
-readonly file_hash: BitString
-readonly before_split: Bool
-readonly before_merge: Bool
-readonly want_split: Bool
-readonly want_merge: Bool
-readonly nx_cc_updated: Bool
-readonly flags: number
-readonly next_catchain_seqno: number
-readonly next_validator_shard: number
-readonly min_ref_mc_seqno: number
-readonly gen_utime: number
-readonly split_merge_at: FutureSplitMerge
-readonly fees_collected: CurrencyCollection
-readonly funds_created: CurrencyCollection
+    readonly kind: 'ShardDescr_shard_descr';
+    readonly seq_no: number;
+    readonly reg_mc_seqno: number;
+    readonly start_lt: number;
+    readonly end_lt: number;
+    readonly root_hash: BitString;
+    readonly file_hash: BitString;
+    readonly before_split: Bool;
+    readonly before_merge: Bool;
+    readonly want_split: Bool;
+    readonly want_merge: Bool;
+    readonly nx_cc_updated: Bool;
+    readonly flags: number;
+    readonly next_catchain_seqno: number;
+    readonly next_validator_shard: number;
+    readonly min_ref_mc_seqno: number;
+    readonly gen_utime: number;
+    readonly split_merge_at: FutureSplitMerge;
+    readonly fees_collected: CurrencyCollection;
+    readonly funds_created: CurrencyCollection;
 }
 
 export interface ShardDescr_shard_descr_new {
-readonly kind: 'ShardDescr_shard_descr_new'
-readonly seq_no: number
-readonly reg_mc_seqno: number
-readonly start_lt: number
-readonly end_lt: number
-readonly root_hash: BitString
-readonly file_hash: BitString
-readonly before_split: Bool
-readonly before_merge: Bool
-readonly want_split: Bool
-readonly want_merge: Bool
-readonly nx_cc_updated: Bool
-readonly flags: number
-readonly next_catchain_seqno: number
-readonly next_validator_shard: number
-readonly min_ref_mc_seqno: number
-readonly gen_utime: number
-readonly split_merge_at: FutureSplitMerge
-readonly fees_collected: CurrencyCollection
-readonly funds_created: CurrencyCollection
+    readonly kind: 'ShardDescr_shard_descr_new';
+    readonly seq_no: number;
+    readonly reg_mc_seqno: number;
+    readonly start_lt: number;
+    readonly end_lt: number;
+    readonly root_hash: BitString;
+    readonly file_hash: BitString;
+    readonly before_split: Bool;
+    readonly before_merge: Bool;
+    readonly want_split: Bool;
+    readonly want_merge: Bool;
+    readonly nx_cc_updated: Bool;
+    readonly flags: number;
+    readonly next_catchain_seqno: number;
+    readonly next_validator_shard: number;
+    readonly min_ref_mc_seqno: number;
+    readonly gen_utime: number;
+    readonly split_merge_at: FutureSplitMerge;
+    readonly fees_collected: CurrencyCollection;
+    readonly funds_created: CurrencyCollection;
 }
 
 export interface ShardHashes {
-readonly kind: 'ShardHashes'
-readonly anon0: HashmapE<BinTree<ShardDescr>>
+    readonly kind: 'ShardHashes';
+    readonly anon0: HashmapE<BinTree<ShardDescr>>;
 }
 
 export type BinTreeAug<X, Y> = BinTreeAug_bta_leaf<X, Y> | BinTreeAug_bta_fork<X, Y>;
 
 export interface BinTreeAug_bta_leaf<X, Y> {
-readonly kind: 'BinTreeAug_bta_leaf'
-readonly extra: Y
-readonly leaf: X
+    readonly kind: 'BinTreeAug_bta_leaf';
+    readonly extra: Y;
+    readonly leaf: X;
 }
 
 export interface BinTreeAug_bta_fork<X, Y> {
-readonly kind: 'BinTreeAug_bta_fork'
-readonly left: BinTreeAug<X, Y>
-readonly right: BinTreeAug<X, Y>
-readonly extra: Y
+    readonly kind: 'BinTreeAug_bta_fork';
+    readonly left: BinTreeAug<X, Y>;
+    readonly right: BinTreeAug<X, Y>;
+    readonly extra: Y;
 }
 
 export interface ShardFeeCreated {
-readonly kind: 'ShardFeeCreated'
-readonly fees: CurrencyCollection
-readonly create: CurrencyCollection
+    readonly kind: 'ShardFeeCreated';
+    readonly fees: CurrencyCollection;
+    readonly create: CurrencyCollection;
 }
 
 export interface ShardFees {
-readonly kind: 'ShardFees'
-readonly anon0: HashmapAugE<ShardFeeCreated, ShardFeeCreated>
+    readonly kind: 'ShardFees';
+    readonly anon0: HashmapAugE<ShardFeeCreated, ShardFeeCreated>;
 }
 
 export interface ConfigParams {
-readonly kind: 'ConfigParams'
-readonly config_addr: BitString
-readonly config: Hashmap<Slice>
+    readonly kind: 'ConfigParams';
+    readonly config_addr: BitString;
+    readonly config: Hashmap<Slice>;
 }
 
 export interface ValidatorInfo {
-readonly kind: 'ValidatorInfo'
-readonly validator_list_hash_short: number
-readonly catchain_seqno: number
-readonly nx_cc_updated: Bool
+    readonly kind: 'ValidatorInfo';
+    readonly validator_list_hash_short: number;
+    readonly catchain_seqno: number;
+    readonly nx_cc_updated: Bool;
 }
 
 export interface ValidatorBaseInfo {
-readonly kind: 'ValidatorBaseInfo'
-readonly validator_list_hash_short: number
-readonly catchain_seqno: number
+    readonly kind: 'ValidatorBaseInfo';
+    readonly validator_list_hash_short: number;
+    readonly catchain_seqno: number;
 }
 
 export interface KeyMaxLt {
-readonly kind: 'KeyMaxLt'
-readonly key: Bool
-readonly max_end_lt: number
+    readonly kind: 'KeyMaxLt';
+    readonly key: Bool;
+    readonly max_end_lt: number;
 }
 
 export interface KeyExtBlkRef {
-readonly kind: 'KeyExtBlkRef'
-readonly key: Bool
-readonly blk_ref: ExtBlkRef
+    readonly kind: 'KeyExtBlkRef';
+    readonly key: Bool;
+    readonly blk_ref: ExtBlkRef;
 }
 
 export interface OldMcBlocksInfo {
-readonly kind: 'OldMcBlocksInfo'
-readonly anon0: HashmapAugE<KeyExtBlkRef, KeyMaxLt>
+    readonly kind: 'OldMcBlocksInfo';
+    readonly anon0: HashmapAugE<KeyExtBlkRef, KeyMaxLt>;
 }
 
 export interface Counters {
-readonly kind: 'Counters'
-readonly last_updated: number
-readonly total: number
-readonly cnt2048: number
-readonly cnt65536: number
+    readonly kind: 'Counters';
+    readonly last_updated: number;
+    readonly total: number;
+    readonly cnt2048: number;
+    readonly cnt65536: number;
 }
 
 export interface CreatorStats {
-readonly kind: 'CreatorStats'
-readonly mc_blocks: Counters
-readonly shard_blocks: Counters
+    readonly kind: 'CreatorStats';
+    readonly mc_blocks: Counters;
+    readonly shard_blocks: Counters;
 }
 
 export type BlockCreateStats = BlockCreateStats_block_create_stats | BlockCreateStats_block_create_stats_ext;
 
 export interface BlockCreateStats_block_create_stats {
-readonly kind: 'BlockCreateStats_block_create_stats'
-readonly counters: HashmapE<CreatorStats>
+    readonly kind: 'BlockCreateStats_block_create_stats';
+    readonly counters: HashmapE<CreatorStats>;
 }
 
 export interface BlockCreateStats_block_create_stats_ext {
-readonly kind: 'BlockCreateStats_block_create_stats_ext'
-readonly counters: HashmapAugE<CreatorStats, number>
+    readonly kind: 'BlockCreateStats_block_create_stats_ext';
+    readonly counters: HashmapAugE<CreatorStats, number>;
 }
 
 export interface McStateExtra {
-readonly kind: 'McStateExtra'
-readonly shard_hashes: ShardHashes
-readonly config: ConfigParams
-readonly flags: number
-readonly validator_info: ValidatorInfo
-readonly prev_blocks: OldMcBlocksInfo
-readonly after_key_block: Bool
-readonly last_key_block: Maybe<ExtBlkRef>
-readonly block_create_stats: BlockCreateStats | undefined
-readonly global_balance: CurrencyCollection
+    readonly kind: 'McStateExtra';
+    readonly shard_hashes: ShardHashes;
+    readonly config: ConfigParams;
+    readonly flags: number;
+    readonly validator_info: ValidatorInfo;
+    readonly prev_blocks: OldMcBlocksInfo;
+    readonly after_key_block: Bool;
+    readonly last_key_block: Maybe<ExtBlkRef>;
+    readonly block_create_stats: BlockCreateStats | undefined;
+    readonly global_balance: CurrencyCollection;
 }
 
 export interface SigPubKey {
-readonly kind: 'SigPubKey'
-readonly pubkey: BitString
+    readonly kind: 'SigPubKey';
+    readonly pubkey: BitString;
 }
 
 export interface CryptoSignatureSimple {
-readonly kind: 'CryptoSignatureSimple'
-readonly R: BitString
-readonly s: BitString
+    readonly kind: 'CryptoSignatureSimple';
+    readonly R: BitString;
+    readonly s: BitString;
 }
 
 export type CryptoSignature = CryptoSignature__ | CryptoSignature_chained_signature;
 
 export interface CryptoSignature__ {
-readonly kind: 'CryptoSignature__'
-readonly anon0: CryptoSignatureSimple
+    readonly kind: 'CryptoSignature__';
+    readonly anon0: CryptoSignatureSimple;
 }
 
 export interface CryptoSignature_chained_signature {
-readonly kind: 'CryptoSignature_chained_signature'
-readonly signed_cert: SignedCertificate
-readonly temp_key_signature: CryptoSignatureSimple
+    readonly kind: 'CryptoSignature_chained_signature';
+    readonly signed_cert: SignedCertificate;
+    readonly temp_key_signature: CryptoSignatureSimple;
 }
 
 export interface CryptoSignaturePair {
-readonly kind: 'CryptoSignaturePair'
-readonly node_id_short: BitString
-readonly sign: CryptoSignature
+    readonly kind: 'CryptoSignaturePair';
+    readonly node_id_short: BitString;
+    readonly sign: CryptoSignature;
 }
 
 export interface Certificate {
-readonly kind: 'Certificate'
-readonly temp_key: SigPubKey
-readonly valid_since: number
-readonly valid_until: number
+    readonly kind: 'Certificate';
+    readonly temp_key: SigPubKey;
+    readonly valid_since: number;
+    readonly valid_until: number;
 }
 
 export interface CertificateEnv {
-readonly kind: 'CertificateEnv'
-readonly certificate: Certificate
+    readonly kind: 'CertificateEnv';
+    readonly certificate: Certificate;
 }
 
 export interface SignedCertificate {
-readonly kind: 'SignedCertificate'
-readonly certificate: Certificate
-readonly certificate_signature: CryptoSignature
+    readonly kind: 'SignedCertificate';
+    readonly certificate: Certificate;
+    readonly certificate_signature: CryptoSignature;
 }
 
 export interface McBlockExtra {
-readonly kind: 'McBlockExtra'
-readonly key_block: number
-readonly shard_hashes: ShardHashes
-readonly shard_fees: ShardFees
-readonly prev_blk_signatures: HashmapE<CryptoSignaturePair>
-readonly recover_create_msg: Maybe<InMsg>
-readonly mint_msg: Maybe<InMsg>
-readonly config: ConfigParams | undefined
+    readonly kind: 'McBlockExtra';
+    readonly key_block: number;
+    readonly shard_hashes: ShardHashes;
+    readonly shard_fees: ShardFees;
+    readonly prev_blk_signatures: HashmapE<CryptoSignaturePair>;
+    readonly recover_create_msg: Maybe<InMsg>;
+    readonly mint_msg: Maybe<InMsg>;
+    readonly config: ConfigParams | undefined;
 }
 
 export type ValidatorDescr = ValidatorDescr_validator | ValidatorDescr_validator_addr;
 
 export interface ValidatorDescr_validator {
-readonly kind: 'ValidatorDescr_validator'
-readonly public_key: SigPubKey
-readonly weight: number
+    readonly kind: 'ValidatorDescr_validator';
+    readonly public_key: SigPubKey;
+    readonly weight: number;
 }
 
 export interface ValidatorDescr_validator_addr {
-readonly kind: 'ValidatorDescr_validator_addr'
-readonly public_key: SigPubKey
-readonly weight: number
-readonly adnl_addr: BitString
+    readonly kind: 'ValidatorDescr_validator_addr';
+    readonly public_key: SigPubKey;
+    readonly weight: number;
+    readonly adnl_addr: BitString;
 }
 
 export type ValidatorSet = ValidatorSet_validators | ValidatorSet_validators_ext;
 
 export interface ValidatorSet_validators {
-readonly kind: 'ValidatorSet_validators'
-readonly utime_since: number
-readonly utime_until: number
-readonly total: number
-readonly main: number
-readonly list: Hashmap<ValidatorDescr>
+    readonly kind: 'ValidatorSet_validators';
+    readonly utime_since: number;
+    readonly utime_until: number;
+    readonly total: number;
+    readonly main: number;
+    readonly list: Hashmap<ValidatorDescr>;
 }
 
 export interface ValidatorSet_validators_ext {
-readonly kind: 'ValidatorSet_validators_ext'
-readonly utime_since: number
-readonly utime_until: number
-readonly total: number
-readonly main: number
-readonly total_weight: number
-readonly list: HashmapE<ValidatorDescr>
+    readonly kind: 'ValidatorSet_validators_ext';
+    readonly utime_since: number;
+    readonly utime_until: number;
+    readonly total: number;
+    readonly main: number;
+    readonly total_weight: number;
+    readonly list: HashmapE<ValidatorDescr>;
 }
 
 export type ConfigParam = ConfigParam__ | ConfigParam__1 | ConfigParam__2 | ConfigParam__3 | ConfigParam__4 | ConfigParam__5 | ConfigParam__6 | ConfigParam__7 | ConfigParam__8 | ConfigParam__9 | ConfigParam__10 | ConfigParam__11 | ConfigParam__12 | ConfigParam__13 | ConfigParam__14 | ConfigParam__15 | ConfigParam__16 | ConfigParam__17 | ConfigParam__24 | ConfigParam__25 | ConfigParam__26 | ConfigParam__27 | ConfigParam__28 | ConfigParam__29 | ConfigParam__30 | ConfigParam__31 | ConfigParam__32 | ConfigParam__33 | ConfigParam__34 | ConfigParam__35 | ConfigParam__36 | ConfigParam__37 | ConfigParam_config_mc_gas_prices | ConfigParam_config_gas_prices | ConfigParam_config_mc_block_limits | ConfigParam_config_block_limits | ConfigParam_config_mc_fwd_prices | ConfigParam_config_fwd_prices;
 
 export interface ConfigParam__ {
-readonly kind: 'ConfigParam__'
-readonly config_addr: BitString
+    readonly kind: 'ConfigParam__';
+    readonly config_addr: BitString;
 }
 
 export interface ConfigParam__1 {
-readonly kind: 'ConfigParam__1'
-readonly elector_addr: BitString
+    readonly kind: 'ConfigParam__1';
+    readonly elector_addr: BitString;
 }
 
 export interface ConfigParam__2 {
-readonly kind: 'ConfigParam__2'
-readonly minter_addr: BitString
+    readonly kind: 'ConfigParam__2';
+    readonly minter_addr: BitString;
 }
 
 export interface ConfigParam__3 {
-readonly kind: 'ConfigParam__3'
-readonly fee_collector_addr: BitString
+    readonly kind: 'ConfigParam__3';
+    readonly fee_collector_addr: BitString;
 }
 
 export interface ConfigParam__4 {
-readonly kind: 'ConfigParam__4'
-readonly dns_root_addr: BitString
+    readonly kind: 'ConfigParam__4';
+    readonly dns_root_addr: BitString;
 }
 
 export interface ConfigParam__5 {
-readonly kind: 'ConfigParam__5'
-readonly mint_new_price: Grams
-readonly mint_add_price: Grams
+    readonly kind: 'ConfigParam__5';
+    readonly mint_new_price: Grams;
+    readonly mint_add_price: Grams;
 }
 
 export interface ConfigParam__6 {
-readonly kind: 'ConfigParam__6'
-readonly to_mint: ExtraCurrencyCollection
+    readonly kind: 'ConfigParam__6';
+    readonly to_mint: ExtraCurrencyCollection;
 }
 
 export interface ConfigParam__7 {
-readonly kind: 'ConfigParam__7'
-readonly anon0: GlobalVersion
+    readonly kind: 'ConfigParam__7';
+    readonly anon0: GlobalVersion;
 }
 
 export interface ConfigParam__8 {
-readonly kind: 'ConfigParam__8'
-readonly mandatory_params: Hashmap<True>
+    readonly kind: 'ConfigParam__8';
+    readonly mandatory_params: Hashmap<True>;
 }
 
 export interface ConfigParam__9 {
-readonly kind: 'ConfigParam__9'
-readonly critical_params: Hashmap<True>
+    readonly kind: 'ConfigParam__9';
+    readonly critical_params: Hashmap<True>;
 }
 
 export interface ConfigParam__10 {
-readonly kind: 'ConfigParam__10'
-readonly anon0: ConfigVotingSetup
+    readonly kind: 'ConfigParam__10';
+    readonly anon0: ConfigVotingSetup;
 }
 
 export interface ConfigParam__11 {
-readonly kind: 'ConfigParam__11'
-readonly workchains: HashmapE<WorkchainDescr>
+    readonly kind: 'ConfigParam__11';
+    readonly workchains: HashmapE<WorkchainDescr>;
 }
 
 export interface ConfigParam__12 {
-readonly kind: 'ConfigParam__12'
-readonly anon0: ComplaintPricing
+    readonly kind: 'ConfigParam__12';
+    readonly anon0: ComplaintPricing;
 }
 
 export interface ConfigParam__13 {
-readonly kind: 'ConfigParam__13'
-readonly anon0: BlockCreateFees
+    readonly kind: 'ConfigParam__13';
+    readonly anon0: BlockCreateFees;
 }
 
 export interface ConfigParam__14 {
-readonly kind: 'ConfigParam__14'
-readonly validators_elected_for: number
-readonly elections_start_before: number
-readonly elections_end_before: number
-readonly stake_held_for: number
+    readonly kind: 'ConfigParam__14';
+    readonly validators_elected_for: number;
+    readonly elections_start_before: number;
+    readonly elections_end_before: number;
+    readonly stake_held_for: number;
 }
 
 export interface ConfigParam__15 {
-readonly kind: 'ConfigParam__15'
-readonly max_validators: number
-readonly max_main_validators: number
-readonly min_validators: number
+    readonly kind: 'ConfigParam__15';
+    readonly max_validators: number;
+    readonly max_main_validators: number;
+    readonly min_validators: number;
 }
 
 export interface ConfigParam__16 {
-readonly kind: 'ConfigParam__16'
-readonly min_stake: Grams
-readonly max_stake: Grams
-readonly min_total_stake: Grams
-readonly max_stake_factor: number
+    readonly kind: 'ConfigParam__16';
+    readonly min_stake: Grams;
+    readonly max_stake: Grams;
+    readonly min_total_stake: Grams;
+    readonly max_stake_factor: number;
 }
 
 export interface ConfigParam__17 {
-readonly kind: 'ConfigParam__17'
-readonly anon0: Hashmap<StoragePrices>
+    readonly kind: 'ConfigParam__17';
+    readonly anon0: Hashmap<StoragePrices>;
 }
 
 export interface ConfigParam__24 {
-readonly kind: 'ConfigParam__24'
-readonly anon0: CatchainConfig
+    readonly kind: 'ConfigParam__24';
+    readonly anon0: CatchainConfig;
 }
 
 export interface ConfigParam__25 {
-readonly kind: 'ConfigParam__25'
-readonly anon0: ConsensusConfig
+    readonly kind: 'ConfigParam__25';
+    readonly anon0: ConsensusConfig;
 }
 
 export interface ConfigParam__26 {
-readonly kind: 'ConfigParam__26'
-readonly fundamental_smc_addr: HashmapE<True>
+    readonly kind: 'ConfigParam__26';
+    readonly fundamental_smc_addr: HashmapE<True>;
 }
 
 export interface ConfigParam__27 {
-readonly kind: 'ConfigParam__27'
-readonly prev_validators: ValidatorSet
+    readonly kind: 'ConfigParam__27';
+    readonly prev_validators: ValidatorSet;
 }
 
 export interface ConfigParam__28 {
-readonly kind: 'ConfigParam__28'
-readonly prev_temp_validators: ValidatorSet
+    readonly kind: 'ConfigParam__28';
+    readonly prev_temp_validators: ValidatorSet;
 }
 
 export interface ConfigParam__29 {
-readonly kind: 'ConfigParam__29'
-readonly cur_validators: ValidatorSet
+    readonly kind: 'ConfigParam__29';
+    readonly cur_validators: ValidatorSet;
 }
 
 export interface ConfigParam__30 {
-readonly kind: 'ConfigParam__30'
-readonly cur_temp_validators: ValidatorSet
+    readonly kind: 'ConfigParam__30';
+    readonly cur_temp_validators: ValidatorSet;
 }
 
 export interface ConfigParam__31 {
-readonly kind: 'ConfigParam__31'
-readonly next_validators: ValidatorSet
+    readonly kind: 'ConfigParam__31';
+    readonly next_validators: ValidatorSet;
 }
 
 export interface ConfigParam__32 {
-readonly kind: 'ConfigParam__32'
-readonly next_temp_validators: ValidatorSet
+    readonly kind: 'ConfigParam__32';
+    readonly next_temp_validators: ValidatorSet;
 }
 
 export interface ConfigParam__33 {
-readonly kind: 'ConfigParam__33'
-readonly anon0: HashmapE<ValidatorSignedTempKey>
+    readonly kind: 'ConfigParam__33';
+    readonly anon0: HashmapE<ValidatorSignedTempKey>;
 }
 
 export interface ConfigParam__34 {
-readonly kind: 'ConfigParam__34'
-readonly anon0: MisbehaviourPunishmentConfig
+    readonly kind: 'ConfigParam__34';
+    readonly anon0: MisbehaviourPunishmentConfig;
 }
 
 export interface ConfigParam__35 {
-readonly kind: 'ConfigParam__35'
-readonly anon0: OracleBridgeParams
+    readonly kind: 'ConfigParam__35';
+    readonly anon0: OracleBridgeParams;
 }
 
 export interface ConfigParam__36 {
-readonly kind: 'ConfigParam__36'
-readonly anon0: OracleBridgeParams
+    readonly kind: 'ConfigParam__36';
+    readonly anon0: OracleBridgeParams;
 }
 
 export interface ConfigParam__37 {
-readonly kind: 'ConfigParam__37'
-readonly anon0: OracleBridgeParams
+    readonly kind: 'ConfigParam__37';
+    readonly anon0: OracleBridgeParams;
 }
 
 export interface ConfigParam_config_mc_gas_prices {
-readonly kind: 'ConfigParam_config_mc_gas_prices'
-readonly anon0: GasLimitsPrices
+    readonly kind: 'ConfigParam_config_mc_gas_prices';
+    readonly anon0: GasLimitsPrices;
 }
 
 export interface ConfigParam_config_gas_prices {
-readonly kind: 'ConfigParam_config_gas_prices'
-readonly anon0: GasLimitsPrices
+    readonly kind: 'ConfigParam_config_gas_prices';
+    readonly anon0: GasLimitsPrices;
 }
 
 export interface ConfigParam_config_mc_block_limits {
-readonly kind: 'ConfigParam_config_mc_block_limits'
-readonly anon0: BlockLimits
+    readonly kind: 'ConfigParam_config_mc_block_limits';
+    readonly anon0: BlockLimits;
 }
 
 export interface ConfigParam_config_block_limits {
-readonly kind: 'ConfigParam_config_block_limits'
-readonly anon0: BlockLimits
+    readonly kind: 'ConfigParam_config_block_limits';
+    readonly anon0: BlockLimits;
 }
 
 export interface ConfigParam_config_mc_fwd_prices {
-readonly kind: 'ConfigParam_config_mc_fwd_prices'
-readonly anon0: MsgForwardPrices
+    readonly kind: 'ConfigParam_config_mc_fwd_prices';
+    readonly anon0: MsgForwardPrices;
 }
 
 export interface ConfigParam_config_fwd_prices {
-readonly kind: 'ConfigParam_config_fwd_prices'
-readonly anon0: MsgForwardPrices
+    readonly kind: 'ConfigParam_config_fwd_prices';
+    readonly anon0: MsgForwardPrices;
 }
 
 export interface GlobalVersion {
-readonly kind: 'GlobalVersion'
-readonly version: number
-readonly capabilities: number
+    readonly kind: 'GlobalVersion';
+    readonly version: number;
+    readonly capabilities: number;
 }
 
 export interface ConfigProposalSetup {
-readonly kind: 'ConfigProposalSetup'
-readonly min_tot_rounds: number
-readonly max_tot_rounds: number
-readonly min_wins: number
-readonly max_losses: number
-readonly min_store_sec: number
-readonly max_store_sec: number
-readonly bit_price: number
-readonly _cell_price: number
+    readonly kind: 'ConfigProposalSetup';
+    readonly min_tot_rounds: number;
+    readonly max_tot_rounds: number;
+    readonly min_wins: number;
+    readonly max_losses: number;
+    readonly min_store_sec: number;
+    readonly max_store_sec: number;
+    readonly bit_price: number;
+    readonly _cell_price: number;
 }
 
 export interface ConfigVotingSetup {
-readonly kind: 'ConfigVotingSetup'
-readonly normal_params: ConfigProposalSetup
-readonly critical_params: ConfigProposalSetup
+    readonly kind: 'ConfigVotingSetup';
+    readonly normal_params: ConfigProposalSetup;
+    readonly critical_params: ConfigProposalSetup;
 }
 
 export interface ConfigProposal {
-readonly kind: 'ConfigProposal'
-readonly param_id: number
-readonly param_value: Maybe<Slice>
-readonly if_hash_equal: Maybe<number>
+    readonly kind: 'ConfigProposal';
+    readonly param_id: number;
+    readonly param_value: Maybe<Slice>;
+    readonly if_hash_equal: Maybe<number>;
 }
 
 export interface ConfigProposalStatus {
-readonly kind: 'ConfigProposalStatus'
-readonly expires: number
-readonly proposal: ConfigProposal
-readonly is_critical: Bool
-readonly voters: HashmapE<True>
-readonly remaining_weight: number
-readonly validator_set_id: number
-readonly rounds_remaining: number
-readonly wins: number
-readonly losses: number
+    readonly kind: 'ConfigProposalStatus';
+    readonly expires: number;
+    readonly proposal: ConfigProposal;
+    readonly is_critical: Bool;
+    readonly voters: HashmapE<True>;
+    readonly remaining_weight: number;
+    readonly validator_set_id: number;
+    readonly rounds_remaining: number;
+    readonly wins: number;
+    readonly losses: number;
 }
 
 export type WorkchainFormat = WorkchainFormat_wfmt_basic | WorkchainFormat_wfmt_ext;
 
 export interface WorkchainFormat_wfmt_basic {
-readonly kind: 'WorkchainFormat_wfmt_basic'
-readonly vm_version: number
-readonly vm_mode: number
+    readonly kind: 'WorkchainFormat_wfmt_basic';
+    readonly vm_version: number;
+    readonly vm_mode: number;
 }
 
 export interface WorkchainFormat_wfmt_ext {
-readonly kind: 'WorkchainFormat_wfmt_ext'
-readonly min_addr_len: number
-readonly max_addr_len: number
-readonly addr_len_step: number
-readonly workchain_type_id: number
+    readonly kind: 'WorkchainFormat_wfmt_ext';
+    readonly min_addr_len: number;
+    readonly max_addr_len: number;
+    readonly addr_len_step: number;
+    readonly workchain_type_id: number;
 }
 
 export interface WorkchainDescr {
-readonly kind: 'WorkchainDescr'
-readonly enabled_since: number
-readonly actual_min_split: number
-readonly min_split: number
-readonly max_split: number
-readonly basic: number
-readonly active: Bool
-readonly accept_msgs: Bool
-readonly flags: number
-readonly zerostate_root_hash: BitString
-readonly zerostate_file_hash: BitString
-readonly version: number
-readonly format: WorkchainFormat
+    readonly kind: 'WorkchainDescr';
+    readonly enabled_since: number;
+    readonly actual_min_split: number;
+    readonly min_split: number;
+    readonly max_split: number;
+    readonly basic: number;
+    readonly active: Bool;
+    readonly accept_msgs: Bool;
+    readonly flags: number;
+    readonly zerostate_root_hash: BitString;
+    readonly zerostate_file_hash: BitString;
+    readonly version: number;
+    readonly format: WorkchainFormat;
 }
 
 export interface ComplaintPricing {
-readonly kind: 'ComplaintPricing'
-readonly deposit: Grams
-readonly bit_price: Grams
-readonly _cell_price: Grams
+    readonly kind: 'ComplaintPricing';
+    readonly deposit: Grams;
+    readonly bit_price: Grams;
+    readonly _cell_price: Grams;
 }
 
 export interface BlockCreateFees {
-readonly kind: 'BlockCreateFees'
-readonly masterchain_block_fee: Grams
-readonly basechain_block_fee: Grams
+    readonly kind: 'BlockCreateFees';
+    readonly masterchain_block_fee: Grams;
+    readonly basechain_block_fee: Grams;
 }
 
 export interface StoragePrices {
-readonly kind: 'StoragePrices'
-readonly utime_since: number
-readonly bit_price_ps: number
-readonly _cell_price_ps: number
-readonly mc_bit_price_ps: number
-readonly mc_cell_price_ps: number
+    readonly kind: 'StoragePrices';
+    readonly utime_since: number;
+    readonly bit_price_ps: number;
+    readonly _cell_price_ps: number;
+    readonly mc_bit_price_ps: number;
+    readonly mc_cell_price_ps: number;
 }
 
 export type GasLimitsPrices = GasLimitsPrices_gas_prices | GasLimitsPrices_gas_prices_ext | GasLimitsPrices_gas_flat_pfx;
 
 export interface GasLimitsPrices_gas_prices {
-readonly kind: 'GasLimitsPrices_gas_prices'
-readonly gas_price: number
-readonly gas_limit: number
-readonly gas_credit: number
-readonly block_gas_limit: number
-readonly freeze_due_limit: number
-readonly delete_due_limit: number
+    readonly kind: 'GasLimitsPrices_gas_prices';
+    readonly gas_price: number;
+    readonly gas_limit: number;
+    readonly gas_credit: number;
+    readonly block_gas_limit: number;
+    readonly freeze_due_limit: number;
+    readonly delete_due_limit: number;
 }
 
 export interface GasLimitsPrices_gas_prices_ext {
-readonly kind: 'GasLimitsPrices_gas_prices_ext'
-readonly gas_price: number
-readonly gas_limit: number
-readonly special_gas_limit: number
-readonly gas_credit: number
-readonly block_gas_limit: number
-readonly freeze_due_limit: number
-readonly delete_due_limit: number
+    readonly kind: 'GasLimitsPrices_gas_prices_ext';
+    readonly gas_price: number;
+    readonly gas_limit: number;
+    readonly special_gas_limit: number;
+    readonly gas_credit: number;
+    readonly block_gas_limit: number;
+    readonly freeze_due_limit: number;
+    readonly delete_due_limit: number;
 }
 
 export interface GasLimitsPrices_gas_flat_pfx {
-readonly kind: 'GasLimitsPrices_gas_flat_pfx'
-readonly flat_gas_limit: number
-readonly flat_gas_price: number
-readonly other: GasLimitsPrices
+    readonly kind: 'GasLimitsPrices_gas_flat_pfx';
+    readonly flat_gas_limit: number;
+    readonly flat_gas_price: number;
+    readonly other: GasLimitsPrices;
 }
 
 export interface ParamLimits {
-readonly kind: 'ParamLimits'
-readonly underload: number
-readonly soft_limit: number
-readonly hard_limit: number
+    readonly kind: 'ParamLimits';
+    readonly underload: number;
+    readonly soft_limit: number;
+    readonly hard_limit: number;
 }
 
 export interface BlockLimits {
-readonly kind: 'BlockLimits'
-readonly bytes: ParamLimits
-readonly gas: ParamLimits
-readonly lt_delta: ParamLimits
+    readonly kind: 'BlockLimits';
+    readonly bytes: ParamLimits;
+    readonly gas: ParamLimits;
+    readonly lt_delta: ParamLimits;
 }
 
 export interface MsgForwardPrices {
-readonly kind: 'MsgForwardPrices'
-readonly lump_price: number
-readonly bit_price: number
-readonly _cell_price: number
-readonly ihr_price_factor: number
-readonly first_frac: number
-readonly next_frac: number
+    readonly kind: 'MsgForwardPrices';
+    readonly lump_price: number;
+    readonly bit_price: number;
+    readonly _cell_price: number;
+    readonly ihr_price_factor: number;
+    readonly first_frac: number;
+    readonly next_frac: number;
 }
 
 export type CatchainConfig = CatchainConfig_catchain_config | CatchainConfig_catchain_config_new;
 
 export interface CatchainConfig_catchain_config {
-readonly kind: 'CatchainConfig_catchain_config'
-readonly mc_catchain_lifetime: number
-readonly shard_catchain_lifetime: number
-readonly shard_validators_lifetime: number
-readonly shard_validators_num: number
+    readonly kind: 'CatchainConfig_catchain_config';
+    readonly mc_catchain_lifetime: number;
+    readonly shard_catchain_lifetime: number;
+    readonly shard_validators_lifetime: number;
+    readonly shard_validators_num: number;
 }
 
 export interface CatchainConfig_catchain_config_new {
-readonly kind: 'CatchainConfig_catchain_config_new'
-readonly flags: number
-readonly shuffle_mc_validators: Bool
-readonly mc_catchain_lifetime: number
-readonly shard_catchain_lifetime: number
-readonly shard_validators_lifetime: number
-readonly shard_validators_num: number
+    readonly kind: 'CatchainConfig_catchain_config_new';
+    readonly flags: number;
+    readonly shuffle_mc_validators: Bool;
+    readonly mc_catchain_lifetime: number;
+    readonly shard_catchain_lifetime: number;
+    readonly shard_validators_lifetime: number;
+    readonly shard_validators_num: number;
 }
 
 export type ConsensusConfig = ConsensusConfig_consensus_config | ConsensusConfig_consensus_config_new | ConsensusConfig_consensus_config_v3 | ConsensusConfig_consensus_config_v4;
 
 export interface ConsensusConfig_consensus_config {
-readonly kind: 'ConsensusConfig_consensus_config'
-readonly round_candidates: number
-readonly next_candidate_delay_ms: number
-readonly consensus_timeout_ms: number
-readonly fast_attempts: number
-readonly attempt_duration: number
-readonly catchain_max_deps: number
-readonly max_block_bytes: number
-readonly max_collated_bytes: number
+    readonly kind: 'ConsensusConfig_consensus_config';
+    readonly round_candidates: number;
+    readonly next_candidate_delay_ms: number;
+    readonly consensus_timeout_ms: number;
+    readonly fast_attempts: number;
+    readonly attempt_duration: number;
+    readonly catchain_max_deps: number;
+    readonly max_block_bytes: number;
+    readonly max_collated_bytes: number;
 }
 
 export interface ConsensusConfig_consensus_config_new {
-readonly kind: 'ConsensusConfig_consensus_config_new'
-readonly flags: number
-readonly new_catchain_ids: Bool
-readonly round_candidates: number
-readonly next_candidate_delay_ms: number
-readonly consensus_timeout_ms: number
-readonly fast_attempts: number
-readonly attempt_duration: number
-readonly catchain_max_deps: number
-readonly max_block_bytes: number
-readonly max_collated_bytes: number
+    readonly kind: 'ConsensusConfig_consensus_config_new';
+    readonly flags: number;
+    readonly new_catchain_ids: Bool;
+    readonly round_candidates: number;
+    readonly next_candidate_delay_ms: number;
+    readonly consensus_timeout_ms: number;
+    readonly fast_attempts: number;
+    readonly attempt_duration: number;
+    readonly catchain_max_deps: number;
+    readonly max_block_bytes: number;
+    readonly max_collated_bytes: number;
 }
 
 export interface ConsensusConfig_consensus_config_v3 {
-readonly kind: 'ConsensusConfig_consensus_config_v3'
-readonly flags: number
-readonly new_catchain_ids: Bool
-readonly round_candidates: number
-readonly next_candidate_delay_ms: number
-readonly consensus_timeout_ms: number
-readonly fast_attempts: number
-readonly attempt_duration: number
-readonly catchain_max_deps: number
-readonly max_block_bytes: number
-readonly max_collated_bytes: number
-readonly proto_version: number
+    readonly kind: 'ConsensusConfig_consensus_config_v3';
+    readonly flags: number;
+    readonly new_catchain_ids: Bool;
+    readonly round_candidates: number;
+    readonly next_candidate_delay_ms: number;
+    readonly consensus_timeout_ms: number;
+    readonly fast_attempts: number;
+    readonly attempt_duration: number;
+    readonly catchain_max_deps: number;
+    readonly max_block_bytes: number;
+    readonly max_collated_bytes: number;
+    readonly proto_version: number;
 }
 
 export interface ConsensusConfig_consensus_config_v4 {
-readonly kind: 'ConsensusConfig_consensus_config_v4'
-readonly flags: number
-readonly new_catchain_ids: Bool
-readonly round_candidates: number
-readonly next_candidate_delay_ms: number
-readonly consensus_timeout_ms: number
-readonly fast_attempts: number
-readonly attempt_duration: number
-readonly catchain_max_deps: number
-readonly max_block_bytes: number
-readonly max_collated_bytes: number
-readonly proto_version: number
-readonly catchain_max_blocks_coeff: number
+    readonly kind: 'ConsensusConfig_consensus_config_v4';
+    readonly flags: number;
+    readonly new_catchain_ids: Bool;
+    readonly round_candidates: number;
+    readonly next_candidate_delay_ms: number;
+    readonly consensus_timeout_ms: number;
+    readonly fast_attempts: number;
+    readonly attempt_duration: number;
+    readonly catchain_max_deps: number;
+    readonly max_block_bytes: number;
+    readonly max_collated_bytes: number;
+    readonly proto_version: number;
+    readonly catchain_max_blocks_coeff: number;
 }
 
 export interface ValidatorTempKey {
-readonly kind: 'ValidatorTempKey'
-readonly adnl_addr: BitString
-readonly temp_public_key: SigPubKey
-readonly seqno: number
-readonly valid_until: number
+    readonly kind: 'ValidatorTempKey';
+    readonly adnl_addr: BitString;
+    readonly temp_public_key: SigPubKey;
+    readonly seqno: number;
+    readonly valid_until: number;
 }
 
 export interface ValidatorSignedTempKey {
-readonly kind: 'ValidatorSignedTempKey'
-readonly key: ValidatorTempKey
-readonly signature: CryptoSignature
+    readonly kind: 'ValidatorSignedTempKey';
+    readonly key: ValidatorTempKey;
+    readonly signature: CryptoSignature;
 }
 
 export interface MisbehaviourPunishmentConfig {
-readonly kind: 'MisbehaviourPunishmentConfig'
-readonly default_flat_fine: Grams
-readonly default_proportional_fine: number
-readonly severity_flat_mult: number
-readonly severity_proportional_mult: number
-readonly unpunishable_interval: number
-readonly long_interval: number
-readonly long_flat_mult: number
-readonly long_proportional_mult: number
-readonly medium_interval: number
-readonly medium_flat_mult: number
-readonly medium_proportional_mult: number
+    readonly kind: 'MisbehaviourPunishmentConfig';
+    readonly default_flat_fine: Grams;
+    readonly default_proportional_fine: number;
+    readonly severity_flat_mult: number;
+    readonly severity_proportional_mult: number;
+    readonly unpunishable_interval: number;
+    readonly long_interval: number;
+    readonly long_flat_mult: number;
+    readonly long_proportional_mult: number;
+    readonly medium_interval: number;
+    readonly medium_flat_mult: number;
+    readonly medium_proportional_mult: number;
 }
 
 export interface OracleBridgeParams {
-readonly kind: 'OracleBridgeParams'
-readonly bridge_address: BitString
-readonly oracle_mutlisig_address: BitString
-readonly oracles: HashmapE<number>
-readonly external_chain_address: BitString
+    readonly kind: 'OracleBridgeParams';
+    readonly bridge_address: BitString;
+    readonly oracle_mutlisig_address: BitString;
+    readonly oracles: HashmapE<number>;
+    readonly external_chain_address: BitString;
 }
 
 export interface BlockSignaturesPure {
-readonly kind: 'BlockSignaturesPure'
-readonly sig_count: number
-readonly sig_weight: number
-readonly signatures: HashmapE<CryptoSignaturePair>
+    readonly kind: 'BlockSignaturesPure';
+    readonly sig_count: number;
+    readonly sig_weight: number;
+    readonly signatures: HashmapE<CryptoSignaturePair>;
 }
 
 export interface BlockSignatures {
-readonly kind: 'BlockSignatures'
-readonly validator_info: ValidatorBaseInfo
-readonly pure_signatures: BlockSignaturesPure
+    readonly kind: 'BlockSignatures';
+    readonly validator_info: ValidatorBaseInfo;
+    readonly pure_signatures: BlockSignaturesPure;
 }
 
 export interface BlockProof {
-readonly kind: 'BlockProof'
-readonly proof_for: BlockIdExt
-readonly root: Slice
-readonly signatures: Maybe<BlockSignatures>
+    readonly kind: 'BlockProof';
+    readonly proof_for: BlockIdExt;
+    readonly root: Slice;
+    readonly signatures: Maybe<BlockSignatures>;
 }
 
 export type ProofChain = ProofChain_chain_empty | ProofChain_chain_link;
 
 export interface ProofChain_chain_empty {
-readonly kind: 'ProofChain_chain_empty'
+    readonly kind: 'ProofChain_chain_empty';
 }
 
 export interface ProofChain_chain_link {
-readonly kind: 'ProofChain_chain_link'
-readonly n: number
-readonly root: Slice
-readonly prev: ProofChain | undefined
+    readonly kind: 'ProofChain_chain_link';
+    readonly n: number;
+    readonly root: Slice;
+    readonly prev: ProofChain | undefined;
 }
 
 export interface TopBlockDescr {
-readonly kind: 'TopBlockDescr'
-readonly proof_for: BlockIdExt
-readonly signatures: Maybe<BlockSignatures>
-readonly len: number
-readonly chain: ProofChain
+    readonly kind: 'TopBlockDescr';
+    readonly proof_for: BlockIdExt;
+    readonly signatures: Maybe<BlockSignatures>;
+    readonly len: number;
+    readonly chain: ProofChain;
 }
 
 export interface TopBlockDescrSet {
-readonly kind: 'TopBlockDescrSet'
-readonly collection: HashmapE<TopBlockDescr>
+    readonly kind: 'TopBlockDescrSet';
+    readonly collection: HashmapE<TopBlockDescr>;
 }
 
 export interface ProducerInfo {
-readonly kind: 'ProducerInfo'
-readonly utime: number
-readonly mc_blk_ref: ExtBlkRef
-readonly state_proof: MERKLE_PROOF<Block>
-readonly prod_proof: MERKLE_PROOF<ShardState>
+    readonly kind: 'ProducerInfo';
+    readonly utime: number;
+    readonly mc_blk_ref: ExtBlkRef;
+    readonly state_proof: MERKLE_PROOF<Block>;
+    readonly prod_proof: MERKLE_PROOF<ShardState>;
 }
 
 export type ComplaintDescr = ComplaintDescr_no_blk_gen | ComplaintDescr_no_blk_gen_diff;
 
 export interface ComplaintDescr_no_blk_gen {
-readonly kind: 'ComplaintDescr_no_blk_gen'
-readonly from_utime: number
-readonly prod_info: ProducerInfo
+    readonly kind: 'ComplaintDescr_no_blk_gen';
+    readonly from_utime: number;
+    readonly prod_info: ProducerInfo;
 }
 
 export interface ComplaintDescr_no_blk_gen_diff {
-readonly kind: 'ComplaintDescr_no_blk_gen_diff'
-readonly prod_info_old: ProducerInfo
-readonly prod_info_new: ProducerInfo
+    readonly kind: 'ComplaintDescr_no_blk_gen_diff';
+    readonly prod_info_old: ProducerInfo;
+    readonly prod_info_new: ProducerInfo;
 }
 
 export interface ValidatorComplaint {
-readonly kind: 'ValidatorComplaint'
-readonly validator_pubkey: BitString
-readonly description: ComplaintDescr
-readonly created_at: number
-readonly severity: number
-readonly reward_addr: number
-readonly paid: Grams
-readonly suggested_fine: Grams
-readonly suggested_fine_part: number
+    readonly kind: 'ValidatorComplaint';
+    readonly validator_pubkey: BitString;
+    readonly description: ComplaintDescr;
+    readonly created_at: number;
+    readonly severity: number;
+    readonly reward_addr: number;
+    readonly paid: Grams;
+    readonly suggested_fine: Grams;
+    readonly suggested_fine_part: number;
 }
 
 export interface ValidatorComplaintStatus {
-readonly kind: 'ValidatorComplaintStatus'
-readonly complaint: ValidatorComplaint
-readonly voters: HashmapE<True>
-readonly vset_id: number
-readonly weight_remaining: number
+    readonly kind: 'ValidatorComplaintStatus';
+    readonly complaint: ValidatorComplaint;
+    readonly voters: HashmapE<True>;
+    readonly vset_id: number;
+    readonly weight_remaining: number;
 }
 
 export type VmStackValue = VmStackValue_vm_stk_null | VmStackValue_vm_stk_tinyint | VmStackValue_vm_stk_int | VmStackValue_vm_stk_nan | VmStackValue_vm_stk_cell | VmStackValue_vm_stk_slice | VmStackValue_vm_stk_builder | VmStackValue_vm_stk_cont | VmStackValue_vm_stk_tuple;
 
 export interface VmStackValue_vm_stk_null {
-readonly kind: 'VmStackValue_vm_stk_null'
+    readonly kind: 'VmStackValue_vm_stk_null';
 }
 
 export interface VmStackValue_vm_stk_tinyint {
-readonly kind: 'VmStackValue_vm_stk_tinyint'
-readonly value: number
+    readonly kind: 'VmStackValue_vm_stk_tinyint';
+    readonly value: number;
 }
 
 export interface VmStackValue_vm_stk_int {
-readonly kind: 'VmStackValue_vm_stk_int'
-readonly value: number
+    readonly kind: 'VmStackValue_vm_stk_int';
+    readonly value: number;
 }
 
 export interface VmStackValue_vm_stk_nan {
-readonly kind: 'VmStackValue_vm_stk_nan'
+    readonly kind: 'VmStackValue_vm_stk_nan';
 }
 
 export interface VmStackValue_vm_stk_cell {
-readonly kind: 'VmStackValue_vm_stk_cell'
-readonly _cell: Slice
+    readonly kind: 'VmStackValue_vm_stk_cell';
+    readonly _cell: Slice;
 }
 
 export interface VmStackValue_vm_stk_slice {
-readonly kind: 'VmStackValue_vm_stk_slice'
-readonly _: VmCellSlice
+    readonly kind: 'VmStackValue_vm_stk_slice';
+    readonly _: VmCellSlice;
 }
 
 export interface VmStackValue_vm_stk_builder {
-readonly kind: 'VmStackValue_vm_stk_builder'
-readonly _cell: Slice
+    readonly kind: 'VmStackValue_vm_stk_builder';
+    readonly _cell: Slice;
 }
 
 export interface VmStackValue_vm_stk_cont {
-readonly kind: 'VmStackValue_vm_stk_cont'
-readonly cont: VmCont
+    readonly kind: 'VmStackValue_vm_stk_cont';
+    readonly cont: VmCont;
 }
 
 export interface VmStackValue_vm_stk_tuple {
-readonly kind: 'VmStackValue_vm_stk_tuple'
-readonly len: number
-readonly data: VmTuple
+    readonly kind: 'VmStackValue_vm_stk_tuple';
+    readonly len: number;
+    readonly data: VmTuple;
 }
 
 export interface VmCellSlice {
-readonly kind: 'VmCellSlice'
-readonly _cell: Slice
-readonly st_bits: number
-readonly end_bits: number
-readonly st_ref: number
-readonly end_ref: number
+    readonly kind: 'VmCellSlice';
+    readonly _cell: Slice;
+    readonly st_bits: number;
+    readonly end_bits: number;
+    readonly st_ref: number;
+    readonly end_ref: number;
 }
 
 export type VmTupleRef = VmTupleRef_vm_tupref_nil | VmTupleRef_vm_tupref_single | VmTupleRef_vm_tupref_any;
 
 export interface VmTupleRef_vm_tupref_nil {
-readonly kind: 'VmTupleRef_vm_tupref_nil'
+    readonly kind: 'VmTupleRef_vm_tupref_nil';
 }
 
 export interface VmTupleRef_vm_tupref_single {
-readonly kind: 'VmTupleRef_vm_tupref_single'
-readonly entry: VmStackValue
+    readonly kind: 'VmTupleRef_vm_tupref_single';
+    readonly entry: VmStackValue;
 }
 
 export interface VmTupleRef_vm_tupref_any {
-readonly kind: 'VmTupleRef_vm_tupref_any'
-readonly n: number
-readonly ref: VmTuple
+    readonly kind: 'VmTupleRef_vm_tupref_any';
+    readonly n: number;
+    readonly ref: VmTuple;
 }
 
 export type VmTuple = VmTuple_vm_tuple_nil | VmTuple_vm_tuple_tcons;
 
 export interface VmTuple_vm_tuple_nil {
-readonly kind: 'VmTuple_vm_tuple_nil'
+    readonly kind: 'VmTuple_vm_tuple_nil';
 }
 
 export interface VmTuple_vm_tuple_tcons {
-readonly kind: 'VmTuple_vm_tuple_tcons'
-readonly n: number
-readonly head: VmTupleRef
-readonly tail: VmStackValue
+    readonly kind: 'VmTuple_vm_tuple_tcons';
+    readonly n: number;
+    readonly head: VmTupleRef;
+    readonly tail: VmStackValue;
 }
 
 export interface VmStack {
-readonly kind: 'VmStack'
-readonly depth: number
-readonly stack: VmStackList
+    readonly kind: 'VmStack';
+    readonly depth: number;
+    readonly stack: VmStackList;
 }
 
 export type VmStackList = VmStackList_vm_stk_nil | VmStackList_vm_stk_cons;
 
 export interface VmStackList_vm_stk_nil {
-readonly kind: 'VmStackList_vm_stk_nil'
+    readonly kind: 'VmStackList_vm_stk_nil';
 }
 
 export interface VmStackList_vm_stk_cons {
-readonly kind: 'VmStackList_vm_stk_cons'
-readonly n: number
-readonly rest: VmStackList
-readonly tos: VmStackValue
+    readonly kind: 'VmStackList_vm_stk_cons';
+    readonly n: number;
+    readonly rest: VmStackList;
+    readonly tos: VmStackValue;
 }
 
 export interface VmSaveList {
-readonly kind: 'VmSaveList'
-readonly cregs: HashmapE<VmStackValue>
+    readonly kind: 'VmSaveList';
+    readonly cregs: HashmapE<VmStackValue>;
 }
 
 export interface VmGasLimits {
-readonly kind: 'VmGasLimits'
-readonly remaining: number
-readonly max_limit: number
-readonly cur_limit: number
-readonly credit: number
+    readonly kind: 'VmGasLimits';
+    readonly remaining: number;
+    readonly max_limit: number;
+    readonly cur_limit: number;
+    readonly credit: number;
 }
 
 export interface VmLibraries {
-readonly kind: 'VmLibraries'
-readonly libraries: HashmapE<Slice>
+    readonly kind: 'VmLibraries';
+    readonly libraries: HashmapE<Slice>;
 }
 
 export interface VmControlData {
-readonly kind: 'VmControlData'
-readonly nargs: Maybe<number>
-readonly stack: Maybe<VmStack>
-readonly save: VmSaveList
-readonly cp: Maybe<number>
+    readonly kind: 'VmControlData';
+    readonly nargs: Maybe<number>;
+    readonly stack: Maybe<VmStack>;
+    readonly save: VmSaveList;
+    readonly cp: Maybe<number>;
 }
 
 export type VmCont = VmCont_vmc_std | VmCont_vmc_envelope | VmCont_vmc_quit | VmCont_vmc_quit_exc | VmCont_vmc_repeat | VmCont_vmc_until | VmCont_vmc_again | VmCont_vmc_while_cond | VmCont_vmc_while_body | VmCont_vmc_pushint;
 
 export interface VmCont_vmc_std {
-readonly kind: 'VmCont_vmc_std'
-readonly cdata: VmControlData
-readonly code: VmCellSlice
+    readonly kind: 'VmCont_vmc_std';
+    readonly cdata: VmControlData;
+    readonly code: VmCellSlice;
 }
 
 export interface VmCont_vmc_envelope {
-readonly kind: 'VmCont_vmc_envelope'
-readonly cdata: VmControlData
-readonly next: VmCont
+    readonly kind: 'VmCont_vmc_envelope';
+    readonly cdata: VmControlData;
+    readonly next: VmCont;
 }
 
 export interface VmCont_vmc_quit {
-readonly kind: 'VmCont_vmc_quit'
-readonly exit_code: number
+    readonly kind: 'VmCont_vmc_quit';
+    readonly exit_code: number;
 }
 
 export interface VmCont_vmc_quit_exc {
-readonly kind: 'VmCont_vmc_quit_exc'
+    readonly kind: 'VmCont_vmc_quit_exc';
 }
 
 export interface VmCont_vmc_repeat {
-readonly kind: 'VmCont_vmc_repeat'
-readonly count: number
-readonly body: VmCont
-readonly after: VmCont
+    readonly kind: 'VmCont_vmc_repeat';
+    readonly count: number;
+    readonly body: VmCont;
+    readonly after: VmCont;
 }
 
 export interface VmCont_vmc_until {
-readonly kind: 'VmCont_vmc_until'
-readonly body: VmCont
-readonly after: VmCont
+    readonly kind: 'VmCont_vmc_until';
+    readonly body: VmCont;
+    readonly after: VmCont;
 }
 
 export interface VmCont_vmc_again {
-readonly kind: 'VmCont_vmc_again'
-readonly body: VmCont
+    readonly kind: 'VmCont_vmc_again';
+    readonly body: VmCont;
 }
 
 export interface VmCont_vmc_while_cond {
-readonly kind: 'VmCont_vmc_while_cond'
-readonly cond: VmCont
-readonly body: VmCont
-readonly after: VmCont
+    readonly kind: 'VmCont_vmc_while_cond';
+    readonly cond: VmCont;
+    readonly body: VmCont;
+    readonly after: VmCont;
 }
 
 export interface VmCont_vmc_while_body {
-readonly kind: 'VmCont_vmc_while_body'
-readonly cond: VmCont
-readonly body: VmCont
-readonly after: VmCont
+    readonly kind: 'VmCont_vmc_while_body';
+    readonly cond: VmCont;
+    readonly body: VmCont;
+    readonly after: VmCont;
 }
 
 export interface VmCont_vmc_pushint {
-readonly kind: 'VmCont_vmc_pushint'
-readonly value: number
-readonly next: VmCont
+    readonly kind: 'VmCont_vmc_pushint';
+    readonly value: number;
+    readonly next: VmCont;
 }
 
 export interface DNS_RecordSet {
-readonly kind: 'DNS_RecordSet'
-readonly anon0: HashmapE<DNSRecord>
+    readonly kind: 'DNS_RecordSet';
+    readonly anon0: HashmapE<DNSRecord>;
 }
 
 export type TextChunkRef = TextChunkRef_chunk_ref_empty | TextChunkRef_chunk_ref;
 
 export interface TextChunkRef_chunk_ref_empty {
-readonly kind: 'TextChunkRef_chunk_ref_empty'
+    readonly kind: 'TextChunkRef_chunk_ref_empty';
 }
 
 export interface TextChunkRef_chunk_ref {
-readonly kind: 'TextChunkRef_chunk_ref'
-readonly n: number
-readonly ref: TextChunks
+    readonly kind: 'TextChunkRef_chunk_ref';
+    readonly n: number;
+    readonly ref: TextChunks;
 }
 
 export type TextChunks = TextChunks_text_chunk_empty | TextChunks_text_chunk;
 
 export interface TextChunks_text_chunk_empty {
-readonly kind: 'TextChunks_text_chunk_empty'
+    readonly kind: 'TextChunks_text_chunk_empty';
 }
 
 export interface TextChunks_text_chunk {
-readonly kind: 'TextChunks_text_chunk'
-readonly n: number
-readonly len: number
-readonly data: BitString
-readonly next: TextChunkRef
+    readonly kind: 'TextChunks_text_chunk';
+    readonly n: number;
+    readonly len: number;
+    readonly data: BitString;
+    readonly next: TextChunkRef;
 }
 
 export interface Text {
-readonly kind: 'Text'
-readonly chunks: number
-readonly rest: TextChunks
+    readonly kind: 'Text';
+    readonly chunks: number;
+    readonly rest: TextChunks;
 }
 
 export type DNSRecord = DNSRecord_dns_text | DNSRecord_dns_next_resolver | DNSRecord_dns_adnl_address | DNSRecord_dns_smc_address;
 
 export interface DNSRecord_dns_text {
-readonly kind: 'DNSRecord_dns_text'
-readonly _: Text
+    readonly kind: 'DNSRecord_dns_text';
+    readonly _: Text;
 }
 
 export interface DNSRecord_dns_next_resolver {
-readonly kind: 'DNSRecord_dns_next_resolver'
-readonly resolver: MsgAddressInt
+    readonly kind: 'DNSRecord_dns_next_resolver';
+    readonly resolver: MsgAddressInt;
 }
 
 export interface DNSRecord_dns_adnl_address {
-readonly kind: 'DNSRecord_dns_adnl_address'
-readonly adnl_addr: BitString
-readonly flags: number
-readonly proto_list: ProtoList | undefined
+    readonly kind: 'DNSRecord_dns_adnl_address';
+    readonly adnl_addr: BitString;
+    readonly flags: number;
+    readonly proto_list: ProtoList | undefined;
 }
 
 export interface DNSRecord_dns_smc_address {
-readonly kind: 'DNSRecord_dns_smc_address'
-readonly smc_addr: MsgAddressInt
-readonly flags: number
-readonly cap_list: SmcCapList | undefined
+    readonly kind: 'DNSRecord_dns_smc_address';
+    readonly smc_addr: MsgAddressInt;
+    readonly flags: number;
+    readonly cap_list: SmcCapList | undefined;
 }
 
 export type ProtoList = ProtoList_proto_list_nil | ProtoList_proto_list_next;
 
 export interface ProtoList_proto_list_nil {
-readonly kind: 'ProtoList_proto_list_nil'
+    readonly kind: 'ProtoList_proto_list_nil';
 }
 
 export interface ProtoList_proto_list_next {
-readonly kind: 'ProtoList_proto_list_next'
-readonly head: Protocol
-readonly tail: ProtoList
+    readonly kind: 'ProtoList_proto_list_next';
+    readonly head: Protocol;
+    readonly tail: ProtoList;
 }
 
 export interface Protocol {
-readonly kind: 'Protocol'
+    readonly kind: 'Protocol';
 }
 
 export type SmcCapList = SmcCapList_cap_list_nil | SmcCapList_cap_list_next;
 
 export interface SmcCapList_cap_list_nil {
-readonly kind: 'SmcCapList_cap_list_nil'
+    readonly kind: 'SmcCapList_cap_list_nil';
 }
 
 export interface SmcCapList_cap_list_next {
-readonly kind: 'SmcCapList_cap_list_next'
-readonly head: SmcCapability
-readonly tail: SmcCapList
+    readonly kind: 'SmcCapList_cap_list_next';
+    readonly head: SmcCapability;
+    readonly tail: SmcCapList;
 }
 
 export type SmcCapability = SmcCapability_cap_method_seqno | SmcCapability_cap_method_pubkey | SmcCapability_cap_is_wallet | SmcCapability_cap_name;
 
 export interface SmcCapability_cap_method_seqno {
-readonly kind: 'SmcCapability_cap_method_seqno'
+    readonly kind: 'SmcCapability_cap_method_seqno';
 }
 
 export interface SmcCapability_cap_method_pubkey {
-readonly kind: 'SmcCapability_cap_method_pubkey'
+    readonly kind: 'SmcCapability_cap_method_pubkey';
 }
 
 export interface SmcCapability_cap_is_wallet {
-readonly kind: 'SmcCapability_cap_is_wallet'
+    readonly kind: 'SmcCapability_cap_is_wallet';
 }
 
 export interface SmcCapability_cap_name {
-readonly kind: 'SmcCapability_cap_name'
-readonly name: Text
+    readonly kind: 'SmcCapability_cap_name';
+    readonly name: Text;
 }
 
 export interface ChanConfig {
-readonly kind: 'ChanConfig'
-readonly init_timeout: number
-readonly close_timeout: number
-readonly a_key: BitString
-readonly b_key: BitString
-readonly a_addr: MsgAddressInt
-readonly b_addr: MsgAddressInt
-readonly channel_id: number
-readonly min_A_extra: Grams
+    readonly kind: 'ChanConfig';
+    readonly init_timeout: number;
+    readonly close_timeout: number;
+    readonly a_key: BitString;
+    readonly b_key: BitString;
+    readonly a_addr: MsgAddressInt;
+    readonly b_addr: MsgAddressInt;
+    readonly channel_id: number;
+    readonly min_A_extra: Grams;
 }
 
 export type ChanState = ChanState_chan_state_init | ChanState_chan_state_close | ChanState_chan_state_payout;
 
 export interface ChanState_chan_state_init {
-readonly kind: 'ChanState_chan_state_init'
-readonly signed_A: Bool
-readonly signed_B: Bool
-readonly min_A: Grams
-readonly min_B: Grams
-readonly expire_at: number
-readonly A: Grams
-readonly B: Grams
+    readonly kind: 'ChanState_chan_state_init';
+    readonly signed_A: Bool;
+    readonly signed_B: Bool;
+    readonly min_A: Grams;
+    readonly min_B: Grams;
+    readonly expire_at: number;
+    readonly A: Grams;
+    readonly B: Grams;
 }
 
 export interface ChanState_chan_state_close {
-readonly kind: 'ChanState_chan_state_close'
-readonly signed_A: Bool
-readonly signed_B: Bool
-readonly promise_A: Grams
-readonly promise_B: Grams
-readonly expire_at: number
-readonly A: Grams
-readonly B: Grams
+    readonly kind: 'ChanState_chan_state_close';
+    readonly signed_A: Bool;
+    readonly signed_B: Bool;
+    readonly promise_A: Grams;
+    readonly promise_B: Grams;
+    readonly expire_at: number;
+    readonly A: Grams;
+    readonly B: Grams;
 }
 
 export interface ChanState_chan_state_payout {
-readonly kind: 'ChanState_chan_state_payout'
-readonly A: Grams
-readonly B: Grams
+    readonly kind: 'ChanState_chan_state_payout';
+    readonly A: Grams;
+    readonly B: Grams;
 }
 
 export interface ChanPromise {
-readonly kind: 'ChanPromise'
-readonly channel_id: number
-readonly promise_A: Grams
-readonly promise_B: Grams
+    readonly kind: 'ChanPromise';
+    readonly channel_id: number;
+    readonly promise_A: Grams;
+    readonly promise_B: Grams;
 }
 
 export interface ChanSignedPromise {
-readonly kind: 'ChanSignedPromise'
-readonly sig: Maybe<BitString>
-readonly promise: ChanPromise
+    readonly kind: 'ChanSignedPromise';
+    readonly sig: Maybe<BitString>;
+    readonly promise: ChanPromise;
 }
 
 export type ChanMsg = ChanMsg_chan_msg_init | ChanMsg_chan_msg_close | ChanMsg_chan_msg_timeout | ChanMsg_chan_msg_payout;
 
 export interface ChanMsg_chan_msg_init {
-readonly kind: 'ChanMsg_chan_msg_init'
-readonly inc_A: Grams
-readonly inc_B: Grams
-readonly min_A: Grams
-readonly min_B: Grams
-readonly channel_id: number
+    readonly kind: 'ChanMsg_chan_msg_init';
+    readonly inc_A: Grams;
+    readonly inc_B: Grams;
+    readonly min_A: Grams;
+    readonly min_B: Grams;
+    readonly channel_id: number;
 }
 
 export interface ChanMsg_chan_msg_close {
-readonly kind: 'ChanMsg_chan_msg_close'
-readonly extra_A: Grams
-readonly extra_B: Grams
-readonly promise: ChanSignedPromise
+    readonly kind: 'ChanMsg_chan_msg_close';
+    readonly extra_A: Grams;
+    readonly extra_B: Grams;
+    readonly promise: ChanSignedPromise;
 }
 
 export interface ChanMsg_chan_msg_timeout {
-readonly kind: 'ChanMsg_chan_msg_timeout'
+    readonly kind: 'ChanMsg_chan_msg_timeout';
 }
 
 export interface ChanMsg_chan_msg_payout {
-readonly kind: 'ChanMsg_chan_msg_payout'
+    readonly kind: 'ChanMsg_chan_msg_payout';
 }
 
 export interface ChanSignedMsg {
-readonly kind: 'ChanSignedMsg'
-readonly sig_A: Maybe<BitString>
-readonly sig_B: Maybe<BitString>
-readonly msg: ChanMsg
+    readonly kind: 'ChanSignedMsg';
+    readonly sig_A: Maybe<BitString>;
+    readonly sig_B: Maybe<BitString>;
+    readonly msg: ChanMsg;
 }
 
 export interface ChanOp {
-readonly kind: 'ChanOp'
-readonly msg: ChanSignedMsg
+    readonly kind: 'ChanOp';
+    readonly msg: ChanSignedMsg;
 }
 
 export interface ChanData {
-readonly kind: 'ChanData'
-readonly config: ChanConfig
-readonly state: ChanState
+    readonly kind: 'ChanData';
+    readonly config: ChanConfig;
+    readonly state: ChanState;
 }
 
 export function bitLen(n: number) {
