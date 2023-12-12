@@ -91,8 +91,24 @@ function checkThrowOnStoreLoad(expected: any, load: any, store: any, expectCell?
     expect(t).toThrow(Error);
 }
 
+export type TLFunction = {
+    decode: any
+    encode: any
+};
+
+function theEncode(a: number, b: number, c: number) {
+    console.log(a, b, c);
+}
+
+function callf(x: TLFunction) {
+    x.encode(5, 6, 7);
+}
+
 describe('Generating tlb code', () => {
     test('Basic types', () => {
+        let tlf: TLFunction = {decode: null, encode:theEncode}
+        callf(tlf);
+
         expect.hasAssertions()
 
         let simple: Simple = { kind: 'Simple', a: 827, b: 387 }

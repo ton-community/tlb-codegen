@@ -7,7 +7,7 @@ import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
 import { addLoadProperty, getNegationDerivationFunctionBody, getParamVarExpr, goodVariableName, sliceLoad } from './helpers'
 
-export function handleField(field: FieldDefinition, slicePrefix: Array<number>, tlbCode: TLBCode, constructor: TLBConstructor, constructorLoadStatements: Statement[], subStructStoreStatements: Statement[], subStructProperties: TypedIdentifier[], subStructLoadProperties: ObjectProperty[], variableCombinatorName: string, variableSubStructName: string, jsCodeDeclarations: GenDeclaration[], fieldIndex: string) {
+export function handleField(field: FieldDefinition, slicePrefix: Array<number>, tlbCode: TLBCode, constructor: TLBConstructor, constructorLoadStatements: Statement[], subStructStoreStatements: Statement[], subStructProperties: TypedIdentifier[], subStructLoadProperties: ObjectProperty[], variableCombinatorName: string, variableSubStructName: string, jsCodeFunctionsDeclarations: FunctionDeclaration[], fieldIndex: string) {
   let currentSlice = getCurrentSlice(slicePrefix, 'slice');
   let currentCell = getCurrentSlice(slicePrefix, 'cell');
 
@@ -19,7 +19,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
     subStructStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
 
     field.fields.forEach(field => {
-      handleField(field, slicePrefix, tlbCode, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeDeclarations, fieldIndex)
+      handleField(field, slicePrefix, tlbCode, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeFunctionsDeclarations, fieldIndex)
     });
 
     subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
@@ -52,7 +52,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
 
       constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice))
       subStructStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
-      handleField(new FieldNamedDef(fieldName, field.expr.expr), slicePrefix, tlbCode, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeDeclarations, fieldIndex)
+      handleField(new FieldNamedDef(fieldName, field.expr.expr), slicePrefix, tlbCode, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeFunctionsDeclarations, fieldIndex)
       subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
       slicePrefix.pop();
     }
@@ -65,7 +65,7 @@ export function handleField(field: FieldDefinition, slicePrefix: Array<number>, 
         tmpTypeName = field.expr.name;
       }
 
-      let fieldInfo = handleCombinator(field.expr, fieldName, true, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
+      let fieldInfo = handleCombinator(field.expr, fieldName, true, false, variableCombinatorName, variableSubStructName, currentSlice, currentCell, constructor, jsCodeFunctionsDeclarations, tmpTypeName, 0, tlbCode, subStructLoadProperties);
       if (fieldInfo.loadExpr) {
         addLoadProperty(goodVariableName(fieldName), fieldInfo.loadExpr, fieldInfo.typeParamExpr, constructorLoadStatements, subStructLoadProperties);
       }

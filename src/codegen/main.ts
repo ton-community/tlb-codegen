@@ -1,11 +1,10 @@
 import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr, CompareExpr, Expression as ParserExpression } from '../../src/ast/nodes'
-import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, GenDeclaration, toCodeArray, TypeWithParameters, ArrowFunctionExpression, tUnionTypeExpression, tUnaryOpExpression } from './tsgen'
+import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, GenDeclaration, toCodeArray, TypeWithParameters, ArrowFunctionExpression, tUnionTypeExpression, tUnaryOpExpression, StructDeclaration, FunctionDeclaration } from './tsgen'
 import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter, TLBVariable, TLBConstructorTag } from './ast'
 import { Expression, Statement, Identifier, BinaryExpression, ASTNode, TypeExpression, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
 import { fillConstructors, firstLower, getTypeParametersExpression, getCurrentSlice, bitLen, convertToAST, convertToMathExpr, getCondition, splitForTypeValue, deriveMathExpression, getStringDeclaration } from './util'
 import { constructorNodes } from '../parsing'
 import { handleCombinator } from './combinator'
-import { FunctionDeclaration } from '@babel/types'
 import { handleField } from './field'
 import { getParamVarExpr, getSubStructName, goodVariableName } from './helpers'
 
@@ -16,7 +15,10 @@ export function generate(tree: Program, input: string) {
   jsCodeDeclarations.push(tImportDeclaration(tIdentifier('beginCell'), tStringLiteral('ton')))
   jsCodeDeclarations.push(tImportDeclaration(tIdentifier('BitString'), tStringLiteral('ton')))
 
-  jsCodeDeclarations.push(tFunctionDeclaration(tIdentifier('bitLen'), tTypeParametersExpression([]), null, [tTypedIdentifier(tIdentifier('n'), tIdentifier('number'))], [
+  let jsCodeConstructorDeclarations: GenDeclaration[] = []
+  let jsCodeFunctionsDeclarations: FunctionDeclaration[] = []
+
+  jsCodeFunctionsDeclarations.push(tFunctionDeclaration(tIdentifier('bitLen'), tTypeParametersExpression([]), null, [tTypedIdentifier(tIdentifier('n'), tIdentifier('number'))], [
     tExpressionStatement(tIdentifier('return n.toString(2).length;'))
   ]))
 
@@ -32,7 +34,7 @@ export function generate(tree: Program, input: string) {
       return;
     }
     let subStructsUnion: TypeExpression[] = []
-    let subStructDeclarations: GenDeclaration[] = []
+    let subStructDeclarations: StructDeclaration[] = []
 
     let loadStatements: Statement[] = []
     let storeStatements: Statement[] = []
@@ -67,7 +69,7 @@ export function generate(tree: Program, input: string) {
       })
 
       let fieldIndex = 0;
-      declaration?.fields.forEach(element => { handleField(element, slicePrefix, tlbCode, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeDeclarations, fieldIndex.toString()); fieldIndex++; })
+      declaration?.fields.forEach(element => { handleField(element, slicePrefix, tlbCode, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeFunctionsDeclarations, fieldIndex.toString()); fieldIndex++; })
 
       subStructsUnion.push(tTypeWithParameters(tIdentifier(subStructName), structTypeParametersExpr));
 
@@ -154,17 +156,25 @@ export function generate(tree: Program, input: string) {
 
     if (tlbType.constructors.length > 1) {
       let unionTypeDecl = tUnionTypeDeclaration(tTypeWithParameters(tIdentifier(combinatorName), structTypeParametersExpr), tUnionTypeExpression(subStructsUnion))
-      jsCodeDeclarations.push(unionTypeDecl)
+      jsCodeConstructorDeclarations.push(unionTypeDecl)
     }
     subStructDeclarations.forEach(element => {
-      jsCodeDeclarations.push(element)
+      jsCodeConstructorDeclarations.push(element)
     });
 
-    jsCodeDeclarations.push(loadFunction)
-    jsCodeDeclarations.push(storeFunction)
+    jsCodeFunctionsDeclarations.push(loadFunction)
+    jsCodeFunctionsDeclarations.push(storeFunction)
   });
 
   let generatedCode = ''
+
+  jsCodeConstructorDeclarations.forEach(element => {
+    jsCodeDeclarations.push(element)
+  });
+
+  jsCodeFunctionsDeclarations.forEach(element => {
+    jsCodeDeclarations.push(element)
+  });
 
   jsCodeDeclarations.forEach(element => {
     generatedCode += toCode(element, { tabs: 0 }) + '\n';
