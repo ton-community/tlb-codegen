@@ -287,25 +287,6 @@ export function tMultiStatement(statements: Array<Statement>): MultiStatement {
     return { type: "MultiStatement", statements: statements };
 }
 
-
-
-// export function toCodeArray(nodeArray: Array<TheNode>, delimeter: string, prefix: string, printContext: PrintContext, suffix: string) {
-//     let parameters: string = '';
-
-//     for (let i = 0; i < nodeArray.length; i++) {
-//         let currentParam = nodeArray[i];
-//         if (currentParam != undefined) {
-//             parameters += prefix + toCode(currentParam, printContext) + suffix;
-//         }
-//         if (i + 1 < nodeArray.length) {
-//             parameters += delimeter;
-//         }
-//     }
-
-//     return parameters;
-// }
-
-
 export function toCodeArray(nodeArray: Array<TheNode>, code: CodeBuilder, delimeter: string) {
     for (let i = 0; i < nodeArray.length; i++) {
         let currentParam = nodeArray[i];
