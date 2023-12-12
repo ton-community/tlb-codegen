@@ -396,7 +396,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
     }
 
     if (node.type == "ExpressionStatement") {
-        code.appendInline(toCode(node.expression))
+        code.add(toCode(node.expression).render())
     }
 
     if (node.type == "TypeParametersExpression") {
