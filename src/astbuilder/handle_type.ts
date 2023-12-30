@@ -18,20 +18,26 @@ export function getType(expr: ParserExpression, fieldName: string, isField: bool
       if (expr.arg instanceof NameExpr) {
         let parameter = constructor.parametersMap.get(expr.arg.name);
         if (!parameter || !parameter.variable.deriveExpr || !parameter.variable.initialExpr) {
-          throw new Error('');
+          throw new Error(`Couldn't handle expression ${expr}`);
         }
         return { kind: 'TLBNumberType', bits: getCalculatedExpression(parameter.variable.deriveExpr, constructor), storeBits: parameter.variable.initialExpr, signed: false, maxBits: undefined };
-      } // TODO: handle other cases
+      } else {
+        throw new Error(`Couldn't handle expression ${expr}`)
+      }
     } else if (expr.name == '#<') {
       if (expr.arg instanceof NumberExpr || expr.arg instanceof NameExpr) {
         let bits = new TLBUnaryOp(new TLBBinaryOp(getCalculatedExpression(convertToMathExpr(expr.arg), constructor), new TLBNumberExpr(1), '-'), '.');
         return { kind: 'TLBNumberType', bits: bits, storeBits: bits, signed: false, maxBits: 32 };
-      } // TODO: handle other cases
+      } else {
+        throw new Error(`Couldn't handle expression ${expr}`)
+      }
     } else if (expr.name == '#<=') {
       if (expr.arg instanceof NumberExpr || expr.arg instanceof NameExpr) {
         let bits = new TLBUnaryOp(getCalculatedExpression(convertToMathExpr(expr.arg), constructor), '.');
         return { kind: 'TLBNumberType', bits: bits, storeBits: bits, signed: false, maxBits: 32 };
-      } // TODO: handle other cases
+      } else {
+        throw new Error(`Couldn't handle expression ${expr}`)
+      }
     }
   } else if (expr instanceof CombinatorExpr) {
     if (expr.name == 'int' && expr.args.length == 1 && (expr.args[0] instanceof MathExpr || expr.args[0] instanceof NumberExpr || expr.args[0] instanceof NameExpr)) {
@@ -79,7 +85,7 @@ export function getType(expr: ParserExpression, fieldName: string, isField: bool
     }
   } else if (expr instanceof NumberExpr) {
     return { kind: 'TLBExprMathType', expr: new TLBNumberExpr(expr.num) };
-  } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) { // TODO: handle other case
+  } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) {
     return { kind: 'TLBNegatedType', variableName: expr.expr.name };
   } else if (expr instanceof CellRefExpr) {
     let subExprInfo = getType(expr.expr, fieldName, true, true, variableCombinatorName, variableSubStructName, constructor, fieldTypeName, argIndex);
@@ -90,7 +96,7 @@ export function getType(expr: ParserExpression, fieldName: string, isField: bool
         let subExprInfo = getType(expr.right, fieldName, false, needArg, variableCombinatorName, variableSubStructName, constructor, fieldTypeName, argIndex);
         return { kind: 'TLBMultipleType', times: getCalculatedExpression(convertToMathExpr(expr.left), constructor), value: subExprInfo };
       } else {
-        throw new Error('');
+        throw new Error(`Couldn't handle expression ${expr}`)
       }
     } else {
       return { kind: 'TLBExprMathType', expr: getCalculatedExpression(convertToMathExpr(expr), constructor) };
