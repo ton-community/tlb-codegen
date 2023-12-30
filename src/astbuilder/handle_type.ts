@@ -111,7 +111,7 @@ export function getType(expr: ParserExpression, fieldName: string, isField: bool
       return { kind: 'TLBCondType', value: subExprInfo, condition: condition };
     }
   } else {
-    throw new Error('Expression not supported: ' + expr);
+    throw new Error(`Couldn't handle expression ${expr}`);
   }
-  throw new Error('Type unknown');
+  throw new Error(`Couldn't handle expression ${expr}`);
 }
