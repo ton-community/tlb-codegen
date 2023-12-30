@@ -1,5 +1,4 @@
 import { TLBBinaryOp, TLBCode, TLBConstructor, TLBMathExpr, TLBNumberExpr, TLBNumberType, TLBParameter, TLBType, TLBUnaryOp, TLBVarExpr } from '../../ast'
-import { TLBParameterBuild } from "../../astbuilder/utils"
 import { getCurrentSlice, getSubStructName } from '../../utils'
 import { BinaryExpression, Expression, Identifier, ObjectProperty, Statement, TypeExpression, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tIdentifier, tIfStatement, tMemberExpression, tNumericLiteral, tObjectProperty, tReturnStatement, tStringLiteral, tTypeParametersExpression, tUnaryOpExpression } from './tsgen'
 
@@ -34,7 +33,7 @@ export function simpleCycle(varName: string, finish: Expression): Statement {
   return tForCycle(tDeclareVariable(tIdentifier(varName), tNumericLiteral(0)), tBinaryExpression(tIdentifier(varName), '<', finish), tNumericLiteral(5), [])
 }
 
-export function getParamVarExpr(param: TLBParameterBuild | TLBParameter, constructor: TLBConstructor): Expression {
+export function getParamVarExpr(param: TLBParameter, constructor: TLBConstructor): Expression {
   if (param.variable.deriveExpr) {
     return convertToAST(param.variable.deriveExpr, constructor);
   } else {

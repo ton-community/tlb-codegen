@@ -1,18 +1,17 @@
 
 import { BuiltinOneArgExpr, BuiltinZeroArgs, CellRefExpr, CombinatorExpr, CondExpr, Declaration, FieldAnonymousDef, FieldDefinition, FieldExprDef, FieldNamedDef, MathExpr, NameExpr } from '@igorivaniuk/tlb-parser/dist/ast/nodes';
 import { TLBField } from "../ast";
-import { GenDeclaration, ObjectProperty, Statement, TypedIdentifier } from "../generators/typescript/tsgen";
 import { firstLower, getSubStructName, goodVariableName } from "../utils";
 import { getType } from "./handle_type";
 import { TLBConstructorBuild, TLBTypeBuild } from "./utils";
 
-export function getField(field: FieldDefinition, slicePrefix: Array<number>, constructor: TLBConstructorBuild, constructorLoadStatements: Statement[], subStructStoreStatements: Statement[], subStructProperties: TypedIdentifier[], subStructLoadProperties: ObjectProperty[], variableCombinatorName: string, variableSubStructName: string, jsCodeFunctionsDeclarations: GenDeclaration[], fieldIndex: string): TLBField | undefined {
+export function getField(field: FieldDefinition, slicePrefix: Array<number>, constructor: TLBConstructorBuild, variableCombinatorName: string, variableSubStructName: string, fieldIndex: string): TLBField | undefined {
   if (field instanceof FieldAnonymousDef) {
     let result: TLBField = { name: '', anonymous: true, fieldType: { kind: 'TLBBoolType' }, subFields: [] };
     let currentFieldIndex = 0;
     field.fields.forEach(field => {
       let theFieldIndex = fieldIndex + '_' + currentFieldIndex.toString();
-      let subfield = getField(field, slicePrefix, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeFunctionsDeclarations, theFieldIndex);
+      let subfield = getField(field, slicePrefix, constructor, variableCombinatorName, variableSubStructName, theFieldIndex);
       if (subfield) {
         result.subFields.push(subfield)
       }
@@ -37,7 +36,7 @@ export function getField(field: FieldDefinition, slicePrefix: Array<number>, con
         return { name: fieldName, anonymous: true, fieldType: { kind: 'TLBExoticType' }, subFields: [] };
       } else {
         let theFieldIndex = fieldIndex + '_' + '0';
-        let subfield = getField(new FieldNamedDef(fieldName, field.expr.expr), slicePrefix, constructor, constructorLoadStatements, subStructStoreStatements, subStructProperties, subStructLoadProperties, variableCombinatorName, variableSubStructName, jsCodeFunctionsDeclarations, theFieldIndex)
+        let subfield = getField(new FieldNamedDef(fieldName, field.expr.expr), slicePrefix, constructor, variableCombinatorName, variableSubStructName, theFieldIndex)
         if (subfield) {
           let result: TLBField = { name: fieldName, anonymous: true, fieldType: { kind: 'TLBBoolType' }, subFields: [subfield] };
           return result;
@@ -72,7 +71,7 @@ export function fillFields(typeItem: {declaration: Declaration, constructor: TLB
 
       declaration.fields.forEach(fieldDecl => {
         fieldIndex++;
-        let field = getField(fieldDecl, slicePrefix, constructor, [], [], [], [], variableCombinatorName, variableSubStructName, [], fieldIndex.toString())
+        let field = getField(fieldDecl, slicePrefix, constructor, variableCombinatorName, variableSubStructName, fieldIndex.toString())
         if (field != undefined) {
           constructor.fields.push(field)
         }
