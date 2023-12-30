@@ -1,0 +1,82 @@
+//c$_ b:^Bits a:Int c:Uint = Intex3;
+bit$_ (## 1) = Bit;
+
+
+tmpa$_ a:# b:# = Simple;
+
+bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
+bool_true$1 b:# = TwoConstructors; 
+
+tmpb$_ y:(## 5) = Y;
+tmpc$_ y:Y c:# = C;
+tmpd#_ y:Y c:# = D;
+
+nothing$0 {TheType:Type} = Maybe TheType;
+just$1 {TheType:Type} value:TheType = Maybe TheType;
+thejust$_ x:(Maybe D) = TheJust;
+
+left$0 {X:Type} {Y:Type} value:X = Either X Y;
+right$1 {X:Type} {Y:Type} value:Y = Either X Y;
+pair$_ {X:Type} {Y:Type} first:X second:Y = Both X Y;
+
+unit$_ = Unit;
+//true$_ = True;
+
+a$_ {x:#} value:(## x) = Example1 x;
+
+a$_ {x:#} value:(## x) = Example (2 + x);
+
+a$_ t:(Example 4) = BitInteger;
+
+a$_ a:BitInteger = NFG;
+
+a$_ a:^BitInteger = NFT;
+
+
+a$_ t:# ^[ q:# ] ^[ a:(## 32) ^[ e:# ] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = A;
+
+b$_ d:int11 g:bits2 {Arg:Type} arg:Arg x:Any = IntEx2 Arg; 
+a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntEx e;
+a$_ {x:#} a:(IntEx2 (int (1 + x))) = IntexArg2 (2 * x);
+a$_ {x:#} a:(IntEx 7) = IntexArg x;
+
+a$_ x:(#< 4) y:(#<= 4) = LessThan;
+
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+          {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
+
+hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+           right:^(Hashmap n X) = HashmapNode (n + 1) X;
+
+hml_short$0 {m:#} {n:#} len:(Unary ~n) {n <= m} s:(n * Bit) = HmLabel ~n m;
+hml_long$10 {m:#} n:(#<= m) s:(n * Bit) = HmLabel ~n m;
+hml_same$11 {m:#} v:Bit n:(#<= m) = HmLabel ~n m;
+
+unary_zero$0 = Unary ~0;
+unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
+
+//a$0 x:# = Const 1;
+//b$1 {X:#} y:(## 2) = Const X;
+
+a$0 x:# = ConstT 1;
+b$1 {X:#} y:(## 2) = ConstT X;
+
+
+с$_ = ParamConst 1 1;
+a$01 = ParamConst 2 1;
+b$01 = ParamConst 3 3;
+d$_ test:# = ParamConst 4 2;
+
+a$0 = ParamDifNames 1 ~0;
+b$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
+c$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
+
+g$0 {X:Type} {Y:#} x:# {~Y = x} = Same X ~Y;
+t$1 {X:Type} {Y:#} t:# z:# { t = (~Y) * 2} = Same X ~(Y + 1);
+
+
+a$_ {A:Type} t:# x:A = OneComb A;
+a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;
+
+a$_ s:(3 * int5) = TupleCheck;
