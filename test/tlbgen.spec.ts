@@ -2,10 +2,10 @@ import path from 'path'
 
 import { BitString, Slice, Builder, Cell, Address } from 'ton';
 
-import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag, TupleCheck, loadTupleCheck, storeTupleCheck, HashmapE, loadHashmapE, storeHashmapE, HashmapEUser, loadHashmapEUser, storeHashmapEUser, ConditionalField, loadConditionalField, storeConditionalField, BitSelection, loadBitSelection, storeBitSelection, ImplicitCondition, loadImplicitCondition, storeImplicitCondition, MultipleEmptyConstructor, loadMultipleEmptyConstructor, storeMultipleEmptyConstructor, True, loadTrue, storeTrue, ParamNamedArgInSecondConstr, loadParamNamedArgInSecondConstr, storeParamNamedArgInSecondConstr, RefCombinatorAny, loadRefCombinatorAny, storeRefCombinatorAny, EqualityExpression, loadEqualityExpression, storeEqualityExpression, ConditionalRef, loadConditionalRef, storeConditionalRef, LoadFromNegationOutsideExpr, loadLoadFromNegationOutsideExpr, storeLoadFromNegationOutsideExpr, AnonymousData, loadAnonymousData, storeAnonymousData, FalseAnonField, loadFalseAnonField, storeFalseAnonField, ConstructorOrder, loadConstructorOrder, storeConstructorOrder, CheckCrc32, loadCheckCrc32, storeCheckCrc32, CheckKeyword, loadCheckKeyword, storeCheckKeyword, RefCombinatorInRef, loadRefCombinatorInRef, storeRefCombinatorInRef, BoolUser, loadBoolUser, storeBoolUser, AddressUser, loadAddressUser, storeAddressUser} from '../generated_test';
+import { TwoConstructors, Simple, loadTwoConstructors, loadSimple, storeTwoConstructors, storeSimple, TypedParam, loadTypedParam, storeTypedParam, TypedField, loadTypedField, storeTypedField, ExprArg, BitLenArg, loadBitLenArg, storeBitLenArg, BitLenArgUser, loadBitLenArgUser, storeBitLenArgUser, ExprArgUser, loadExprArgUser, storeExprArgUser, ComplexTypedField, loadComplexTypedField, storeComplexTypedField, CellTypedField, storeCellTypedField, loadCellTypedField, CellsSimple, loadCellsSimple, storeCellsSimple, IntBitsOutside, loadIntBitsOutside, storeIntBitsOutside, IntBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside, LessThan, loadLessThan, storeLessThan, Unary, loadUnary, storeUnary, ParamConst, loadParamConst, storeParamConst, ParamDifNames, loadParamDifNames, storeParamDifNames, NegationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit, loadManyComb, storeManyComb, ManyComb, ParamDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser, UnaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder, CombArgCellRef, loadCombArgCellRef, storeCombArgCellRef, CombArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser, MathExprAsCombArg, loadMathExprAsCombArg, storeMathExprAsCombArg, SharpConstructor, loadSharpConstructor, storeSharpConstructor, EmptyTag, loadEmptyTag, storeEmptyTag, SharpTag, loadSharpTag, storeSharpTag, DollarTag, loadDollarTag, storeDollarTag, TupleCheck, loadTupleCheck, storeTupleCheck, HashmapE, loadHashmapE, storeHashmapE, HashmapEUser, loadHashmapEUser, storeHashmapEUser, ConditionalField, loadConditionalField, storeConditionalField, BitSelection, loadBitSelection, storeBitSelection, ImplicitCondition, loadImplicitCondition, storeImplicitCondition, MultipleEmptyConstructor, loadMultipleEmptyConstructor, storeMultipleEmptyConstructor, True, loadTrue, storeTrue, ParamNamedArgInSecondConstr, loadParamNamedArgInSecondConstr, storeParamNamedArgInSecondConstr, RefCombinatorAny, loadRefCombinatorAny, storeRefCombinatorAny, EqualityExpression, loadEqualityExpression, storeEqualityExpression, ConditionalRef, loadConditionalRef, storeConditionalRef, LoadFromNegationOutsideExpr, loadLoadFromNegationOutsideExpr, storeLoadFromNegationOutsideExpr, AnonymousData, loadAnonymousData, storeAnonymousData, FalseAnonField, loadFalseAnonField, storeFalseAnonField, ConstructorOrder, loadConstructorOrder, storeConstructorOrder, CheckCrc32, loadCheckCrc32, storeCheckCrc32, CheckKeyword, loadCheckKeyword, storeCheckKeyword, RefCombinatorInRef, loadRefCombinatorInRef, storeRefCombinatorInRef, BoolUser, loadBoolUser, storeBoolUser, AddressUser, loadAddressUser, storeAddressUser } from '../generated_test';
 import { beginCell } from 'ton';
-import { loadBit, loadBlock, storeBlock} from '../generated_block';
-import {describe, expect, test} from '@jest/globals';
+import { loadBit, loadBlock, storeBlock } from '../generated_block';
+import { describe, expect, test } from '@jest/globals';
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
 
@@ -105,127 +105,127 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(tcFalse, loadTwoConstructors, storeTwoConstructors)
         let tcTooBigNumberB: TwoConstructors = { 'kind': 'TwoConstructors_bool_false', a: 1000, b: 128, c: 1000 }
         checkThrowOnStoreLoad(tcTooBigNumberB, loadTwoConstructors, storeTwoConstructors)
-        let tcTrue: TwoConstructors = {'kind': 'TwoConstructors_bool_true', b: 1000}
+        let tcTrue: TwoConstructors = { 'kind': 'TwoConstructors_bool_true', b: 1000 }
         checkSameOnStoreLoad(tcTrue, loadTwoConstructors, storeTwoConstructors)
-        let typedConstructor: TypedField = {'kind': 'TypedField', c: 5, y: {'kind': 'FixedIntParam', y: 10}}
+        let typedConstructor: TypedField = { 'kind': 'TypedField', c: 5, y: { 'kind': 'FixedIntParam', y: 10 } }
         checkSameOnStoreLoad(typedConstructor, loadTypedField, storeTypedField);
-        let typedParamValue: TypedParam = {'kind': 'TypedParam', x: {'kind': 'Maybe_just', value: {'kind': 'SharpConstructor', c: 5, y: {'kind': 'FixedIntParam', y: 6}}}}
+        let typedParamValue: TypedParam = { 'kind': 'TypedParam', x: { 'kind': 'Maybe_just', value: { 'kind': 'SharpConstructor', c: 5, y: { 'kind': 'FixedIntParam', y: 6 } } } }
         checkSameOnStoreLoad(typedParamValue, loadTypedParam, storeTypedParam);
-        let typedParamNothing: TypedParam = {'kind': 'TypedParam', x:{'kind': 'Maybe_nothing'}}
+        let typedParamNothing: TypedParam = { 'kind': 'TypedParam', x: { 'kind': 'Maybe_nothing' } }
         checkSameOnStoreLoad(typedParamNothing, loadTypedParam, storeTypedParam);
-        let bitlenArgUser: BitLenArgUser = {'kind': 'BitLenArgUser', t: {'kind': 'BitLenArg', x: 4, value: BigInt(10)}}
+        let bitlenArgUser: BitLenArgUser = { 'kind': 'BitLenArgUser', t: { 'kind': 'BitLenArg', x: 4, value: BigInt(10) } }
         checkSameOnStoreLoad(bitlenArgUser, loadBitLenArgUser, storeBitLenArgUser);
-        let bitlenArgUserIncorrect: BitLenArgUser = {'kind': 'BitLenArgUser', t: {'kind': 'BitLenArg', x: 3, value: BigInt(10)}}
+        let bitlenArgUserIncorrect: BitLenArgUser = { 'kind': 'BitLenArgUser', t: { 'kind': 'BitLenArg', x: 3, value: BigInt(10) } }
         checkThrowOnStoreLoad(bitlenArgUserIncorrect, loadBitLenArgUser, storeBitLenArgUser);
-        let exprArgUser: ExprArgUser = {'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: BigInt(10)}}
+        let exprArgUser: ExprArgUser = { 'kind': 'ExprArgUser', t: { 'kind': 'ExprArg', x: 4, value: BigInt(10) } }
         checkSameOnStoreLoad(exprArgUser, loadExprArgUser, storeExprArgUser);
-        let exprArgUserIncorrect: ExprArgUser = {'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 5, value: BigInt(10)}}
+        let exprArgUserIncorrect: ExprArgUser = { 'kind': 'ExprArgUser', t: { 'kind': 'ExprArg', x: 5, value: BigInt(10) } }
         checkDifferOnStoreLoad(exprArgUserIncorrect, loadExprArgUser, storeExprArgUser);
-        let complexTypedField: ComplexTypedField = {'kind': 'ComplexTypedField', a:{'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: BigInt(10)}}}
+        let complexTypedField: ComplexTypedField = { 'kind': 'ComplexTypedField', a: { 'kind': 'ExprArgUser', t: { 'kind': 'ExprArg', x: 4, value: BigInt(10) } } }
         checkSameOnStoreLoad(complexTypedField, loadComplexTypedField, storeComplexTypedField);
-        let cellTypedField: CellTypedField = {'kind': 'CellTypedField', a:{'kind': 'ExprArgUser', t: {'kind': 'ExprArg', x: 4, value: BigInt(10)}}}
+        let cellTypedField: CellTypedField = { 'kind': 'CellTypedField', a: { 'kind': 'ExprArgUser', t: { 'kind': 'ExprArg', x: 4, value: BigInt(10) } } }
         checkSameOnStoreLoad(cellTypedField, loadCellTypedField, storeCellTypedField);
-        let lessThan: LessThan = {kind: 'LessThan', x: 3, y: 7} 
+        let lessThan: LessThan = { kind: 'LessThan', x: 3, y: 7 }
         checkSameOnStoreLoad(lessThan, loadLessThan, storeLessThan);
-        let lessThanIncorrectX: LessThan = {kind: 'LessThan', x: 4, y: 7} 
+        let lessThanIncorrectX: LessThan = { kind: 'LessThan', x: 4, y: 7 }
         checkThrowOnStoreLoad(lessThanIncorrectX, loadLessThan, storeLessThan);
-        let lessThanIncorrectY: LessThan = {kind: 'LessThan', x: 3, y: 8} 
+        let lessThanIncorrectY: LessThan = { kind: 'LessThan', x: 3, y: 8 }
         checkThrowOnStoreLoad(lessThanIncorrectY, loadLessThan, storeLessThan);
-        let paramNamedArgInSecondConstr: ParamNamedArgInSecondConstr = {kind: 'ParamNamedArgInSecondConstr_a', n: 3}
+        let paramNamedArgInSecondConstr: ParamNamedArgInSecondConstr = { kind: 'ParamNamedArgInSecondConstr_a', n: 3 }
         checkSameOnStoreLoad(paramNamedArgInSecondConstr, (slice: Slice) => { return loadParamNamedArgInSecondConstr(slice, 3) }, storeParamNamedArgInSecondConstr);
-        let anonymousData: AnonymousData = {kind: 'AnonymousData', anon0: 1, anon0_0: 3}
+        let anonymousData: AnonymousData = { kind: 'AnonymousData', anon0: 1, anon0_0: 3 }
         checkSameOnStoreLoad(anonymousData, loadAnonymousData, storeAnonymousData);
-        let falseAnonField: FalseAnonField = {kind: 'FalseAnonField', value: BigInt(3)}
+        let falseAnonField: FalseAnonField = { kind: 'FalseAnonField', value: BigInt(3) }
         checkSameOnStoreLoad(falseAnonField, loadFalseAnonField, storeFalseAnonField)
-        let checkKeyword: CheckKeyword = {kind: 'CheckKeyword', const0: 3}
+        let checkKeyword: CheckKeyword = { kind: 'CheckKeyword', const0: 3 }
         checkSameOnStoreLoad(checkKeyword, loadCheckKeyword, storeCheckKeyword);
 
-        let checkBigInt: BitLenArg = {kind: 'BitLenArg', x: 100, value: BigInt(2709958555) * BigInt(1e9) + BigInt(228628813)}
-        checkSameOnStoreLoad(checkBigInt, (slice: Slice) => {return loadBitLenArg(slice, checkBigInt.x)}, storeBitLenArg)
+        let checkBigInt: BitLenArg = { kind: 'BitLenArg', x: 100, value: BigInt(2709958555) * BigInt(1e9) + BigInt(228628813) }
+        checkSameOnStoreLoad(checkBigInt, (slice: Slice) => { return loadBitLenArg(slice, checkBigInt.x) }, storeBitLenArg)
     })
 
     test('Primitives', () => {
         expect.hasAssertions()
 
-        let boolUserTrue: BoolUser = {kind: 'BoolUser', a: true}
+        let boolUserTrue: BoolUser = { kind: 'BoolUser', a: true }
         checkSameOnStoreLoad(boolUserTrue, loadBoolUser, storeBoolUser);
-        let boolUserFalse: BoolUser = {kind: 'BoolUser', a: false}
+        let boolUserFalse: BoolUser = { kind: 'BoolUser', a: false }
         checkSameOnStoreLoad(boolUserFalse, loadBoolUser, storeBoolUser);
 
-        let expectedAddressUser: AddressUser = {kind: 'AddressUser', src: Address.parseFriendly('EQBmzW4wYlFW0tiBgj5sP1CgSlLdYs-VpjPWM7oPYPYWQEdT').address}
+        let expectedAddressUser: AddressUser = { kind: 'AddressUser', src: Address.parseFriendly('EQBmzW4wYlFW0tiBgj5sP1CgSlLdYs-VpjPWM7oPYPYWQEdT').address }
         checkSameOnStoreLoad(expectedAddressUser, loadAddressUser, storeAddressUser)
     })
 
     test('Combinators', () => {
         expect.hasAssertions()
-        let manyComb: ManyComb = {kind: 'ManyComb', y: {kind: 'OneComb', t: 5, x: {kind: 'OneComb', t: 6, x: {kind: 'OneComb', t: 7, x: 3}}}};
+        let manyComb: ManyComb = { kind: 'ManyComb', y: { kind: 'OneComb', t: 5, x: { kind: 'OneComb', t: 6, x: { kind: 'OneComb', t: 7, x: 3 } } } };
         checkSameOnStoreLoad(manyComb, loadManyComb, storeManyComb);
-        let manyCombIncorrect: ManyComb = {kind: 'ManyComb', y: {kind: 'OneComb', t: 5, x: {kind: 'OneComb', t: 8, x: {kind: 'OneComb', t: 7, x: 8}}}};
+        let manyCombIncorrect: ManyComb = { kind: 'ManyComb', y: { kind: 'OneComb', t: 5, x: { kind: 'OneComb', t: 8, x: { kind: 'OneComb', t: 7, x: 8 } } } };
         checkThrowOnStoreLoad(manyCombIncorrect, loadManyComb, storeManyComb);
-        let combArgCellRefUser: CombArgCellRefUser = {kind: 'CombArgCellRefUser', x: {kind: 'CombArgCellRef', body: {'kind': 'Either_right', value: 3}, info: 4, other: {kind: 'Either_right', value: {kind: 'OneComb', t: 5, x: 5}}, init: {kind: 'Maybe_just', value: {kind: 'Either_right', value: 4}}}}
+        let combArgCellRefUser: CombArgCellRefUser = { kind: 'CombArgCellRefUser', x: { kind: 'CombArgCellRef', body: { 'kind': 'Either_right', value: 3 }, info: 4, other: { kind: 'Either_right', value: { kind: 'OneComb', t: 5, x: 5 } }, init: { kind: 'Maybe_just', value: { kind: 'Either_right', value: 4 } } } }
         checkSameOnStoreLoad(combArgCellRefUser, loadCombArgCellRefUser, storeCombArgCellRefUser);
-        let mathExprAsCombArg: MathExprAsCombArg = {kind: 'MathExprAsCombArg', n: 8, ref: {kind: 'BitLenArg', x: 10, value: BigInt(1000)}}
-        checkSameOnStoreLoad(mathExprAsCombArg, (slice: Slice) => {return loadMathExprAsCombArg(slice, mathExprAsCombArg.n + 2)}, storeMathExprAsCombArg);
+        let mathExprAsCombArg: MathExprAsCombArg = { kind: 'MathExprAsCombArg', n: 8, ref: { kind: 'BitLenArg', x: 10, value: BigInt(1000) } }
+        checkSameOnStoreLoad(mathExprAsCombArg, (slice: Slice) => { return loadMathExprAsCombArg(slice, mathExprAsCombArg.n + 2) }, storeMathExprAsCombArg);
 
         let refCombinatorAny: RefCombinatorAny = {
             kind: 'RefCombinatorAny',
-            msg: {kind: 'Maybe_just', value: beginCell().storeUint(676, 10).endCell().beginParse()}
+            msg: { kind: 'Maybe_just', value: beginCell().storeUint(676, 10).endCell().beginParse() }
         }
         checkSameOnStoreLoad(refCombinatorAny, loadRefCombinatorAny, storeRefCombinatorAny);
 
-        let msgEnvelope: RefCombinatorInRef = {kind: 'RefCombinatorInRef', msg: {kind: 'RefCombinatorInRefHelper', t: 3, y: {kind: 'Maybe_just', value: beginCell().storeUint(3, 32).endCell().beginParse()}} } 
+        let msgEnvelope: RefCombinatorInRef = { kind: 'RefCombinatorInRef', msg: { kind: 'RefCombinatorInRefHelper', t: 3, y: { kind: 'Maybe_just', value: beginCell().storeUint(3, 32).endCell().beginParse() } } }
         checkSameOnStoreLoad(msgEnvelope, loadRefCombinatorInRef, storeRefCombinatorInRef);
     });
 
     test('Naming', () => {
         expect.hasAssertions()
 
-        let multipleEmptyConstructor: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor__', a: 5}
-        checkSameOnStoreLoad(multipleEmptyConstructor, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 0);}, storeMultipleEmptyConstructor);
-        let multipleEmptyConstructor1: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor__1', b: 6}
-        checkSameOnStoreLoad(multipleEmptyConstructor1, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 1);}, storeMultipleEmptyConstructor);
-        let multipleEmptyConstructor2: MultipleEmptyConstructor = {kind: 'MultipleEmptyConstructor_a', x: 5}
-        checkSameOnStoreLoad(multipleEmptyConstructor2, (slice: Slice) => {return loadMultipleEmptyConstructor(slice, 2);}, storeMultipleEmptyConstructor);
+        let multipleEmptyConstructor: MultipleEmptyConstructor = { kind: 'MultipleEmptyConstructor__', a: 5 }
+        checkSameOnStoreLoad(multipleEmptyConstructor, (slice: Slice) => { return loadMultipleEmptyConstructor(slice, 0); }, storeMultipleEmptyConstructor);
+        let multipleEmptyConstructor1: MultipleEmptyConstructor = { kind: 'MultipleEmptyConstructor__1', b: 6 }
+        checkSameOnStoreLoad(multipleEmptyConstructor1, (slice: Slice) => { return loadMultipleEmptyConstructor(slice, 1); }, storeMultipleEmptyConstructor);
+        let multipleEmptyConstructor2: MultipleEmptyConstructor = { kind: 'MultipleEmptyConstructor_a', x: 5 }
+        checkSameOnStoreLoad(multipleEmptyConstructor2, (slice: Slice) => { return loadMultipleEmptyConstructor(slice, 2); }, storeMultipleEmptyConstructor);
 
-        let trueCheck: True = {kind: 'True'}
+        let trueCheck: True = { kind: 'True' }
         checkSameOnStoreLoad(trueCheck, loadTrue, storeTrue);
     })
 
     test('Complex Expressions', () => {
         expect.hasAssertions()
 
-        let tupleCheck: TupleCheck = {kind: 'TupleCheck', s: [5, 6, 7]}
+        let tupleCheck: TupleCheck = { kind: 'TupleCheck', s: [5, 6, 7] }
         checkSameOnStoreLoad(tupleCheck, loadTupleCheck, storeTupleCheck);
 
-        let conditionalField: ConditionalField = {kind: 'ConditionalField', a: 1, b: 5}
+        let conditionalField: ConditionalField = { kind: 'ConditionalField', a: 1, b: 5 }
         checkSameOnStoreLoad(conditionalField, loadConditionalField, storeConditionalField);
 
-        let conditionalFieldIncorrect: ConditionalField = {kind: 'ConditionalField', a: 0, b: 5}
+        let conditionalFieldIncorrect: ConditionalField = { kind: 'ConditionalField', a: 0, b: 5 }
         checkDifferOnStoreLoad(conditionalFieldIncorrect, loadConditionalField, storeConditionalField);
 
-        let conditionalFieldBUndef: ConditionalField = {kind: 'ConditionalField', a: 0, b: undefined}
+        let conditionalFieldBUndef: ConditionalField = { kind: 'ConditionalField', a: 0, b: undefined }
         checkSameOnStoreLoad(conditionalFieldBUndef, loadConditionalField, storeConditionalField);
 
-        let bitSelection: BitSelection = {kind: 'BitSelection', a: 5, b: 5}
+        let bitSelection: BitSelection = { kind: 'BitSelection', a: 5, b: 5 }
         checkSameOnStoreLoad(bitSelection, loadBitSelection, storeBitSelection);
 
-        let bitSelectionIncorrect: BitSelection = {kind: 'BitSelection', a: 8, b: 5}
+        let bitSelectionIncorrect: BitSelection = { kind: 'BitSelection', a: 8, b: 5 }
         checkDifferOnStoreLoad(bitSelectionIncorrect, loadBitSelection, storeBitSelection);
 
-        let conditionalRef: ConditionalRef = {kind: 'ConditionalRef', x: 1, y: {kind: 'Simple', a: 3, b: 4}}
+        let conditionalRef: ConditionalRef = { kind: 'ConditionalRef', x: 1, y: { kind: 'Simple', a: 3, b: 4 } }
         checkSameOnStoreLoad(conditionalRef, loadConditionalRef, storeConditionalRef);
 
-        let conditionalRefUndefined: ConditionalRef = {kind: 'ConditionalRef', x: 0, y: undefined}
+        let conditionalRefUndefined: ConditionalRef = { kind: 'ConditionalRef', x: 0, y: undefined }
         checkSameOnStoreLoad(conditionalRefUndefined, loadConditionalRef, storeConditionalRef);
     })
 
     test('Exceptions', () => {
         expect.hasAssertions()
 
-        let implicitConditionIncorrect: ImplicitCondition = {kind: 'ImplicitCondition', flags: 200}
+        let implicitConditionIncorrect: ImplicitCondition = { kind: 'ImplicitCondition', flags: 200 }
         checkThrowOnStoreLoad(implicitConditionIncorrect, loadImplicitCondition, storeImplicitCondition);
 
-        let implicitCondition: ImplicitCondition = {kind: 'ImplicitCondition', flags: 100}
+        let implicitCondition: ImplicitCondition = { kind: 'ImplicitCondition', flags: 100 }
         checkSameOnStoreLoad(implicitCondition, loadImplicitCondition, storeImplicitCondition);
 
         let implicitConditionIncorrectCell = beginCell().storeUint(200, 10).endCell().beginParse();
@@ -236,10 +236,10 @@ describe('Generating tlb code', () => {
         let implicitConditionCell = beginCell().storeUint(100, 10).endCell().beginParse();
         expect(loadImplicitCondition(implicitConditionCell).flags == 100).toBeTruthy()
 
-        let equalityExpression: EqualityExpression = {kind: 'EqualityExpression', n: 2}
+        let equalityExpression: EqualityExpression = { kind: 'EqualityExpression', n: 2 }
         checkSameOnStoreLoad(equalityExpression, loadEqualityExpression, storeEqualityExpression);
 
-        let equalityExpressionIncorrect: EqualityExpression = {kind: 'EqualityExpression', n: 3}
+        let equalityExpressionIncorrect: EqualityExpression = { kind: 'EqualityExpression', n: 3 }
         checkThrowOnStoreLoad(equalityExpressionIncorrect, loadEqualityExpression, storeEqualityExpression);
     })
 
@@ -247,17 +247,17 @@ describe('Generating tlb code', () => {
         expect.hasAssertions()
 
         let hashmapEUser: HashmapEUser = {
-            kind: 'HashmapEUser', 
+            kind: 'HashmapEUser',
             x: {
-                kind: 'HashmapE_hme_root', 
-                n: 8, 
+                kind: 'HashmapE_hme_root',
+                n: 8,
                 root: {
-                    kind: 'Hashmap', 
-                    l:0, m: 8, n: 8, 
+                    kind: 'Hashmap',
+                    l: 0, m: 8, n: 8,
                     label: {
-                        kind: 'HmLabel_hml_short', 
-                        n: 0, m: 8, 
-                        len: {kind: 'Unary_unary_zero'}, 
+                        kind: 'HmLabel_hml_short',
+                        n: 0, m: 8,
+                        len: { kind: 'Unary_unary_zero' },
                         s: []
                     },
                     node: {
@@ -337,16 +337,16 @@ describe('Generating tlb code', () => {
     test('Constructor Tags', () => {
         expect.hasAssertions()
 
-        let sharpConstructor: SharpConstructor = {kind: 'SharpConstructor', c: 5, y: {'kind': 'FixedIntParam', y: 6} }
+        let sharpConstructor: SharpConstructor = { kind: 'SharpConstructor', c: 5, y: { 'kind': 'FixedIntParam', y: 6 } }
         checkSameOnStoreLoad(sharpConstructor, loadSharpConstructor, storeSharpConstructor);
 
-        let emptyTag: EmptyTag = {kind: 'EmptyTag', a: 3}
+        let emptyTag: EmptyTag = { kind: 'EmptyTag', a: 3 }
         checkSameOnStoreLoad(emptyTag, loadEmptyTag, storeEmptyTag);
         let emptyTagCell = beginCell();
         storeEmptyTag(emptyTag)(emptyTagCell);
         expect(emptyTagCell.endCell().beginParse().remainingBits == 32).toBeTruthy();
 
-        let sharpTag: SharpTag = {kind: 'SharpTag', x: 3}
+        let sharpTag: SharpTag = { kind: 'SharpTag', x: 3 }
         checkSameOnStoreLoad(sharpTag, loadSharpTag, storeSharpTag);
         let sharpTagCell = beginCell();
         storeSharpTag(sharpTag)(sharpTagCell);
@@ -354,7 +354,7 @@ describe('Generating tlb code', () => {
         expect(sharpTagSlice.loadUint(8) == 0xf4).toBeTruthy();
         expect(sharpTagSlice.remainingBits == 32).toBeTruthy();
 
-        let dollarTag: DollarTag = {kind: 'DollarTag', x: 3} 
+        let dollarTag: DollarTag = { kind: 'DollarTag', x: 3 }
         checkSameOnStoreLoad(dollarTag, loadDollarTag, storeDollarTag);
         let dollarTagCell = beginCell();
         storeDollarTag(dollarTag)(dollarTagCell);
@@ -362,13 +362,13 @@ describe('Generating tlb code', () => {
         expect(dollarTagSlice.loadUint(4) == 0b1011).toBeTruthy();
         expect(dollarTagSlice.remainingBits == 32).toBeTruthy();
 
-        let constructorOrder: ConstructorOrder = {kind: 'ConstructorOrder_a', a: {kind: 'Simple', a: 2, b: 3}}
+        let constructorOrder: ConstructorOrder = { kind: 'ConstructorOrder_a', a: { kind: 'Simple', a: 2, b: 3 } }
         checkSameOnStoreLoad(constructorOrder, loadConstructorOrder, storeConstructorOrder);
 
-        let checkCrc32A: CheckCrc32 = {kind: 'CheckCrc32_a', a: 3}
+        let checkCrc32A: CheckCrc32 = { kind: 'CheckCrc32_a', a: 3 }
         checkSameOnStoreLoad(checkCrc32A, loadCheckCrc32, storeCheckCrc32);
 
-        let checkCrc32B: CheckCrc32 = {kind: 'CheckCrc32_b', b: 4, c: 5}
+        let checkCrc32B: CheckCrc32 = { kind: 'CheckCrc32_b', b: 4, c: 5 }
         checkSameOnStoreLoad(checkCrc32B, loadCheckCrc32, storeCheckCrc32);
 
         let checkCrc32AOpCode = beginCell().storeUint(0x9d97e7a, 32).storeUint(76, 32).endCell().beginParse();
@@ -378,43 +378,43 @@ describe('Generating tlb code', () => {
     test('Advanced types', () => {
         expect.hasAssertions()
 
-        let unary: Unary = {kind: 'Unary_unary_succ', n: 2, x: {kind: 'Unary_unary_succ', n: 1, x: {kind: 'Unary_unary_succ', n: 0, x: {kind: 'Unary_unary_zero'}}}}
+        let unary: Unary = { kind: 'Unary_unary_succ', n: 2, x: { kind: 'Unary_unary_succ', n: 1, x: { kind: 'Unary_unary_succ', n: 0, x: { kind: 'Unary_unary_zero' } } } }
         checkSameOnStoreLoad(unary, loadUnary, storeUnary);
-        let unaryIncorrectOne: Unary = {kind: 'Unary_unary_succ', n: 3, x: {kind: 'Unary_unary_succ', n: 1, x: {kind: 'Unary_unary_succ', n: 0, x: {kind: 'Unary_unary_zero'}}}}
+        let unaryIncorrectOne: Unary = { kind: 'Unary_unary_succ', n: 3, x: { kind: 'Unary_unary_succ', n: 1, x: { kind: 'Unary_unary_succ', n: 0, x: { kind: 'Unary_unary_zero' } } } }
         checkDifferOnStoreLoad(unaryIncorrectOne, loadUnary, storeUnary);
-        let unaryIncorrectAll: Unary = {kind: 'Unary_unary_succ', n: 3, x: {kind: 'Unary_unary_succ', n: 2, x: {kind: 'Unary_unary_succ', n: 1, x: {kind: 'Unary_unary_zero'}}}}
+        let unaryIncorrectAll: Unary = { kind: 'Unary_unary_succ', n: 3, x: { kind: 'Unary_unary_succ', n: 2, x: { kind: 'Unary_unary_succ', n: 1, x: { kind: 'Unary_unary_zero' } } } }
         checkDifferOnStoreLoad(unaryIncorrectAll, loadUnary, storeUnary);
-        let unaryIncorrectSuccZero: Unary = {kind: 'Unary_unary_succ', n: 3, x: {kind: 'Unary_unary_zero'}}
+        let unaryIncorrectSuccZero: Unary = { kind: 'Unary_unary_succ', n: 3, x: { kind: 'Unary_unary_zero' } }
         checkDifferOnStoreLoad(unaryIncorrectSuccZero, loadUnary, storeUnary);
 
-        let paramConstD: ParamConst = {kind: 'ParamConst_d', n: 1, k: 2, l: 3, m: 4}
+        let paramConstD: ParamConst = { kind: 'ParamConst_d', n: 1, k: 2, l: 3, m: 4 }
         checkDifferOnStoreLoad(paramConstD, (slice: Slice) => loadParamConst(slice, 1, 1), storeParamConst);
         checkThrowOnStoreLoad(paramConstD, (slice: Slice) => loadParamConst(slice, 1, 2), storeParamConst)
         checkSameOnStoreLoad(paramConstD, (slice: Slice) => loadParamConst(slice, 4, 2), storeParamConst)
-        let paramConstB: ParamConst = {kind: 'ParamConst_b', k: 2, m: 4}
+        let paramConstB: ParamConst = { kind: 'ParamConst_b', k: 2, m: 4 }
         checkSameOnStoreLoad(paramConstB, (slice: Slice) => loadParamConst(slice, 2, 1), storeParamConst);
-        let paramConstC: ParamConst = {kind: 'ParamConst_c', k: 2, m: 4, n: 3}
+        let paramConstC: ParamConst = { kind: 'ParamConst_c', k: 2, m: 4, n: 3 }
         checkSameOnStoreLoad(paramConstC, (slice: Slice) => loadParamConst(slice, 3, 3), storeParamConst);
 
-        let paramDifNamesC: ParamDifNames = {kind: 'ParamDifNames_c', n: 3, x: {kind: 'ParamDifNames_c', n: 2, x: {kind: 'ParamDifNames_c', n: 1, x:{kind: 'ParamDifNames_a'}}}}
+        let paramDifNamesC: ParamDifNames = { kind: 'ParamDifNames_c', n: 3, x: { kind: 'ParamDifNames_c', n: 2, x: { kind: 'ParamDifNames_c', n: 1, x: { kind: 'ParamDifNames_a' } } } }
         checkSameOnStoreLoad(paramDifNamesC, (slice: Slice) => loadParamDifNames(slice, 2), storeParamDifNames);
-        let paramDifNamesD: ParamDifNames = {kind: 'ParamDifNames_d', m: 4, x: {kind: 'ParamDifNames_d', m: 2, x: {kind: 'ParamDifNames_d', m: 1, x: {kind: 'ParamDifNames_b'}}}}
+        let paramDifNamesD: ParamDifNames = { kind: 'ParamDifNames_d', m: 4, x: { kind: 'ParamDifNames_d', m: 2, x: { kind: 'ParamDifNames_d', m: 1, x: { kind: 'ParamDifNames_b' } } } }
         checkSameOnStoreLoad(paramDifNamesD, (slice: Slice) => loadParamDifNames(slice, 3), storeParamDifNames);
 
-        let paramDifNamesUser: ParamDifNamesUser = {kind: 'ParamDifNamesUser', k: 4, x: {kind: 'ParamDifNames_c', n: 3, x: {kind: 'ParamDifNames_c', n: 2, x: {kind: 'ParamDifNames_c', n: 1, x:{kind: 'ParamDifNames_a'}}}}}
+        let paramDifNamesUser: ParamDifNamesUser = { kind: 'ParamDifNamesUser', k: 4, x: { kind: 'ParamDifNames_c', n: 3, x: { kind: 'ParamDifNames_c', n: 2, x: { kind: 'ParamDifNames_c', n: 1, x: { kind: 'ParamDifNames_a' } } } } }
         checkSameOnStoreLoad(paramDifNamesUser, loadParamDifNamesUser, storeParamDifNamesUser);
-        let paramDifNamesUserIncorrect: ParamDifNamesUser = {kind: 'ParamDifNamesUser', k: 5, x: {kind: 'ParamDifNames_c', n: 3, x: {kind: 'ParamDifNames_c', n: 2, x: {kind: 'ParamDifNames_c', n: 1, x:{kind: 'ParamDifNames_a'}}}}}
+        let paramDifNamesUserIncorrect: ParamDifNamesUser = { kind: 'ParamDifNamesUser', k: 5, x: { kind: 'ParamDifNames_c', n: 3, x: { kind: 'ParamDifNames_c', n: 2, x: { kind: 'ParamDifNames_c', n: 1, x: { kind: 'ParamDifNames_a' } } } } }
         checkDifferOnStoreLoad(paramDifNamesUserIncorrect, loadParamDifNamesUser, storeParamDifNamesUser);
 
-        let negationFromImplicit: NegationFromImplicit = {kind: 'NegationFromImplicit', t: 4, y: 2, z: 7}
+        let negationFromImplicit: NegationFromImplicit = { kind: 'NegationFromImplicit', t: 4, y: 2, z: 7 }
         checkSameOnStoreLoad(negationFromImplicit, loadNegationFromImplicit, storeNegationFromImplicit)
-        let negationFromImplicitIncorrect: NegationFromImplicit = {kind: 'NegationFromImplicit', t: 4, y: 3, z: 7}
+        let negationFromImplicitIncorrect: NegationFromImplicit = { kind: 'NegationFromImplicit', t: 4, y: 3, z: 7 }
         checkDifferOnStoreLoad(negationFromImplicitIncorrect, loadNegationFromImplicit, storeNegationFromImplicit)
 
-        let unaryUserCheckOrder: UnaryUserCheckOrder = {kind: 'UnaryUserCheckOrder', l: 2, m: 5, label: {kind: 'Unary_unary_succ', n: 1, x: {kind: 'Unary_unary_succ', n: 0, x: {kind: 'Unary_unary_zero'}}}}
+        let unaryUserCheckOrder: UnaryUserCheckOrder = { kind: 'UnaryUserCheckOrder', l: 2, m: 5, label: { kind: 'Unary_unary_succ', n: 1, x: { kind: 'Unary_unary_succ', n: 0, x: { kind: 'Unary_unary_zero' } } } }
         checkSameOnStoreLoad(unaryUserCheckOrder, loadUnaryUserCheckOrder, storeUnaryUserCheckOrder)
 
-        let loadFromNegationOutsideExpr: LoadFromNegationOutsideExpr = {kind: 'LoadFromNegationOutsideExpr', prev_seq_no: 3, seq_no: 4}
+        let loadFromNegationOutsideExpr: LoadFromNegationOutsideExpr = { kind: 'LoadFromNegationOutsideExpr', prev_seq_no: 3, seq_no: 4 }
         checkSameOnStoreLoad(loadFromNegationOutsideExpr, loadLoadFromNegationOutsideExpr, storeLoadFromNegationOutsideExpr)
 
     })
@@ -422,7 +422,7 @@ describe('Generating tlb code', () => {
     test('Slices', () => {
         expect.hasAssertions()
 
-        let cellsSimple: CellsSimple = {'kind': 'CellsSimple', a: 5, b: 3, c: 4, d: 100, e: 4, q: 1, t: 3}
+        let cellsSimple: CellsSimple = { 'kind': 'CellsSimple', a: 5, b: 3, c: 4, d: 100, e: 4, q: 1, t: 3 }
         checkSameOnStoreLoad(cellsSimple, loadCellsSimple, storeCellsSimple, (slice: Slice) => {
             slice = slice.clone()
             slice.loadRef();
@@ -451,12 +451,12 @@ describe('Generating tlb code', () => {
         });
 
         let intBitsOutside: IntBitsOutside = {
-            'kind': 'IntBitsOutside', 
+            'kind': 'IntBitsOutside',
             x: {
-                'kind': 'IntBitsInside', 
+                'kind': 'IntBitsInside',
                 a: {
-                    'kind': 'IntBits', arg: BigInt(3), d: 5, 
-                    g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2), 
+                    'kind': 'IntBits', arg: BigInt(3), d: 5,
+                    g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2),
                     x: beginCell().storeUint(76, 10).endCell().beginParse()
                 },
                 x: 3
@@ -465,12 +465,12 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(intBitsOutside, loadIntBitsOutside, storeIntBitsOutside);
 
         let intBitsParametrizedOutside: IntBitsParametrizedOutside = {
-            kind: 'IntBitsParametrizedOutside', 
+            kind: 'IntBitsParametrizedOutside',
             x: {
-                kind: 'IntBitsParametrizedInside', 
+                kind: 'IntBitsParametrizedInside',
                 a: {
                     kind: 'IntBitsParametrized', e: 5, f: BigInt(3), h: BigInt(7), j: 9, k: BigInt(10),
-                    i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10), 
+                    i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10),
                     tc: beginCell().storeUint(76, 10).endCell().beginParse()
                 },
                 x: 5
@@ -479,12 +479,12 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(intBitsParametrizedOutside, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside);
 
         let intBitsParametrizedOutsideIncorrect: IntBitsParametrizedOutside = {
-            kind: 'IntBitsParametrizedOutside', 
+            kind: 'IntBitsParametrizedOutside',
             x: {
-                kind: 'IntBitsParametrizedInside', 
+                kind: 'IntBitsParametrizedInside',
                 a: {
                     kind: 'IntBitsParametrized', e: 6, f: BigInt(3), h: BigInt(7), j: 9, k: BigInt(10),
-                    i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10), 
+                    i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10),
                     tc: beginCell().storeUint(76, 10).endCell().beginParse()
                 },
                 x: 5

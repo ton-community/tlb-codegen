@@ -155,7 +155,7 @@ export interface BinaryExpression extends ASTNode {
     left: Expression,
     right: Expression
 }
-   
+
 export interface TernaryExpression extends ASTNode {
     type: "TernaryExpression",
     condition: Expression,

@@ -59,21 +59,21 @@ export function getField(field: FieldDefinition, slicePrefix: Array<number>, con
   return undefined
 }
 
-export function fillFields(typeItem: {declaration: Declaration, constructor: TLBConstructorBuild}, tlbType: TLBTypeBuild) {
-      let constructor = typeItem.constructor;
-      let declaration = typeItem.declaration;
+export function fillFields(typeItem: { declaration: Declaration, constructor: TLBConstructorBuild }, tlbType: TLBTypeBuild) {
+  let constructor = typeItem.constructor;
+  let declaration = typeItem.declaration;
 
-      let fieldIndex = -1;
-      let variableCombinatorName = goodVariableName(firstLower(tlbType.name), '0')
-      let subStructName: string = getSubStructName(tlbType, constructor);
-      let variableSubStructName = goodVariableName(firstLower(subStructName), '_' + constructor.name)
-      let slicePrefix: number[] = [0];
+  let fieldIndex = -1;
+  let variableCombinatorName = goodVariableName(firstLower(tlbType.name), '0')
+  let subStructName: string = getSubStructName(tlbType, constructor);
+  let variableSubStructName = goodVariableName(firstLower(subStructName), '_' + constructor.name)
+  let slicePrefix: number[] = [0];
 
-      declaration.fields.forEach(fieldDecl => {
-        fieldIndex++;
-        let field = getField(fieldDecl, slicePrefix, constructor, variableCombinatorName, variableSubStructName, fieldIndex.toString())
-        if (field != undefined) {
-          constructor.fields.push(field)
-        }
-      })
+  declaration.fields.forEach(fieldDecl => {
+    fieldIndex++;
+    let field = getField(fieldDecl, slicePrefix, constructor, variableCombinatorName, variableSubStructName, fieldIndex.toString())
+    if (field != undefined) {
+      constructor.fields.push(field)
+    }
+  })
 }

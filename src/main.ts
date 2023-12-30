@@ -14,7 +14,7 @@ export function generate(tree: Program, input: string) {
   let tlbCode: TLBCode = convertToReadonly(oldTlbCode)
 
   let codeGenerator: CodeGenerator = new TypescriptGenerator(tlbCode);
-  
+
   codeGenerator.addTonCoreClassUsage('Builder')
   codeGenerator.addTonCoreClassUsage('Slice')
   codeGenerator.addTonCoreClassUsage('beginCell')

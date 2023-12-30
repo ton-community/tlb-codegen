@@ -9,15 +9,15 @@ import { generate } from './src/main'
 const fixturesDir = path.resolve(__dirname, 'test')
 
 function generateCode(filename: string) {
-    const input = fs.readFileSync(
-      path.resolve(fixturesDir, 'tlb', filename + '.tlb'),
-      'utf-8',
-    )
-    const parsed = parse(input)
+  const input = fs.readFileSync(
+    path.resolve(fixturesDir, 'tlb', filename + '.tlb'),
+    'utf-8',
+  )
+  const parsed = parse(input)
 
-    const tree = ast(input)
+  const tree = ast(input)
 
-    fs.writeFile('generated_' + filename + '.ts', generate(tree, input), () => { });
+  fs.writeFile('generated_' + filename + '.ts', generate(tree, input), () => { });
 }
 
 // generateCode('my')
