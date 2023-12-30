@@ -1,6 +1,6 @@
 import { Program } from '@igorivaniuk/tlb-parser/dist/ast/nodes'
 import { TLBCode, TLBType } from './ast'
-import { TLBCodeBuild, TLBTypeBuild, convertToReadonly, fillConstructors } from "./astbuilder/utils"
+import { TLBCodeBuild, TLBTypeBuild, convertCodeToReadonly, fillConstructors } from "./astbuilder/utils"
 import { CodeBuilder } from './generators/CodeBuilder'
 import { CodeGenerator, CommonGenDeclaration } from './generators/generator'
 import { TypescriptGenerator } from './generators/typescript/generator'
@@ -11,7 +11,7 @@ export function generate(tree: Program, input: string) {
   let splittedInput = input.split('\n')
 
   fillConstructors(tree.declarations, oldTlbCode, splittedInput);
-  let tlbCode: TLBCode = convertToReadonly(oldTlbCode)
+  let tlbCode: TLBCode = convertCodeToReadonly(oldTlbCode)
 
   let codeGenerator: CodeGenerator = new TypescriptGenerator(tlbCode);
 

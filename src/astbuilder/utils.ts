@@ -154,7 +154,7 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCodeBu
     checkAndRemovePrimitives(tlbCode, input, typeDeclarations);
     fixVariablesNaming(tlbCode);
 }
-export function converVariable(tlbVariable: TLBVariableBuild): TLBVariable {
+export function convertVariableToReadonly(tlbVariable: TLBVariableBuild): TLBVariable {
     if (tlbVariable.name == undefined) {
         throw new Error('Variable is undefined');
     }
@@ -168,29 +168,29 @@ export function converVariable(tlbVariable: TLBVariableBuild): TLBVariable {
         tlbVariable.initialExpr
     );
 }
-export function convertParameter(tlbParameter: TLBParameterBuild): TLBParameter {
+export function convertParameterToReadonly(tlbParameter: TLBParameterBuild): TLBParameter {
     return new TLBParameter(
-        converVariable(tlbParameter.variable),
+        convertVariableToReadonly(tlbParameter.variable),
         tlbParameter.paramExpr,
         tlbParameter.argName
     );
 }
-export function convertToReadonly(tlbCode: TLBCodeBuild): TLBCode {
+export function convertCodeToReadonly(tlbCode: TLBCodeBuild): TLBCode {
     let newTypes = new Map<string, TLBType>();
     tlbCode.types.forEach((value, key) => {
         let newConstructors = new Array<TLBConstructor>();
         value.constructors.forEach((value) => {
             let newVariablesMap = new Map<string, TLBVariable>();
             value.variablesMap.forEach((value, key) => {
-                newVariablesMap.set(key, converVariable(value));
+                newVariablesMap.set(key, convertVariableToReadonly(value));
             });
             let newParametersMap = new Map<string, TLBParameter>();
             value.parametersMap.forEach((value, key) => {
-                newParametersMap.set(key, convertParameter(value));
+                newParametersMap.set(key, convertParameterToReadonly(value));
             });
             let newConstructor = new TLBConstructor(
-                value.parameters.map(convertParameter),
-                value.variables.map(converVariable),
+                value.parameters.map(convertParameterToReadonly),
+                value.variables.map(convertVariableToReadonly),
                 newVariablesMap,
                 newParametersMap,
                 value.name,
@@ -348,7 +348,7 @@ export function getConstructorTag(declaration: Declaration, input: string[]): TL
             binary: '0x' + tag.slice(1)
         };
     }
-    throw new Error('Unknown tag' + tag);
+    throw new Error('Unknown tag ' + tag);
 }
 export function calculateVariables(constructor: TLBConstructorBuild) {
     constructor.variables.forEach(variable => {
@@ -431,7 +431,6 @@ export function fillParameterNames(tlbType: TLBTypeBuild) {
                 if (parameterName != undefined) {
                     parameterNames[i] = parameterName;
                 }
-
             }
         }
     });
