@@ -1,6 +1,4 @@
 import { TLBCode, TLBType } from "../ast"
-import { TLBTypeBuild } from "../astbuilder/utils"
-import { TLBCodeBuild } from "../astbuilder/utils"
 import { CodeBuilder } from "./CodeBuilder"
 import { GenDeclaration as TSGenDeclaration, TheNode } from "./typescript/tsgen"
 

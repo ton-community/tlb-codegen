@@ -1,15 +1,9 @@
 import { TLBCode, TLBConstructor, TLBField, TLBFieldType, TLBType } from "../../ast";
-import { TLBTypeBuild } from "../../astbuilder/utils";
-import { TLBCodeBuild } from "../../astbuilder/utils";
-import { TLBConstructorBuild } from "../../astbuilder/utils";
-import { firstLower, getCurrentSlice, getStringDeclaration, getSubStructName, goodVariableName } from "../../utils";
+import { firstLower, getCurrentSlice, getSubStructName, goodVariableName } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
-import { BinaryExpression, Expression, FunctionDeclaration, GenDeclaration, ObjectProperty, Statement, StructDeclaration, TheNode, TypeExpression, TypeParametersExpression, TypedIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tComment, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIdentifier, tIfStatement, tImportDeclaration, tMemberExpression, tMultiStatement, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTernaryExpression, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnaryOpExpression, tUnionTypeDeclaration, tUnionTypeExpression, toCode } from "./tsgen";
-import { addLoadProperty, convertToAST, getCondition, getNegationDerivationFunctionBody, getParamVarExpr, getTypeParametersExpression, sliceLoad } from "./utils";
-import { isBigInt } from './utils';
-import { ExprForParam } from './utils';
-import { FieldInfoType } from './utils';
+import { BinaryExpression, Expression, GenDeclaration, ObjectProperty, Statement, StructDeclaration, TheNode, TypeExpression, TypeParametersExpression, TypedIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tComment, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIdentifier, tIfStatement, tImportDeclaration, tMemberExpression, tMultiStatement, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTernaryExpression, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnaryOpExpression, tUnionTypeDeclaration, tUnionTypeExpression, toCode } from "./tsgen";
+import { ExprForParam, FieldInfoType, addLoadProperty, convertToAST, getCondition, getNegationDerivationFunctionBody, getParamVarExpr, getTypeParametersExpression, isBigInt, sliceLoad } from "./utils";
 
 
 type ConstructorContext = {

@@ -1,8 +1,6 @@
 import { BuiltinOneArgExpr, BuiltinZeroArgs, CellRefExpr, CombinatorExpr, CondExpr, MathExpr, NameExpr, NegateExpr, NumberExpr, Expression as ParserExpression } from '@igorivaniuk/tlb-parser/dist/ast/nodes';
 import { TLBBinaryOp, TLBFieldType, TLBMathExpr, TLBNumberExpr, TLBUnaryOp, TLBVarExpr } from "../ast";
-import { TLBCodeBuild } from "./utils";
-import { TLBConstructorBuild } from "./utils";
-import { convertToMathExpr, getCalculatedExpression, splitForTypeValue } from "../utils";
+import { TLBConstructorBuild, convertToMathExpr, getCalculatedExpression, splitForTypeValue } from "./utils";
 
 
 export function getType(expr: ParserExpression, fieldName: string, isField: boolean, needArg: boolean, variableCombinatorName: string, variableSubStructName: string, constructor: TLBConstructorBuild, fieldTypeName: string, argIndex: number): TLBFieldType {

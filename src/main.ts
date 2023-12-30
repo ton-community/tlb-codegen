@@ -1,11 +1,6 @@
-import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, Declaration, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr, CompareExpr, Expression as ParserExpression } from '@igorivaniuk/tlb-parser/dist/ast/nodes'
-import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBConstructorTag, TLBCode, TLBType } from './ast'
-import { TLBTypeBuild } from "./astbuilder/utils"
-import { TLBCodeBuild } from "./astbuilder/utils"
-import { TLBConstructorBuild } from "./astbuilder/utils"
-import { TLBParameterBuild } from "./astbuilder/utils"
-import { TLBVariableBuild } from "./astbuilder/utils"
-import { convertToReadonly, fillConstructors } from './utils'
+import { Program } from '@igorivaniuk/tlb-parser/dist/ast/nodes'
+import { TLBCode, TLBType } from './ast'
+import { TLBCodeBuild, TLBTypeBuild, convertToReadonly, fillConstructors } from "./astbuilder/utils"
 import { CodeBuilder } from './generators/CodeBuilder'
 import { CodeGenerator, CommonGenDeclaration } from './generators/generator'
 import { TypescriptGenerator } from './generators/typescript/generator'

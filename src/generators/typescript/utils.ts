@@ -1,14 +1,7 @@
-import { BuiltinZeroArgs, FieldCurlyExprDef, FieldNamedDef, Program, BuiltinOneArgExpr, NumberExpr, NameExpr, CombinatorExpr, FieldBuiltinDef, MathExpr, SimpleExpr, NegateExpr, CellRefExpr, FieldDefinition, FieldAnonymousDef, CondExpr, CompareExpr, Expression as ParserExpression } from '@igorivaniuk/tlb-parser/dist/ast/nodes'
-import { tIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tBinaryNumericLiteral, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tImportDeclaration, tMemberExpression, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTypeWithParameters, tTypedIdentifier, tUnionTypeDeclaration, toCode, TypeWithParameters, ArrowFunctionExpression, tForCycle, tTypeParametersExpression, tUnaryOpExpression, Expression, Statement, TypeExpression } from './tsgen'
-import { TLBMathExpr, TLBVarExpr, TLBNumberExpr, TLBBinaryOp, TLBUnaryOp, TLBCode, TLBType, TLBConstructor, TLBParameter } from '../../ast'
-import { TLBTypeBuild } from "../../astbuilder/utils"
-import { TLBCodeBuild } from "../../astbuilder/utils"
-import { TLBConstructorBuild } from "../../astbuilder/utils"
+import { TLBBinaryOp, TLBCode, TLBConstructor, TLBMathExpr, TLBNumberExpr, TLBNumberType, TLBParameter, TLBType, TLBUnaryOp, TLBVarExpr } from '../../ast'
 import { TLBParameterBuild } from "../../astbuilder/utils"
-import { TLBVariableBuild } from "../../astbuilder/utils"
-import { TLBNumberType } from "../../ast"
-import { Identifier, BinaryExpression, ASTNode, TypeParametersExpression, ObjectProperty, TypedIdentifier } from './tsgen'
-import { getCalculatedExpression, getSubStructName, fillConstructors, firstLower, getCurrentSlice, bitLen, convertToMathExpr, splitForTypeValue, deriveMathExpression, goodVariableName } from '../../utils'
+import { getCurrentSlice, getSubStructName } from '../../utils'
+import { BinaryExpression, Expression, Identifier, ObjectProperty, Statement, TypeExpression, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tIdentifier, tIfStatement, tMemberExpression, tNumericLiteral, tObjectProperty, tReturnStatement, tStringLiteral, tTypeParametersExpression, tUnaryOpExpression } from './tsgen'
 
 export type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined
