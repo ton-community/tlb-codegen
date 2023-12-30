@@ -64,7 +64,6 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCodeBu
             let declaration = typeItem.declaration;
             let constructor = typeItem.constructor;
 
-            let fieldIndex = 0;
             declaration.fields.forEach(field => {
                 if (field instanceof FieldBuiltinDef) {
                     constructor.variables.push({ name: field.name, isConst: false, negated: false, type: field.type, calculated: false, isField: false });
@@ -72,13 +71,11 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCodeBu
                 if (field instanceof FieldNamedDef) {
                     constructor.variables.push({ name: field.name, isConst: false, negated: false, type: '#', calculated: false, isField: true });
                 }
-                fieldIndex++;
             });
             constructor.variables.forEach(variable => {
-                if (variable.name == undefined) {
-                    throw new Error('');
+                if (variable.name) {
+                    constructor.variablesMap.set(variable.name, variable);
                 }
-                constructor.variablesMap.set(variable.name, variable);
             });
             let argumentIndex = -1;
             declaration.combinator.args.forEach(element => {
@@ -99,19 +96,16 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCodeBu
                 } else if (element instanceof MathExpr) {
                     let derivedExpr = deriveMathExpression(element);
                     if (!derivedExpr.name) {
-                        throw new Error('');
+                        throw new Error(`Expression should contain variable ${element}`);
                     }
                     let variable = constructor.variablesMap.get(derivedExpr.name);
-                    if (variable) {
+                    if (variable && variable.name) {
                         parameter = { variable: variable, paramExpr: derivedExpr.derived };
                         parameter.argName = 'arg' + argumentIndex;
-                        if (parameter.variable.name == undefined) {
-                            throw new Error('');
-                        }
-                        parameter.variable.deriveExpr = reorganizeWithArg(convertToMathExpr(element), parameter.argName, parameter.variable.name);
-                        parameter.variable.initialExpr = new TLBVarExpr(parameter.variable.name);
+                        parameter.variable.deriveExpr = reorganizeWithArg(convertToMathExpr(element), parameter.argName, variable.name);
+                        parameter.variable.initialExpr = new TLBVarExpr(variable.name);
                     } else {
-                        throw new Error('');
+                        throw new Error(`Variable should have name ${variable}`);
                     }
                 } else if (element instanceof NegateExpr && (element.expr instanceof MathExpr || element.expr instanceof NumberExpr || element.expr instanceof NameExpr)) {
                     let derivedExpr = deriveMathExpression(element.expr);
