@@ -2,7 +2,7 @@ import { TLBCode, TLBConstructor, TLBField, TLBFieldType, TLBType } from "../../
 import { firstLower, getCurrentSlice, getSubStructName, goodVariableName } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
-import { BinaryExpression, Expression, GenDeclaration, ObjectProperty, Statement, StructDeclaration, TheNode, TypeExpression, TypeParametersExpression, TypedIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tComment, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIdentifier, tIfStatement, tImportDeclaration, tMemberExpression, tMultiStatement, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTernaryExpression, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnaryOpExpression, tUnionTypeDeclaration, tUnionTypeExpression, toCode } from "./tsgen";
+import { BinaryExpression, Expression, GenDeclaration, ObjectProperty, Statement, StructDeclaration, TheNode, TypeExpression, TypeParametersExpression, TypedIdentifier, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tComment, tDeclareVariable, tExpressionStatement, tFunctionCall, tFunctionDeclaration, id, tIfStatement, tImportDeclaration, tMemberExpression, tMultiStatement, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tTernaryExpression, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnaryOpExpression, tUnionTypeDeclaration, tUnionTypeExpression, toCode } from "./tsgen";
 import { ExprForParam, FieldInfoType, addLoadProperty, convertToAST, getCondition, getNegationDerivationFunctionBody, getParamVarExpr, getTypeParametersExpression, isBigInt, sliceLoad } from "./utils";
 
 
@@ -27,11 +27,11 @@ export class TypescriptGenerator implements CodeGenerator {
     }
 
     addTonCoreClassUsage(name: string) {
-        this.jsCodeDeclarations.push(tImportDeclaration(tIdentifier(name), tStringLiteral('ton')))
+        this.jsCodeDeclarations.push(tImportDeclaration(id(name), tStringLiteral('ton')))
     }
     addBitLenFunction() {
-        this.jsCodeDeclarations.push(tFunctionDeclaration(tIdentifier('bitLen'), tTypeParametersExpression([]), null, [tTypedIdentifier(tIdentifier('n'), tIdentifier('number'))], [
-            tExpressionStatement(tIdentifier('return n.toString(2).length;'))
+        this.jsCodeDeclarations.push(tFunctionDeclaration(id('bitLen'), tTypeParametersExpression([]), null, [tTypedIdentifier(id('n'), id('number'))], [
+            tExpressionStatement(id('return n.toString(2).length;'))
         ]))
     }
     addTlbType(tlbType: TLBType): void {
@@ -52,8 +52,8 @@ export class TypescriptGenerator implements CodeGenerator {
                 variableSubStructName: goodVariableName(firstLower(constructorTypeName), '_' + constructor.name),
                 variableCombinatorName: variableCombinatorName,
                 constructorLoadStatements: [],
-                constructorLoadProperties: [tObjectProperty(tIdentifier('kind'), tStringLiteral(constructorTypeName))],
-                constructorProperties: [tTypedIdentifier(tIdentifier('kind'), tStringLiteral(constructorTypeName))],
+                constructorLoadProperties: [tObjectProperty(id('kind'), tStringLiteral(constructorTypeName))],
+                constructorProperties: [tTypedIdentifier(id('kind'), tStringLiteral(constructorTypeName))],
                 constructorStoreStatements: []
             }
 
@@ -64,17 +64,17 @@ export class TypescriptGenerator implements CodeGenerator {
             constructor.variables.forEach((variable) => {
                 if (variable.negated) {
                     if (variable.deriveExpr) {
-                        ctx.constructorLoadProperties.push(tObjectProperty(tIdentifier(variable.name), convertToAST(variable.deriveExpr, constructor)));
+                        ctx.constructorLoadProperties.push(tObjectProperty(id(variable.name), convertToAST(variable.deriveExpr, constructor)));
                     }
                 }
             })
 
             constructor.variables.forEach(variable => {
                 if (variable.type == '#' && !variable.isField) {
-                    ctx.constructorProperties.push(tTypedIdentifier(tIdentifier(variable.name), tIdentifier('number')));
+                    ctx.constructorProperties.push(tTypedIdentifier(id(variable.name), id('number')));
                     let parameter = constructor.parametersMap.get(variable.name)
                     if (parameter && !parameter.variable.isConst && !parameter.variable.negated) {
-                        ctx.constructorLoadProperties.push(tObjectProperty(tIdentifier(variable.name), getParamVarExpr(parameter, constructor)))
+                        ctx.constructorLoadProperties.push(tObjectProperty(id(variable.name), getParamVarExpr(parameter, constructor)))
                     }
                 }
             })
@@ -83,25 +83,25 @@ export class TypescriptGenerator implements CodeGenerator {
                 this.handleField(field, slicePrefix, ctx);
             })
 
-            typeUnion.push(tTypeWithParameters(tIdentifier(constructorTypeName), structTypeParametersExpr));
+            typeUnion.push(tTypeWithParameters(id(constructorTypeName), structTypeParametersExpr));
 
-            let structX = tStructDeclaration(tIdentifier(constructorTypeName), ctx.constructorProperties, structTypeParametersExpr);
+            let structX = tStructDeclaration(id(constructorTypeName), ctx.constructorProperties, structTypeParametersExpr);
 
             constructor.constraints.forEach(constraint => {
                 let loadConstraintAST = convertToAST(constraint, constructor);
-                let storeConstraintAST = convertToAST(constraint, constructor, tIdentifier(variableCombinatorName));
+                let storeConstraintAST = convertToAST(constraint, constructor, id(variableCombinatorName));
                 let exceptionCommentLastPart = ` is not satisfied while loading "${getSubStructName(tlbType, constructor)}" for type "${tlbType.name}"`
-                ctx.constructorLoadStatements.push(tIfStatement(tUnaryOpExpression('!', loadConstraintAST), [tExpressionStatement(tIdentifier("throw new Error('Condition " + toCode(loadConstraintAST).code + exceptionCommentLastPart + "')"))]));
-                ctx.constructorStoreStatements.push(tIfStatement(tUnaryOpExpression('!', storeConstraintAST), [tExpressionStatement(tIdentifier("throw new Error('Condition " + toCode(storeConstraintAST).code + exceptionCommentLastPart + "')"))]))
+                ctx.constructorLoadStatements.push(tIfStatement(tUnaryOpExpression('!', loadConstraintAST), [tExpressionStatement(id("throw new Error('Condition " + toCode(loadConstraintAST).code + exceptionCommentLastPart + "')"))]));
+                ctx.constructorStoreStatements.push(tIfStatement(tUnaryOpExpression('!', storeConstraintAST), [tExpressionStatement(id("throw new Error('Condition " + toCode(storeConstraintAST).code + exceptionCommentLastPart + "')"))]))
             });
 
             ctx.constructorLoadStatements.push(tReturnStatement(tObjectExpression(ctx.constructorLoadProperties)));
             if (constructor.tag.bitLen != 0 || tlbType.constructors.length > 1) {
                 let conditions: Array<BinaryExpression> = []
                 if (constructor.tag.bitLen != 0) {
-                    conditions.push(tBinaryExpression(tMemberExpression(tIdentifier('slice'), tIdentifier('remainingBits')), '>=', tNumericLiteral(constructor.tag.bitLen)))
-                    conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(constructor.tag.bitLen)]), '==', tIdentifier(constructor.tag.binary)))
-                    let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(constructor.tag.bitLen)]))]
+                    conditions.push(tBinaryExpression(tMemberExpression(id('slice'), id('remainingBits')), '>=', tNumericLiteral(constructor.tag.bitLen)))
+                    conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(id('slice'), id('preloadUint')), [tNumericLiteral(constructor.tag.bitLen)]), '==', id(constructor.tag.binary)))
+                    let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(id('slice'), id('loadUint')), [tNumericLiteral(constructor.tag.bitLen)]))]
                     ctx.constructorLoadStatements = loadBitsStatement.concat(ctx.constructorLoadStatements);
                 }
                 constructor.parameters.forEach(param => {
@@ -110,7 +110,7 @@ export class TypescriptGenerator implements CodeGenerator {
                         if (param.argName) {
                             argName = param.argName
                         }
-                        conditions.push(tBinaryExpression(tIdentifier(argName), '==', getParamVarExpr(param, constructor)))
+                        conditions.push(tBinaryExpression(id(argName), '==', getParamVarExpr(param, constructor)))
                     }
                 });
                 loadStatements.push(tIfStatement(getCondition(conditions), ctx.constructorLoadStatements))
@@ -119,12 +119,12 @@ export class TypescriptGenerator implements CodeGenerator {
             }
 
             if (constructor.tag.bitLen != 0) {
-                let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(constructor.tag.binary), tNumericLiteral(constructor.tag.bitLen)]))];
+                let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(id('builder'), id('storeUint')), [id(constructor.tag.binary), tNumericLiteral(constructor.tag.bitLen)]))];
                 ctx.constructorStoreStatements = preStoreStatement.concat(ctx.constructorStoreStatements)
             }
-            let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], ctx.constructorStoreStatements));
+            let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(id('builder'), id('Builder'))], ctx.constructorStoreStatements));
             if (tlbType.constructors.length > 1) {
-                storeStatement = tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier('kind')), '==', tStringLiteral(constructorTypeName)), [storeStatement])
+                storeStatement = tIfStatement(tBinaryExpression(tMemberExpression(id(variableCombinatorName), id('kind')), '==', tStringLiteral(constructorTypeName)), [storeStatement])
             }
             storeStatements.push(storeStatement);
 
@@ -138,7 +138,7 @@ export class TypescriptGenerator implements CodeGenerator {
         // loadTheType: (slice: Slice) => TheType
 
         let exceptionTypesComment = tlbType.constructors.map(constructor => { return `"${getSubStructName(tlbType, constructor)}"` }).join(', ')
-        let exceptionComment = tExpressionStatement(tIdentifier("throw new Error('" + `Expected one of ${exceptionTypesComment} in loading "${tlbType.name}", but data does not satisfy any constructor` + "')"))
+        let exceptionComment = tExpressionStatement(id("throw new Error('" + `Expected one of ${exceptionTypesComment} in loading "${tlbType.name}", but data does not satisfy any constructor` + "')"))
         if (tlbType.constructors.length > 1 || tlbType.constructors.at(0)?.tag.bitLen != 0) {
             let neededTypesComment = '';
             tlbType.constructors.forEach(constructor => {
@@ -150,26 +150,26 @@ export class TypescriptGenerator implements CodeGenerator {
             storeStatements.push(exceptionComment)
         }
 
-        let loadFunctionParameters = [tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))]
-        let storeFunctionParameters = [tTypedIdentifier(tIdentifier(variableCombinatorName), tTypeWithParameters(tIdentifier(tlbType.name), structTypeParametersExpr))]
+        let loadFunctionParameters = [tTypedIdentifier(id('slice'), id('Slice'))]
+        let storeFunctionParameters = [tTypedIdentifier(id(variableCombinatorName), tTypeWithParameters(id(tlbType.name), structTypeParametersExpr))]
 
         let anyConstructor = tlbType.constructors[0];
         if (anyConstructor) {
             anyConstructor.parameters.forEach(element => {
                 if (element.variable.type == 'Type') {
-                    loadFunctionParameters.push(tTypedIdentifier(tIdentifier('load' + element.variable.name), tArrowFunctionType([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], tIdentifier(element.variable.name))))
+                    loadFunctionParameters.push(tTypedIdentifier(id('load' + element.variable.name), tArrowFunctionType([tTypedIdentifier(id('slice'), id('Slice'))], id(element.variable.name))))
 
                     storeFunctionParameters.push(
-                        tTypedIdentifier(tIdentifier('store' + element.variable.name),
+                        tTypedIdentifier(id('store' + element.variable.name),
                             tArrowFunctionType(
-                                [tTypedIdentifier(tIdentifier(firstLower(element.variable.name)), tIdentifier(element.variable.name))],
-                                tArrowFunctionType([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], tIdentifier('void')))))
+                                [tTypedIdentifier(id(firstLower(element.variable.name)), id(element.variable.name))],
+                                tArrowFunctionType([tTypedIdentifier(id('builder'), id('Builder'))], id('void')))))
                 }
                 if (element.variable.type == '#' && !element.variable.negated) {
                     if (element.argName) {
-                        loadFunctionParameters.push(tTypedIdentifier(tIdentifier(element.argName), tIdentifier('number')))
+                        loadFunctionParameters.push(tTypedIdentifier(id(element.argName), id('number')))
                     } else {
-                        loadFunctionParameters.push(tTypedIdentifier(tIdentifier(element.variable.name), tIdentifier('number')))
+                        loadFunctionParameters.push(tTypedIdentifier(id(element.variable.name), id('number')))
                     }
                 }
             });
@@ -177,12 +177,12 @@ export class TypescriptGenerator implements CodeGenerator {
             throw new Error(`Type ${tlbType.name} should have at least one constructor`)
         }
 
-        let loadFunction = tFunctionDeclaration(tIdentifier('load' + tlbType.name), structTypeParametersExpr, tTypeWithParameters(tIdentifier(tlbType.name), structTypeParametersExpr), loadFunctionParameters, loadStatements);
+        let loadFunction = tFunctionDeclaration(id('load' + tlbType.name), structTypeParametersExpr, tTypeWithParameters(id(tlbType.name), structTypeParametersExpr), loadFunctionParameters, loadStatements);
 
-        let storeFunction = tFunctionDeclaration(tIdentifier('store' + tlbType.name), structTypeParametersExpr, tIdentifier('(builder: Builder) => void'), storeFunctionParameters, storeStatements)
+        let storeFunction = tFunctionDeclaration(id('store' + tlbType.name), structTypeParametersExpr, id('(builder: Builder) => void'), storeFunctionParameters, storeStatements)
 
         if (tlbType.constructors.length > 1) {
-            let unionTypeDecl = tUnionTypeDeclaration(tTypeWithParameters(tIdentifier(tlbType.name), structTypeParametersExpr), tUnionTypeExpression(typeUnion))
+            let unionTypeDecl = tUnionTypeDeclaration(tTypeWithParameters(id(tlbType.name), structTypeParametersExpr), tUnionTypeExpression(typeUnion))
             this.jsCodeConstructorDeclarations.push(unionTypeDecl)
         }
         constructorsDeclarations.forEach(element => {
@@ -206,13 +206,13 @@ export class TypescriptGenerator implements CodeGenerator {
             slicePrefix.push(0)
 
             ctx.constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice))
-            ctx.constructorStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
+            ctx.constructorStoreStatements.push(tExpressionStatement(tDeclareVariable(id(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(id('beginCell'), []))))
 
             field.subFields.forEach(fieldDef => {
                 this.handleField(fieldDef, slicePrefix, ctx)
             });
 
-            ctx.constructorStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
+            ctx.constructorStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeRef')), [id(getCurrentSlice(slicePrefix, 'cell'))])))
 
             slicePrefix.pop();
         }
@@ -221,13 +221,13 @@ export class TypescriptGenerator implements CodeGenerator {
             slicePrefix[slicePrefix.length - 1]++;
             slicePrefix.push(0);
             ctx.constructorLoadStatements.push(
-                tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')),
+                tExpressionStatement(tDeclareVariable(id(getCurrentSlice(slicePrefix, 'cell')),
                     tFunctionCall(tMemberExpression(
-                        tIdentifier(currentSlice), tIdentifier('loadRef')
+                        id(currentSlice), id('loadRef')
                     ), []),)))
-            addLoadProperty(field.name, tIdentifier(getCurrentSlice(slicePrefix, 'cell')), undefined, ctx.constructorLoadStatements, ctx.constructorLoadProperties)
-            ctx.constructorProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('Cell')));
-            ctx.constructorStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tMemberExpression(tIdentifier(ctx.variableCombinatorName), tIdentifier(field.name))])))
+            addLoadProperty(field.name, id(getCurrentSlice(slicePrefix, 'cell')), undefined, ctx.constructorLoadStatements, ctx.constructorLoadProperties)
+            ctx.constructorProperties.push(tTypedIdentifier(id(field.name), id('Cell')));
+            ctx.constructorStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeRef')), [tMemberExpression(id(ctx.variableCombinatorName), id(field.name))])))
             slicePrefix.pop();
         } else if (field.subFields.length == 0) {
             if (field == undefined) {
@@ -238,7 +238,7 @@ export class TypescriptGenerator implements CodeGenerator {
                 addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, ctx.constructorLoadStatements, ctx.constructorLoadProperties);
             }
             if (fieldInfo.typeParamExpr) {
-                ctx.constructorProperties.push(tTypedIdentifier(tIdentifier(field.name), fieldInfo.typeParamExpr));
+                ctx.constructorProperties.push(tTypedIdentifier(id(field.name), fieldInfo.typeParamExpr));
             }
             if (fieldInfo.storeExpr) {
                 ctx.constructorStoreStatements.push(fieldInfo.storeExpr)
@@ -269,13 +269,13 @@ export class TypescriptGenerator implements CodeGenerator {
 
         let insideStoreParameters: Expression[];
 
-        insideStoreParameters = [tMemberExpression(tIdentifier(ctx.variableCombinatorName), tIdentifier(fieldName))]; // TODO: use only field
-        let insideStoreParameters2: Expression[] = [tIdentifier('arg')]
+        insideStoreParameters = [tMemberExpression(id(ctx.variableCombinatorName), id(fieldName))]; // TODO: use only field
+        let insideStoreParameters2: Expression[] = [id('arg')]
 
         if (fieldType.kind == 'TLBNumberType') {
             exprForParam = {
                 argLoadExpr: convertToAST(fieldType.bits, ctx.constructor),
-                argStoreExpr: convertToAST(fieldType.storeBits, ctx.constructor, tIdentifier(ctx.variableCombinatorName)),
+                argStoreExpr: convertToAST(fieldType.storeBits, ctx.constructor, id(ctx.variableCombinatorName)),
                 paramType: 'number',
                 fieldLoadSuffix: fieldType.signed ? 'Int' : 'Uint',
                 fieldStoreSuffix: fieldType.signed ? 'Int' : 'Uint'
@@ -287,11 +287,11 @@ export class TypescriptGenerator implements CodeGenerator {
         } else if (fieldType.kind == 'TLBBitsType') {
             exprForParam = {
                 argLoadExpr: convertToAST(fieldType.bits, ctx.constructor),
-                argStoreExpr: convertToAST(fieldType.bits, ctx.constructor, tIdentifier(ctx.variableSubStructName)),
+                argStoreExpr: convertToAST(fieldType.bits, ctx.constructor, id(ctx.variableSubStructName)),
                 paramType: 'BitString', fieldLoadSuffix: 'Bits', fieldStoreSuffix: 'Bits'
             }
         } else if (fieldType.kind == 'TLBCellType') {
-            exprForParam = { argLoadExpr: tIdentifier(theSlice), argStoreExpr: tIdentifier(theSlice), paramType: 'Slice', fieldLoadSuffix: 'Slice', fieldStoreSuffix: 'Slice' }
+            exprForParam = { argLoadExpr: id(theSlice), argStoreExpr: id(theSlice), paramType: 'Slice', fieldLoadSuffix: 'Slice', fieldStoreSuffix: 'Slice' }
         } else if (fieldType.kind == 'TLBBoolType') {
             exprForParam = { argLoadExpr: undefined, argStoreExpr: undefined, paramType: 'boolean', fieldLoadSuffix: 'Boolean', fieldStoreSuffix: 'Bit' }
         } else if (fieldType.kind == 'TLBAddressType') {
@@ -300,22 +300,22 @@ export class TypescriptGenerator implements CodeGenerator {
             result.loadExpr = convertToAST(fieldType.expr, ctx.constructor);
             result.storeExpr = tExpressionStatement(result.loadExpr)
         } else if (fieldType.kind == 'TLBNegatedType') {
-            let getParameterFunctionId = tIdentifier(ctx.variableSubStructName + '_get_' + fieldType.variableName)
+            let getParameterFunctionId = id(ctx.variableSubStructName + '_get_' + fieldType.variableName)
             if (field.fieldType.kind == 'TLBNamedType') {
                 let fieldTypeName = field.fieldType.name
-                this.jsCodeFunctionsDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), tIdentifier('number'), [tTypedIdentifier(tIdentifier(goodVariableName(fieldName)), tIdentifier(fieldTypeName))], getNegationDerivationFunctionBody(this.tlbCode, fieldTypeName, argIndex, fieldName)))
+                this.jsCodeFunctionsDeclarations.push(tFunctionDeclaration(getParameterFunctionId, tTypeParametersExpression([]), id('number'), [tTypedIdentifier(id(goodVariableName(fieldName)), id(fieldTypeName))], getNegationDerivationFunctionBody(this.tlbCode, fieldTypeName, argIndex, fieldName)))
             }
-            result.negatedVariablesLoads.push({ name: fieldType.variableName, expression: tFunctionCall(getParameterFunctionId, [tIdentifier(fieldName)]) })
+            result.negatedVariablesLoads.push({ name: fieldType.variableName, expression: tFunctionCall(getParameterFunctionId, [id(fieldName)]) })
         } else if (fieldType.kind == 'TLBNamedType' && fieldType.arguments.length == 0) {
             let typeName = fieldType.name;
-            result.typeParamExpr = tIdentifier(typeName);
+            result.typeParamExpr = id(typeName);
             if (isField) {
-                result.loadExpr = tFunctionCall(tIdentifier('load' + typeName), [tIdentifier(theSlice)])
-                result.storeExpr = tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + typeName), insideStoreParameters), [tIdentifier(currentCell)]))
-                storeExpr2 = tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + typeName), insideStoreParameters2), [tIdentifier(currentCell)]))
+                result.loadExpr = tFunctionCall(id('load' + typeName), [id(theSlice)])
+                result.storeExpr = tExpressionStatement(tFunctionCall(tFunctionCall(id('store' + typeName), insideStoreParameters), [id(currentCell)]))
+                storeExpr2 = tExpressionStatement(tFunctionCall(tFunctionCall(id('store' + typeName), insideStoreParameters2), [id(currentCell)]))
             } else {
-                result.loadExpr = tIdentifier('load' + typeName)
-                result.storeExpr = tExpressionStatement(tIdentifier('store' + typeName))
+                result.loadExpr = id('load' + typeName)
+                result.storeExpr = tExpressionStatement(id('store' + typeName))
             }
         } else if (fieldType.kind == 'TLBCondType') {
             let subExprInfo: FieldInfoType
@@ -323,16 +323,16 @@ export class TypescriptGenerator implements CodeGenerator {
             subExprInfo = this.handleType(field, fieldType.value, true, ctx, slicePrefix, argIndex);
             conditionExpr = convertToAST(fieldType.condition, ctx.constructor)
             if (subExprInfo.typeParamExpr) {
-                result.typeParamExpr = tUnionTypeExpression([subExprInfo.typeParamExpr, tIdentifier('undefined')])
+                result.typeParamExpr = tUnionTypeExpression([subExprInfo.typeParamExpr, id('undefined')])
             }
             if (subExprInfo.loadExpr) {
-                result.loadExpr = tTernaryExpression(conditionExpr, subExprInfo.loadExpr, tIdentifier('undefined'))
+                result.loadExpr = tTernaryExpression(conditionExpr, subExprInfo.loadExpr, id('undefined'))
             }
             let currentParam = insideStoreParameters[0]
             let currentParam2 = insideStoreParameters2[0]
             if (currentParam && currentParam2 && subExprInfo.storeExpr) {
-                result.storeExpr = tIfStatement(tBinaryExpression(currentParam, '!=', tIdentifier('undefined')), [subExprInfo.storeExpr])
-                storeExpr2 = tIfStatement(tBinaryExpression(currentParam2, '!=', tIdentifier('undefined')), [subExprInfo.storeExpr])
+                result.storeExpr = tIfStatement(tBinaryExpression(currentParam, '!=', id('undefined')), [subExprInfo.storeExpr])
+                storeExpr2 = tIfStatement(tBinaryExpression(currentParam2, '!=', id('undefined')), [subExprInfo.storeExpr])
             }
         } else if (fieldType.kind == 'TLBMultipleType') {
             let arrayLength: Expression
@@ -342,16 +342,16 @@ export class TypescriptGenerator implements CodeGenerator {
             let currentParam = insideStoreParameters[0]
             let currentParam2 = insideStoreParameters2[0]
             if (subExprInfo.loadExpr) {
-                result.loadExpr = tFunctionCall(tMemberExpression(tFunctionCall(tMemberExpression(tIdentifier('Array'), tIdentifier('from')), [tFunctionCall(tMemberExpression(tFunctionCall(tIdentifier('Array'), [arrayLength]), tIdentifier('keys')), [])]), tIdentifier('map')), [tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), tIdentifier('number'))], [tReturnStatement(subExprInfo.loadExpr)])])
+                result.loadExpr = tFunctionCall(tMemberExpression(tFunctionCall(tMemberExpression(id('Array'), id('from')), [tFunctionCall(tMemberExpression(tFunctionCall(id('Array'), [arrayLength]), id('keys')), [])]), id('map')), [tArrowFunctionExpression([tTypedIdentifier(id('arg'), id('number'))], [tReturnStatement(subExprInfo.loadExpr)])])
             }
             if (currentParam && currentParam2 && subExprInfo.typeParamExpr && subExprInfo.storeExpr) {
                 if (subExprInfo.storeFunctionExpr && subExprInfo.storeExpr2) {
-                    result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(currentParam, tIdentifier('forEach')), [tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [subExprInfo.storeExpr2])])) //subExprInfo.storeExpr;)
-                    storeExpr2 = tExpressionStatement(tFunctionCall(tMemberExpression(currentParam2, tIdentifier('forEach')), [tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), subExprInfo.typeParamExpr)], [subExprInfo.storeExpr2])])) //subExprInfo.storeExpr;
+                    result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(currentParam, id('forEach')), [tArrowFunctionExpression([tTypedIdentifier(id('arg'), subExprInfo.typeParamExpr)], [subExprInfo.storeExpr2])])) //subExprInfo.storeExpr;)
+                    storeExpr2 = tExpressionStatement(tFunctionCall(tMemberExpression(currentParam2, id('forEach')), [tArrowFunctionExpression([tTypedIdentifier(id('arg'), subExprInfo.typeParamExpr)], [subExprInfo.storeExpr2])])) //subExprInfo.storeExpr;
                 }
             }
             if (subExprInfo.typeParamExpr) {
-                result.typeParamExpr = tTypeWithParameters(tIdentifier('Array'), tTypeParametersExpression([subExprInfo.typeParamExpr]));
+                result.typeParamExpr = tTypeWithParameters(id('Array'), tTypeParametersExpression([subExprInfo.typeParamExpr]));
             }
         } else if (fieldType.kind == 'TLBCellInsideType') {
             let currentCell = getCurrentSlice([1, 0], 'cell');
@@ -362,21 +362,21 @@ export class TypescriptGenerator implements CodeGenerator {
                 result.typeParamExpr = subExprInfo.typeParamExpr;
                 result.storeExpr = subExprInfo.storeExpr;
                 result.negatedVariablesLoads = subExprInfo.negatedVariablesLoads;
-                result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [sliceLoad([1, 0], 'slice'), tReturnStatement(subExprInfo.loadExpr)])
-                result.loadExpr = tFunctionCall(result.loadFunctionExpr, [tIdentifier(theSlice)])
+                result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(id('slice'), id('Slice'))], [sliceLoad([1, 0], 'slice'), tReturnStatement(subExprInfo.loadExpr)])
+                result.loadExpr = tFunctionCall(result.loadFunctionExpr, [id(theSlice)])
             }
             if (subExprInfo.storeExpr) {
                 result.storeExpr = tMultiStatement([
-                    tExpressionStatement(tDeclareVariable(tIdentifier(currentCell), tFunctionCall(tIdentifier('beginCell'), []))),
+                    tExpressionStatement(tDeclareVariable(id(currentCell), tFunctionCall(id('beginCell'), []))),
                     subExprInfo.storeExpr,
-                    tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeRef')), [tIdentifier(currentCell)]))
+                    tExpressionStatement(tFunctionCall(tMemberExpression(id('builder'), id('storeRef')), [id(currentCell)]))
                 ])
             }
             if (subExprInfo.storeExpr2) {
                 storeExpr2 = tMultiStatement([
-                    tExpressionStatement(tDeclareVariable(tIdentifier(currentCell), tFunctionCall(tIdentifier('beginCell'), []))),
+                    tExpressionStatement(tDeclareVariable(id(currentCell), tFunctionCall(id('beginCell'), []))),
                     subExprInfo.storeExpr2,
-                    tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeRef')), [tIdentifier(currentCell)]))
+                    tExpressionStatement(tFunctionCall(tMemberExpression(id('builder'), id('storeRef')), [id(currentCell)]))
                 ])
             }
         } else if (fieldType.kind == 'TLBNamedType' && fieldType.arguments.length) {
@@ -402,17 +402,17 @@ export class TypescriptGenerator implements CodeGenerator {
                     result.negatedVariablesLoads = result.negatedVariablesLoads.concat(subExprInfo.negatedVariablesLoads);
                 })
             }
-            result.typeParamExpr = tTypeWithParameters(tIdentifier(typeName), typeExpression);
+            result.typeParamExpr = tTypeWithParameters(id(typeName), typeExpression);
 
             let currentTypeParameters = typeExpression;
 
-            let insideLoadParameters: Array<Expression> = [tIdentifier(theSlice)];
+            let insideLoadParameters: Array<Expression> = [id(theSlice)];
 
-            result.loadExpr = tFunctionCall(tIdentifier('load' + typeName), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
-            result.storeExpr = tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + typeName), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(theCell)]))
-            storeExpr2 = tExpressionStatement(tFunctionCall(tFunctionCall(tIdentifier('store' + typeName), insideStoreParameters2.concat(storeFunctionsArray), currentTypeParameters), [tIdentifier(theCell)]))
+            result.loadExpr = tFunctionCall(id('load' + typeName), insideLoadParameters.concat(loadFunctionsArray), currentTypeParameters);
+            result.storeExpr = tExpressionStatement(tFunctionCall(tFunctionCall(id('store' + typeName), insideStoreParameters.concat(storeFunctionsArray), currentTypeParameters), [id(theCell)]))
+            storeExpr2 = tExpressionStatement(tFunctionCall(tFunctionCall(id('store' + typeName), insideStoreParameters2.concat(storeFunctionsArray), currentTypeParameters), [id(theCell)]))
             if (exprForParam) {
-                result.typeParamExpr = tIdentifier(exprForParam.paramType);
+                result.typeParamExpr = id(exprForParam.paramType);
             }
         }
 
@@ -423,19 +423,19 @@ export class TypescriptGenerator implements CodeGenerator {
                     insideStoreParameters2.push(exprForParam.argStoreExpr);
                 }
             }
-            result.loadExpr = tFunctionCall(tMemberExpression(tIdentifier(currentSlice), tIdentifier('load' + exprForParam.fieldLoadSuffix)), (exprForParam.argLoadExpr ? [exprForParam.argLoadExpr] : []));
+            result.loadExpr = tFunctionCall(tMemberExpression(id(currentSlice), id('load' + exprForParam.fieldLoadSuffix)), (exprForParam.argLoadExpr ? [exprForParam.argLoadExpr] : []));
             if (exprForParam.paramType == 'Slice') {
-                result.loadExpr = tIdentifier(currentSlice)
-                result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [tReturnStatement(tIdentifier('slice'))])
+                result.loadExpr = id(currentSlice)
+                result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(id('slice'), id('Slice'))], [tReturnStatement(id('slice'))])
             }
-            result.typeParamExpr = tIdentifier(exprForParam.paramType);
-            result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(theCell), tIdentifier('store' + exprForParam.fieldStoreSuffix)), insideStoreParameters));
-            storeExpr2 = tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(theCell), tIdentifier('store' + exprForParam.fieldStoreSuffix)), insideStoreParameters2));
+            result.typeParamExpr = id(exprForParam.paramType);
+            result.storeExpr = tExpressionStatement(tFunctionCall(tMemberExpression(id(theCell), id('store' + exprForParam.fieldStoreSuffix)), insideStoreParameters));
+            storeExpr2 = tExpressionStatement(tFunctionCall(tMemberExpression(id(theCell), id('store' + exprForParam.fieldStoreSuffix)), insideStoreParameters2));
         }
 
         if (result.loadExpr && !result.loadFunctionExpr) {
             if (result.loadExpr.type == 'FunctionCall') {
-                result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('slice'), tIdentifier('Slice'))], [tReturnStatement(result.loadExpr)])
+                result.loadFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(id('slice'), id('Slice'))], [tReturnStatement(result.loadExpr)])
             } else {
                 result.loadFunctionExpr = result.loadExpr
             }
@@ -446,7 +446,7 @@ export class TypescriptGenerator implements CodeGenerator {
             }
             if (result.typeParamExpr) {
                 if (result.storeExpr.type == 'ExpressionStatement' && result.storeExpr.expression.type == 'FunctionCall' || result.storeExpr.type == 'MultiStatement') {
-                    result.storeFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(tIdentifier('arg'), result.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], [storeExpr2]))])
+                    result.storeFunctionExpr = tArrowFunctionExpression([tTypedIdentifier(id('arg'), result.typeParamExpr)], [tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(id('builder'), id('Builder'))], [storeExpr2]))])
                 } else {
                     if (result.storeExpr.type == 'ExpressionStatement') {
                         result.storeFunctionExpr = result.storeExpr.expression;

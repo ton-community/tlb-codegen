@@ -186,6 +186,8 @@ export function tIdentifier(name: string): Identifier {
     return { type: "Identifier", name: name };
 }
 
+export let id = tIdentifier;
+
 export function tStringLiteral(value: string): StringLiteral {
     return { type: "StringLiteral", value: value }
 }

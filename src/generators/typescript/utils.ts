@@ -1,6 +1,6 @@
 import { TLBBinaryOp, TLBCode, TLBConstructor, TLBMathExpr, TLBNumberExpr, TLBNumberType, TLBParameter, TLBType, TLBUnaryOp, TLBVarExpr } from '../../ast'
 import { getCurrentSlice, getSubStructName } from '../../utils'
-import { BinaryExpression, Expression, Identifier, ObjectProperty, Statement, TypeExpression, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tIdentifier, tIfStatement, tMemberExpression, tNumericLiteral, tObjectProperty, tReturnStatement, tStringLiteral, tTypeParametersExpression, tUnaryOpExpression } from './tsgen'
+import { BinaryExpression, Expression, Identifier, ObjectProperty, Statement, TypeExpression, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, id, tIfStatement, tMemberExpression, tNumericLiteral, tObjectProperty, tReturnStatement, tStringLiteral, tTypeParametersExpression, tUnaryOpExpression } from './tsgen'
 
 export type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined
@@ -20,17 +20,17 @@ export type ExprForParam = {
 }
 
 export function sliceLoad(slicePrefix: number[], currentSlice: string) {
-  return tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'slice')),
+  return tExpressionStatement(tDeclareVariable(id(getCurrentSlice(slicePrefix, 'slice')),
     tFunctionCall(tMemberExpression(
       tFunctionCall(tMemberExpression(
-        tIdentifier(currentSlice), tIdentifier('loadRef')
+        id(currentSlice), id('loadRef')
       ), []),
-      tIdentifier('beginParse')
+      id('beginParse')
     ), []),))
 }
 
 export function simpleCycle(varName: string, finish: Expression): Statement {
-  return tForCycle(tDeclareVariable(tIdentifier(varName), tNumericLiteral(0)), tBinaryExpression(tIdentifier(varName), '<', finish), tNumericLiteral(5), [])
+  return tForCycle(tDeclareVariable(id(varName), tNumericLiteral(0)), tBinaryExpression(id(varName), '<', finish), tNumericLiteral(5), [])
 }
 
 export function getParamVarExpr(param: TLBParameter, constructor: TLBConstructor): Expression {
@@ -46,7 +46,7 @@ export function getVarExprByName(name: string, constructor: TLBConstructor): Exp
   if (variable?.deriveExpr) {
     return convertToAST(variable.deriveExpr, constructor);
   }
-  return tIdentifier(name)
+  return id(name)
 }
 
 export function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: string, parameterIndex: number, parameterName: string): Statement[] {
@@ -62,24 +62,24 @@ export function getNegationDerivationFunctionBody(tlbCode: TLBCode, typeName: st
       getExpression = convertToAST(parameter.paramExpr, constructor);
       let statements = [];
       if (!parameter.variable.isConst) {
-        statements.push(tExpressionStatement(tDeclareVariable(tIdentifier(parameter.variable.name), tMemberExpression(tIdentifier(parameterName), tIdentifier(parameter.variable.name)))));
+        statements.push(tExpressionStatement(tDeclareVariable(id(parameter.variable.name), tMemberExpression(id(parameterName), id(parameter.variable.name)))));
       }
       statements.push(tReturnStatement(getExpression));
       if (tlbType) {
-        result.push(tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(parameterName), tIdentifier('kind')), '==', tStringLiteral(getSubStructName(tlbType, constructor))), statements))
+        result.push(tIfStatement(tBinaryExpression(tMemberExpression(id(parameterName), id('kind')), '==', tStringLiteral(getSubStructName(tlbType, constructor))), statements))
       }
     }
   });
 
   let exceptionTypesComment = tlbType.constructors.map(constructor => { return `"${tlbType ? getSubStructName(tlbType, constructor) : ''}"` }).join(', ')
-  let exceptionComment = tExpressionStatement(tIdentifier("throw new Error('" + `Expected one of ${exceptionTypesComment} for type "${tlbType.name}" while getting "${parameterName}", but data does not satisfy any constructor` + "')"))
+  let exceptionComment = tExpressionStatement(id("throw new Error('" + `Expected one of ${exceptionTypesComment} for type "${tlbType.name}" while getting "${parameterName}", but data does not satisfy any constructor` + "')"))
   result.push(exceptionComment)
 
   return result;
 }
 
 export function addLoadProperty(name: string, loadExpr: Expression, typeExpr: TypeExpression | undefined, constructorLoadStatements: Statement[], subStructLoadProperties: ObjectProperty[]) {
-  let nameId = tIdentifier(name);
+  let nameId = id(name);
   constructorLoadStatements.push(tExpressionStatement(tDeclareVariable(nameId, loadExpr, typeExpr)))
   subStructLoadProperties.push(tObjectProperty(nameId, nameId))
 }
@@ -88,9 +88,9 @@ export function convertToAST(mathExpr: TLBMathExpr, constructor: TLBConstructor,
   if (mathExpr instanceof TLBVarExpr) {
     let varName = mathExpr.x;
     if (objectId != undefined) {
-      return tMemberExpression(objectId, tIdentifier(varName));
+      return tMemberExpression(objectId, id(varName));
     }
-    return tIdentifier(varName);
+    return id(varName);
   }
   if (mathExpr instanceof TLBNumberExpr) {
     return tNumericLiteral(mathExpr.n);
@@ -104,7 +104,7 @@ export function convertToAST(mathExpr: TLBMathExpr, constructor: TLBConstructor,
   }
   if (mathExpr instanceof TLBUnaryOp) {
     if (mathExpr.operation == '.') {
-      return tFunctionCall(tIdentifier('bitLen'), [convertToAST(mathExpr.value, constructor, objectId)])
+      return tFunctionCall(id('bitLen'), [convertToAST(mathExpr.value, constructor, objectId)])
     }
     return tUnaryOpExpression(mathExpr.operation, convertToAST(mathExpr.value, constructor, objectId))
   }
@@ -115,7 +115,7 @@ export function getTypeParametersExpression(parameters: Array<TLBParameter>) {
   let structTypeParameters: Array<Identifier> = [];
   parameters.forEach(element => {
     if (element.variable.type == 'Type') {
-      structTypeParameters.push(tIdentifier(element.variable.name));
+      structTypeParameters.push(id(element.variable.name));
     }
   });
   let structTypeParametersExpr = tTypeParametersExpression(structTypeParameters);
@@ -131,7 +131,7 @@ export function getCondition(conditions: Array<BinaryExpression>): Expression {
       return cnd;
     }
   } else {
-    return tIdentifier('true');
+    return id('true');
   }
 }
 
