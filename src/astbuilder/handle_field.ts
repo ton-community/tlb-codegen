@@ -52,7 +52,7 @@ export function getField(field: FieldDefinition, slicePrefix: Array<number>, con
       } else {
         tmpTypeName = field.expr.name;
       }
-      let fieldInfo = getType(field.expr, fieldName, true, false, variableCombinatorName, variableSubStructName, constructor, tmpTypeName, 0);
+      let fieldInfo = getType(field.expr, fieldName, true, false, variableCombinatorName, variableSubStructName, constructor, tmpTypeName);
       return { name: fieldName, anonymous: !(field instanceof FieldNamedDef), fieldType: fieldInfo, subFields: [] };
     }
   }
