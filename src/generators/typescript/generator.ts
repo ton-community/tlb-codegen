@@ -53,10 +53,6 @@ export class TypescriptGenerator implements CodeGenerator {
             let subStructLoadProperties: ObjectProperty[] = [tObjectProperty(tIdentifier('kind'), tStringLiteral(subStructName))]
             let subStructStoreStatements: Statement[] = []
 
-            if (constructor.tag == undefined) {
-                return;
-            }
-
             structTypeParametersExpr = getTypeParametersExpression(constructor.parameters);
 
             let slicePrefix: number[] = [0];
@@ -183,6 +179,8 @@ export class TypescriptGenerator implements CodeGenerator {
                     }
                 }
             });
+        } else {
+            throw new Error(`Type ${tlbType.name} should have at least one constructor`)
         }
 
         let loadFunction = tFunctionDeclaration(tIdentifier('load' + tlbType.name), structTypeParametersExpr, tTypeWithParameters(tIdentifier(tlbType.name), structTypeParametersExpr), loadFunctionParameters, loadStatements);
@@ -209,7 +207,7 @@ export class TypescriptGenerator implements CodeGenerator {
         let currentSlice = getCurrentSlice(slicePrefix, 'slice');
         let currentCell = getCurrentSlice(slicePrefix, 'cell');
 
-        if (field && field.subFields.length > 0) {
+        if (field.subFields.length > 0) {
             slicePrefix[slicePrefix.length - 1]++;
             slicePrefix.push(0)
 
@@ -225,7 +223,7 @@ export class TypescriptGenerator implements CodeGenerator {
             slicePrefix.pop();
         }
 
-        if (field?.fieldType.kind == 'TLBExoticType') {
+        if (field.fieldType.kind == 'TLBExoticType') {
             slicePrefix[slicePrefix.length - 1]++;
             slicePrefix.push(0);
             ctx.constructorLoadStatements.push(
@@ -237,11 +235,11 @@ export class TypescriptGenerator implements CodeGenerator {
             ctx.subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('Cell')));
             ctx.subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tMemberExpression(tIdentifier(ctx.variableCombinatorName), tIdentifier(field.name))])))
             slicePrefix.pop();
-        } else if (field?.subFields.length == 0) {
+        } else if (field.subFields.length == 0) {
             if (field == undefined) {
                 throw new Error('')
             }
-            let fieldInfo = this.handleType(field, field.fieldType, true, ctx, currentSlice, currentCell, 0);
+            let fieldInfo = this.handleType(field, field.fieldType, true, ctx, slicePrefix, 0);
             if (fieldInfo.loadExpr) {
                 addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, ctx.constructorLoadStatements, ctx.subStructLoadProperties);
             }
@@ -258,7 +256,10 @@ export class TypescriptGenerator implements CodeGenerator {
     }
 
 
-    handleType(field: TLBField, fieldType: TLBFieldType, isField: boolean, ctx: ConstructorContext, currentSlice: string, currentCell: string, argIndex: number): FieldInfoType {
+    handleType(field: TLBField, fieldType: TLBFieldType, isField: boolean, ctx: ConstructorContext, slicePrefix: Array<number>, argIndex: number): FieldInfoType {
+        let currentSlice = getCurrentSlice(slicePrefix, 'slice');
+        let currentCell = getCurrentSlice(slicePrefix, 'cell');
+
         let fieldName = field.name
         let theSlice = 'slice'; // TODO: use slice from field
         let theCell = 'builder';
@@ -325,7 +326,7 @@ export class TypescriptGenerator implements CodeGenerator {
         } else if (fieldType.kind == 'TLBCondType') {
             let subExprInfo: FieldInfoType
             let conditionExpr: Expression;
-            subExprInfo = this.handleType(field, fieldType.value, true, ctx, currentSlice, currentCell, argIndex);
+            subExprInfo = this.handleType(field, fieldType.value, true, ctx, slicePrefix, argIndex);
             conditionExpr = convertToAST(fieldType.condition, ctx.constructor)
             if (subExprInfo.typeParamExpr) {
                 result.typeParamExpr = tUnionTypeExpression([subExprInfo.typeParamExpr, tIdentifier('undefined')])
@@ -343,7 +344,7 @@ export class TypescriptGenerator implements CodeGenerator {
             let arrayLength: Expression
             let subExprInfo: FieldInfoType
             arrayLength = convertToAST(fieldType.times, ctx.constructor);
-            subExprInfo = this.handleType(field, fieldType.value, false, ctx, currentSlice, currentCell, argIndex);
+            subExprInfo = this.handleType(field, fieldType.value, false, ctx, slicePrefix, argIndex);
             let currentParam = insideStoreParameters[0]
             let currentParam2 = insideStoreParameters2[0]
             if (subExprInfo.loadExpr) {
@@ -359,11 +360,10 @@ export class TypescriptGenerator implements CodeGenerator {
                 result.typeParamExpr = tTypeWithParameters(tIdentifier('Array'), tTypeParametersExpression([subExprInfo.typeParamExpr]));
             }
         } else if (fieldType.kind == 'TLBCellInsideType') {
-            let currentSlice = getCurrentSlice([1, 0], 'slice');
             let currentCell = getCurrentSlice([1, 0], 'cell');
 
             let subExprInfo: FieldInfoType;
-            subExprInfo = this.handleType(field, fieldType.value, true, ctx, currentSlice, currentCell, argIndex)
+            subExprInfo = this.handleType(field, fieldType.value, true, ctx, [1, 0], argIndex)
             if (subExprInfo.loadExpr) {
                 result.typeParamExpr = subExprInfo.typeParamExpr;
                 result.storeExpr = subExprInfo.storeExpr;
@@ -395,7 +395,7 @@ export class TypescriptGenerator implements CodeGenerator {
             if (fieldType.kind == 'TLBNamedType') {
                 fieldType.arguments.forEach(arg => {
                     argIndex++;
-                    let subExprInfo = this.handleType(field, arg, false, ctx, currentSlice, currentCell, argIndex);
+                    let subExprInfo = this.handleType(field, arg, false, ctx, slicePrefix, argIndex);
                     if (subExprInfo.typeParamExpr) {
                         typeExpression.typeParameters.push(subExprInfo.typeParamExpr);
                     }
