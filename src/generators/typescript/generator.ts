@@ -36,8 +36,8 @@ export class TypescriptGenerator implements CodeGenerator {
     }
     addTlbType(tlbType: TLBType): void {
         let variableCombinatorName = goodVariableName(firstLower(tlbType.name), '0')
-        let subStructsUnion: TypeExpression[] = []
-        let subStructDeclarations: StructDeclaration[] = []
+        let typeUnion: TypeExpression[] = []
+        let constructorsDeclarations: StructDeclaration[] = []
 
         let loadStatements: Statement[] = []
         let storeStatements: Statement[] = []
@@ -83,7 +83,7 @@ export class TypescriptGenerator implements CodeGenerator {
                 this.handleField(field, slicePrefix, ctx);
             })
 
-            subStructsUnion.push(tTypeWithParameters(tIdentifier(constructorTypeName), structTypeParametersExpr));
+            typeUnion.push(tTypeWithParameters(tIdentifier(constructorTypeName), structTypeParametersExpr));
 
             let structX = tStructDeclaration(tIdentifier(constructorTypeName), ctx.constructorProperties, structTypeParametersExpr);
 
@@ -128,7 +128,7 @@ export class TypescriptGenerator implements CodeGenerator {
             }
             storeStatements.push(storeStatement);
 
-            subStructDeclarations.push(structX)
+            constructorsDeclarations.push(structX)
 
             this.jsCodeFunctionsDeclarations.push(tComment(constructor.declaration))
 
@@ -182,10 +182,10 @@ export class TypescriptGenerator implements CodeGenerator {
         let storeFunction = tFunctionDeclaration(tIdentifier('store' + tlbType.name), structTypeParametersExpr, tIdentifier('(builder: Builder) => void'), storeFunctionParameters, storeStatements)
 
         if (tlbType.constructors.length > 1) {
-            let unionTypeDecl = tUnionTypeDeclaration(tTypeWithParameters(tIdentifier(tlbType.name), structTypeParametersExpr), tUnionTypeExpression(subStructsUnion))
+            let unionTypeDecl = tUnionTypeDeclaration(tTypeWithParameters(tIdentifier(tlbType.name), structTypeParametersExpr), tUnionTypeExpression(typeUnion))
             this.jsCodeConstructorDeclarations.push(unionTypeDecl)
         }
-        subStructDeclarations.forEach(element => {
+        constructorsDeclarations.forEach(element => {
             this.jsCodeConstructorDeclarations.push(element)
         });
 
