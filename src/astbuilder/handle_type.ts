@@ -2,8 +2,11 @@ import { BuiltinOneArgExpr, BuiltinZeroArgs, CellRefExpr, CombinatorExpr, CondEx
 import { TLBBinaryOp, TLBFieldType, TLBMathExpr, TLBNumberExpr, TLBUnaryOp, TLBVarExpr } from "../ast";
 import { TLBConstructorBuild, convertToMathExpr, getCalculatedExpression, splitForTypeValue } from "./utils";
 
+export type TypeContext = {
+  fieldName: string,
+}
 
-export function getType(expr: ParserExpression, fieldName: string, needArg: boolean, variableCombinatorName: string, variableSubStructName: string, constructor: TLBConstructorBuild, fieldTypeName: string): TLBFieldType {
+export function getType(expr: ParserExpression, constructor: TLBConstructorBuild, fieldTypeName: string): TLBFieldType {
   if (expr instanceof BuiltinZeroArgs) {
     if (expr.name == '#') {
       return { kind: 'TLBNumberType', bits: new TLBNumberExpr(32), storeBits: new TLBNumberExpr(32), signed: false, maxBits: 32 };
@@ -49,7 +52,7 @@ export function getType(expr: ParserExpression, fieldName: string, needArg: bool
     } else {
       let argumentTypes: TLBFieldType[] = [];
       expr.args.forEach((arg) => {
-        let thefield = getType(arg, fieldName, needArg, variableCombinatorName, variableSubStructName, constructor, fieldTypeName);
+        let thefield = getType(arg, constructor, fieldTypeName);
         argumentTypes.push(thefield);
       });
       return { kind: 'TLBNamedType', name: expr.name, arguments: argumentTypes };
@@ -88,12 +91,12 @@ export function getType(expr: ParserExpression, fieldName: string, needArg: bool
   } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) {
     return { kind: 'TLBNegatedType', variableName: expr.expr.name };
   } else if (expr instanceof CellRefExpr) {
-    let subExprInfo = getType(expr.expr, fieldName, true, variableCombinatorName, variableSubStructName, constructor, fieldTypeName);
+    let subExprInfo = getType(expr.expr, constructor, fieldTypeName);
     return { kind: 'TLBCellInsideType', value: subExprInfo };
   } else if (expr instanceof MathExpr) {
     if (fieldTypeName == '') {
       if (expr.op == '*') {
-        let subExprInfo = getType(expr.right, fieldName, needArg, variableCombinatorName, variableSubStructName, constructor, fieldTypeName);
+        let subExprInfo = getType(expr.right, constructor, fieldTypeName);
         return { kind: 'TLBMultipleType', times: getCalculatedExpression(convertToMathExpr(expr.left), constructor), value: subExprInfo };
       } else {
         throw new Error(`Couldn't handle expression ${expr}`)
@@ -102,7 +105,7 @@ export function getType(expr: ParserExpression, fieldName: string, needArg: bool
       return { kind: 'TLBExprMathType', expr: getCalculatedExpression(convertToMathExpr(expr), constructor) };
     }
   } else if (expr instanceof CondExpr) {
-    let subExprInfo = getType(expr.condExpr, fieldName, false, variableCombinatorName, variableSubStructName, constructor, fieldTypeName);
+    let subExprInfo = getType(expr.condExpr, constructor, fieldTypeName);
     if (expr.left instanceof NameExpr) {
       let condition: TLBMathExpr = getCalculatedExpression(convertToMathExpr(expr.left), constructor);
       if (expr.dotExpr != null) {
