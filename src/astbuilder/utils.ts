@@ -148,11 +148,11 @@ export function fillConstructors(declarations: Declaration[], tlbCode: TLBCodeBu
         });
         fillParameterNames(tlbType);
         fillArgNames(tlbType);
-        fixConstructorsNaming(tlbType);
+        findConstructorsNaming(tlbType);
         tlbType.constructors.sort(compareConstructors);
     });
     checkAndRemovePrimitives(tlbCode, input, typeDeclarations);
-    fixVariablesNaming(tlbCode);
+    findAvailableVarNamesForCode(tlbCode);
 }
 export function convertVariableToReadonly(tlbVariable: TLBVariableBuild): TLBVariable {
     if (tlbVariable.name == undefined) {
@@ -238,23 +238,23 @@ export function checkAndRemovePrimitives(tlbCode: TLBCodeBuild, input: string[],
         tlbCode.types.delete(name);
     });
 }
-export function fixVariablesNaming(tlbCode: TLBCodeBuild) {
+export function findAvailableVarNamesForCode(tlbCode: TLBCodeBuild) {
     tlbCode.types.forEach(tlbType => {
         tlbType.constructors.forEach(constructor => {
             let variablesSet = new Set<string>();
-            fixVarNamsField(constructor.fields, variablesSet);
+            findAvailableFieldsNames(constructor.fields, variablesSet);
         });
     });
 }
-export function fixVarNamsField(fields: TLBField[], variablesSet: Set<string>) {
+export function findAvailableFieldsNames(fields: TLBField[], variablesSet: Set<string>) {
     fields.forEach(field => {
         if (field.subFields.length == 0) {
-            fixCurrentVariableName(field, variablesSet);
+            findAvailableFieldName(field, variablesSet);
         }
-        fixVarNamsField(field.subFields, variablesSet);
+        findAvailableFieldsNames(field.subFields, variablesSet);
     });
 }
-export function fixCurrentVariableName(field: TLBField, variablesSet: Set<string>) {
+export function findAvailableFieldName(field: TLBField, variablesSet: Set<string>) {
     let index = 0;
     field.name = goodVariableName(field.name);
     while (variablesSet.has(field.name)) {
@@ -310,7 +310,7 @@ export function getStringDeclaration(declaration: Declaration, input: string[]):
     }
     return result;
 }
-export function fixConstructorsNaming(tlbType: TLBTypeBuild) {
+export function findConstructorsNaming(tlbType: TLBTypeBuild) {
     let constructorNames: Set<string> = new Set<string>();
     let constructorIndex = 0;
     tlbType.constructors.forEach(current => {
