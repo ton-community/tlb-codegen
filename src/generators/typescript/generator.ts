@@ -9,9 +9,9 @@ import { ExprForParam, FieldInfoType, addLoadProperty, convertToAST, getConditio
 type ConstructorContext = {
     constructor: TLBConstructor
     constructorLoadStatements: Statement[]
-    subStructStoreStatements: Statement[]
-    subStructProperties: TypedIdentifier[]
-    subStructLoadProperties: ObjectProperty[]
+    constructorStoreStatements: Statement[]
+    constructorProperties: TypedIdentifier[]
+    constructorLoadProperties: ObjectProperty[]
     variableCombinatorName: string
     variableSubStructName: string
 }
@@ -45,13 +45,17 @@ export class TypescriptGenerator implements CodeGenerator {
         let structTypeParametersExpr: TypeParametersExpression = tTypeParametersExpression([]);
 
         tlbType.constructors.forEach(constructor => {
-            let constructorLoadStatements: Statement[] = []
-            let subStructName: string = getSubStructName(tlbType, constructor);
-            let variableSubStructName = goodVariableName(firstLower(subStructName), '_' + constructor.name)
+            let constructorTypeName: string = getSubStructName(tlbType, constructor);
 
-            let subStructProperties: TypedIdentifier[] = [tTypedIdentifier(tIdentifier('kind'), tStringLiteral(subStructName))]
-            let subStructLoadProperties: ObjectProperty[] = [tObjectProperty(tIdentifier('kind'), tStringLiteral(subStructName))]
-            let subStructStoreStatements: Statement[] = []
+            let ctx: ConstructorContext = {
+                constructor: constructor,
+                variableSubStructName: goodVariableName(firstLower(constructorTypeName), '_' + constructor.name),
+                variableCombinatorName: variableCombinatorName,
+                constructorLoadStatements: [],
+                constructorLoadProperties: [tObjectProperty(tIdentifier('kind'), tStringLiteral(constructorTypeName))],
+                constructorProperties: [tTypedIdentifier(tIdentifier('kind'), tStringLiteral(constructorTypeName))],
+                constructorStoreStatements: []
+            }
 
             structTypeParametersExpr = getTypeParametersExpression(constructor.parameters);
 
@@ -60,55 +64,45 @@ export class TypescriptGenerator implements CodeGenerator {
             constructor.variables.forEach((variable) => {
                 if (variable.negated) {
                     if (variable.deriveExpr) {
-                        subStructLoadProperties.push(tObjectProperty(tIdentifier(variable.name), convertToAST(variable.deriveExpr, constructor)));
+                        ctx.constructorLoadProperties.push(tObjectProperty(tIdentifier(variable.name), convertToAST(variable.deriveExpr, constructor)));
                     }
                 }
             })
 
             constructor.variables.forEach(variable => {
                 if (variable.type == '#' && !variable.isField) {
-                    subStructProperties.push(tTypedIdentifier(tIdentifier(variable.name), tIdentifier('number')));
+                    ctx.constructorProperties.push(tTypedIdentifier(tIdentifier(variable.name), tIdentifier('number')));
                     let parameter = constructor.parametersMap.get(variable.name)
                     if (parameter && !parameter.variable.isConst && !parameter.variable.negated) {
-                        subStructLoadProperties.push(tObjectProperty(tIdentifier(variable.name), getParamVarExpr(parameter, constructor)))
+                        ctx.constructorLoadProperties.push(tObjectProperty(tIdentifier(variable.name), getParamVarExpr(parameter, constructor)))
                     }
                 }
             })
 
-            let constructorContext: ConstructorContext = {
-                constructor: constructor,
-                variableSubStructName: variableSubStructName,
-                variableCombinatorName: variableCombinatorName,
-                constructorLoadStatements: constructorLoadStatements,
-                subStructLoadProperties: subStructLoadProperties,
-                subStructProperties: subStructProperties,
-                subStructStoreStatements: subStructStoreStatements
-            }
-
             constructor.fields.forEach(field => {
-                this.handleField(field, slicePrefix, constructorContext);
+                this.handleField(field, slicePrefix, ctx);
             })
 
-            subStructsUnion.push(tTypeWithParameters(tIdentifier(subStructName), structTypeParametersExpr));
+            subStructsUnion.push(tTypeWithParameters(tIdentifier(constructorTypeName), structTypeParametersExpr));
 
-            let structX = tStructDeclaration(tIdentifier(subStructName), subStructProperties, structTypeParametersExpr);
+            let structX = tStructDeclaration(tIdentifier(constructorTypeName), ctx.constructorProperties, structTypeParametersExpr);
 
             constructor.constraints.forEach(constraint => {
                 let loadConstraintAST = convertToAST(constraint, constructor);
                 let storeConstraintAST = convertToAST(constraint, constructor, tIdentifier(variableCombinatorName));
                 let exceptionCommentLastPart = ` is not satisfied while loading "${getSubStructName(tlbType, constructor)}" for type "${tlbType.name}"`
-                constructorLoadStatements.push(tIfStatement(tUnaryOpExpression('!', loadConstraintAST), [tExpressionStatement(tIdentifier("throw new Error('Condition " + toCode(loadConstraintAST).code + exceptionCommentLastPart + "')"))]));
-                subStructStoreStatements.push(tIfStatement(tUnaryOpExpression('!', storeConstraintAST), [tExpressionStatement(tIdentifier("throw new Error('Condition " + toCode(storeConstraintAST).code + exceptionCommentLastPart + "')"))]))
+                ctx.constructorLoadStatements.push(tIfStatement(tUnaryOpExpression('!', loadConstraintAST), [tExpressionStatement(tIdentifier("throw new Error('Condition " + toCode(loadConstraintAST).code + exceptionCommentLastPart + "')"))]));
+                ctx.constructorStoreStatements.push(tIfStatement(tUnaryOpExpression('!', storeConstraintAST), [tExpressionStatement(tIdentifier("throw new Error('Condition " + toCode(storeConstraintAST).code + exceptionCommentLastPart + "')"))]))
             });
 
-            constructorLoadStatements.push(tReturnStatement(tObjectExpression(subStructLoadProperties)));
+            ctx.constructorLoadStatements.push(tReturnStatement(tObjectExpression(ctx.constructorLoadProperties)));
             if (constructor.tag.bitLen != 0 || tlbType.constructors.length > 1) {
                 let conditions: Array<BinaryExpression> = []
                 if (constructor.tag.bitLen != 0) {
                     conditions.push(tBinaryExpression(tMemberExpression(tIdentifier('slice'), tIdentifier('remainingBits')), '>=', tNumericLiteral(constructor.tag.bitLen)))
                     conditions.push(tBinaryExpression(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('preloadUint')), [tNumericLiteral(constructor.tag.bitLen)]), '==', tIdentifier(constructor.tag.binary)))
                     let loadBitsStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('slice'), tIdentifier('loadUint')), [tNumericLiteral(constructor.tag.bitLen)]))]
-                    constructorLoadStatements = loadBitsStatement.concat(constructorLoadStatements);
+                    ctx.constructorLoadStatements = loadBitsStatement.concat(ctx.constructorLoadStatements);
                 }
                 constructor.parameters.forEach(param => {
                     if (param.variable.isConst && !param.variable.negated) {
@@ -119,18 +113,18 @@ export class TypescriptGenerator implements CodeGenerator {
                         conditions.push(tBinaryExpression(tIdentifier(argName), '==', getParamVarExpr(param, constructor)))
                     }
                 });
-                loadStatements.push(tIfStatement(getCondition(conditions), constructorLoadStatements))
+                loadStatements.push(tIfStatement(getCondition(conditions), ctx.constructorLoadStatements))
             } else {
-                loadStatements = loadStatements.concat(constructorLoadStatements);
+                loadStatements = loadStatements.concat(ctx.constructorLoadStatements);
             }
 
             if (constructor.tag.bitLen != 0) {
                 let preStoreStatement: Statement[] = [tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier('builder'), tIdentifier('storeUint')), [tIdentifier(constructor.tag.binary), tNumericLiteral(constructor.tag.bitLen)]))];
-                subStructStoreStatements = preStoreStatement.concat(subStructStoreStatements)
+                ctx.constructorStoreStatements = preStoreStatement.concat(ctx.constructorStoreStatements)
             }
-            let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], subStructStoreStatements));
+            let storeStatement: Statement = tReturnStatement(tArrowFunctionExpression([tTypedIdentifier(tIdentifier('builder'), tIdentifier('Builder'))], ctx.constructorStoreStatements));
             if (tlbType.constructors.length > 1) {
-                storeStatement = tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier('kind')), '==', tStringLiteral(subStructName)), [storeStatement])
+                storeStatement = tIfStatement(tBinaryExpression(tMemberExpression(tIdentifier(variableCombinatorName), tIdentifier('kind')), '==', tStringLiteral(constructorTypeName)), [storeStatement])
             }
             storeStatements.push(storeStatement);
 
@@ -212,13 +206,13 @@ export class TypescriptGenerator implements CodeGenerator {
             slicePrefix.push(0)
 
             ctx.constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice))
-            ctx.subStructStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
+            ctx.constructorStoreStatements.push(tExpressionStatement(tDeclareVariable(tIdentifier(getCurrentSlice(slicePrefix, 'cell')), tFunctionCall(tIdentifier('beginCell'), []))))
 
             field.subFields.forEach(fieldDef => {
                 this.handleField(fieldDef, slicePrefix, ctx)
             });
 
-            ctx.subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
+            ctx.constructorStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tIdentifier(getCurrentSlice(slicePrefix, 'cell'))])))
 
             slicePrefix.pop();
         }
@@ -231,9 +225,9 @@ export class TypescriptGenerator implements CodeGenerator {
                     tFunctionCall(tMemberExpression(
                         tIdentifier(currentSlice), tIdentifier('loadRef')
                     ), []),)))
-            addLoadProperty(field.name, tIdentifier(getCurrentSlice(slicePrefix, 'cell')), undefined, ctx.constructorLoadStatements, ctx.subStructLoadProperties)
-            ctx.subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('Cell')));
-            ctx.subStructStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tMemberExpression(tIdentifier(ctx.variableCombinatorName), tIdentifier(field.name))])))
+            addLoadProperty(field.name, tIdentifier(getCurrentSlice(slicePrefix, 'cell')), undefined, ctx.constructorLoadStatements, ctx.constructorLoadProperties)
+            ctx.constructorProperties.push(tTypedIdentifier(tIdentifier(field.name), tIdentifier('Cell')));
+            ctx.constructorStoreStatements.push(tExpressionStatement(tFunctionCall(tMemberExpression(tIdentifier(currentCell), tIdentifier('storeRef')), [tMemberExpression(tIdentifier(ctx.variableCombinatorName), tIdentifier(field.name))])))
             slicePrefix.pop();
         } else if (field.subFields.length == 0) {
             if (field == undefined) {
@@ -241,16 +235,16 @@ export class TypescriptGenerator implements CodeGenerator {
             }
             let fieldInfo = this.handleType(field, field.fieldType, true, ctx, slicePrefix, 0);
             if (fieldInfo.loadExpr) {
-                addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, ctx.constructorLoadStatements, ctx.subStructLoadProperties);
+                addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, ctx.constructorLoadStatements, ctx.constructorLoadProperties);
             }
             if (fieldInfo.typeParamExpr) {
-                ctx.subStructProperties.push(tTypedIdentifier(tIdentifier(field.name), fieldInfo.typeParamExpr));
+                ctx.constructorProperties.push(tTypedIdentifier(tIdentifier(field.name), fieldInfo.typeParamExpr));
             }
             if (fieldInfo.storeExpr) {
-                ctx.subStructStoreStatements.push(fieldInfo.storeExpr)
+                ctx.constructorStoreStatements.push(fieldInfo.storeExpr)
             }
             fieldInfo.negatedVariablesLoads.forEach(element => {
-                addLoadProperty(element.name, element.expression, undefined, ctx.constructorLoadStatements, ctx.subStructLoadProperties)
+                addLoadProperty(element.name, element.expression, undefined, ctx.constructorLoadStatements, ctx.constructorLoadProperties)
             });
         }
     }
@@ -261,7 +255,7 @@ export class TypescriptGenerator implements CodeGenerator {
         let currentCell = getCurrentSlice(slicePrefix, 'cell');
 
         let fieldName = field.name
-        let theSlice = 'slice'; // TODO: use slice from field
+        let theSlice = 'slice';
         let theCell = 'builder';
         if (isField) {
             theSlice = currentSlice;
