@@ -10,10 +10,9 @@ export function getField(field: FieldDefinition, constructor: TLBConstructorBuil
     let result: TLBField = { name: '', anonymous: true, fieldType: { kind: 'TLBBoolType' }, subFields: [] };
     let currentFieldIndex = 0;
     field.fields.forEach(field => {
-      let theFieldIndex = fieldIndex + '_' + currentFieldIndex.toString();
-      let subfield = getField(field, constructor, theFieldIndex);
-      if (subfield) {
-        result.subFields.push(subfield)
+      let subField = getField(field, constructor, fieldIndex + '_' + currentFieldIndex.toString());
+      if (subField) {
+        result.subFields.push(subField)
       }
       currentFieldIndex++;
     });
@@ -35,24 +34,23 @@ export function getField(field: FieldDefinition, constructor: TLBConstructorBuil
       if (field.expr.expr instanceof CombinatorExpr && (field.expr.expr.name == 'MERKLE_UPDATE' || field.expr.expr.name == 'MERKLE_ROOT')) {
         return { name: fieldName, anonymous: true, fieldType: { kind: 'TLBExoticType' }, subFields: [] };
       } else {
-        let theFieldIndex = fieldIndex + '_' + '0';
-        let subfield = getField(new FieldNamedDef(fieldName, field.expr.expr), constructor, theFieldIndex)
-        if (subfield) {
-          let result: TLBField = { name: fieldName, anonymous: true, fieldType: { kind: 'TLBBoolType' }, subFields: [subfield] };
+        let subField = getField(new FieldNamedDef(fieldName, field.expr.expr), constructor, fieldIndex + '_' + '0')
+        if (subField) {
+          let result: TLBField = { name: fieldName, anonymous: true, fieldType: { kind: 'TLBBoolType' }, subFields: [subField] };
           return result;
         }
-        return subfield
+        return subField
       }
     }
 
     if (field.expr instanceof CombinatorExpr || field.expr instanceof NameExpr || field.expr instanceof BuiltinZeroArgs || field.expr instanceof BuiltinOneArgExpr || field.expr instanceof MathExpr || field.expr instanceof CondExpr) {
-      let tmpTypeName: string;
+      let fieldTypeName: string;
       if (field.expr instanceof MathExpr || field.expr instanceof CondExpr) {
-        tmpTypeName = ''
+        fieldTypeName = ''
       } else {
-        tmpTypeName = field.expr.name;
+        fieldTypeName = field.expr.name;
       }
-      let fieldInfo = getType(field.expr, constructor, tmpTypeName);
+      let fieldInfo = getType(field.expr, constructor, fieldTypeName);
       return { name: fieldName, anonymous: !(field instanceof FieldNamedDef), fieldType: fieldInfo, subFields: [] };
     }
   }
