@@ -5,13 +5,13 @@ import { firstLower, getSubStructName, goodVariableName } from "../utils";
 import { getType } from "./handle_type";
 import { TLBConstructorBuild, TLBTypeBuild } from "./utils";
 
-export function getField(field: FieldDefinition, slicePrefix: Array<number>, constructor: TLBConstructorBuild, variableCombinatorName: string, variableSubStructName: string, fieldIndex: string): TLBField | undefined {
+export function getField(field: FieldDefinition, constructor: TLBConstructorBuild, fieldIndex: string): TLBField | undefined {
   if (field instanceof FieldAnonymousDef) {
     let result: TLBField = { name: '', anonymous: true, fieldType: { kind: 'TLBBoolType' }, subFields: [] };
     let currentFieldIndex = 0;
     field.fields.forEach(field => {
       let theFieldIndex = fieldIndex + '_' + currentFieldIndex.toString();
-      let subfield = getField(field, slicePrefix, constructor, variableCombinatorName, variableSubStructName, theFieldIndex);
+      let subfield = getField(field, constructor, theFieldIndex);
       if (subfield) {
         result.subFields.push(subfield)
       }
@@ -36,7 +36,7 @@ export function getField(field: FieldDefinition, slicePrefix: Array<number>, con
         return { name: fieldName, anonymous: true, fieldType: { kind: 'TLBExoticType' }, subFields: [] };
       } else {
         let theFieldIndex = fieldIndex + '_' + '0';
-        let subfield = getField(new FieldNamedDef(fieldName, field.expr.expr), slicePrefix, constructor, variableCombinatorName, variableSubStructName, theFieldIndex)
+        let subfield = getField(new FieldNamedDef(fieldName, field.expr.expr), constructor, theFieldIndex)
         if (subfield) {
           let result: TLBField = { name: fieldName, anonymous: true, fieldType: { kind: 'TLBBoolType' }, subFields: [subfield] };
           return result;
@@ -64,14 +64,10 @@ export function fillFields(typeItem: { declaration: Declaration, constructor: TL
   let declaration = typeItem.declaration;
 
   let fieldIndex = -1;
-  let variableCombinatorName = goodVariableName(firstLower(tlbType.name), '0')
-  let subStructName: string = getSubStructName(tlbType, constructor);
-  let variableSubStructName = goodVariableName(firstLower(subStructName), '_' + constructor.name)
-  let slicePrefix: number[] = [0];
 
   declaration.fields.forEach(fieldDecl => {
     fieldIndex++;
-    let field = getField(fieldDecl, slicePrefix, constructor, variableCombinatorName, variableSubStructName, fieldIndex.toString())
+    let field = getField(fieldDecl, constructor, fieldIndex.toString())
     if (field != undefined) {
       constructor.fields.push(field)
     }
