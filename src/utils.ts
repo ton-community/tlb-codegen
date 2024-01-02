@@ -21,7 +21,7 @@ export function bitLen(n: number) {
   return n.toString(2).length;
 }
 
-export function isBadVarName(name: string): boolean {
+export function isNameReserved(name: string): boolean {
   let tsReserved = [
     "abstract",
     "arguments",
@@ -102,14 +102,14 @@ export function isBadVarName(name: string): boolean {
   }
   return false;
 }
-export function goodVariableName(
+export function findNotReservedName(
   name: string,
   possibleSuffix: string = "0"
 ): string {
   if (name.startsWith("slice") || name.startsWith("cell")) {
     name = "_" + name;
   }
-  while (isBadVarName(name)) {
+  while (isNameReserved(name)) {
     name += possibleSuffix;
   }
   return name;

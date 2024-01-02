@@ -9,7 +9,7 @@ import {
   firstLower,
   getCurrentSlice,
   getSubStructName,
-  goodVariableName,
+  findNotReservedName,
 } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
@@ -102,7 +102,7 @@ export class TypescriptGenerator implements CodeGenerator {
     );
   }
   addTlbType(tlbType: TLBType): void {
-    let variableCombinatorName = goodVariableName(
+    let variableCombinatorName = findNotReservedName(
       firstLower(tlbType.name),
       "0"
     );
@@ -120,7 +120,7 @@ export class TypescriptGenerator implements CodeGenerator {
 
       let ctx: ConstructorContext = {
         constructor: constructor,
-        variableSubStructName: goodVariableName(
+        variableSubStructName: findNotReservedName(
           firstLower(constructorTypeName),
           "_" + constructor.name
         ),
@@ -655,7 +655,7 @@ export class TypescriptGenerator implements CodeGenerator {
             id("number"),
             [
               tTypedIdentifier(
-                id(goodVariableName(fieldName)),
+                id(findNotReservedName(fieldName)),
                 id(fieldTypeName)
               ),
             ],

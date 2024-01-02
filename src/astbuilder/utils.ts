@@ -27,7 +27,7 @@ import {
 import { fillFields } from "./handle_field";
 
 import * as crc32 from "crc-32";
-import { goodVariableName } from "../utils";
+import { findNotReservedName } from "../utils";
 
 export type TLBVariableBuild = {
   isConst: boolean;
@@ -366,9 +366,9 @@ export function findAvailableFieldName(
   variablesSet: Set<string>
 ) {
   let index = 0;
-  field.name = goodVariableName(field.name);
+  field.name = findNotReservedName(field.name);
   while (variablesSet.has(field.name)) {
-    field.name = goodVariableName(field.name + "_" + index);
+    field.name = findNotReservedName(field.name + "_" + index);
     index++;
   }
   variablesSet.add(field.name);
