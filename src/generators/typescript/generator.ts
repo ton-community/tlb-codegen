@@ -15,6 +15,7 @@ import {
 } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
+import { checkKindStmt } from "./complex_expr";
 import { storeTagExpression } from "./complex_expr";
 import { storeFunctionStmt } from "./complex_expr";
 import { tEqualExpression } from "./complex_expr";
@@ -180,13 +181,7 @@ export class TypescriptGenerator implements CodeGenerator {
       let storeStatement: Statement = storeFunctionStmt(ctx.constructorStoreStatements);
 
       if (tlbType.constructors.length > 1) {
-        storeStatement = tIfStatement(
-          tEqualExpression(
-            tMemberExpression(id(variableCombinatorName), id("kind")),
-            tStringLiteral(constructorTypeName)
-          ),
-          [storeStatement]
-        );
+        storeStatement = checkKindStmt(variableCombinatorName, constructorTypeName, storeStatement);
       }
       storeStatements.push(storeStatement);
 
@@ -1011,5 +1006,6 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
+
 
 

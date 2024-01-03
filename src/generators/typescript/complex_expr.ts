@@ -1,6 +1,6 @@
 import { TLBConstructor, TLBConstructorTag } from "../../ast";
 import { ConstructorContext } from "./generator";
-import { Expression, Statement, id, tArrowFunctionExpression, tBinaryExpression, tExpressionStatement, tFunctionCall, tMemberExpression, tNumericLiteral, tReturnStatement, tTypedIdentifier } from "./tsgen";
+import { Expression, Statement, id, tArrowFunctionExpression, tBinaryExpression, tExpressionStatement, tFunctionCall, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypedIdentifier } from "./tsgen";
 
 export function tEqualExpression(left: Expression, right: Expression) {
     return tBinaryExpression(left, '==', right)
@@ -18,6 +18,15 @@ export function storeTagExpression(tag: TLBConstructorTag): Statement {
             [tTypedIdentifier(id("builder"), id("Builder"))],
             statements
         )
+    );
+}
+export function checkKindStmt(variableCombinatorName: string, constructorTypeName: string, storeStatement: Statement): Statement {
+    return tIfStatement(
+        tEqualExpression(
+            tMemberExpression(id(variableCombinatorName), id("kind")),
+            tStringLiteral(constructorTypeName)
+        ),
+        [storeStatement]
     );
 }
 
