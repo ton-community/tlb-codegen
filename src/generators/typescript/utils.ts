@@ -11,6 +11,7 @@ import {
   TLBVarExpr,
 } from "../../ast";
 import { getCurrentSlice, getSubStructName } from "../../utils";
+import { tEqualExpression } from "./complex_expr";
 import {
   BinaryExpression,
   Expression,
@@ -130,9 +131,8 @@ export function getNegationDerivationFunctionBody(
       if (tlbType) {
         result.push(
           tIfStatement(
-            tBinaryExpression(
+            tEqualExpression(
               tMemberExpression(id(parameterName), id("kind")),
-              "==",
               tStringLiteral(getSubStructName(tlbType, constructor))
             ),
             statements

@@ -13,6 +13,7 @@ import {
 } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
+import { tEqualExpression } from "./complex_expr";
 import {
   BinaryExpression,
   Expression,
@@ -240,11 +241,10 @@ export class TypescriptGenerator implements CodeGenerator {
             )
           );
           conditions.push(
-            tBinaryExpression(
+            tEqualExpression(
               tFunctionCall(tMemberExpression(id("slice"), id("preloadUint")), [
                 tNumericLiteral(constructor.tag.bitLen),
               ]),
-              "==",
               id(constructor.tag.binary)
             )
           );
@@ -302,9 +302,8 @@ export class TypescriptGenerator implements CodeGenerator {
       );
       if (tlbType.constructors.length > 1) {
         storeStatement = tIfStatement(
-          tBinaryExpression(
+          tEqualExpression(
             tMemberExpression(id(variableCombinatorName), id("kind")),
-            "==",
             tStringLiteral(constructorTypeName)
           ),
           [storeStatement]
