@@ -1746,8 +1746,8 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
     let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
     return {
         kind: 'Hashmap',
-        m: (n - l),
         n: n,
+        m: (n - l),
         label: label,
         l: l,
         node: node,

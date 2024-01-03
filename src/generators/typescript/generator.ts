@@ -142,20 +142,22 @@ export class TypescriptGenerator implements CodeGenerator {
 
       let slicePrefix: number[] = [0];
 
-      constructor.variables.forEach((variable) => {
-        if (variable.negated) {
-          if (variable.deriveExpr) {
-            ctx.constructorLoadProperties.push(
-              tObjectProperty(
-                id(variable.name),
-                convertToAST(variable.deriveExpr, constructor)
-              )
-            );
-          }
-        }
-      });
+    //   constructor.variables.forEach((variable) => {
+        
+    //   });
 
       constructor.variables.forEach((variable) => {
+        if (variable.negated) {
+            if (variable.deriveExpr) {
+              ctx.constructorLoadProperties.push(
+                tObjectProperty(
+                  id(variable.name),
+                  convertToAST(variable.deriveExpr, constructor)
+                )
+              );
+            }
+          }
+
         if (variable.type == "#" && !variable.isField) {
           ctx.constructorProperties.push(
             tTypedIdentifier(id(variable.name), id("number"))

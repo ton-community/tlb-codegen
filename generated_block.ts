@@ -2760,8 +2760,8 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
     let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
     return {
         kind: 'Hashmap',
-        m: (n - l),
         n: n,
+        m: (n - l),
         label: label,
         l: l,
         node: node,
@@ -3087,8 +3087,8 @@ export function loadHashmapAug<X, Y>(slice: Slice, n: number, loadX: (slice: Sli
     let node: HashmapAugNode<X, Y> = loadHashmapAugNode<X, Y>(slice, (n - l), loadX, loadY);
     return {
         kind: 'HashmapAug',
-        m: (n - l),
         n: n,
+        m: (n - l),
         label: label,
         l: l,
         node: node,
@@ -3252,8 +3252,8 @@ export function loadVarHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice)
     let node: VarHashmapNode<X> = loadVarHashmapNode<X>(slice, (n - l), loadX);
     return {
         kind: 'VarHashmap',
-        m: (n - l),
         n: n,
+        m: (n - l),
         label: label,
         l: l,
         node: node,
@@ -3442,8 +3442,8 @@ export function loadPfxHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice)
     let node: PfxHashmapNode<X> = loadPfxHashmapNode<X>(slice, (n - l), loadX);
     return {
         kind: 'PfxHashmap',
-        m: (n - l),
         n: n,
+        m: (n - l),
         label: label,
         l: l,
         node: node,
