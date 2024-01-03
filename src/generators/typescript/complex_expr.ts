@@ -1,6 +1,6 @@
-import { TLBConstructorTag, TLBParameter } from "../../ast";
+import { TLBConstructorTag } from "../../ast";
 import { firstLower, getCurrentSlice } from "../../utils";
-import { Expression, GenDeclaration, Statement, TypedIdentifier, id, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypedIdentifier } from "./tsgen";
+import { BinaryExpression, Expression, GenDeclaration, Statement, TypedIdentifier, id, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypedIdentifier } from "./tsgen";
 
 export function tEqualExpression(left: Expression, right: Expression) {
     return tBinaryExpression(left, '==', right)
@@ -85,5 +85,27 @@ export function loadFunctionParam(varName: string): TypedIdentifier {
         id("load" + varName),
         tArrowFunctionType(typedSlice(), id(varName))
     );
+}
+export function skipTagStmt(bitLen: number): Statement {
+  return tExpressionStatement(
+    tFunctionCall(tMemberExpression(id("slice"), id("loadUint")), [
+      tNumericLiteral(bitLen),
+    ])
+  );
+}
+export function checkTagExpr(tag: TLBConstructorTag): BinaryExpression {
+  return tEqualExpression(
+    tFunctionCall(tMemberExpression(id("slice"), id("preloadUint")), [
+      tNumericLiteral(tag.bitLen),
+    ]),
+    id(tag.binary)
+  );
+}
+export function checkHasBitsForTag(bitLen: number): BinaryExpression {
+  return tBinaryExpression(
+    tMemberExpression(id("slice"), id("remainingBits")),
+    ">=",
+    tNumericLiteral(bitLen)
+  );
 }
 

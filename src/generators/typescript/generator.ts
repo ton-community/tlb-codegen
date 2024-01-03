@@ -20,7 +20,6 @@ import { typedSlice } from "./complex_expr";
 import { checkKindStmt } from "./complex_expr";
 import { storeTagExpression } from "./complex_expr";
 import { storeFunctionStmt } from "./complex_expr";
-import { tEqualExpression } from "./complex_expr";
 import {
   BinaryExpression,
   Expression,
@@ -44,7 +43,6 @@ import {
   tImportDeclaration,
   tMemberExpression,
   tMultiStatement,
-  tNumericLiteral,
   tObjectExpression,
   tObjectProperty,
   tReturnStatement,
@@ -73,6 +71,9 @@ import {
 import { sliceLoad } from "./complex_expr";
 import { storeFunctionParam } from "./complex_expr";
 import { loadFunctionParam } from "./complex_expr";
+import { skipTagStmt } from "./complex_expr";
+import { checkTagExpr } from "./complex_expr";
+import { checkHasBitsForTag } from "./complex_expr";
 
 export type ConstructorContext = {
   constructor: TLBConstructor;
@@ -323,26 +324,13 @@ export class TypescriptGenerator implements CodeGenerator {
       let conditions: Array<BinaryExpression> = [];
       if (constructor.tag.bitLen != 0) {
         conditions.push(
-          tBinaryExpression(
-            tMemberExpression(id("slice"), id("remainingBits")),
-            ">=",
-            tNumericLiteral(constructor.tag.bitLen)
-          )
+          checkHasBitsForTag(constructor.tag.bitLen)
         );
         conditions.push(
-          tEqualExpression(
-            tFunctionCall(tMemberExpression(id("slice"), id("preloadUint")), [
-              tNumericLiteral(constructor.tag.bitLen),
-            ]),
-            id(constructor.tag.binary)
-          )
+          checkTagExpr(constructor.tag)
         );
         let loadBitsStatement: Statement[] = [
-          tExpressionStatement(
-            tFunctionCall(tMemberExpression(id("slice"), id("loadUint")), [
-              tNumericLiteral(constructor.tag.bitLen),
-            ])
-          ),
+          skipTagStmt(constructor.tag.bitLen),
         ];
         ctx.constructorLoadStatements = loadBitsStatement.concat(
           ctx.constructorLoadStatements
@@ -1028,3 +1016,4 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
+
