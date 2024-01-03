@@ -425,47 +425,39 @@ export class TypescriptGenerator implements CodeGenerator {
     let currentCell = getCurrentSlice(slicePrefix, "cell");
 
     if (field.subFields.length > 0) {
-      slicePrefix[slicePrefix.length - 1]++;
-      slicePrefix.push(0);
-
-      ctx.constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice));
-      ctx.constructorStoreStatements.push(newCellStmt(slicePrefix));
-
-      field.subFields.forEach((fieldDef) => {
-        this.handleField(fieldDef, slicePrefix, ctx);
-      });
-
-      ctx.constructorStoreStatements.push(
-        storeRefStmt(slicePrefix, currentCell)
-      );
-
-      slicePrefix.pop();
+      inSeparateRef(slicePrefix, () => {
+        ctx.constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice));
+        ctx.constructorStoreStatements.push(newCellStmt(slicePrefix));
+  
+        field.subFields.forEach((fieldDef) => {
+          this.handleField(fieldDef, slicePrefix, ctx);
+        });
+  
+        ctx.constructorStoreStatements.push(
+          storeRefStmt(slicePrefix, currentCell)
+        );
+      })
     }
 
     if (field.fieldType.kind == "TLBExoticType") {
-      slicePrefix[slicePrefix.length - 1]++;
-      slicePrefix.push(0);
-      ctx.constructorLoadStatements.push(
-        loadRefStmt(slicePrefix, currentSlice)
-      );
-      addLoadProperty(
-        field.name,
-        id(getCurrentSlice(slicePrefix, "cell")),
-        undefined,
-        ctx.constructorLoadStatements,
-        ctx.constructorLoadProperties
-      );
-      ctx.constructorProperties.push(
-        tTypedIdentifier(id(field.name), id("Cell"))
-      );
-      ctx.constructorStoreStatements.push(
-        tExpressionStatement(
-          tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
-            tMemberExpression(id(ctx.variableCombinatorName), id(field.name)),
-          ])
-        )
-      );
-      slicePrefix.pop();
+      inSeparateRef(slicePrefix, () => {
+        ctx.constructorLoadStatements.push(
+          loadRefStmt(slicePrefix, currentSlice)
+        );
+        addLoadProperty(
+          field.name,
+          id(getCurrentSlice(slicePrefix, "cell")),
+          undefined,
+          ctx.constructorLoadStatements,
+          ctx.constructorLoadProperties
+        );
+        ctx.constructorProperties.push(
+          tTypedIdentifier(id(field.name), id("Cell"))
+        );
+        ctx.constructorStoreStatements.push(
+          storeRefObjectStmt(currentCell, ctx, field)
+        );
+      })
     } else if (field.subFields.length == 0) {
       if (field == undefined) {
         throw new Error("");
@@ -972,6 +964,14 @@ export class TypescriptGenerator implements CodeGenerator {
   }
 }
 
+function storeRefObjectStmt(currentCell: string, ctx: ConstructorContext, field: TLBField): Statement {
+  return tExpressionStatement(
+    tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
+      tMemberExpression(id(ctx.variableCombinatorName), id(field.name)),
+    ])
+  );
+}
+
 function loadRefStmt(slicePrefix: number[], currentSlice: string): Statement {
   return tExpressionStatement(
     tDeclareVariable(
@@ -1012,4 +1012,11 @@ function checkConstraintStmt(
       )
     ),
   ]);
+}
+
+function inSeparateRef(slicePrefix: Array<number>, callback: any) {
+  slicePrefix[slicePrefix.length - 1]++;
+  slicePrefix.push(0);
+  callback()
+  slicePrefix.pop();
 }
