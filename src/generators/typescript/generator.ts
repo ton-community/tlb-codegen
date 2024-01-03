@@ -666,26 +666,7 @@ export class TypescriptGenerator implements CodeGenerator {
       let currentParam = insideStoreParameters[0];
       let currentParam2 = insideStoreParameters2[0];
       if (subExprInfo.loadExpr) {
-        result.loadExpr = tFunctionCall(
-          tMemberExpression(
-            tFunctionCall(tMemberExpression(id("Array"), id("from")), [
-              tFunctionCall(
-                tMemberExpression(
-                  tFunctionCall(id("Array"), [arrayLength]),
-                  id("keys")
-                ),
-                []
-              ),
-            ]),
-            id("map")
-          ),
-          [
-            tArrowFunctionExpression(
-              [tTypedIdentifier(id("arg"), id("number"))],
-              [tReturnStatement(subExprInfo.loadExpr)]
-            ),
-          ]
-        );
+        result.loadExpr = loadTupleExpr(arrayLength, subExprInfo.loadExpr);
       }
       if (
         currentParam &&
@@ -694,29 +675,12 @@ export class TypescriptGenerator implements CodeGenerator {
         subExprInfo.storeExpr
       ) {
         if (subExprInfo.storeFunctionExpr && subExprInfo.storeExpr2) {
-          result.storeExpr = tExpressionStatement(
-            tFunctionCall(tMemberExpression(currentParam, id("forEach")), [
-              tArrowFunctionExpression(
-                [tTypedIdentifier(id("arg"), subExprInfo.typeParamExpr)],
-                [subExprInfo.storeExpr2]
-              ),
-            ])
-          ); //subExprInfo.storeExpr;)
-          storeExpr2 = tExpressionStatement(
-            tFunctionCall(tMemberExpression(currentParam2, id("forEach")), [
-              tArrowFunctionExpression(
-                [tTypedIdentifier(id("arg"), subExprInfo.typeParamExpr)],
-                [subExprInfo.storeExpr2]
-              ),
-            ])
-          ); //subExprInfo.storeExpr;
+          result.storeExpr = storeTupleStmt(currentParam, subExprInfo.storeExpr2, subExprInfo.typeParamExpr);
+          storeExpr2 = storeTupleStmt(currentParam2, subExprInfo.storeExpr2, subExprInfo.typeParamExpr)
         }
       }
       if (subExprInfo.typeParamExpr) {
-        result.typeParamExpr = tTypeWithParameters(
-          id("Array"),
-          tTypeParametersExpression([subExprInfo.typeParamExpr])
-        );
+        result.typeParamExpr = arrayedType(subExprInfo.typeParamExpr);
       }
     } else if (fieldType.kind == "TLBCellInsideType") {
       let currentCell = getCurrentSlice([1, 0], "cell");
@@ -931,14 +895,55 @@ export class TypescriptGenerator implements CodeGenerator {
   }
 }
 
-function storeExprCond(currentParam: Expression, storeExpr: Statement): Statement | undefined {
+function arrayedType(typeParamExpr: TypeExpression): TypeExpression {
+  return tTypeWithParameters(
+    id("Array"),
+    tTypeParametersExpression([typeParamExpr])
+  );
+}
+
+function storeTupleStmt(currentParam: Expression, storeExpr: Statement, typeParamExpr: TypeExpression): Statement {
+  return tExpressionStatement(
+    tFunctionCall(tMemberExpression(currentParam, id("forEach")), [
+      tArrowFunctionExpression(
+        [tTypedIdentifier(id("arg"), typeParamExpr)],
+        [storeExpr]
+      ),
+    ])
+  );
+}
+
+function loadTupleExpr(arrayLength: Expression, loadExpr: Expression): Expression {
+  return tFunctionCall(
+    tMemberExpression(
+      tFunctionCall(tMemberExpression(id("Array"), id("from")), [
+        tFunctionCall(
+          tMemberExpression(
+            tFunctionCall(id("Array"), [arrayLength]),
+            id("keys")
+          ),
+          []
+        ),
+      ]),
+      id("map")
+    ),
+    [
+      tArrowFunctionExpression(
+        [tTypedIdentifier(id("arg"), id("number"))],
+        [tReturnStatement(loadExpr)]
+      ),
+    ]
+  );
+}
+
+function storeExprCond(currentParam: Expression, storeExpr: Statement): Statement {
   return tIfStatement(
     tBinaryExpression(currentParam, "!=", id("undefined")),
     [storeExpr]
   );
 }
 
-function storeExpressionNamedType(typeName: string, insideStoreParameters: Expression[], currentCell: string): Statement | undefined {
+function storeExpressionNamedType(typeName: string, insideStoreParameters: Expression[], currentCell: string): Statement {
   return tExpressionStatement(
     tFunctionCall(
       tFunctionCall(id("store" + typeName), insideStoreParameters),
