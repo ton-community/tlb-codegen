@@ -33,7 +33,6 @@ import {
   TypeParametersExpression,
   TypedIdentifier,
   tArrowFunctionExpression,
-  tArrowFunctionType,
   tBinaryExpression,
   tComment,
   tDeclareVariable,
@@ -72,6 +71,8 @@ import {
   isBigInt,
 } from "./utils";
 import { sliceLoad } from "./complex_expr";
+import { storeFunctionParam } from "./complex_expr";
+import { loadFunctionParam } from "./complex_expr";
 
 export type ConstructorContext = {
   constructor: TLBConstructor;
@@ -215,52 +216,7 @@ export class TypescriptGenerator implements CodeGenerator {
       tTypedIdentifier(id(variableCombinatorName), currentType),
     ];
 
-    let anyConstructor = tlbType.constructors[0];
-    if (anyConstructor) {
-      anyConstructor.parameters.forEach((element) => {
-        if (element.variable.type == "Type") {
-          loadFunctionParameters.push(
-            tTypedIdentifier(
-              id("load" + element.variable.name),
-              tArrowFunctionType(typedSlice(), id(element.variable.name))
-            )
-          );
-
-          storeFunctionParameters.push(
-            tTypedIdentifier(
-              id("store" + element.variable.name),
-              tArrowFunctionType(
-                [
-                  tTypedIdentifier(
-                    id(firstLower(element.variable.name)),
-                    id(element.variable.name)
-                  ),
-                ],
-                tArrowFunctionType(
-                  [tTypedIdentifier(id("builder"), id("Builder"))],
-                  id("void")
-                )
-              )
-            )
-          );
-        }
-        if (element.variable.type == "#" && !element.variable.negated) {
-          if (element.argName) {
-            loadFunctionParameters.push(
-              tTypedIdentifier(id(element.argName), id("number"))
-            );
-          } else {
-            loadFunctionParameters.push(
-              tTypedIdentifier(id(element.variable.name), id("number"))
-            );
-          }
-        }
-      });
-    } else {
-      throw new Error(
-        `Type ${tlbType.name} should have at least one constructor`
-      );
-    }
+    this.addFunctionParameters(tlbType, loadFunctionParameters, storeFunctionParameters);
 
     let loadFunction = tFunctionDeclaration(
       id("load" + tlbType.name),
@@ -290,6 +246,38 @@ export class TypescriptGenerator implements CodeGenerator {
     this.jsCodeFunctionsDeclarations.push(loadFunction);
     this.jsCodeFunctionsDeclarations.push(storeFunction);
   }
+
+    private addFunctionParameters(tlbType: TLBType, loadFunctionParameters: TypedIdentifier[], storeFunctionParameters: TypedIdentifier[]) {
+        let anyConstructor = tlbType.constructors[0];
+        if (anyConstructor) {
+            anyConstructor.parameters.forEach((element) => {
+                if (element.variable.type == "Type") {
+                    loadFunctionParameters.push(
+                        loadFunctionParam(element)
+                    );
+
+                    storeFunctionParameters.push(
+                        storeFunctionParam(element)
+                    );
+                }
+                if (element.variable.type == "#" && !element.variable.negated) {
+                    if (element.argName) {
+                        loadFunctionParameters.push(
+                            tTypedIdentifier(id(element.argName), id("number"))
+                        );
+                    } else {
+                        loadFunctionParameters.push(
+                            tTypedIdentifier(id(element.variable.name), id("number"))
+                        );
+                    }
+                }
+            });
+        } else {
+            throw new Error(
+                `Type ${tlbType.name} should have at least one constructor`
+            );
+        }
+    }
 
   private addExceptionStmts(
     tlbType: TLBType,
@@ -1034,3 +1022,4 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
+

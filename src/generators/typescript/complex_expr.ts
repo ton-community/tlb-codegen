@@ -1,6 +1,6 @@
-import { TLBConstructorTag } from "../../ast";
-import { getCurrentSlice } from "../../utils";
-import { Expression, GenDeclaration, Statement, id, tArrowFunctionExpression, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypedIdentifier } from "./tsgen";
+import { TLBConstructorTag, TLBParameter } from "../../ast";
+import { firstLower, getCurrentSlice } from "../../utils";
+import { Expression, GenDeclaration, Statement, TypedIdentifier, id, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypedIdentifier } from "./tsgen";
 
 export function tEqualExpression(left: Expression, right: Expression) {
     return tBinaryExpression(left, '==', right)
@@ -62,5 +62,28 @@ export function simpleCycle(varName: string, finish: Expression): Statement {
     tNumericLiteral(5),
     []
   );
+}
+export function storeFunctionParam(element: TLBParameter): TypedIdentifier {
+    return tTypedIdentifier(
+        id("store" + element.variable.name),
+        tArrowFunctionType(
+            [
+                tTypedIdentifier(
+                    id(firstLower(element.variable.name)),
+                    id(element.variable.name)
+                ),
+            ],
+            tArrowFunctionType(
+                [tTypedIdentifier(id("builder"), id("Builder"))],
+                id("void")
+            )
+        )
+    );
+}
+export function loadFunctionParam(element: TLBParameter): TypedIdentifier {
+    return tTypedIdentifier(
+        id("load" + element.variable.name),
+        tArrowFunctionType(typedSlice(), id(element.variable.name))
+    );
 }
 
