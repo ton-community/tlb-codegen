@@ -16,6 +16,7 @@ import {
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
 import { storeTagExpression } from "./complex_expr";
+import { storeFunctionStmt } from "./complex_expr";
 import { tEqualExpression } from "./complex_expr";
 import {
   BinaryExpression,
@@ -69,7 +70,7 @@ import {
   sliceLoad,
 } from "./utils";
 
-type ConstructorContext = {
+export type ConstructorContext = {
   constructor: TLBConstructor;
   constructorLoadStatements: Statement[];
   constructorStoreStatements: Statement[];
@@ -176,12 +177,8 @@ export class TypescriptGenerator implements CodeGenerator {
         ctx.constructorStoreStatements.splice(0, 0, storeTagExpression(constructor.tag))
       }
       
-      let storeStatement: Statement = tReturnStatement(
-        tArrowFunctionExpression(
-          [tTypedIdentifier(id("builder"), id("Builder"))],
-          ctx.constructorStoreStatements
-        )
-      );
+      let storeStatement: Statement = storeFunctionStmt(ctx.constructorStoreStatements);
+
       if (tlbType.constructors.length > 1) {
         storeStatement = tIfStatement(
           tEqualExpression(
@@ -1014,4 +1011,5 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
+
 
