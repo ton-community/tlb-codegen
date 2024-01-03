@@ -70,8 +70,8 @@ import {
   getParamVarExpr,
   getTypeParametersExpression,
   isBigInt,
-  sliceLoad,
 } from "./utils";
+import { sliceLoad } from "./complex_expr";
 
 export type ConstructorContext = {
   constructor: TLBConstructor;

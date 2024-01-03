@@ -1,5 +1,6 @@
 import { TLBConstructorTag } from "../../ast";
-import { Expression, GenDeclaration, Statement, id, tArrowFunctionExpression, tBinaryExpression, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypedIdentifier } from "./tsgen";
+import { getCurrentSlice } from "../../utils";
+import { Expression, GenDeclaration, Statement, id, tArrowFunctionExpression, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypedIdentifier } from "./tsgen";
 
 export function tEqualExpression(left: Expression, right: Expression) {
     return tBinaryExpression(left, '==', right)
@@ -39,5 +40,27 @@ export function bitlenFunctionDecl(): GenDeclaration {
 }
 export function typedSlice() {
     return [tTypedIdentifier(id("slice"), id("Slice"))];
+}
+export function sliceLoad(slicePrefix: number[], currentSlice: string) {
+  return tExpressionStatement(
+    tDeclareVariable(
+      id(getCurrentSlice(slicePrefix, "slice")),
+      tFunctionCall(
+        tMemberExpression(
+          tFunctionCall(tMemberExpression(id(currentSlice), id("loadRef")), []),
+          id("beginParse")
+        ),
+        []
+      )
+    )
+  );
+}
+export function simpleCycle(varName: string, finish: Expression): Statement {
+  return tForCycle(
+    tDeclareVariable(id(varName), tNumericLiteral(0)),
+    tBinaryExpression(id(varName), "<", finish),
+    tNumericLiteral(5),
+    []
+  );
 }
 

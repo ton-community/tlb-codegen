@@ -10,7 +10,7 @@ import {
   TLBUnaryOp,
   TLBVarExpr,
 } from "../../ast";
-import { getCurrentSlice, getSubStructName } from "../../utils";
+import { getSubStructName } from "../../utils";
 import { tEqualExpression } from "./complex_expr";
 import {
   BinaryExpression,
@@ -22,7 +22,6 @@ import {
   tBinaryExpression,
   tDeclareVariable,
   tExpressionStatement,
-  tForCycle,
   tFunctionCall,
   id,
   tIfStatement,
@@ -51,30 +50,6 @@ export type ExprForParam = {
   fieldLoadSuffix: string;
   fieldStoreSuffix: string;
 };
-
-export function sliceLoad(slicePrefix: number[], currentSlice: string) {
-  return tExpressionStatement(
-    tDeclareVariable(
-      id(getCurrentSlice(slicePrefix, "slice")),
-      tFunctionCall(
-        tMemberExpression(
-          tFunctionCall(tMemberExpression(id(currentSlice), id("loadRef")), []),
-          id("beginParse")
-        ),
-        []
-      )
-    )
-  );
-}
-
-export function simpleCycle(varName: string, finish: Expression): Statement {
-  return tForCycle(
-    tDeclareVariable(id(varName), tNumericLiteral(0)),
-    tBinaryExpression(id(varName), "<", finish),
-    tNumericLiteral(5),
-    []
-  );
-}
 
 export function getParamVarExpr(
   param: TLBParameter,
