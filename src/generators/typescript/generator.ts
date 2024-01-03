@@ -99,9 +99,7 @@ export class TypescriptGenerator implements CodeGenerator {
     );
   }
   addBitLenFunction() {
-    this.jsCodeDeclarations.push(
-      bitlenFunctionDecl()
-    );
+    this.jsCodeDeclarations.push(bitlenFunctionDecl());
   }
   addTlbType(tlbType: TLBType): void {
     let variableCombinatorName = findNotReservedName(
@@ -162,22 +160,42 @@ export class TypescriptGenerator implements CodeGenerator {
       );
 
       constructor.constraints.forEach((constraint) => {
-        this.genCodeForConstraint(constraint, constructor, variableCombinatorName, tlbType, ctx);
+        this.genCodeForConstraint(
+          constraint,
+          variableCombinatorName,
+          tlbType,
+          ctx
+        );
       });
 
       ctx.constructorLoadStatements.push(
         tReturnStatement(tObjectExpression(ctx.constructorLoadProperties))
       );
-      loadStatements = this.constructorStmtsToTypeStmts(constructor, tlbType, ctx, loadStatements);
+      loadStatements = this.constructorStmtsToTypeStmts(
+        constructor,
+        tlbType,
+        ctx,
+        loadStatements
+      );
 
       if (constructor.tag.bitLen != 0) {
-        ctx.constructorStoreStatements.splice(0, 0, storeTagExpression(constructor.tag))
+        ctx.constructorStoreStatements.splice(
+          0,
+          0,
+          storeTagExpression(constructor.tag)
+        );
       }
-      
-      let storeStatement: Statement = storeFunctionStmt(ctx.constructorStoreStatements);
+
+      let storeStatement: Statement = storeFunctionStmt(
+        ctx.constructorStoreStatements
+      );
 
       if (tlbType.constructors.length > 1) {
-        storeStatement = checkKindStmt(variableCombinatorName, constructorTypeName, storeStatement);
+        storeStatement = checkKindStmt(
+          variableCombinatorName,
+          constructorTypeName,
+          storeStatement
+        );
       }
       storeStatements.push(storeStatement);
 
@@ -189,11 +207,12 @@ export class TypescriptGenerator implements CodeGenerator {
     this.addExceptionStmts(tlbType, loadStatements, storeStatements);
 
     let loadFunctionParameters = typedSlice();
+    const currentType = tTypeWithParameters(
+      id(tlbType.name),
+      structTypeParametersExpr
+    );
     let storeFunctionParameters = [
-      tTypedIdentifier(
-        id(variableCombinatorName),
-        tTypeWithParameters(id(tlbType.name), structTypeParametersExpr)
-      ),
+      tTypedIdentifier(id(variableCombinatorName), currentType),
     ];
 
     let anyConstructor = tlbType.constructors[0];
@@ -203,10 +222,7 @@ export class TypescriptGenerator implements CodeGenerator {
           loadFunctionParameters.push(
             tTypedIdentifier(
               id("load" + element.variable.name),
-              tArrowFunctionType(
-                typedSlice(),
-                id(element.variable.name)
-              )
+              tArrowFunctionType(typedSlice(), id(element.variable.name))
             )
           );
 
@@ -249,7 +265,7 @@ export class TypescriptGenerator implements CodeGenerator {
     let loadFunction = tFunctionDeclaration(
       id("load" + tlbType.name),
       structTypeParametersExpr,
-      tTypeWithParameters(id(tlbType.name), structTypeParametersExpr),
+      currentType,
       loadFunctionParameters,
       loadStatements
     );
@@ -263,11 +279,9 @@ export class TypescriptGenerator implements CodeGenerator {
     );
 
     if (tlbType.constructors.length > 1) {
-      let unionTypeDecl = tUnionTypeDeclaration(
-        tTypeWithParameters(id(tlbType.name), structTypeParametersExpr),
-        tUnionTypeExpression(typeUnion)
+      this.jsCodeConstructorDeclarations.push(
+        tUnionTypeDeclaration(currentType, tUnionTypeExpression(typeUnion))
       );
-      this.jsCodeConstructorDeclarations.push(unionTypeDecl);
     }
     constructorsDeclarations.forEach((element) => {
       this.jsCodeConstructorDeclarations.push(element);
@@ -277,148 +291,170 @@ export class TypescriptGenerator implements CodeGenerator {
     this.jsCodeFunctionsDeclarations.push(storeFunction);
   }
 
-    private addExceptionStmts(tlbType: TLBType, loadStatements: Statement[], storeStatements: Statement[]) {
-        let exceptionTypesComment = tlbType.constructors
-            .map((constructor) => {
-                return `"${getSubStructName(tlbType, constructor)}"`;
-            })
-            .join(", ");
-        let exceptionComment = tExpressionStatement(
-            id(
-                "throw new Error('" +
-                `Expected one of ${exceptionTypesComment} in loading "${tlbType.name}", but data does not satisfy any constructor` +
-                "')"
+  private addExceptionStmts(
+    tlbType: TLBType,
+    loadStatements: Statement[],
+    storeStatements: Statement[]
+  ) {
+    let exceptionTypesComment = tlbType.constructors
+      .map((constructor) => {
+        return `"${getSubStructName(tlbType, constructor)}"`;
+      })
+      .join(", ");
+    let exceptionComment = tExpressionStatement(
+      id(
+        "throw new Error('" +
+          `Expected one of ${exceptionTypesComment} in loading "${tlbType.name}", but data does not satisfy any constructor` +
+          "')"
+      )
+    );
+    if (
+      tlbType.constructors.length > 1 ||
+      tlbType.constructors.at(0)?.tag.bitLen != 0
+    ) {
+      loadStatements.push(exceptionComment);
+    }
+    if (tlbType.constructors.length > 1) {
+      storeStatements.push(exceptionComment);
+    }
+  }
+
+  private constructorStmtsToTypeStmts(
+    constructor: TLBConstructor,
+    tlbType: TLBType,
+    ctx: ConstructorContext,
+    loadStatements: Statement[]
+  ) {
+    if (constructor.tag.bitLen != 0 || tlbType.constructors.length > 1) {
+      let conditions: Array<BinaryExpression> = [];
+      if (constructor.tag.bitLen != 0) {
+        conditions.push(
+          tBinaryExpression(
+            tMemberExpression(id("slice"), id("remainingBits")),
+            ">=",
+            tNumericLiteral(constructor.tag.bitLen)
+          )
+        );
+        conditions.push(
+          tEqualExpression(
+            tFunctionCall(tMemberExpression(id("slice"), id("preloadUint")), [
+              tNumericLiteral(constructor.tag.bitLen),
+            ]),
+            id(constructor.tag.binary)
+          )
+        );
+        let loadBitsStatement: Statement[] = [
+          tExpressionStatement(
+            tFunctionCall(tMemberExpression(id("slice"), id("loadUint")), [
+              tNumericLiteral(constructor.tag.bitLen),
+            ])
+          ),
+        ];
+        ctx.constructorLoadStatements = loadBitsStatement.concat(
+          ctx.constructorLoadStatements
+        );
+      }
+      constructor.parameters.forEach((param) => {
+        if (param.variable.isConst && !param.variable.negated) {
+          let argName = param.variable.name;
+          if (param.argName) {
+            argName = param.argName;
+          }
+          conditions.push(
+            tBinaryExpression(
+              id(argName),
+              "==",
+              getParamVarExpr(param, constructor)
             )
+          );
+        }
+      });
+      loadStatements.push(
+        tIfStatement(getCondition(conditions), ctx.constructorLoadStatements)
+      );
+    } else {
+      loadStatements = loadStatements.concat(ctx.constructorLoadStatements);
+    }
+    return loadStatements;
+  }
+
+  private genCodeForConstraint(
+    constraint: TLBMathExpr,
+    variableCombinatorName: string,
+    tlbType: TLBType,
+    ctx: ConstructorContext
+  ) {
+    let loadConstraintAST = convertToAST(constraint, ctx.constructor);
+    let storeConstraintAST = convertToAST(
+      constraint,
+      ctx.constructor,
+      id(variableCombinatorName)
+    );
+    let exceptionCommentLastPart = ` is not satisfied while loading "${getSubStructName(
+      tlbType,
+      ctx.constructor
+    )}" for type "${tlbType.name}"`;
+    ctx.constructorLoadStatements.push(
+      tIfStatement(tUnaryOpExpression("!", loadConstraintAST), [
+        tExpressionStatement(
+          id(
+            "throw new Error('Condition " +
+              toCode(loadConstraintAST).code +
+              exceptionCommentLastPart +
+              "')"
+          )
+        ),
+      ])
+    );
+    ctx.constructorStoreStatements.push(
+      tIfStatement(tUnaryOpExpression("!", storeConstraintAST), [
+        tExpressionStatement(
+          id(
+            "throw new Error('Condition " +
+              toCode(storeConstraintAST).code +
+              exceptionCommentLastPart +
+              "')"
+          )
+        ),
+      ])
+    );
+  }
+
+  private addVarToConstructorLoadProperty(
+    variable: TLBVariable,
+    ctx: ConstructorContext,
+    constructor: TLBConstructor
+  ) {
+    if (variable.negated) {
+      if (variable.deriveExpr) {
+        ctx.constructorLoadProperties.push(
+          tObjectProperty(
+            id(variable.name),
+            convertToAST(variable.deriveExpr, constructor)
+          )
         );
-        if (tlbType.constructors.length > 1 ||
-            tlbType.constructors.at(0)?.tag.bitLen != 0) {
-            loadStatements.push(exceptionComment);
-        }
-        if (tlbType.constructors.length > 1) {
-            storeStatements.push(exceptionComment);
-        }
+      }
     }
 
-    private constructorStmtsToTypeStmts(constructor: TLBConstructor, tlbType: TLBType, ctx: ConstructorContext, loadStatements: Statement[]) {
-        if (constructor.tag.bitLen != 0 || tlbType.constructors.length > 1) {
-            let conditions: Array<BinaryExpression> = [];
-            if (constructor.tag.bitLen != 0) {
-                conditions.push(
-                    tBinaryExpression(
-                        tMemberExpression(id("slice"), id("remainingBits")),
-                        ">=",
-                        tNumericLiteral(constructor.tag.bitLen)
-                    )
-                );
-                conditions.push(
-                    tEqualExpression(
-                        tFunctionCall(tMemberExpression(id("slice"), id("preloadUint")), [
-                            tNumericLiteral(constructor.tag.bitLen),
-                        ]),
-                        id(constructor.tag.binary)
-                    )
-                );
-                let loadBitsStatement: Statement[] = [
-                    tExpressionStatement(
-                        tFunctionCall(tMemberExpression(id("slice"), id("loadUint")), [
-                            tNumericLiteral(constructor.tag.bitLen),
-                        ])
-                    ),
-                ];
-                ctx.constructorLoadStatements = loadBitsStatement.concat(
-                    ctx.constructorLoadStatements
-                );
-            }
-            constructor.parameters.forEach((param) => {
-                if (param.variable.isConst && !param.variable.negated) {
-                    let argName = param.variable.name;
-                    if (param.argName) {
-                        argName = param.argName;
-                    }
-                    conditions.push(
-                        tBinaryExpression(
-                            id(argName),
-                            "==",
-                            getParamVarExpr(param, constructor)
-                        )
-                    );
-                }
-            });
-            loadStatements.push(
-                tIfStatement(getCondition(conditions), ctx.constructorLoadStatements)
-            );
-        } else {
-            loadStatements = loadStatements.concat(ctx.constructorLoadStatements);
-        }
-        return loadStatements;
-    }
-
-    private genCodeForConstraint(constraint: TLBMathExpr, constructor: TLBConstructor, variableCombinatorName: string, tlbType: TLBType, ctx: ConstructorContext) {
-        let loadConstraintAST = convertToAST(constraint, constructor);
-        let storeConstraintAST = convertToAST(
-            constraint,
-            constructor,
-            id(variableCombinatorName)
+    if (variable.type == "#" && !variable.isField) {
+      ctx.constructorProperties.push(
+        tTypedIdentifier(id(variable.name), id("number"))
+      );
+      let parameter = constructor.parametersMap.get(variable.name);
+      if (
+        parameter &&
+        !parameter.variable.isConst &&
+        !parameter.variable.negated
+      ) {
+        ctx.constructorLoadProperties.push(
+          tObjectProperty(
+            id(variable.name),
+            getParamVarExpr(parameter, constructor)
+          )
         );
-        let exceptionCommentLastPart = ` is not satisfied while loading "${getSubStructName(
-            tlbType,
-            constructor
-        )}" for type "${tlbType.name}"`;
-        ctx.constructorLoadStatements.push(
-            tIfStatement(tUnaryOpExpression("!", loadConstraintAST), [
-                tExpressionStatement(
-                    id(
-                        "throw new Error('Condition " +
-                        toCode(loadConstraintAST).code +
-                        exceptionCommentLastPart +
-                        "')"
-                    )
-                ),
-            ])
-        );
-        ctx.constructorStoreStatements.push(
-            tIfStatement(tUnaryOpExpression("!", storeConstraintAST), [
-                tExpressionStatement(
-                    id(
-                        "throw new Error('Condition " +
-                        toCode(storeConstraintAST).code +
-                        exceptionCommentLastPart +
-                        "')"
-                    )
-                ),
-            ])
-        );
+      }
     }
-
-    private addVarToConstructorLoadProperty(variable: TLBVariable, ctx: ConstructorContext, constructor: TLBConstructor) {
-        if (variable.negated) {
-            if (variable.deriveExpr) {
-                ctx.constructorLoadProperties.push(
-                    tObjectProperty(
-                        id(variable.name),
-                        convertToAST(variable.deriveExpr, constructor)
-                    )
-                );
-            }
-        }
-
-        if (variable.type == "#" && !variable.isField) {
-            ctx.constructorProperties.push(
-                tTypedIdentifier(id(variable.name), id("number"))
-            );
-            let parameter = constructor.parametersMap.get(variable.name);
-            if (parameter &&
-                !parameter.variable.isConst &&
-                !parameter.variable.negated) {
-                ctx.constructorLoadProperties.push(
-                    tObjectProperty(
-                        id(variable.name),
-                        getParamVarExpr(parameter, constructor)
-                    )
-                );
-            }
-        }
-    }
+  }
 
   toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): CodeBuilder {
     return toCode(node, code);
@@ -802,10 +838,10 @@ export class TypescriptGenerator implements CodeGenerator {
         result.typeParamExpr = subExprInfo.typeParamExpr;
         result.storeExpr = subExprInfo.storeExpr;
         result.negatedVariablesLoads = subExprInfo.negatedVariablesLoads;
-        result.loadFunctionExpr = tArrowFunctionExpression(
-          typedSlice(),
-          [sliceLoad([1, 0], "slice"), tReturnStatement(subExprInfo.loadExpr)]
-        );
+        result.loadFunctionExpr = tArrowFunctionExpression(typedSlice(), [
+          sliceLoad([1, 0], "slice"),
+          tReturnStatement(subExprInfo.loadExpr),
+        ]);
         result.loadExpr = tFunctionCall(result.loadFunctionExpr, [
           id(theSlice),
         ]);
@@ -931,10 +967,9 @@ export class TypescriptGenerator implements CodeGenerator {
       );
       if (exprForParam.paramType == "Slice") {
         result.loadExpr = id(currentSlice);
-        result.loadFunctionExpr = tArrowFunctionExpression(
-          typedSlice(),
-          [tReturnStatement(id("slice"))]
-        );
+        result.loadFunctionExpr = tArrowFunctionExpression(typedSlice(), [
+          tReturnStatement(id("slice")),
+        ]);
       }
       result.typeParamExpr = id(exprForParam.paramType);
       result.storeExpr = tExpressionStatement(
@@ -959,10 +994,9 @@ export class TypescriptGenerator implements CodeGenerator {
 
     if (result.loadExpr && !result.loadFunctionExpr) {
       if (result.loadExpr.type == "FunctionCall") {
-        result.loadFunctionExpr = tArrowFunctionExpression(
-          typedSlice(),
-          [tReturnStatement(result.loadExpr)]
-        );
+        result.loadFunctionExpr = tArrowFunctionExpression(typedSlice(), [
+          tReturnStatement(result.loadExpr),
+        ]);
       } else {
         result.loadFunctionExpr = result.loadExpr;
       }
@@ -1000,4 +1034,3 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
-
