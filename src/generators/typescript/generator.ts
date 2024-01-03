@@ -172,18 +172,14 @@ export class TypescriptGenerator implements CodeGenerator {
       loadStatements = this.constructorStmtsToTypeStmts(constructor, tlbType, ctx, loadStatements);
 
       if (constructor.tag.bitLen != 0) {
-        let preStoreStatement: Statement[] = [
-          tExpressionStatement(
+        ctx.constructorStoreStatements.splice(0, 0, tExpressionStatement(
             tFunctionCall(tMemberExpression(id("builder"), id("storeUint")), [
               id(constructor.tag.binary),
               tNumericLiteral(constructor.tag.bitLen),
             ])
-          ),
-        ];
-        ctx.constructorStoreStatements = preStoreStatement.concat(
-          ctx.constructorStoreStatements
-        );
+          ))
       }
+      
       let storeStatement: Statement = tReturnStatement(
         tArrowFunctionExpression(
           [tTypedIdentifier(id("builder"), id("Builder"))],
@@ -205,8 +201,6 @@ export class TypescriptGenerator implements CodeGenerator {
 
       this.jsCodeFunctionsDeclarations.push(tComment(constructor.declaration));
     });
-
-    // loadTheType: (slice: Slice) => TheType
 
     let exceptionTypesComment = tlbType.constructors
       .map((constructor) => {
