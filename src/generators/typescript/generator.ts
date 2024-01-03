@@ -15,6 +15,7 @@ import {
 } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
+import { bitlenFunctionDecl } from "./complex_expr";
 import { checkKindStmt } from "./complex_expr";
 import { storeTagExpression } from "./complex_expr";
 import { storeFunctionStmt } from "./complex_expr";
@@ -98,13 +99,7 @@ export class TypescriptGenerator implements CodeGenerator {
   }
   addBitLenFunction() {
     this.jsCodeDeclarations.push(
-      tFunctionDeclaration(
-        id("bitLen"),
-        tTypeParametersExpression([]),
-        null,
-        [tTypedIdentifier(id("n"), id("number"))],
-        [tExpressionStatement(id("return n.toString(2).length;"))]
-      )
+      bitlenFunctionDecl()
     );
   }
   addTlbType(tlbType: TLBType): void {
@@ -1006,6 +1001,7 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
+
 
 
 

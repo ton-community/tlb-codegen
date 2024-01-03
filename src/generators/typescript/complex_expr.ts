@@ -1,6 +1,5 @@
-import { TLBConstructor, TLBConstructorTag } from "../../ast";
-import { ConstructorContext } from "./generator";
-import { Expression, Statement, id, tArrowFunctionExpression, tBinaryExpression, tExpressionStatement, tFunctionCall, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypedIdentifier } from "./tsgen";
+import { TLBConstructorTag } from "../../ast";
+import { Expression, GenDeclaration, Statement, id, tArrowFunctionExpression, tBinaryExpression, tExpressionStatement, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tNumericLiteral, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypedIdentifier } from "./tsgen";
 
 export function tEqualExpression(left: Expression, right: Expression) {
     return tBinaryExpression(left, '==', right)
@@ -27,6 +26,15 @@ export function checkKindStmt(variableCombinatorName: string, constructorTypeNam
             tStringLiteral(constructorTypeName)
         ),
         [storeStatement]
+    );
+}
+export function bitlenFunctionDecl(): GenDeclaration {
+    return tFunctionDeclaration(
+        id("bitLen"),
+        tTypeParametersExpression([]),
+        null,
+        [tTypedIdentifier(id("n"), id("number"))],
+        [tExpressionStatement(id("return n.toString(2).length;"))]
     );
 }
 
