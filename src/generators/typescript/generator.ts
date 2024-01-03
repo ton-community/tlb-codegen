@@ -56,6 +56,7 @@ import {
   tUnionTypeDeclaration,
   tUnionTypeExpression,
   toCode,
+  Identifier,
 } from "./tsgen";
 import {
   ExprForParam,
@@ -598,23 +599,7 @@ export class TypescriptGenerator implements CodeGenerator {
       if (field.fieldType.kind == "TLBNamedType") {
         let fieldTypeName = field.fieldType.name;
         this.jsCodeFunctionsDeclarations.push(
-          tFunctionDeclaration(
-            getParameterFunctionId,
-            tTypeParametersExpression([]),
-            id("number"),
-            [
-              tTypedIdentifier(
-                id(findNotReservedName(fieldName)),
-                id(fieldTypeName)
-              ),
-            ],
-            getNegationDerivationFunctionBody(
-              this.tlbCode,
-              fieldTypeName,
-              argIndex,
-              fieldName
-            )
-          )
+          negationDerivationFuncDecl(this.tlbCode, getParameterFunctionId, fieldName, fieldTypeName, argIndex)
         );
       }
       result.negatedVariablesLoads.push({
@@ -629,18 +614,8 @@ export class TypescriptGenerator implements CodeGenerator {
       result.typeParamExpr = id(typeName);
       if (isField) {
         result.loadExpr = tFunctionCall(id("load" + typeName), [id(theSlice)]);
-        result.storeExpr = tExpressionStatement(
-          tFunctionCall(
-            tFunctionCall(id("store" + typeName), insideStoreParameters),
-            [id(currentCell)]
-          )
-        );
-        storeExpr2 = tExpressionStatement(
-          tFunctionCall(
-            tFunctionCall(id("store" + typeName), insideStoreParameters2),
-            [id(currentCell)]
-          )
-        );
+        result.storeExpr = storeExpressionNamedType(typeName, insideStoreParameters, currentCell);
+        storeExpr2 = storeExpressionNamedType(typeName, insideStoreParameters2, currentCell);
       } else {
         result.loadExpr = id("load" + typeName);
         result.storeExpr = tExpressionStatement(id("store" + typeName));
@@ -673,14 +648,8 @@ export class TypescriptGenerator implements CodeGenerator {
       let currentParam = insideStoreParameters[0];
       let currentParam2 = insideStoreParameters2[0];
       if (currentParam && currentParam2 && subExprInfo.storeExpr) {
-        result.storeExpr = tIfStatement(
-          tBinaryExpression(currentParam, "!=", id("undefined")),
-          [subExprInfo.storeExpr]
-        );
-        storeExpr2 = tIfStatement(
-          tBinaryExpression(currentParam2, "!=", id("undefined")),
-          [subExprInfo.storeExpr]
-        );
+        result.storeExpr = storeExprCond(currentParam, subExprInfo.storeExpr);
+        storeExpr2 = storeExprCond(currentParam2, subExprInfo.storeExpr);
       }
     } else if (fieldType.kind == "TLBMultipleType") {
       let arrayLength: Expression;
@@ -962,6 +931,22 @@ export class TypescriptGenerator implements CodeGenerator {
   }
 }
 
+function storeExprCond(currentParam: Expression, storeExpr: Statement): Statement | undefined {
+  return tIfStatement(
+    tBinaryExpression(currentParam, "!=", id("undefined")),
+    [storeExpr]
+  );
+}
+
+function storeExpressionNamedType(typeName: string, insideStoreParameters: Expression[], currentCell: string): Statement | undefined {
+  return tExpressionStatement(
+    tFunctionCall(
+      tFunctionCall(id("store" + typeName), insideStoreParameters),
+      [id(currentCell)]
+    )
+  );
+}
+
 function storeRefObjectStmt(currentCell: string, ctx: ConstructorContext, field: TLBField): Statement {
   return tExpressionStatement(
     tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
@@ -1017,4 +1002,25 @@ function inSeparateRef(slicePrefix: Array<number>, callback: any) {
   slicePrefix.push(0);
   callback()
   slicePrefix.pop();
+}
+
+
+function negationDerivationFuncDecl(tlbCode: TLBCode, getParameterFunctionId: Identifier, fieldName: string, fieldTypeName: string, argIndex: number): GenDeclaration {
+  return tFunctionDeclaration(
+    getParameterFunctionId,
+    tTypeParametersExpression([]),
+    id("number"),
+    [
+      tTypedIdentifier(
+        id(findNotReservedName(fieldName)),
+        id(fieldTypeName)
+      ),
+    ],
+    getNegationDerivationFunctionBody(
+      tlbCode,
+      fieldTypeName,
+      argIndex,
+      fieldName
+    )
+  );
 }
