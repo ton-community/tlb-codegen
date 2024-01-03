@@ -37,4 +37,7 @@ export function bitlenFunctionDecl(): GenDeclaration {
         [tExpressionStatement(id("return n.toString(2).length;"))]
     );
 }
+export function typedSlice() {
+    return [tTypedIdentifier(id("slice"), id("Slice"))];
+}
 

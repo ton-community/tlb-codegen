@@ -16,6 +16,7 @@ import {
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
 import { bitlenFunctionDecl } from "./complex_expr";
+import { typedSlice } from "./complex_expr";
 import { checkKindStmt } from "./complex_expr";
 import { storeTagExpression } from "./complex_expr";
 import { storeFunctionStmt } from "./complex_expr";
@@ -185,33 +186,9 @@ export class TypescriptGenerator implements CodeGenerator {
       this.jsCodeFunctionsDeclarations.push(tComment(constructor.declaration));
     });
 
-    let exceptionTypesComment = tlbType.constructors
-      .map((constructor) => {
-        return `"${getSubStructName(tlbType, constructor)}"`;
-      })
-      .join(", ");
-    let exceptionComment = tExpressionStatement(
-      id(
-        "throw new Error('" +
-          `Expected one of ${exceptionTypesComment} in loading "${tlbType.name}", but data does not satisfy any constructor` +
-          "')"
-      )
-    );
-    if (
-      tlbType.constructors.length > 1 ||
-      tlbType.constructors.at(0)?.tag.bitLen != 0
-    ) {
-      let neededTypesComment = "";
-      tlbType.constructors.forEach((constructor) => {
-        neededTypesComment += getSubStructName(tlbType, constructor);
-      });
-      loadStatements.push(exceptionComment);
-    }
-    if (tlbType.constructors.length > 1) {
-      storeStatements.push(exceptionComment);
-    }
+    this.addExceptionStmts(tlbType, loadStatements, storeStatements);
 
-    let loadFunctionParameters = [tTypedIdentifier(id("slice"), id("Slice"))];
+    let loadFunctionParameters = typedSlice();
     let storeFunctionParameters = [
       tTypedIdentifier(
         id(variableCombinatorName),
@@ -227,7 +204,7 @@ export class TypescriptGenerator implements CodeGenerator {
             tTypedIdentifier(
               id("load" + element.variable.name),
               tArrowFunctionType(
-                [tTypedIdentifier(id("slice"), id("Slice"))],
+                typedSlice(),
                 id(element.variable.name)
               )
             )
@@ -299,6 +276,28 @@ export class TypescriptGenerator implements CodeGenerator {
     this.jsCodeFunctionsDeclarations.push(loadFunction);
     this.jsCodeFunctionsDeclarations.push(storeFunction);
   }
+
+    private addExceptionStmts(tlbType: TLBType, loadStatements: Statement[], storeStatements: Statement[]) {
+        let exceptionTypesComment = tlbType.constructors
+            .map((constructor) => {
+                return `"${getSubStructName(tlbType, constructor)}"`;
+            })
+            .join(", ");
+        let exceptionComment = tExpressionStatement(
+            id(
+                "throw new Error('" +
+                `Expected one of ${exceptionTypesComment} in loading "${tlbType.name}", but data does not satisfy any constructor` +
+                "')"
+            )
+        );
+        if (tlbType.constructors.length > 1 ||
+            tlbType.constructors.at(0)?.tag.bitLen != 0) {
+            loadStatements.push(exceptionComment);
+        }
+        if (tlbType.constructors.length > 1) {
+            storeStatements.push(exceptionComment);
+        }
+    }
 
     private constructorStmtsToTypeStmts(constructor: TLBConstructor, tlbType: TLBType, ctx: ConstructorContext, loadStatements: Statement[]) {
         if (constructor.tag.bitLen != 0 || tlbType.constructors.length > 1) {
@@ -804,7 +803,7 @@ export class TypescriptGenerator implements CodeGenerator {
         result.storeExpr = subExprInfo.storeExpr;
         result.negatedVariablesLoads = subExprInfo.negatedVariablesLoads;
         result.loadFunctionExpr = tArrowFunctionExpression(
-          [tTypedIdentifier(id("slice"), id("Slice"))],
+          typedSlice(),
           [sliceLoad([1, 0], "slice"), tReturnStatement(subExprInfo.loadExpr)]
         );
         result.loadExpr = tFunctionCall(result.loadFunctionExpr, [
@@ -933,7 +932,7 @@ export class TypescriptGenerator implements CodeGenerator {
       if (exprForParam.paramType == "Slice") {
         result.loadExpr = id(currentSlice);
         result.loadFunctionExpr = tArrowFunctionExpression(
-          [tTypedIdentifier(id("slice"), id("Slice"))],
+          typedSlice(),
           [tReturnStatement(id("slice"))]
         );
       }
@@ -961,7 +960,7 @@ export class TypescriptGenerator implements CodeGenerator {
     if (result.loadExpr && !result.loadFunctionExpr) {
       if (result.loadExpr.type == "FunctionCall") {
         result.loadFunctionExpr = tArrowFunctionExpression(
-          [tTypedIdentifier(id("slice"), id("Slice"))],
+          typedSlice(),
           [tReturnStatement(result.loadExpr)]
         );
       } else {
@@ -1001,7 +1000,4 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
-
-
-
 
