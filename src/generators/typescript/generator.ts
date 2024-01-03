@@ -15,6 +15,7 @@ import {
 } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
+import { storeTagExpression } from "./complex_expr";
 import { tEqualExpression } from "./complex_expr";
 import {
   BinaryExpression,
@@ -172,12 +173,7 @@ export class TypescriptGenerator implements CodeGenerator {
       loadStatements = this.constructorStmtsToTypeStmts(constructor, tlbType, ctx, loadStatements);
 
       if (constructor.tag.bitLen != 0) {
-        ctx.constructorStoreStatements.splice(0, 0, tExpressionStatement(
-            tFunctionCall(tMemberExpression(id("builder"), id("storeUint")), [
-              id(constructor.tag.binary),
-              tNumericLiteral(constructor.tag.bitLen),
-            ])
-          ))
+        ctx.constructorStoreStatements.splice(0, 0, storeTagExpression(constructor.tag))
       }
       
       let storeStatement: Statement = tReturnStatement(
@@ -1018,3 +1014,4 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
+
