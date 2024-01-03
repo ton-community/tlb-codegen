@@ -400,16 +400,13 @@ export class TypescriptGenerator implements CodeGenerator {
         !parameter.variable.isConst &&
         !parameter.variable.negated
       ) {
-        varExpr = getParamVarExpr(parameter, constructor)
+        varExpr = getParamVarExpr(parameter, constructor);
       }
     }
 
     if (varExpr) {
       ctx.constructorLoadProperties.push(
-        tObjectProperty(
-          id(variable.name),
-          varExpr
-        )
+        tObjectProperty(id(variable.name), varExpr)
       );
     }
   }
@@ -428,17 +425,19 @@ export class TypescriptGenerator implements CodeGenerator {
 
     if (field.subFields.length > 0) {
       inSeparateRef(slicePrefix, () => {
-        ctx.constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice));
+        ctx.constructorLoadStatements.push(
+          sliceLoad(slicePrefix, currentSlice)
+        );
         ctx.constructorStoreStatements.push(newCellStmt(slicePrefix));
-  
+
         field.subFields.forEach((fieldDef) => {
           this.handleField(fieldDef, slicePrefix, ctx);
         });
-  
+
         ctx.constructorStoreStatements.push(
           storeRefStmt(slicePrefix, currentCell)
         );
-      })
+      });
     }
 
     if (field.fieldType.kind == "TLBExoticType") {
@@ -458,7 +457,7 @@ export class TypescriptGenerator implements CodeGenerator {
         ctx.constructorStoreStatements.push(
           storeRefObjectStmt(currentCell, ctx, field)
         );
-      })
+      });
     } else if (field.subFields.length == 0) {
       if (field == undefined) {
         throw new Error("");
@@ -488,12 +487,7 @@ export class TypescriptGenerator implements CodeGenerator {
         ctx.constructorStoreStatements.push(fieldInfo.storeExpr);
       }
       fieldInfo.negatedVariablesLoads.forEach((element) => {
-        addLoadProperty(
-          element.name,
-          element.expression,
-          undefined,
-          ctx
-        );
+        addLoadProperty(element.name, element.expression, undefined, ctx);
       });
     }
   }
@@ -599,7 +593,13 @@ export class TypescriptGenerator implements CodeGenerator {
       if (field.fieldType.kind == "TLBNamedType") {
         let fieldTypeName = field.fieldType.name;
         this.jsCodeFunctionsDeclarations.push(
-          negationDerivationFuncDecl(this.tlbCode, getParameterFunctionId, fieldName, fieldTypeName, argIndex)
+          negationDerivationFuncDecl(
+            this.tlbCode,
+            getParameterFunctionId,
+            fieldName,
+            fieldTypeName,
+            argIndex
+          )
         );
       }
       result.negatedVariablesLoads.push({
@@ -614,8 +614,16 @@ export class TypescriptGenerator implements CodeGenerator {
       result.typeParamExpr = id(typeName);
       if (isField) {
         result.loadExpr = tFunctionCall(id("load" + typeName), [id(theSlice)]);
-        result.storeExpr = storeExpressionNamedType(typeName, insideStoreParameters, currentCell);
-        storeExpr2 = storeExpressionNamedType(typeName, insideStoreParameters2, currentCell);
+        result.storeExpr = storeExpressionNamedType(
+          typeName,
+          insideStoreParameters,
+          currentCell
+        );
+        storeExpr2 = storeExpressionNamedType(
+          typeName,
+          insideStoreParameters2,
+          currentCell
+        );
       } else {
         result.loadExpr = id("load" + typeName);
         result.storeExpr = tExpressionStatement(id("store" + typeName));
@@ -675,8 +683,16 @@ export class TypescriptGenerator implements CodeGenerator {
         subExprInfo.storeExpr
       ) {
         if (subExprInfo.storeFunctionExpr && subExprInfo.storeExpr2) {
-          result.storeExpr = storeTupleStmt(currentParam, subExprInfo.storeExpr2, subExprInfo.typeParamExpr);
-          storeExpr2 = storeTupleStmt(currentParam2, subExprInfo.storeExpr2, subExprInfo.typeParamExpr)
+          result.storeExpr = storeTupleStmt(
+            currentParam,
+            subExprInfo.storeExpr2,
+            subExprInfo.typeParamExpr
+          );
+          storeExpr2 = storeTupleStmt(
+            currentParam2,
+            subExprInfo.storeExpr2,
+            subExprInfo.typeParamExpr
+          );
         }
       }
       if (subExprInfo.typeParamExpr) {
@@ -698,45 +714,16 @@ export class TypescriptGenerator implements CodeGenerator {
         result.typeParamExpr = subExprInfo.typeParamExpr;
         result.storeExpr = subExprInfo.storeExpr;
         result.negatedVariablesLoads = subExprInfo.negatedVariablesLoads;
-        result.loadFunctionExpr = tArrowFunctionExpression(typedSlice(), [
-          sliceLoad([1, 0], "slice"),
-          tReturnStatement(subExprInfo.loadExpr),
-        ]);
+        result.loadFunctionExpr = loadFromNewSlice(subExprInfo.loadExpr);
         result.loadExpr = tFunctionCall(result.loadFunctionExpr, [
           id(theSlice),
         ]);
       }
       if (subExprInfo.storeExpr) {
-        result.storeExpr = tMultiStatement([
-          tExpressionStatement(
-            tDeclareVariable(
-              id(currentCell),
-              tFunctionCall(id("beginCell"), [])
-            )
-          ),
-          subExprInfo.storeExpr,
-          tExpressionStatement(
-            tFunctionCall(tMemberExpression(id("builder"), id("storeRef")), [
-              id(currentCell),
-            ])
-          ),
-        ]);
+        result.storeExpr = storeInNewCell(currentCell, subExprInfo.storeExpr);
       }
       if (subExprInfo.storeExpr2) {
-        storeExpr2 = tMultiStatement([
-          tExpressionStatement(
-            tDeclareVariable(
-              id(currentCell),
-              tFunctionCall(id("beginCell"), [])
-            )
-          ),
-          subExprInfo.storeExpr2,
-          tExpressionStatement(
-            tFunctionCall(tMemberExpression(id("builder"), id("storeRef")), [
-              id(currentCell),
-            ])
-          ),
-        ]);
+        storeExpr2 = storeInNewCell(currentCell, subExprInfo.storeExpr2);
       }
     } else if (fieldType.kind == "TLBNamedType" && fieldType.arguments.length) {
       let typeName = fieldType.name;
@@ -747,31 +734,29 @@ export class TypescriptGenerator implements CodeGenerator {
       let loadFunctionsArray: Array<Expression> = [];
       let storeFunctionsArray: Array<Expression> = [];
       let argIndex = -1;
-      if (fieldType.kind == "TLBNamedType") {
-        fieldType.arguments.forEach((arg) => {
-          argIndex++;
-          let subExprInfo = this.handleType(
-            field,
-            arg,
-            false,
-            ctx,
-            slicePrefix,
-            argIndex
-          );
-          if (subExprInfo.typeParamExpr) {
-            typeExpression.typeParameters.push(subExprInfo.typeParamExpr);
-          }
-          if (subExprInfo.loadFunctionExpr) {
-            loadFunctionsArray.push(subExprInfo.loadFunctionExpr);
-          }
-          if (subExprInfo.storeFunctionExpr) {
-            storeFunctionsArray.push(subExprInfo.storeFunctionExpr);
-          }
-          result.negatedVariablesLoads = result.negatedVariablesLoads.concat(
-            subExprInfo.negatedVariablesLoads
-          );
-        });
-      }
+      fieldType.arguments.forEach((arg) => {
+        argIndex++;
+        let subExprInfo = this.handleType(
+          field,
+          arg,
+          false,
+          ctx,
+          slicePrefix,
+          argIndex
+        );
+        if (subExprInfo.typeParamExpr) {
+          typeExpression.typeParameters.push(subExprInfo.typeParamExpr);
+        }
+        if (subExprInfo.loadFunctionExpr) {
+          loadFunctionsArray.push(subExprInfo.loadFunctionExpr);
+        }
+        if (subExprInfo.storeFunctionExpr) {
+          storeFunctionsArray.push(subExprInfo.storeFunctionExpr);
+        }
+        result.negatedVariablesLoads = result.negatedVariablesLoads.concat(
+          subExprInfo.negatedVariablesLoads
+        );
+      });
       result.typeParamExpr = tTypeWithParameters(id(typeName), typeExpression);
 
       let currentTypeParameters = typeExpression;
@@ -783,25 +768,19 @@ export class TypescriptGenerator implements CodeGenerator {
         insideLoadParameters.concat(loadFunctionsArray),
         currentTypeParameters
       );
-      result.storeExpr = tExpressionStatement(
-        tFunctionCall(
-          tFunctionCall(
-            id("store" + typeName),
-            insideStoreParameters.concat(storeFunctionsArray),
-            currentTypeParameters
-          ),
-          [id(theCell)]
-        )
+      result.storeExpr = storeCombinator(
+        typeName,
+        insideStoreParameters,
+        storeFunctionsArray,
+        currentTypeParameters,
+        theCell
       );
-      storeExpr2 = tExpressionStatement(
-        tFunctionCall(
-          tFunctionCall(
-            id("store" + typeName),
-            insideStoreParameters2.concat(storeFunctionsArray),
-            currentTypeParameters
-          ),
-          [id(theCell)]
-        )
+      storeExpr2 = storeCombinator(
+        typeName,
+        insideStoreParameters2,
+        storeFunctionsArray,
+        currentTypeParameters,
+        theCell
       );
       if (exprForParam) {
         result.typeParamExpr = id(exprForParam.paramType);
@@ -818,13 +797,7 @@ export class TypescriptGenerator implements CodeGenerator {
           insideStoreParameters2.push(exprForParam.argStoreExpr);
         }
       }
-      result.loadExpr = tFunctionCall(
-        tMemberExpression(
-          id(currentSlice),
-          id("load" + exprForParam.fieldLoadSuffix)
-        ),
-        exprForParam.argLoadExpr ? [exprForParam.argLoadExpr] : []
-      );
+      result.loadExpr = loadExprForParam(currentSlice, exprForParam);
       if (exprForParam.paramType == "Slice") {
         result.loadExpr = id(currentSlice);
         result.loadFunctionExpr = tArrowFunctionExpression(typedSlice(), [
@@ -895,6 +868,56 @@ export class TypescriptGenerator implements CodeGenerator {
   }
 }
 
+function loadExprForParam(currentSlice: string, exprForParam: ExprForParam): Expression {
+  return tFunctionCall(
+    tMemberExpression(
+      id(currentSlice),
+      id("load" + exprForParam.fieldLoadSuffix)
+    ),
+    exprForParam.argLoadExpr ? [exprForParam.argLoadExpr] : []
+  );
+}
+
+function storeCombinator(
+  typeName: string,
+  insideStoreParameters: Expression[],
+  storeFunctionsArray: Expression[],
+  currentTypeParameters: TypeParametersExpression,
+  theCell: string
+): Statement {
+  return tExpressionStatement(
+    tFunctionCall(
+      tFunctionCall(
+        id("store" + typeName),
+        insideStoreParameters.concat(storeFunctionsArray),
+        currentTypeParameters
+      ),
+      [id(theCell)]
+    )
+  );
+}
+
+function storeInNewCell(currentCell: string, storeExpr: Statement): Statement {
+  return tMultiStatement([
+    tExpressionStatement(
+      tDeclareVariable(id(currentCell), tFunctionCall(id("beginCell"), []))
+    ),
+    storeExpr,
+    tExpressionStatement(
+      tFunctionCall(tMemberExpression(id("builder"), id("storeRef")), [
+        id(currentCell),
+      ])
+    ),
+  ]);
+}
+
+function loadFromNewSlice(loadExpr: Expression): Expression {
+  return tArrowFunctionExpression(typedSlice(), [
+    sliceLoad([1, 0], "slice"),
+    tReturnStatement(loadExpr),
+  ]);
+}
+
 function arrayedType(typeParamExpr: TypeExpression): TypeExpression {
   return tTypeWithParameters(
     id("Array"),
@@ -902,7 +925,11 @@ function arrayedType(typeParamExpr: TypeExpression): TypeExpression {
   );
 }
 
-function storeTupleStmt(currentParam: Expression, storeExpr: Statement, typeParamExpr: TypeExpression): Statement {
+function storeTupleStmt(
+  currentParam: Expression,
+  storeExpr: Statement,
+  typeParamExpr: TypeExpression
+): Statement {
   return tExpressionStatement(
     tFunctionCall(tMemberExpression(currentParam, id("forEach")), [
       tArrowFunctionExpression(
@@ -913,7 +940,10 @@ function storeTupleStmt(currentParam: Expression, storeExpr: Statement, typePara
   );
 }
 
-function loadTupleExpr(arrayLength: Expression, loadExpr: Expression): Expression {
+function loadTupleExpr(
+  arrayLength: Expression,
+  loadExpr: Expression
+): Expression {
   return tFunctionCall(
     tMemberExpression(
       tFunctionCall(tMemberExpression(id("Array"), id("from")), [
@@ -936,14 +966,20 @@ function loadTupleExpr(arrayLength: Expression, loadExpr: Expression): Expressio
   );
 }
 
-function storeExprCond(currentParam: Expression, storeExpr: Statement): Statement {
-  return tIfStatement(
-    tBinaryExpression(currentParam, "!=", id("undefined")),
-    [storeExpr]
-  );
+function storeExprCond(
+  currentParam: Expression,
+  storeExpr: Statement
+): Statement {
+  return tIfStatement(tBinaryExpression(currentParam, "!=", id("undefined")), [
+    storeExpr,
+  ]);
 }
 
-function storeExpressionNamedType(typeName: string, insideStoreParameters: Expression[], currentCell: string): Statement {
+function storeExpressionNamedType(
+  typeName: string,
+  insideStoreParameters: Expression[],
+  currentCell: string
+): Statement {
   return tExpressionStatement(
     tFunctionCall(
       tFunctionCall(id("store" + typeName), insideStoreParameters),
@@ -952,7 +988,11 @@ function storeExpressionNamedType(typeName: string, insideStoreParameters: Expre
   );
 }
 
-function storeRefObjectStmt(currentCell: string, ctx: ConstructorContext, field: TLBField): Statement {
+function storeRefObjectStmt(
+  currentCell: string,
+  ctx: ConstructorContext,
+  field: TLBField
+): Statement {
   return tExpressionStatement(
     tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
       tMemberExpression(id(ctx.variableCombinatorName), id(field.name)),
@@ -1005,22 +1045,22 @@ function checkConstraintStmt(
 function inSeparateRef(slicePrefix: Array<number>, callback: any) {
   slicePrefix[slicePrefix.length - 1]++;
   slicePrefix.push(0);
-  callback()
+  callback();
   slicePrefix.pop();
 }
 
-
-function negationDerivationFuncDecl(tlbCode: TLBCode, getParameterFunctionId: Identifier, fieldName: string, fieldTypeName: string, argIndex: number): GenDeclaration {
+function negationDerivationFuncDecl(
+  tlbCode: TLBCode,
+  getParameterFunctionId: Identifier,
+  fieldName: string,
+  fieldTypeName: string,
+  argIndex: number
+): GenDeclaration {
   return tFunctionDeclaration(
     getParameterFunctionId,
     tTypeParametersExpression([]),
     id("number"),
-    [
-      tTypedIdentifier(
-        id(findNotReservedName(fieldName)),
-        id(fieldTypeName)
-      ),
-    ],
+    [tTypedIdentifier(id(findNotReservedName(fieldName)), id(fieldTypeName))],
     getNegationDerivationFunctionBody(
       tlbCode,
       fieldTypeName,
