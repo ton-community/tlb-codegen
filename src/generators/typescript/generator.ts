@@ -216,7 +216,11 @@ export class TypescriptGenerator implements CodeGenerator {
       tTypedIdentifier(id(variableCombinatorName), currentType),
     ];
 
-    this.addFunctionParameters(tlbType, loadFunctionParameters, storeFunctionParameters);
+    this.addFunctionParameters(
+      tlbType,
+      loadFunctionParameters,
+      storeFunctionParameters
+    );
 
     let loadFunction = tFunctionDeclaration(
       id("load" + tlbType.name),
@@ -247,37 +251,39 @@ export class TypescriptGenerator implements CodeGenerator {
     this.jsCodeFunctionsDeclarations.push(storeFunction);
   }
 
-    private addFunctionParameters(tlbType: TLBType, loadFunctionParameters: TypedIdentifier[], storeFunctionParameters: TypedIdentifier[]) {
-        let anyConstructor = tlbType.constructors[0];
-        if (anyConstructor) {
-            anyConstructor.parameters.forEach((element) => {
-                if (element.variable.type == "Type") {
-                    loadFunctionParameters.push(
-                        loadFunctionParam(element)
-                    );
+  private addFunctionParameters(
+    tlbType: TLBType,
+    loadFunctionParameters: TypedIdentifier[],
+    storeFunctionParameters: TypedIdentifier[]
+  ) {
+    let anyConstructor = tlbType.constructors[0];
+    if (anyConstructor) {
+      anyConstructor.parameters.forEach((element) => {
+        if (element.variable.type == "Type") {
+          loadFunctionParameters.push(loadFunctionParam(element.variable.name));
 
-                    storeFunctionParameters.push(
-                        storeFunctionParam(element)
-                    );
-                }
-                if (element.variable.type == "#" && !element.variable.negated) {
-                    if (element.argName) {
-                        loadFunctionParameters.push(
-                            tTypedIdentifier(id(element.argName), id("number"))
-                        );
-                    } else {
-                        loadFunctionParameters.push(
-                            tTypedIdentifier(id(element.variable.name), id("number"))
-                        );
-                    }
-                }
-            });
-        } else {
-            throw new Error(
-                `Type ${tlbType.name} should have at least one constructor`
-            );
+          storeFunctionParameters.push(
+            storeFunctionParam(element.variable.name)
+          );
         }
+        if (element.variable.type == "#" && !element.variable.negated) {
+          if (element.argName) {
+            loadFunctionParameters.push(
+              tTypedIdentifier(id(element.argName), id("number"))
+            );
+          } else {
+            loadFunctionParameters.push(
+              tTypedIdentifier(id(element.variable.name), id("number"))
+            );
+          }
+        }
+      });
+    } else {
+      throw new Error(
+        `Type ${tlbType.name} should have at least one constructor`
+      );
     }
+  }
 
   private addExceptionStmts(
     tlbType: TLBType,
@@ -1022,4 +1028,3 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
-

@@ -63,14 +63,14 @@ export function simpleCycle(varName: string, finish: Expression): Statement {
     []
   );
 }
-export function storeFunctionParam(element: TLBParameter): TypedIdentifier {
+export function storeFunctionParam(varName: string): TypedIdentifier {
     return tTypedIdentifier(
-        id("store" + element.variable.name),
+        id("store" + varName),
         tArrowFunctionType(
             [
                 tTypedIdentifier(
-                    id(firstLower(element.variable.name)),
-                    id(element.variable.name)
+                    id(firstLower(varName)),
+                    id(varName)
                 ),
             ],
             tArrowFunctionType(
@@ -80,10 +80,10 @@ export function storeFunctionParam(element: TLBParameter): TypedIdentifier {
         )
     );
 }
-export function loadFunctionParam(element: TLBParameter): TypedIdentifier {
+export function loadFunctionParam(varName: string): TypedIdentifier {
     return tTypedIdentifier(
-        id("load" + element.variable.name),
-        tArrowFunctionType(typedSlice(), id(element.variable.name))
+        id("load" + varName),
+        tArrowFunctionType(typedSlice(), id(varName))
     );
 }
 
