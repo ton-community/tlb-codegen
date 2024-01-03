@@ -381,14 +381,11 @@ export class TypescriptGenerator implements CodeGenerator {
     ctx: ConstructorContext,
     constructor: TLBConstructor
   ) {
+    let varExpr = undefined;
+    
     if (variable.negated) {
       if (variable.deriveExpr) {
-        ctx.constructorLoadProperties.push(
-          tObjectProperty(
-            id(variable.name),
-            convertToAST(variable.deriveExpr, constructor)
-          )
-        );
+        varExpr = convertToAST(variable.deriveExpr, constructor);
       }
     }
 
@@ -402,13 +399,17 @@ export class TypescriptGenerator implements CodeGenerator {
         !parameter.variable.isConst &&
         !parameter.variable.negated
       ) {
-        ctx.constructorLoadProperties.push(
-          tObjectProperty(
-            id(variable.name),
-            getParamVarExpr(parameter, constructor)
-          )
-        );
+        varExpr = getParamVarExpr(parameter, constructor)
       }
+    }
+
+    if (varExpr) {
+      ctx.constructorLoadProperties.push(
+        tObjectProperty(
+          id(variable.name),
+          varExpr
+        )
+      );
     }
   }
 
