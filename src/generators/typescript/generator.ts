@@ -15,7 +15,7 @@ import {
 } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
-import { bitlenFunctionDecl } from "./complex_expr";
+import { bitlenFunctionDecl, tEqualExpression } from "./complex_expr";
 import { typedSlice } from "./complex_expr";
 import { checkKindStmt } from "./complex_expr";
 import { storeTagExpression } from "./complex_expr";
@@ -323,12 +323,8 @@ export class TypescriptGenerator implements CodeGenerator {
     if (constructor.tag.bitLen != 0 || tlbType.constructors.length > 1) {
       let conditions: Array<BinaryExpression> = [];
       if (constructor.tag.bitLen != 0) {
-        conditions.push(
-          checkHasBitsForTag(constructor.tag.bitLen)
-        );
-        conditions.push(
-          checkTagExpr(constructor.tag)
-        );
+        conditions.push(checkHasBitsForTag(constructor.tag.bitLen));
+        conditions.push(checkTagExpr(constructor.tag));
         let loadBitsStatement: Statement[] = [
           skipTagStmt(constructor.tag.bitLen),
         ];
@@ -343,11 +339,7 @@ export class TypescriptGenerator implements CodeGenerator {
             argName = param.argName;
           }
           conditions.push(
-            tBinaryExpression(
-              id(argName),
-              "==",
-              getParamVarExpr(param, constructor)
-            )
+            tEqualExpression(id(argName), getParamVarExpr(param, constructor))
           );
         }
       });
@@ -377,28 +369,10 @@ export class TypescriptGenerator implements CodeGenerator {
       ctx.constructor
     )}" for type "${tlbType.name}"`;
     ctx.constructorLoadStatements.push(
-      tIfStatement(tUnaryOpExpression("!", loadConstraintAST), [
-        tExpressionStatement(
-          id(
-            "throw new Error('Condition " +
-              toCode(loadConstraintAST).code +
-              exceptionCommentLastPart +
-              "')"
-          )
-        ),
-      ])
+      checkConstraintStmt(loadConstraintAST, exceptionCommentLastPart)
     );
     ctx.constructorStoreStatements.push(
-      tIfStatement(tUnaryOpExpression("!", storeConstraintAST), [
-        tExpressionStatement(
-          id(
-            "throw new Error('Condition " +
-              toCode(storeConstraintAST).code +
-              exceptionCommentLastPart +
-              "')"
-          )
-        ),
-      ])
+      checkConstraintStmt(storeConstraintAST, exceptionCommentLastPart)
     );
   }
 
@@ -455,25 +429,14 @@ export class TypescriptGenerator implements CodeGenerator {
       slicePrefix.push(0);
 
       ctx.constructorLoadStatements.push(sliceLoad(slicePrefix, currentSlice));
-      ctx.constructorStoreStatements.push(
-        tExpressionStatement(
-          tDeclareVariable(
-            id(getCurrentSlice(slicePrefix, "cell")),
-            tFunctionCall(id("beginCell"), [])
-          )
-        )
-      );
+      ctx.constructorStoreStatements.push(newCellStmt(slicePrefix));
 
       field.subFields.forEach((fieldDef) => {
         this.handleField(fieldDef, slicePrefix, ctx);
       });
 
       ctx.constructorStoreStatements.push(
-        tExpressionStatement(
-          tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
-            id(getCurrentSlice(slicePrefix, "cell")),
-          ])
-        )
+        storeRefStmt(slicePrefix, currentCell)
       );
 
       slicePrefix.pop();
@@ -483,15 +446,7 @@ export class TypescriptGenerator implements CodeGenerator {
       slicePrefix[slicePrefix.length - 1]++;
       slicePrefix.push(0);
       ctx.constructorLoadStatements.push(
-        tExpressionStatement(
-          tDeclareVariable(
-            id(getCurrentSlice(slicePrefix, "cell")),
-            tFunctionCall(
-              tMemberExpression(id(currentSlice), id("loadRef")),
-              []
-            )
-          )
-        )
+        loadRefStmt(slicePrefix, currentSlice)
       );
       addLoadProperty(
         field.name,
@@ -1017,3 +972,44 @@ export class TypescriptGenerator implements CodeGenerator {
   }
 }
 
+function loadRefStmt(slicePrefix: number[], currentSlice: string): Statement {
+  return tExpressionStatement(
+    tDeclareVariable(
+      id(getCurrentSlice(slicePrefix, "cell")),
+      tFunctionCall(tMemberExpression(id(currentSlice), id("loadRef")), [])
+    )
+  );
+}
+
+function storeRefStmt(slicePrefix: number[], currentCell: string): Statement {
+  return tExpressionStatement(
+    tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
+      id(getCurrentSlice(slicePrefix, "cell")),
+    ])
+  );
+}
+
+function newCellStmt(slicePrefix: number[]): Statement {
+  return tExpressionStatement(
+    tDeclareVariable(
+      id(getCurrentSlice(slicePrefix, "cell")),
+      tFunctionCall(id("beginCell"), [])
+    )
+  );
+}
+
+function checkConstraintStmt(
+  constraintAST: Expression,
+  exceptionCommentLastPart: string
+): Statement {
+  return tIfStatement(tUnaryOpExpression("!", constraintAST), [
+    tExpressionStatement(
+      id(
+        "throw new Error('Condition " +
+          toCode(constraintAST).code +
+          exceptionCommentLastPart +
+          "')"
+      )
+    ),
+  ]);
+}
