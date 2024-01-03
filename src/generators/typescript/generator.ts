@@ -382,7 +382,7 @@ export class TypescriptGenerator implements CodeGenerator {
     constructor: TLBConstructor
   ) {
     let varExpr = undefined;
-    
+
     if (variable.negated) {
       if (variable.deriveExpr) {
         varExpr = convertToAST(variable.deriveExpr, constructor);
@@ -449,8 +449,7 @@ export class TypescriptGenerator implements CodeGenerator {
           field.name,
           id(getCurrentSlice(slicePrefix, "cell")),
           undefined,
-          ctx.constructorLoadStatements,
-          ctx.constructorLoadProperties
+          ctx
         );
         ctx.constructorProperties.push(
           tTypedIdentifier(id(field.name), id("Cell"))
@@ -476,8 +475,7 @@ export class TypescriptGenerator implements CodeGenerator {
           field.name,
           fieldInfo.loadExpr,
           fieldInfo.typeParamExpr,
-          ctx.constructorLoadStatements,
-          ctx.constructorLoadProperties
+          ctx
         );
       }
       if (fieldInfo.typeParamExpr) {
@@ -493,8 +491,7 @@ export class TypescriptGenerator implements CodeGenerator {
           element.name,
           element.expression,
           undefined,
-          ctx.constructorLoadStatements,
-          ctx.constructorLoadProperties
+          ctx
         );
       });
     }

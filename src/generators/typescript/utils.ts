@@ -12,6 +12,7 @@ import {
 } from "../../ast";
 import { getSubStructName } from "../../utils";
 import { tEqualExpression } from "./complex_expr";
+import { ConstructorContext } from "./generator";
 import {
   BinaryExpression,
   Expression,
@@ -138,14 +139,13 @@ export function addLoadProperty(
   name: string,
   loadExpr: Expression,
   typeExpr: TypeExpression | undefined,
-  constructorLoadStatements: Statement[],
-  subStructLoadProperties: ObjectProperty[]
+  ctx: ConstructorContext
 ) {
   let nameId = id(name);
-  constructorLoadStatements.push(
+  ctx.constructorLoadStatements.push(
     tExpressionStatement(tDeclareVariable(nameId, loadExpr, typeExpr))
   );
-  subStructLoadProperties.push(tObjectProperty(nameId, nameId));
+  ctx.constructorLoadProperties.push(tObjectProperty(nameId, nameId));
 }
 
 export function convertToAST(
