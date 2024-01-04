@@ -9,6 +9,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - run: npm ci
+      - run: npm install
       - run: ts-node generate_all.ts
       - run: npm run test
