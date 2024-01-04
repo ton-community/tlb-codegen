@@ -538,8 +538,6 @@ export class TypescriptGenerator implements CodeGenerator {
 
     let exprForParam: ExprForParam | undefined;
 
-    let storeExpr2: Statement | undefined;
-
     let storeParametersOutside: Expression[];
 
     storeParametersOutside = [
@@ -635,7 +633,7 @@ export class TypescriptGenerator implements CodeGenerator {
           storeParametersOutside,
           currentCell
         );
-        storeExpr2 = storeExpressionNamedType(
+        result.storeStmtInside = storeExpressionNamedType(
           typeName,
           storeParametersInside,
           currentCell
@@ -669,11 +667,11 @@ export class TypescriptGenerator implements CodeGenerator {
           id("undefined")
         );
       }
-      let currentParam = storeParametersOutside[0];
-      let currentParam2 = storeParametersInside[0];
-      if (currentParam && currentParam2 && subExprInfo.storeStmtOutside) {
-        result.storeStmtOutside = storeExprCond(currentParam, subExprInfo.storeStmtOutside);
-        storeExpr2 = storeExprCond(currentParam2, subExprInfo.storeStmtOutside);
+      let currentParamOutside = storeParametersOutside[0];
+      let currentParamInside = storeParametersInside[0];
+      if (currentParamOutside && currentParamInside && subExprInfo.storeStmtOutside) {
+        result.storeStmtOutside = storeExprCond(currentParamOutside, subExprInfo.storeStmtOutside);
+        result.storeStmtInside = storeExprCond(currentParamInside, subExprInfo.storeStmtOutside);
       }
     } else if (fieldType.kind == "TLBMultipleType") {
       let arrayLength: Expression;
@@ -687,25 +685,25 @@ export class TypescriptGenerator implements CodeGenerator {
         slicePrefix,
         argIndex
       );
-      let currentParam = storeParametersOutside[0];
-      let currentParam2 = storeParametersInside[0];
+      let currentParamOutside = storeParametersOutside[0];
+      let currentParamInside = storeParametersInside[0];
       if (subExprInfo.loadExpr) {
         result.loadExpr = loadTupleExpr(arrayLength, subExprInfo.loadExpr);
       }
       if (
-        currentParam &&
-        currentParam2 &&
+        currentParamOutside &&
+        currentParamInside &&
         subExprInfo.typeParamExpr &&
         subExprInfo.storeStmtOutside
       ) {
         if (subExprInfo.storeFunctionExpr && subExprInfo.storeStmtInside) {
           result.storeStmtOutside = storeTupleStmt(
-            currentParam,
+            currentParamOutside,
             subExprInfo.storeStmtInside,
             subExprInfo.typeParamExpr
           );
-          storeExpr2 = storeTupleStmt(
-            currentParam2,
+          result.storeStmtInside = storeTupleStmt(
+            currentParamInside,
             subExprInfo.storeStmtInside,
             subExprInfo.typeParamExpr
           );
@@ -738,7 +736,7 @@ export class TypescriptGenerator implements CodeGenerator {
         result.storeStmtOutside = storeInNewCell(currentCell, subExprInfo.storeStmtOutside);
       }
       if (subExprInfo.storeStmtInside) {
-        storeExpr2 = storeInNewCell(currentCell, subExprInfo.storeStmtInside);
+        result.storeStmtInside = storeInNewCell(currentCell, subExprInfo.storeStmtInside);
       }
     } else if (fieldType.kind == "TLBNamedType" && fieldType.arguments.length) {
       let typeName = fieldType.name;
@@ -790,7 +788,7 @@ export class TypescriptGenerator implements CodeGenerator {
         currentTypeParameters,
         theCell
       );
-      storeExpr2 = storeCombinator(
+      result.storeStmtInside = storeCombinator(
         typeName,
         storeParametersInside,
         storeFunctionsArray,
@@ -823,7 +821,7 @@ export class TypescriptGenerator implements CodeGenerator {
         exprForParam,
         storeParametersOutside
       );
-      storeExpr2 = storeExprForParam(
+      result.storeStmtInside = storeExprForParam(
         theCell,
         exprForParam,
         storeParametersInside
@@ -834,8 +832,8 @@ export class TypescriptGenerator implements CodeGenerator {
       result.loadFunctionExpr = coverFuncCall(result.loadExpr);
     }
     if (result.storeStmtOutside && !result.storeFunctionExpr) {
-      if (!storeExpr2) {
-        storeExpr2 = result.storeStmtOutside;
+      if (!result.storeStmtInside) {
+        result.storeStmtInside = result.storeStmtOutside;
       }
       if (result.typeParamExpr) {
         if (
@@ -845,7 +843,7 @@ export class TypescriptGenerator implements CodeGenerator {
         ) {
           result.storeFunctionExpr = storeFunctionExpr(
             result.typeParamExpr,
-            storeExpr2
+            result.storeStmtInside
           );
         } else {
           if (result.storeStmtOutside.type == "ExpressionStatement") {
@@ -855,7 +853,7 @@ export class TypescriptGenerator implements CodeGenerator {
       }
     }
 
-    result.storeStmtInside = storeExpr2;
+    result.storeStmtInside = result.storeStmtInside;
     return result;
   }
 }
