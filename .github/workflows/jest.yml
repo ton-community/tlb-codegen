@@ -10,5 +10,6 @@ jobs:
         with:
           node-version: '14'
       - run: npm install
+      - run: npm install -g ts-node
       - run: ts-node generate_all.ts
       - run: npm run test
