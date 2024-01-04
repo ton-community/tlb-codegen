@@ -820,17 +820,7 @@ export class TypescriptGenerator implements CodeGenerator {
             result.storeExpr.expression.type == "FunctionCall") ||
           result.storeExpr.type == "MultiStatement"
         ) {
-          result.storeFunctionExpr = tArrowFunctionExpression(
-            [tTypedIdentifier(id("arg"), result.typeParamExpr)],
-            [
-              tReturnStatement(
-                tArrowFunctionExpression(
-                  [tTypedIdentifier(id("builder"), id("Builder"))],
-                  [storeExpr2]
-                )
-              ),
-            ]
-          );
+          result.storeFunctionExpr = storeFunctionExpr(result.typeParamExpr, storeExpr2);
         } else {
           if (result.storeExpr.type == "ExpressionStatement") {
             result.storeFunctionExpr = result.storeExpr.expression;
@@ -842,6 +832,20 @@ export class TypescriptGenerator implements CodeGenerator {
     result.storeExpr2 = storeExpr2;
     return result;
   }
+}
+
+function storeFunctionExpr(typeParamExpr: TypeExpression, storeExpr2: Statement): Expression | undefined {
+  return tArrowFunctionExpression(
+    [tTypedIdentifier(id("arg"), typeParamExpr)],
+    [
+      tReturnStatement(
+        tArrowFunctionExpression(
+          [tTypedIdentifier(id("builder"), id("Builder"))],
+          [storeExpr2]
+        )
+      ),
+    ]
+  );
 }
 
 function coverFuncCall(loadExpr: Expression): Expression {
