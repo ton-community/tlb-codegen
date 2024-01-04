@@ -800,39 +800,15 @@ export class TypescriptGenerator implements CodeGenerator {
       result.loadExpr = loadExprForParam(currentSlice, exprForParam);
       if (exprForParam.paramType == "Slice") {
         result.loadExpr = id(currentSlice);
-        result.loadFunctionExpr = tArrowFunctionExpression(typedSlice(), [
-          tReturnStatement(id("slice")),
-        ]);
+        result.loadFunctionExpr = returnSliceFunc();
       }
       result.typeParamExpr = id(exprForParam.paramType);
-      result.storeExpr = tExpressionStatement(
-        tFunctionCall(
-          tMemberExpression(
-            id(theCell),
-            id("store" + exprForParam.fieldStoreSuffix)
-          ),
-          insideStoreParameters
-        )
-      );
-      storeExpr2 = tExpressionStatement(
-        tFunctionCall(
-          tMemberExpression(
-            id(theCell),
-            id("store" + exprForParam.fieldStoreSuffix)
-          ),
-          insideStoreParameters2
-        )
-      );
+      result.storeExpr = storeExprForParam(theCell, exprForParam, insideStoreParameters);
+      storeExpr2 = storeExprForParam(theCell, exprForParam, insideStoreParameters2);
     }
 
     if (result.loadExpr && !result.loadFunctionExpr) {
-      if (result.loadExpr.type == "FunctionCall") {
-        result.loadFunctionExpr = tArrowFunctionExpression(typedSlice(), [
-          tReturnStatement(result.loadExpr),
-        ]);
-      } else {
-        result.loadFunctionExpr = result.loadExpr;
-      }
+        result.loadFunctionExpr = coverFuncCall(result.loadExpr);
     }
     if (result.storeExpr && !result.storeFunctionExpr) {
       if (!storeExpr2) {
@@ -866,6 +842,30 @@ export class TypescriptGenerator implements CodeGenerator {
     result.storeExpr2 = storeExpr2;
     return result;
   }
+}
+
+function coverFuncCall(loadExpr: Expression): Expression {
+  return loadExpr.type == "FunctionCall" ? tArrowFunctionExpression(typedSlice(), [
+    tReturnStatement(loadExpr),
+  ]) : loadExpr;
+}
+
+function storeExprForParam(theCell: string, exprForParam: ExprForParam, insideStoreParameters: Expression[]): Statement {
+  return tExpressionStatement(
+    tFunctionCall(
+      tMemberExpression(
+        id(theCell),
+        id("store" + exprForParam.fieldStoreSuffix)
+      ),
+      insideStoreParameters
+    )
+  );
+}
+
+function returnSliceFunc(): Expression {
+  return tArrowFunctionExpression(typedSlice(), [
+    tReturnStatement(id("slice")),
+  ]);
 }
 
 function loadExprForParam(currentSlice: string, exprForParam: ExprForParam): Expression {
