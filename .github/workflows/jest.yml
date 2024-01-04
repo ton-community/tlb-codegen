@@ -1,5 +1,5 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+name: Typescript Generator Tests
+run-name: ${{ github.actor }} is testing out tlbgenerator for typescript
 on: [push]
 jobs:
   Explore-GitHub-Actions:
