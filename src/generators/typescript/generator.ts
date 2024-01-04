@@ -31,10 +31,7 @@ import {
   TypeExpression,
   TypeParametersExpression,
   TypedIdentifier,
-  tArrowFunctionExpression,
-  tBinaryExpression,
   tComment,
-  tDeclareVariable,
   tExpressionStatement,
   tFunctionCall,
   tFunctionDeclaration,
@@ -42,7 +39,6 @@ import {
   tIfStatement,
   tImportDeclaration,
   tMemberExpression,
-  tMultiStatement,
   tObjectExpression,
   tObjectProperty,
   tReturnStatement,
@@ -52,11 +48,9 @@ import {
   tTypeParametersExpression,
   tTypeWithParameters,
   tTypedIdentifier,
-  tUnaryOpExpression,
   tUnionTypeDeclaration,
   tUnionTypeExpression,
   toCode,
-  Identifier,
 } from "./tsgen";
 import {
   ExprForParam,
@@ -64,7 +58,6 @@ import {
   addLoadProperty,
   convertToAST,
   getCondition,
-  getNegationDerivationFunctionBody,
   getParamVarExpr,
   getTypeParametersExpression,
   isBigInt,
@@ -75,6 +68,20 @@ import { loadFunctionParam } from "./complex_expr";
 import { skipTagStmt } from "./complex_expr";
 import { checkTagExpr } from "./complex_expr";
 import { checkHasBitsForTag } from "./complex_expr";
+import { storeFunctionExpr } from "./complex_expr";
+import { coverFuncCall } from "./complex_expr";
+import { storeExprForParam } from "./complex_expr";
+import { returnSliceFunc } from "./complex_expr";
+import { loadExprForParam } from "./complex_expr";
+import { storeCombinator } from "./complex_expr";
+import { storeInNewCell } from "./complex_expr";
+import { loadFromNewSlice } from "./complex_expr";
+import { arrayedType } from "./complex_expr";
+import { storeTupleStmt } from "./complex_expr";
+import { loadTupleExpr } from "./complex_expr";
+import { storeExprCond } from "./complex_expr";
+import { storeExpressionNamedType } from "./complex_expr";
+import { checkConstraintStmt, inSeparateRef, newCellStmt, storeRefStmt, loadRefStmt, storeRefObjectStmt, negationDerivationFuncDecl } from "./complex_expr";
 
 export type ConstructorContext = {
   constructor: TLBConstructor;
@@ -832,244 +839,4 @@ export class TypescriptGenerator implements CodeGenerator {
     result.storeExpr2 = storeExpr2;
     return result;
   }
-}
-
-function storeFunctionExpr(typeParamExpr: TypeExpression, storeExpr2: Statement): Expression | undefined {
-  return tArrowFunctionExpression(
-    [tTypedIdentifier(id("arg"), typeParamExpr)],
-    [
-      tReturnStatement(
-        tArrowFunctionExpression(
-          [tTypedIdentifier(id("builder"), id("Builder"))],
-          [storeExpr2]
-        )
-      ),
-    ]
-  );
-}
-
-function coverFuncCall(loadExpr: Expression): Expression {
-  return loadExpr.type == "FunctionCall" ? tArrowFunctionExpression(typedSlice(), [
-    tReturnStatement(loadExpr),
-  ]) : loadExpr;
-}
-
-function storeExprForParam(theCell: string, exprForParam: ExprForParam, insideStoreParameters: Expression[]): Statement {
-  return tExpressionStatement(
-    tFunctionCall(
-      tMemberExpression(
-        id(theCell),
-        id("store" + exprForParam.fieldStoreSuffix)
-      ),
-      insideStoreParameters
-    )
-  );
-}
-
-function returnSliceFunc(): Expression {
-  return tArrowFunctionExpression(typedSlice(), [
-    tReturnStatement(id("slice")),
-  ]);
-}
-
-function loadExprForParam(currentSlice: string, exprForParam: ExprForParam): Expression {
-  return tFunctionCall(
-    tMemberExpression(
-      id(currentSlice),
-      id("load" + exprForParam.fieldLoadSuffix)
-    ),
-    exprForParam.argLoadExpr ? [exprForParam.argLoadExpr] : []
-  );
-}
-
-function storeCombinator(
-  typeName: string,
-  insideStoreParameters: Expression[],
-  storeFunctionsArray: Expression[],
-  currentTypeParameters: TypeParametersExpression,
-  theCell: string
-): Statement {
-  return tExpressionStatement(
-    tFunctionCall(
-      tFunctionCall(
-        id("store" + typeName),
-        insideStoreParameters.concat(storeFunctionsArray),
-        currentTypeParameters
-      ),
-      [id(theCell)]
-    )
-  );
-}
-
-function storeInNewCell(currentCell: string, storeExpr: Statement): Statement {
-  return tMultiStatement([
-    tExpressionStatement(
-      tDeclareVariable(id(currentCell), tFunctionCall(id("beginCell"), []))
-    ),
-    storeExpr,
-    tExpressionStatement(
-      tFunctionCall(tMemberExpression(id("builder"), id("storeRef")), [
-        id(currentCell),
-      ])
-    ),
-  ]);
-}
-
-function loadFromNewSlice(loadExpr: Expression): Expression {
-  return tArrowFunctionExpression(typedSlice(), [
-    sliceLoad([1, 0], "slice"),
-    tReturnStatement(loadExpr),
-  ]);
-}
-
-function arrayedType(typeParamExpr: TypeExpression): TypeExpression {
-  return tTypeWithParameters(
-    id("Array"),
-    tTypeParametersExpression([typeParamExpr])
-  );
-}
-
-function storeTupleStmt(
-  currentParam: Expression,
-  storeExpr: Statement,
-  typeParamExpr: TypeExpression
-): Statement {
-  return tExpressionStatement(
-    tFunctionCall(tMemberExpression(currentParam, id("forEach")), [
-      tArrowFunctionExpression(
-        [tTypedIdentifier(id("arg"), typeParamExpr)],
-        [storeExpr]
-      ),
-    ])
-  );
-}
-
-function loadTupleExpr(
-  arrayLength: Expression,
-  loadExpr: Expression
-): Expression {
-  return tFunctionCall(
-    tMemberExpression(
-      tFunctionCall(tMemberExpression(id("Array"), id("from")), [
-        tFunctionCall(
-          tMemberExpression(
-            tFunctionCall(id("Array"), [arrayLength]),
-            id("keys")
-          ),
-          []
-        ),
-      ]),
-      id("map")
-    ),
-    [
-      tArrowFunctionExpression(
-        [tTypedIdentifier(id("arg"), id("number"))],
-        [tReturnStatement(loadExpr)]
-      ),
-    ]
-  );
-}
-
-function storeExprCond(
-  currentParam: Expression,
-  storeExpr: Statement
-): Statement {
-  return tIfStatement(tBinaryExpression(currentParam, "!=", id("undefined")), [
-    storeExpr,
-  ]);
-}
-
-function storeExpressionNamedType(
-  typeName: string,
-  insideStoreParameters: Expression[],
-  currentCell: string
-): Statement {
-  return tExpressionStatement(
-    tFunctionCall(
-      tFunctionCall(id("store" + typeName), insideStoreParameters),
-      [id(currentCell)]
-    )
-  );
-}
-
-function storeRefObjectStmt(
-  currentCell: string,
-  ctx: ConstructorContext,
-  field: TLBField
-): Statement {
-  return tExpressionStatement(
-    tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
-      tMemberExpression(id(ctx.variableCombinatorName), id(field.name)),
-    ])
-  );
-}
-
-function loadRefStmt(slicePrefix: number[], currentSlice: string): Statement {
-  return tExpressionStatement(
-    tDeclareVariable(
-      id(getCurrentSlice(slicePrefix, "cell")),
-      tFunctionCall(tMemberExpression(id(currentSlice), id("loadRef")), [])
-    )
-  );
-}
-
-function storeRefStmt(slicePrefix: number[], currentCell: string): Statement {
-  return tExpressionStatement(
-    tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
-      id(getCurrentSlice(slicePrefix, "cell")),
-    ])
-  );
-}
-
-function newCellStmt(slicePrefix: number[]): Statement {
-  return tExpressionStatement(
-    tDeclareVariable(
-      id(getCurrentSlice(slicePrefix, "cell")),
-      tFunctionCall(id("beginCell"), [])
-    )
-  );
-}
-
-function checkConstraintStmt(
-  constraintAST: Expression,
-  exceptionCommentLastPart: string
-): Statement {
-  return tIfStatement(tUnaryOpExpression("!", constraintAST), [
-    tExpressionStatement(
-      id(
-        "throw new Error('Condition " +
-          toCode(constraintAST).code +
-          exceptionCommentLastPart +
-          "')"
-      )
-    ),
-  ]);
-}
-
-function inSeparateRef(slicePrefix: Array<number>, callback: any) {
-  slicePrefix[slicePrefix.length - 1]++;
-  slicePrefix.push(0);
-  callback();
-  slicePrefix.pop();
-}
-
-function negationDerivationFuncDecl(
-  tlbCode: TLBCode,
-  getParameterFunctionId: Identifier,
-  fieldName: string,
-  fieldTypeName: string,
-  argIndex: number
-): GenDeclaration {
-  return tFunctionDeclaration(
-    getParameterFunctionId,
-    tTypeParametersExpression([]),
-    id("number"),
-    [tTypedIdentifier(id(findNotReservedName(fieldName)), id(fieldTypeName))],
-    getNegationDerivationFunctionBody(
-      tlbCode,
-      fieldTypeName,
-      argIndex,
-      fieldName
-    )
-  );
 }
