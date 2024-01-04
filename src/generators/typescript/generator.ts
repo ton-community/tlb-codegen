@@ -8,18 +8,14 @@ import {
   TLBVariable,
 } from "../../ast";
 import {
+  findNotReservedName,
   firstLower,
   getCurrentSlice,
   getSubStructName,
-  findNotReservedName,
 } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
-import { bitlenFunctionDecl, tEqualExpression } from "./complex_expr";
-import { typedSlice } from "./complex_expr";
-import { checkKindStmt } from "./complex_expr";
-import { storeTagExpression } from "./complex_expr";
-import { storeFunctionStmt } from "./complex_expr";
+import { arrayedType, bitlenFunctionDecl, checkConstraintStmt, checkHasBitsForTag, checkKindStmt, checkTagExpr, coverFuncCall, inSeparateRef, loadExprForParam, loadFromNewSlice, loadFunctionParam, loadRefStmt, loadTupleExpr, negationDerivationFuncDecl, newCellStmt, returnSliceFunc, skipTagStmt, sliceLoad, storeCombinator, storeExprCond, storeExprForParam, storeExpressionNamedType, storeFunctionExpr, storeFunctionParam, storeFunctionStmt, storeInNewCell, storeRefObjectStmt, storeRefStmt, storeTagExpression, storeTupleStmt, tEqualExpression, typedSlice } from "./complex_expr";
 import {
   BinaryExpression,
   Expression,
@@ -31,11 +27,11 @@ import {
   TypeExpression,
   TypeParametersExpression,
   TypedIdentifier,
+  id,
   tComment,
   tExpressionStatement,
   tFunctionCall,
   tFunctionDeclaration,
-  id,
   tIfStatement,
   tImportDeclaration,
   tMemberExpression,
@@ -62,26 +58,6 @@ import {
   getTypeParametersExpression,
   isBigInt,
 } from "./utils";
-import { sliceLoad } from "./complex_expr";
-import { storeFunctionParam } from "./complex_expr";
-import { loadFunctionParam } from "./complex_expr";
-import { skipTagStmt } from "./complex_expr";
-import { checkTagExpr } from "./complex_expr";
-import { checkHasBitsForTag } from "./complex_expr";
-import { storeFunctionExpr } from "./complex_expr";
-import { coverFuncCall } from "./complex_expr";
-import { storeExprForParam } from "./complex_expr";
-import { returnSliceFunc } from "./complex_expr";
-import { loadExprForParam } from "./complex_expr";
-import { storeCombinator } from "./complex_expr";
-import { storeInNewCell } from "./complex_expr";
-import { loadFromNewSlice } from "./complex_expr";
-import { arrayedType } from "./complex_expr";
-import { storeTupleStmt } from "./complex_expr";
-import { loadTupleExpr } from "./complex_expr";
-import { storeExprCond } from "./complex_expr";
-import { storeExpressionNamedType } from "./complex_expr";
-import { checkConstraintStmt, inSeparateRef, newCellStmt, storeRefStmt, loadRefStmt, storeRefObjectStmt, negationDerivationFuncDecl } from "./complex_expr";
 
 export type ConstructorContext = {
   constructor: TLBConstructor;
