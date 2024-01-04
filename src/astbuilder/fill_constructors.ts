@@ -1,17 +1,43 @@
 import {
   CompareExpr,
   Declaration,
-  FieldBuiltinDef, FieldCurlyExprDef, FieldNamedDef,
+  FieldBuiltinDef,
+  FieldCurlyExprDef,
+  FieldNamedDef,
   MathExpr,
   NameExpr,
   NegateExpr,
-  NumberExpr
+  NumberExpr,
 } from "@igorivaniuk/tlb-parser/dist/ast/nodes";
 import * as crc32 from "crc-32";
-import { TLBBinaryOp, TLBCode, TLBConstructor, TLBConstructorTag, TLBField, TLBMathExpr, TLBNumberExpr, TLBParameter, TLBType, TLBVarExpr, TLBVariable } from "../ast";
+import {
+  TLBBinaryOp,
+  TLBCode,
+  TLBConstructor,
+  TLBConstructorTag,
+  TLBField,
+  TLBMathExpr,
+  TLBNumberExpr,
+  TLBParameter,
+  TLBType,
+  TLBVarExpr,
+  TLBVariable,
+} from "../ast";
 import { findNotReservedName } from "../utils";
 import { fillFields } from "./handle_field";
-import { TLBCodeBuild, TLBConstructorBuild, TLBParameterBuild, TLBTypeBuild, TLBVariableBuild, calculateVariable, convertToMathExpr, deriveMathExpression, getNegatedVariable, opCodeSetsEqual, reorganizeExpression } from "./utils";
+import {
+  TLBCodeBuild,
+  TLBConstructorBuild,
+  TLBParameterBuild,
+  TLBTypeBuild,
+  TLBVariableBuild,
+  calculateVariable,
+  convertToMathExpr,
+  deriveMathExpression,
+  getNegatedVariable,
+  opCodeSetsEqual,
+  reorganizeExpression,
+} from "./utils";
 
 export function fillConstructors(
   declarations: Declaration[],
@@ -20,7 +46,7 @@ export function fillConstructors(
 ) {
   let typeDeclarations = new Map<
     String,
-    { declaration: Declaration; constructor: TLBConstructorBuild; }[]
+    { declaration: Declaration; constructor: TLBConstructorBuild }[]
   >();
   declarations.forEach((declaration) => {
     let tlbType: TLBTypeBuild | undefined = tlbCode.types.get(
@@ -102,7 +128,7 @@ export function fillConstructors(
           } else {
             throw new Error(
               "Field not known before using (should be tagged as implicit): " +
-              element
+                element
             );
           }
         } else if (element instanceof MathExpr) {
@@ -123,10 +149,12 @@ export function fillConstructors(
           } else {
             throw new Error(`Variable should have name ${variable}`);
           }
-        } else if (element instanceof NegateExpr &&
+        } else if (
+          element instanceof NegateExpr &&
           (element.expr instanceof MathExpr ||
             element.expr instanceof NumberExpr ||
-            element.expr instanceof NameExpr)) {
+            element.expr instanceof NameExpr)
+        ) {
           let derivedExpr = deriveMathExpression(element.expr);
           let toBeConst = false;
           if (element.expr instanceof NumberExpr) {
@@ -199,13 +227,16 @@ export function fillConstructors(
   });
   checkAndRemovePrimitives(tlbCode, input, typeDeclarations);
   findAvailableVarNamesForCode(tlbCode);
-}export function fillConstraintsAndNegationVars(
+}
+function fillConstraintsAndNegationVars(
   constructor: TLBConstructorBuild,
   declaration: Declaration
 ) {
   declaration.fields.forEach((field) => {
-    if (field instanceof FieldCurlyExprDef &&
-      field.expr instanceof CompareExpr) {
+    if (
+      field instanceof FieldCurlyExprDef &&
+      field.expr instanceof CompareExpr
+    ) {
       if (field.expr.op == "=") {
         let myMathExpr = convertToMathExpr(field.expr);
         let negatedVariable = getNegatedVariable(myMathExpr);
@@ -230,7 +261,7 @@ export function fillConstructors(
     }
   });
 }
-export function fillParameterNames(tlbType: TLBTypeBuild) {
+function fillParameterNames(tlbType: TLBTypeBuild) {
   let parameterNames: (string | undefined)[] = [];
   tlbType.constructors[0]?.parameters.forEach((element) => {
     parameterNames.push(element.variable.name);
@@ -253,14 +284,16 @@ export function fillParameterNames(tlbType: TLBTypeBuild) {
   tlbType.constructors.forEach((constructor) => {
     for (let i = 0; i < constructor.parameters.length; i++) {
       let parameterName = parameterNames[i];
-      if (parameterName != undefined &&
-        constructor.parameters[i]?.variable.name == undefined) {
+      if (
+        parameterName != undefined &&
+        constructor.parameters[i]?.variable.name == undefined
+      ) {
         constructor.parameters[i]!.variable.name = parameterName;
       }
     }
   });
 }
-export function fillArgNames(tlbType: TLBTypeBuild) {
+function fillArgNames(tlbType: TLBTypeBuild) {
   let argNames: (string | undefined)[] = [];
   tlbType.constructors[0]?.parameters.forEach((element) => {
     argNames.push(undefined);
@@ -288,7 +321,7 @@ export function fillArgNames(tlbType: TLBTypeBuild) {
     }
   });
 }
-export function compareConstructors(
+function compareConstructors(
   a: TLBConstructorBuild,
   b: TLBConstructorBuild
 ): number {
@@ -302,7 +335,7 @@ export function compareConstructors(
   }
   return 0;
 }
-export function constructorPriority(c: TLBConstructorBuild): number {
+function constructorPriority(c: TLBConstructorBuild): number {
   let result = 0;
   if (c.tag.bitLen > 0) {
     result++;
@@ -314,7 +347,7 @@ export function constructorPriority(c: TLBConstructorBuild): number {
   });
   return result;
 }
-export function reorganizeWithArg(
+function reorganizeWithArg(
   mathExpr: TLBMathExpr,
   argName: string,
   varName: string
@@ -334,13 +367,15 @@ export function reorganizeWithArg(
   }
   throw new Error(`Couldn't reorganize expression ${mathExpr}`);
 }
-export function getConstructorTag(
+function getConstructorTag(
   declaration: Declaration,
   input: string[]
 ): TLBConstructorTag {
   let tag = declaration.constructorDef.tag;
-  if ((tag == null && declaration.constructorDef.name == "_") ||
-    (tag && tag.length > 1 && tag[1] == "_")) {
+  if (
+    (tag == null && declaration.constructorDef.name == "_") ||
+    (tag && tag.length > 1 && tag[1] == "_")
+  ) {
     return {
       bitLen: 0,
       binary: "",
@@ -367,7 +402,7 @@ export function getConstructorTag(
   }
   throw new Error("Unknown tag " + tag);
 }
-export function findConstructorsNaming(tlbType: TLBTypeBuild) {
+function findConstructorsNaming(tlbType: TLBTypeBuild) {
   let constructorNames: Set<string> = new Set<string>();
   let constructorIndex = 0;
   tlbType.constructors.forEach((current) => {
@@ -378,11 +413,12 @@ export function findConstructorsNaming(tlbType: TLBTypeBuild) {
     constructorIndex++;
   });
 }
-export function checkAndRemovePrimitives(
+function checkAndRemovePrimitives(
   tlbCode: TLBCodeBuild,
   input: string[],
   typeDeclarations: Map<
-    String, { declaration: Declaration; constructor: TLBConstructorBuild; }[]
+    String,
+    { declaration: Declaration; constructor: TLBConstructorBuild }[]
   >
 ) {
   let toDelete: string[] = [];
@@ -409,7 +445,7 @@ export function checkAndRemovePrimitives(
     tlbCode.types.delete(name);
   });
 }
-export function findAvailableVarNamesForCode(tlbCode: TLBCodeBuild) {
+function findAvailableVarNamesForCode(tlbCode: TLBCodeBuild) {
   tlbCode.types.forEach((tlbType) => {
     tlbType.constructors.forEach((constructor) => {
       let variablesSet = new Set<string>();
@@ -417,7 +453,7 @@ export function findAvailableVarNamesForCode(tlbCode: TLBCodeBuild) {
     });
   });
 }
-export function findAvailableFieldsNames(
+function findAvailableFieldsNames(
   fields: TLBField[],
   variablesSet: Set<string>
 ) {
@@ -428,10 +464,7 @@ export function findAvailableFieldsNames(
     findAvailableFieldsNames(field.subFields, variablesSet);
   });
 }
-export function findAvailableFieldName(
-  field: TLBField,
-  variablesSet: Set<string>
-) {
+function findAvailableFieldName(field: TLBField, variablesSet: Set<string>) {
   let index = 0;
   field.name = findNotReservedName(field.name);
   while (variablesSet.has(field.name)) {
@@ -472,7 +505,7 @@ export function convertCodeToReadonly(tlbCode: TLBCodeBuild): TLBCode {
   });
   return new TLBCode(newTypes);
 }
-export function convertParameterToReadonly(
+function convertParameterToReadonly(
   tlbParameter: TLBParameterBuild
 ): TLBParameter {
   return new TLBParameter(
@@ -481,9 +514,7 @@ export function convertParameterToReadonly(
     tlbParameter.argName
   );
 }
-export function convertVariableToReadonly(
-  tlbVariable: TLBVariableBuild
-): TLBVariable {
+function convertVariableToReadonly(tlbVariable: TLBVariableBuild): TLBVariable {
   if (tlbVariable.name == undefined) {
     throw new Error("Variable is undefined");
   }
@@ -497,10 +528,7 @@ export function convertVariableToReadonly(
     tlbVariable.initialExpr
   );
 }
-export function calculateOpcode(
-  declaration: Declaration,
-  input: string[]
-): string {
+function calculateOpcode(declaration: Declaration, input: string[]): string {
   let scheme = getStringDeclaration(declaration, input);
   let constructor = scheme.substring(0, scheme.indexOf(" "));
   const rest = scheme.substring(scheme.indexOf(" "));
@@ -518,7 +546,7 @@ export function calculateOpcode(
       .trim();
   return (BigInt(crc32.str(scheme)) & BigInt(2147483647)).toString(16);
 }
-export function getStringDeclaration(
+function getStringDeclaration(
   declaration: Declaration,
   input: string[]
 ): string {
@@ -540,7 +568,7 @@ export function getStringDeclaration(
   }
   return result;
 }
-export function calculateVariables(constructor: TLBConstructorBuild) {
+function calculateVariables(constructor: TLBConstructorBuild) {
   constructor.variables.forEach((variable) => {
     calculateVariable(variable, constructor);
   });
@@ -548,4 +576,3 @@ export function calculateVariables(constructor: TLBConstructorBuild) {
     calculateVariable(parameter.variable, constructor);
   });
 }
-
