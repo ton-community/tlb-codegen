@@ -7,10 +7,11 @@ import {
   NegateExpr,
   NumberExpr
 } from "@igorivaniuk/tlb-parser/dist/ast/nodes";
+import * as crc32 from "crc-32";
 import { TLBBinaryOp, TLBCode, TLBConstructor, TLBConstructorTag, TLBField, TLBMathExpr, TLBNumberExpr, TLBParameter, TLBType, TLBVarExpr, TLBVariable } from "../ast";
 import { findNotReservedName } from "../utils";
 import { fillFields } from "./handle_field";
-import { TLBCodeBuild, TLBConstructorBuild, TLBParameterBuild, TLBTypeBuild, TLBVariableBuild, calculateOpcode, calculateVariables, convertToMathExpr, deriveMathExpression, getNegatedVariable, getStringDeclaration, opCodeSetsEqual, reorganizeExpression } from "./utils";
+import { TLBCodeBuild, TLBConstructorBuild, TLBParameterBuild, TLBTypeBuild, TLBVariableBuild, calculateVariable, convertToMathExpr, deriveMathExpression, getNegatedVariable, opCodeSetsEqual, reorganizeExpression } from "./utils";
 
 export function fillConstructors(
   declarations: Declaration[],
@@ -495,5 +496,56 @@ export function convertVariableToReadonly(
     tlbVariable.deriveExpr,
     tlbVariable.initialExpr
   );
+}
+export function calculateOpcode(
+  declaration: Declaration,
+  input: string[]
+): string {
+  let scheme = getStringDeclaration(declaration, input);
+  let constructor = scheme.substring(0, scheme.indexOf(" "));
+  const rest = scheme.substring(scheme.indexOf(" "));
+  if (constructor.includes("#")) {
+    constructor = constructor.substring(0, constructor.indexOf("#"));
+  }
+  scheme =
+    constructor +
+    " " +
+    rest
+      .replace(/\(/g, "")
+      .replace(/\)/g, "")
+      .replace(/\s+/g, " ")
+      .replace(/;/g, "")
+      .trim();
+  return (BigInt(crc32.str(scheme)) & BigInt(2147483647)).toString(16);
+}
+export function getStringDeclaration(
+  declaration: Declaration,
+  input: string[]
+): string {
+  let result = "";
+  let splittedInput = input;
+  let currentLine = declaration.locations.line - 1;
+  let currentColumn = 0;
+  while (!splittedInput[currentLine]?.includes(";")) {
+    result += splittedInput[currentLine]?.substring(currentColumn) + "\n";
+    currentLine++;
+    currentColumn = 0;
+  }
+  let currentInput = splittedInput[currentLine];
+  if (currentInput) {
+    result += currentInput.substring(
+      currentColumn,
+      currentInput.indexOf(";") + 1
+    );
+  }
+  return result;
+}
+export function calculateVariables(constructor: TLBConstructorBuild) {
+  constructor.variables.forEach((variable) => {
+    calculateVariable(variable, constructor);
+  });
+  constructor.parameters.forEach((parameter) => {
+    calculateVariable(parameter.variable, constructor);
+  });
 }
 
