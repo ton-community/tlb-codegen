@@ -3,9 +3,9 @@ import { TLBCode, TLBType } from "./ast";
 import {
   TLBCodeBuild,
   TLBTypeBuild,
-  convertCodeToReadonly,
-  fillConstructors,
 } from "./astbuilder/utils";
+import { convertCodeToReadonly } from "./astbuilder/fill_constructors";
+import { fillConstructors } from "./astbuilder/fill_constructors";
 import { CodeBuilder } from "./generators/CodeBuilder";
 import { CodeGenerator, CommonGenDeclaration } from "./generators/generator";
 import { TypescriptGenerator } from "./generators/typescript/generator";
