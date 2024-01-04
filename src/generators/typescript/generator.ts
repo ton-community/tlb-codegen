@@ -92,6 +92,116 @@ import {
   isBigInt,
 } from "./utils";
 
+/*
+
+Example for variables location in generated code:
+
+// bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
+
+// bool_true$1 b:# = TwoConstructors;
+
+
+
+//---------<CodeGenerator::jsCodeDeclarations>-------------------------------------------
+
+//---------<CodeGenerator::jsCodeConstructorDeclarations>--------------------------------
+export type TwoConstructors ---<ConstructorContext::typeName>--- = TwoConstructors_bool_false ---<ConstructorContext::name>--- | TwoConstructors_bool_true ---<ConstructorContext::name>---;
+
+//---------<TypescriptGenerator::addTlbType::constructorsDeclarations>-------------------
+
+export interface TwoConstructors_bool_false ---<ConstructorContext::name>--- {
+    //-------<ConstructorContext::Properties>--------------------------------------------
+    readonly kind: 'TwoConstructors_bool_false';
+    readonly a: number;
+    readonly b: number;
+    readonly c: number;
+    //-------</ConstructorContext::Properties>-------------------------------------------
+}
+
+export interface TwoConstructors_bool_true ---<ConstructorContext::name>--- {
+    //-------<ConstructorContext::Properties>--------------------------------------------
+    readonly kind: 'TwoConstructors_bool_true';
+    readonly b: number;
+    //-------</ConstructorContext::Properties>-------------------------------------------
+}
+//---------</TypescriptGenerator::addTlbType::constructorsDeclarations>------------------
+//---------</CodeGenerator::jsCodeConstructorDeclarations>-------------------------------
+
+//---------<CodeGenerator::jsCodeFunctionsDeclarations>----------------------------------
+export function loadTwoConstructors(slice: Slice): TwoConstructors {
+    //---------<TypescriptGenerator::addTlbType::loadStatements>-------------------------
+    if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
+        //------<ConstructorContext::LoadStatements>-------------------------------------
+        slice.loadUint(1);
+        let a: number = slice.loadUint(32);
+        let b: number = slice.loadUint(7);
+        let c: number = slice.loadUint(32);
+        return {
+            //------<ConstructorContext::loadProperties>---------------------------------
+            kind: 'TwoConstructors_bool_false',
+            a: a,
+            b: b,
+            c: c,
+            //------</ConstructorContext::loadProperties>--------------------------------
+        }
+        //------</ConstructorContext::LoadStatements>------------------------------------
+
+    }
+    if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+        //------<ConstructorContext::LoadStatements>-------------------------------------
+        slice.loadUint(1);
+        let b: number = slice.loadUint(32);
+        return {
+            //------<ConstructorContext::loadProperties>---------------------------------
+            kind: 'TwoConstructors_bool_true',
+            b: b,
+            //------</ConstructorContext::loadProperties>--------------------------------
+
+        }
+        //------</ConstructorContext::LoadStatements>------------------------------------
+
+
+    }
+    throw new Error('Expected one of "TwoConstructors_bool_false", "TwoConstructors_bool_true" in loading "TwoConstructors", but data does not satisfy any constructor');
+    //---------</TypescriptGenerator::addTlbType::loadStatements>------------------------
+}
+
+
+export function storeTwoConstructors(twoConstructors: TwoConstructors): (builder: Builder) => void {
+    //---------<TypescriptGenerator::addTlbType::storeStatements>------------------------
+    if ((twoConstructors.kind == 'TwoConstructors_bool_false')) {
+        return ((builder: Builder) => {
+            //--------<ConstructorContext::StoreStatements>------------------------------
+            builder.storeUint(0b0, 1);
+            builder.storeUint(twoConstructors.a, 32);
+            builder.storeUint(twoConstructors.b, 7);
+            builder.storeUint(twoConstructors.c, 32);
+            //--------</ConstructorContext::StoreStatements>-----------------------------
+        })
+
+    }
+    if ((twoConstructors.kind == 'TwoConstructors_bool_true')) {
+        return ((builder: Builder) => {
+            //--------<ConstructorContext::StoreStatements>------------------------------
+            builder.storeUint(0b1, 1);
+            builder.storeUint(twoConstructors.b, 32);
+            //--------</ConstructorContext::StoreStatements>-----------------------------
+        })
+
+    }
+    throw new Error('Expected one of "TwoConstructors_bool_false", "TwoConstructors_bool_true" in loading "TwoConstructors", but data does not satisfy any constructor');
+    //---------</TypescriptGenerator::addTlbType::storeStatements>-----------------------
+}
+
+//---------</CodeGenerator::jsCodeFunctionsDeclarations>---------------------------------
+
+//---------</CodeGenerator::jsCodeDeclarations>------------------------------------------
+
+
+*/
+
+
+
 export type ConstructorContext = {
   constructor: TLBConstructor;
   loadStatements: Statement[];
@@ -121,7 +231,7 @@ export class TypescriptGenerator implements CodeGenerator {
     this.jsCodeDeclarations.push(bitlenFunctionDecl());
   }
   addTlbType(tlbType: TLBType): void {
-    let variableCombinatorName = findNotReservedName(
+    let typeName = findNotReservedName(
       firstLower(tlbType.name),
       "0"
     );
@@ -143,7 +253,7 @@ export class TypescriptGenerator implements CodeGenerator {
           firstLower(constructorTypeName),
           "_" + constructor.name
         ),
-        typeName: variableCombinatorName,
+        typeName: typeName,
         loadStatements: [],
         loadProperties: [
           tObjectProperty(id("kind"), tStringLiteral(constructorTypeName)),
@@ -181,7 +291,7 @@ export class TypescriptGenerator implements CodeGenerator {
       constructor.constraints.forEach((constraint) => {
         this.genCodeForConstraint(
           constraint,
-          variableCombinatorName,
+          typeName,
           tlbType,
           ctx
         );
@@ -211,7 +321,7 @@ export class TypescriptGenerator implements CodeGenerator {
 
       if (tlbType.constructors.length > 1) {
         storeStatement = checkKindStmt(
-          variableCombinatorName,
+          typeName,
           constructorTypeName,
           storeStatement
         );
@@ -231,7 +341,7 @@ export class TypescriptGenerator implements CodeGenerator {
       structTypeParametersExpr
     );
     let storeFunctionParameters = [
-      tTypedIdentifier(id(variableCombinatorName), currentType),
+      tTypedIdentifier(id(typeName), currentType),
     ];
 
     this.addFunctionParameters(
