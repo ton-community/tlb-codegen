@@ -39,8 +39,8 @@ export type FieldInfoType = {
   typeParamExpr: TypeExpression | undefined;
   loadExpr: Expression | undefined;
   loadFunctionExpr: Expression | undefined;
-  storeExpr: Statement | undefined;
-  storeExpr2: Statement | undefined;
+  storeStmtOutside: Statement | undefined;
+  storeStmtInside: Statement | undefined;
   storeFunctionExpr: Expression | undefined;
   negatedVariablesLoads: Array<{ name: string; expression: Expression }>;
 };
@@ -142,10 +142,10 @@ export function addLoadProperty(
   ctx: ConstructorContext
 ) {
   let nameId = id(name);
-  ctx.constructorLoadStatements.push(
+  ctx.loadStatements.push(
     tExpressionStatement(tDeclareVariable(nameId, loadExpr, typeExpr))
   );
-  ctx.constructorLoadProperties.push(tObjectProperty(nameId, nameId));
+  ctx.loadProperties.push(tObjectProperty(nameId, nameId));
 }
 
 export function convertToAST(

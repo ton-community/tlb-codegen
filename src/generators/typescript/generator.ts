@@ -15,7 +15,40 @@ import {
 } from "../../utils";
 import { CodeBuilder } from "../CodeBuilder";
 import { CodeGenerator } from "../generator";
-import { arrayedType, bitlenFunctionDecl, checkConstraintStmt, checkHasBitsForTag, checkKindStmt, checkTagExpr, coverFuncCall, inSeparateRef, loadExprForParam, loadFromNewSlice, loadFunctionParam, loadRefStmt, loadTupleExpr, negationDerivationFuncDecl, newCellStmt, returnSliceFunc, skipTagStmt, sliceLoad, storeCombinator, storeExprCond, storeExprForParam, storeExpressionNamedType, storeFunctionExpr, storeFunctionParam, storeFunctionStmt, storeInNewCell, storeRefObjectStmt, storeRefStmt, storeTagExpression, storeTupleStmt, tEqualExpression, typedSlice } from "./complex_expr";
+import {
+  arrayedType,
+  bitlenFunctionDecl,
+  checkConstraintStmt,
+  checkHasBitsForTag,
+  checkKindStmt,
+  checkTagExpr,
+  coverFuncCall,
+  inSeparateRef,
+  loadExprForParam,
+  loadFromNewSlice,
+  loadFunctionParam,
+  loadRefStmt,
+  loadTupleExpr,
+  negationDerivationFuncDecl,
+  newCellStmt,
+  returnSliceFunc,
+  skipTagStmt,
+  sliceLoad,
+  storeCombinator,
+  storeExprCond,
+  storeExprForParam,
+  storeExpressionNamedType,
+  storeFunctionExpr,
+  storeFunctionParam,
+  storeFunctionStmt,
+  storeInNewCell,
+  storeRefObjectStmt,
+  storeRefStmt,
+  storeTagExpression,
+  storeTupleStmt,
+  tEqualExpression,
+  typedSlice,
+} from "./complex_expr";
 import {
   BinaryExpression,
   Expression,
@@ -61,12 +94,12 @@ import {
 
 export type ConstructorContext = {
   constructor: TLBConstructor;
-  constructorLoadStatements: Statement[];
-  constructorStoreStatements: Statement[];
-  constructorProperties: TypedIdentifier[];
-  constructorLoadProperties: ObjectProperty[];
-  variableCombinatorName: string;
-  variableSubStructName: string;
+  loadStatements: Statement[];
+  storeStatements: Statement[];
+  properties: TypedIdentifier[];
+  loadProperties: ObjectProperty[];
+  typeName: string;
+  name: string;
 };
 
 export class TypescriptGenerator implements CodeGenerator {
@@ -106,19 +139,19 @@ export class TypescriptGenerator implements CodeGenerator {
 
       let ctx: ConstructorContext = {
         constructor: constructor,
-        variableSubStructName: findNotReservedName(
+        name: findNotReservedName(
           firstLower(constructorTypeName),
           "_" + constructor.name
         ),
-        variableCombinatorName: variableCombinatorName,
-        constructorLoadStatements: [],
-        constructorLoadProperties: [
+        typeName: variableCombinatorName,
+        loadStatements: [],
+        loadProperties: [
           tObjectProperty(id("kind"), tStringLiteral(constructorTypeName)),
         ],
-        constructorProperties: [
+        properties: [
           tTypedIdentifier(id("kind"), tStringLiteral(constructorTypeName)),
         ],
-        constructorStoreStatements: [],
+        storeStatements: [],
       };
 
       structTypeParametersExpr = getTypeParametersExpression(
@@ -141,7 +174,7 @@ export class TypescriptGenerator implements CodeGenerator {
 
       let structX = tStructDeclaration(
         id(constructorTypeName),
-        ctx.constructorProperties,
+        ctx.properties,
         structTypeParametersExpr
       );
 
@@ -154,8 +187,8 @@ export class TypescriptGenerator implements CodeGenerator {
         );
       });
 
-      ctx.constructorLoadStatements.push(
-        tReturnStatement(tObjectExpression(ctx.constructorLoadProperties))
+      ctx.loadStatements.push(
+        tReturnStatement(tObjectExpression(ctx.loadProperties))
       );
       loadStatements = this.constructorStmtsToTypeStmts(
         constructor,
@@ -165,7 +198,7 @@ export class TypescriptGenerator implements CodeGenerator {
       );
 
       if (constructor.tag.bitLen != 0) {
-        ctx.constructorStoreStatements.splice(
+        ctx.storeStatements.splice(
           0,
           0,
           storeTagExpression(constructor.tag)
@@ -173,7 +206,7 @@ export class TypescriptGenerator implements CodeGenerator {
       }
 
       let storeStatement: Statement = storeFunctionStmt(
-        ctx.constructorStoreStatements
+        ctx.storeStatements
       );
 
       if (tlbType.constructors.length > 1) {
@@ -312,8 +345,8 @@ export class TypescriptGenerator implements CodeGenerator {
         let loadBitsStatement: Statement[] = [
           skipTagStmt(constructor.tag.bitLen),
         ];
-        ctx.constructorLoadStatements = loadBitsStatement.concat(
-          ctx.constructorLoadStatements
+        ctx.loadStatements = loadBitsStatement.concat(
+          ctx.loadStatements
         );
       }
       constructor.parameters.forEach((param) => {
@@ -328,10 +361,10 @@ export class TypescriptGenerator implements CodeGenerator {
         }
       });
       loadStatements.push(
-        tIfStatement(getCondition(conditions), ctx.constructorLoadStatements)
+        tIfStatement(getCondition(conditions), ctx.loadStatements)
       );
     } else {
-      loadStatements = loadStatements.concat(ctx.constructorLoadStatements);
+      loadStatements = loadStatements.concat(ctx.loadStatements);
     }
     return loadStatements;
   }
@@ -352,10 +385,10 @@ export class TypescriptGenerator implements CodeGenerator {
       tlbType,
       ctx.constructor
     )}" for type "${tlbType.name}"`;
-    ctx.constructorLoadStatements.push(
+    ctx.loadStatements.push(
       checkConstraintStmt(loadConstraintAST, exceptionCommentLastPart)
     );
-    ctx.constructorStoreStatements.push(
+    ctx.storeStatements.push(
       checkConstraintStmt(storeConstraintAST, exceptionCommentLastPart)
     );
   }
@@ -374,7 +407,7 @@ export class TypescriptGenerator implements CodeGenerator {
     }
 
     if (variable.type == "#" && !variable.isField) {
-      ctx.constructorProperties.push(
+      ctx.properties.push(
         tTypedIdentifier(id(variable.name), id("number"))
       );
       let parameter = constructor.parametersMap.get(variable.name);
@@ -388,7 +421,7 @@ export class TypescriptGenerator implements CodeGenerator {
     }
 
     if (varExpr) {
-      ctx.constructorLoadProperties.push(
+      ctx.loadProperties.push(
         tObjectProperty(id(variable.name), varExpr)
       );
     }
@@ -408,16 +441,16 @@ export class TypescriptGenerator implements CodeGenerator {
 
     if (field.subFields.length > 0) {
       inSeparateRef(slicePrefix, () => {
-        ctx.constructorLoadStatements.push(
+        ctx.loadStatements.push(
           sliceLoad(slicePrefix, currentSlice)
         );
-        ctx.constructorStoreStatements.push(newCellStmt(slicePrefix));
+        ctx.storeStatements.push(newCellStmt(slicePrefix));
 
         field.subFields.forEach((fieldDef) => {
           this.handleField(fieldDef, slicePrefix, ctx);
         });
 
-        ctx.constructorStoreStatements.push(
+        ctx.storeStatements.push(
           storeRefStmt(slicePrefix, currentCell)
         );
       });
@@ -425,7 +458,7 @@ export class TypescriptGenerator implements CodeGenerator {
 
     if (field.fieldType.kind == "TLBExoticType") {
       inSeparateRef(slicePrefix, () => {
-        ctx.constructorLoadStatements.push(
+        ctx.loadStatements.push(
           loadRefStmt(slicePrefix, currentSlice)
         );
         addLoadProperty(
@@ -434,10 +467,10 @@ export class TypescriptGenerator implements CodeGenerator {
           undefined,
           ctx
         );
-        ctx.constructorProperties.push(
+        ctx.properties.push(
           tTypedIdentifier(id(field.name), id("Cell"))
         );
-        ctx.constructorStoreStatements.push(
+        ctx.storeStatements.push(
           storeRefObjectStmt(currentCell, ctx, field)
         );
       });
@@ -462,12 +495,12 @@ export class TypescriptGenerator implements CodeGenerator {
         );
       }
       if (fieldInfo.typeParamExpr) {
-        ctx.constructorProperties.push(
+        ctx.properties.push(
           tTypedIdentifier(id(field.name), fieldInfo.typeParamExpr)
         );
       }
-      if (fieldInfo.storeExpr) {
-        ctx.constructorStoreStatements.push(fieldInfo.storeExpr);
+      if (fieldInfo.storeStmtOutside) {
+        ctx.storeStatements.push(fieldInfo.storeStmtOutside);
       }
       fieldInfo.negatedVariablesLoads.forEach((element) => {
         addLoadProperty(element.name, element.expression, undefined, ctx);
@@ -497,8 +530,8 @@ export class TypescriptGenerator implements CodeGenerator {
       typeParamExpr: undefined,
       loadExpr: undefined,
       loadFunctionExpr: undefined,
-      storeExpr: undefined,
-      storeExpr2: undefined,
+      storeStmtOutside: undefined,
+      storeStmtInside: undefined,
       storeFunctionExpr: undefined,
       negatedVariablesLoads: [],
     };
@@ -507,12 +540,12 @@ export class TypescriptGenerator implements CodeGenerator {
 
     let storeExpr2: Statement | undefined;
 
-    let insideStoreParameters: Expression[];
+    let storeParametersOutside: Expression[];
 
-    insideStoreParameters = [
-      tMemberExpression(id(ctx.variableCombinatorName), id(fieldName)),
+    storeParametersOutside = [
+      tMemberExpression(id(ctx.typeName), id(fieldName)),
     ]; // TODO: use only field
-    let insideStoreParameters2: Expression[] = [id("arg")];
+    let storeParametersInside: Expression[] = [id("arg")];
 
     if (fieldType.kind == "TLBNumberType") {
       exprForParam = {
@@ -520,7 +553,7 @@ export class TypescriptGenerator implements CodeGenerator {
         argStoreExpr: convertToAST(
           fieldType.storeBits,
           ctx.constructor,
-          id(ctx.variableCombinatorName)
+          id(ctx.typeName)
         ),
         paramType: "number",
         fieldLoadSuffix: fieldType.signed ? "Int" : "Uint",
@@ -536,7 +569,7 @@ export class TypescriptGenerator implements CodeGenerator {
         argStoreExpr: convertToAST(
           fieldType.bits,
           ctx.constructor,
-          id(ctx.variableSubStructName)
+          id(ctx.name)
         ),
         paramType: "BitString",
         fieldLoadSuffix: "Bits",
@@ -568,10 +601,10 @@ export class TypescriptGenerator implements CodeGenerator {
       };
     } else if (fieldType.kind == "TLBExprMathType") {
       result.loadExpr = convertToAST(fieldType.expr, ctx.constructor);
-      result.storeExpr = tExpressionStatement(result.loadExpr);
+      result.storeStmtOutside = tExpressionStatement(result.loadExpr);
     } else if (fieldType.kind == "TLBNegatedType") {
       let getParameterFunctionId = id(
-        ctx.variableSubStructName + "_get_" + fieldType.variableName
+        ctx.name + "_get_" + fieldType.variableName
       );
       if (field.fieldType.kind == "TLBNamedType") {
         let fieldTypeName = field.fieldType.name;
@@ -597,19 +630,19 @@ export class TypescriptGenerator implements CodeGenerator {
       result.typeParamExpr = id(typeName);
       if (isField) {
         result.loadExpr = tFunctionCall(id("load" + typeName), [id(theSlice)]);
-        result.storeExpr = storeExpressionNamedType(
+        result.storeStmtOutside = storeExpressionNamedType(
           typeName,
-          insideStoreParameters,
+          storeParametersOutside,
           currentCell
         );
         storeExpr2 = storeExpressionNamedType(
           typeName,
-          insideStoreParameters2,
+          storeParametersInside,
           currentCell
         );
       } else {
         result.loadExpr = id("load" + typeName);
-        result.storeExpr = tExpressionStatement(id("store" + typeName));
+        result.storeStmtOutside = tExpressionStatement(id("store" + typeName));
       }
     } else if (fieldType.kind == "TLBCondType") {
       let subExprInfo: FieldInfoType;
@@ -636,11 +669,11 @@ export class TypescriptGenerator implements CodeGenerator {
           id("undefined")
         );
       }
-      let currentParam = insideStoreParameters[0];
-      let currentParam2 = insideStoreParameters2[0];
-      if (currentParam && currentParam2 && subExprInfo.storeExpr) {
-        result.storeExpr = storeExprCond(currentParam, subExprInfo.storeExpr);
-        storeExpr2 = storeExprCond(currentParam2, subExprInfo.storeExpr);
+      let currentParam = storeParametersOutside[0];
+      let currentParam2 = storeParametersInside[0];
+      if (currentParam && currentParam2 && subExprInfo.storeStmtOutside) {
+        result.storeStmtOutside = storeExprCond(currentParam, subExprInfo.storeStmtOutside);
+        storeExpr2 = storeExprCond(currentParam2, subExprInfo.storeStmtOutside);
       }
     } else if (fieldType.kind == "TLBMultipleType") {
       let arrayLength: Expression;
@@ -654,8 +687,8 @@ export class TypescriptGenerator implements CodeGenerator {
         slicePrefix,
         argIndex
       );
-      let currentParam = insideStoreParameters[0];
-      let currentParam2 = insideStoreParameters2[0];
+      let currentParam = storeParametersOutside[0];
+      let currentParam2 = storeParametersInside[0];
       if (subExprInfo.loadExpr) {
         result.loadExpr = loadTupleExpr(arrayLength, subExprInfo.loadExpr);
       }
@@ -663,17 +696,17 @@ export class TypescriptGenerator implements CodeGenerator {
         currentParam &&
         currentParam2 &&
         subExprInfo.typeParamExpr &&
-        subExprInfo.storeExpr
+        subExprInfo.storeStmtOutside
       ) {
-        if (subExprInfo.storeFunctionExpr && subExprInfo.storeExpr2) {
-          result.storeExpr = storeTupleStmt(
+        if (subExprInfo.storeFunctionExpr && subExprInfo.storeStmtInside) {
+          result.storeStmtOutside = storeTupleStmt(
             currentParam,
-            subExprInfo.storeExpr2,
+            subExprInfo.storeStmtInside,
             subExprInfo.typeParamExpr
           );
           storeExpr2 = storeTupleStmt(
             currentParam2,
-            subExprInfo.storeExpr2,
+            subExprInfo.storeStmtInside,
             subExprInfo.typeParamExpr
           );
         }
@@ -684,8 +717,7 @@ export class TypescriptGenerator implements CodeGenerator {
     } else if (fieldType.kind == "TLBCellInsideType") {
       let currentCell = getCurrentSlice([1, 0], "cell");
 
-      let subExprInfo: FieldInfoType;
-      subExprInfo = this.handleType(
+      let subExprInfo: FieldInfoType = this.handleType(
         field,
         fieldType.value,
         true,
@@ -695,18 +727,18 @@ export class TypescriptGenerator implements CodeGenerator {
       );
       if (subExprInfo.loadExpr) {
         result.typeParamExpr = subExprInfo.typeParamExpr;
-        result.storeExpr = subExprInfo.storeExpr;
+        result.storeStmtOutside = subExprInfo.storeStmtOutside;
         result.negatedVariablesLoads = subExprInfo.negatedVariablesLoads;
         result.loadFunctionExpr = loadFromNewSlice(subExprInfo.loadExpr);
         result.loadExpr = tFunctionCall(result.loadFunctionExpr, [
           id(theSlice),
         ]);
       }
-      if (subExprInfo.storeExpr) {
-        result.storeExpr = storeInNewCell(currentCell, subExprInfo.storeExpr);
+      if (subExprInfo.storeStmtOutside) {
+        result.storeStmtOutside = storeInNewCell(currentCell, subExprInfo.storeStmtOutside);
       }
-      if (subExprInfo.storeExpr2) {
-        storeExpr2 = storeInNewCell(currentCell, subExprInfo.storeExpr2);
+      if (subExprInfo.storeStmtInside) {
+        storeExpr2 = storeInNewCell(currentCell, subExprInfo.storeStmtInside);
       }
     } else if (fieldType.kind == "TLBNamedType" && fieldType.arguments.length) {
       let typeName = fieldType.name;
@@ -751,16 +783,16 @@ export class TypescriptGenerator implements CodeGenerator {
         insideLoadParameters.concat(loadFunctionsArray),
         currentTypeParameters
       );
-      result.storeExpr = storeCombinator(
+      result.storeStmtOutside = storeCombinator(
         typeName,
-        insideStoreParameters,
+        storeParametersOutside,
         storeFunctionsArray,
         currentTypeParameters,
         theCell
       );
       storeExpr2 = storeCombinator(
         typeName,
-        insideStoreParameters2,
+        storeParametersInside,
         storeFunctionsArray,
         currentTypeParameters,
         theCell
@@ -776,8 +808,8 @@ export class TypescriptGenerator implements CodeGenerator {
         exprForParam.paramType != "Slice"
       ) {
         if (exprForParam.argStoreExpr) {
-          insideStoreParameters.push(exprForParam.argStoreExpr);
-          insideStoreParameters2.push(exprForParam.argStoreExpr);
+          storeParametersOutside.push(exprForParam.argStoreExpr);
+          storeParametersInside.push(exprForParam.argStoreExpr);
         }
       }
       result.loadExpr = loadExprForParam(currentSlice, exprForParam);
@@ -786,33 +818,44 @@ export class TypescriptGenerator implements CodeGenerator {
         result.loadFunctionExpr = returnSliceFunc();
       }
       result.typeParamExpr = id(exprForParam.paramType);
-      result.storeExpr = storeExprForParam(theCell, exprForParam, insideStoreParameters);
-      storeExpr2 = storeExprForParam(theCell, exprForParam, insideStoreParameters2);
+      result.storeStmtOutside = storeExprForParam(
+        theCell,
+        exprForParam,
+        storeParametersOutside
+      );
+      storeExpr2 = storeExprForParam(
+        theCell,
+        exprForParam,
+        storeParametersInside
+      );
     }
 
     if (result.loadExpr && !result.loadFunctionExpr) {
-        result.loadFunctionExpr = coverFuncCall(result.loadExpr);
+      result.loadFunctionExpr = coverFuncCall(result.loadExpr);
     }
-    if (result.storeExpr && !result.storeFunctionExpr) {
+    if (result.storeStmtOutside && !result.storeFunctionExpr) {
       if (!storeExpr2) {
-        storeExpr2 = result.storeExpr;
+        storeExpr2 = result.storeStmtOutside;
       }
       if (result.typeParamExpr) {
         if (
-          (result.storeExpr.type == "ExpressionStatement" &&
-            result.storeExpr.expression.type == "FunctionCall") ||
-          result.storeExpr.type == "MultiStatement"
+          (result.storeStmtOutside.type == "ExpressionStatement" &&
+            result.storeStmtOutside.expression.type == "FunctionCall") ||
+          result.storeStmtOutside.type == "MultiStatement"
         ) {
-          result.storeFunctionExpr = storeFunctionExpr(result.typeParamExpr, storeExpr2);
+          result.storeFunctionExpr = storeFunctionExpr(
+            result.typeParamExpr,
+            storeExpr2
+          );
         } else {
-          if (result.storeExpr.type == "ExpressionStatement") {
-            result.storeFunctionExpr = result.storeExpr.expression;
+          if (result.storeStmtOutside.type == "ExpressionStatement") {
+            result.storeFunctionExpr = result.storeStmtOutside.expression;
           }
         }
       }
     }
 
-    result.storeExpr2 = storeExpr2;
+    result.storeStmtInside = storeExpr2;
     return result;
   }
 }

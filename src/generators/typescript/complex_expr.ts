@@ -262,7 +262,7 @@ export function storeRefObjectStmt(
 ): Statement {
   return tExpressionStatement(
     tFunctionCall(tMemberExpression(id(currentCell), id("storeRef")), [
-      tMemberExpression(id(ctx.variableCombinatorName), id(field.name)),
+      tMemberExpression(id(ctx.typeName), id(field.name)),
     ])
   );
 }
