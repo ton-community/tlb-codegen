@@ -452,7 +452,7 @@ export function tTernaryExpression(
   };
 }
 
-export function toCodeArray(
+function toCodeArray(
   nodeArray: Array<TheNode>,
   code: CodeBuilder,
   delimeter: string

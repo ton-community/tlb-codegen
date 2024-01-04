@@ -16,7 +16,7 @@ import { TLBField } from "../ast";
 import { getType } from "./handle_type";
 import { TLBConstructorBuild, TLBTypeBuild } from "./utils";
 
-export function getField(
+function getField(
   field: FieldDefinition,
   constructor: TLBConstructorBuild,
   fieldIndex: string

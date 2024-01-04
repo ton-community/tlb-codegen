@@ -25,10 +25,6 @@ import {
   splitForTypeValue,
 } from "./utils";
 
-export type TypeContext = {
-  fieldName: string;
-};
-
 export function getType(
   expr: ParserExpression,
   constructor: TLBConstructorBuild,
