@@ -1,0 +1,140 @@
+tmpa$_ a:# b:# = Simple;
+
+bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
+bool_true$1 b:# = TwoConstructors; 
+
+tmpb$_ y:(## 5) = FixedIntParam;
+tmpc$_ y:FixedIntParam c:# = TypedField;
+tmpd#_ y:FixedIntParam c:# = SharpConstructor;
+
+nothing$0 {TheType:Type} = Maybe TheType;
+just$1 {TheType:Type} value:TheType = Maybe TheType;
+thejust$_ x:(Maybe SharpConstructor) = TypedParam;
+
+left$0 {X:Type} {Y:Type} value:X = Either X Y;
+right$1 {X:Type} {Y:Type} value:Y = Either X Y;
+
+a$_ {x:#} value:(## x) = BitLenArg x;
+a$_ t:(BitLenArg 4) = BitLenArgUser;
+
+a$_ {x:#} value:(## x) = ExprArg (2 + x);
+a$_ t:(ExprArg 6) = ExprArgUser;
+
+a$_ a:ExprArgUser = ComplexTypedField;
+a$_ a:^ExprArgUser = CellTypedField;
+
+a$_ t:# ^[ q:# ] ^[ a:(## 32) ^[ e:# ] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = CellsSimple;
+
+b$_ d:int11 g:bits2 {Arg:Type} arg:Arg x:Any = IntBits Arg; 
+a$_ {x:#} a:(IntBits (int (1 + x))) = IntBitsInside (x * 2);
+a$_ x:(IntBitsInside 6) = IntBitsOutside;
+
+a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntBitsParametrized e;
+a$_ {x:#} a:(IntBitsParametrized x) = IntBitsParametrizedInside x;
+a$_ x:(IntBitsParametrizedInside 5) = IntBitsParametrizedOutside;
+
+a$_ x:(#< 4) y:(#<= 4) = LessThan;
+
+a$_ {A:Type} t:# x:A = OneComb A;
+a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;
+
+unary_zero$0 = Unary ~0;
+unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
+
+a$_ n:# = ParamConst 1 1;
+b$01 m:# k:# = ParamConst 2 1;
+c$01 n:# m:# k:# = ParamConst 3 3;
+d$_ n:# m:# k:# l:# = ParamConst 4 2;
+
+a$0 = ParamDifNames 2 ~1;
+b$1 = ParamDifNames 3 ~1;
+c$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
+d$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
+e$0 {k:#} x:(ParamDifNames 2 ~k) = ParamDifNamesUser;
+
+b$1 {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit ~(y + 1);
+
+hm_edge#_ {l:#} {m:#} label:(Unary ~l) {7 = (~m) + l} = UnaryUserCheckOrder;
+
+a$_ {X:Type} info:int32
+  init:(Maybe (Either X ^int22))
+  other:(Either X ^(OneComb X))
+  body:(Either X ^X) = CombArgCellRef X;
+a$_ x:(CombArgCellRef int12) = CombArgCellRefUser;
+
+a$_ {n:#} ref:^(BitLenArg (n + 2)) = MathExprAsCombArg (n + 2);
+
+_ a:# = EmptyTag;
+
+a#f4 x:# = SharpTag;
+a$1011 x:# = DollarTag;
+
+a$_ s:(3 * int5) = TupleCheck;
+
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+          {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
+
+hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+           right:^(Hashmap n X) = HashmapNode (n + 1) X;
+
+hml_short$0 {m:#} {n:#} len:(Unary ~n) {n <= m} s:(n * Bit) = HmLabel ~n m;
+hml_long$10 {m:#} n:(#<= m) s:(n * Bit) = HmLabel ~n m;
+hml_same$11 {m:#} v:Bit n:(#<= m) = HmLabel ~n m;
+
+hme_empty$0 {n:#} {X:Type} = HashmapE n X;
+hme_root$1 {n:#} {X:Type} root:^(Hashmap n X) = HashmapE n X;
+
+a$_ x:(HashmapE 8 uint16) = HashmapEUser;
+
+_ a:(## 1) b:a?(## 32) = ConditionalField;
+
+_ a:(## 6) b:(a . 2)?(## 32) = BitSelection;
+
+_ flags:(## 10) { flags <= 100 } = ImplicitCondition;
+
+_ a:# = MultipleEmptyConstructor 0;
+_ b:(## 5) = MultipleEmptyConstructor 1;
+a$_ x:(## 6) = MultipleEmptyConstructor 2; 
+
+true$_ = True;
+
+a$0 {n:#} = ParamNamedArgInSecondConstr n;
+b$1 {n:#} = ParamNamedArgInSecondConstr (n + 1);
+
+a$_ msg:^(Maybe Any) = RefCombinatorAny;
+
+a$_ n:# { 5 + n = 7 } = EqualityExpression;
+
+a$_ x:(## 1) y:x?^Simple = ConditionalRef;
+
+block_info#9bc7a987 seq_no:# { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no } = LoadFromNegationOutsideExpr;
+
+bit$_ (## 1) anon0:# = AnonymousData;
+
+vm_stk_int#0201_ value:int257 = FalseAnonField;
+
+_ Simple = ConstructorOrder;
+a$0 a:Simple = ConstructorOrder;
+
+a a:#  = CheckCrc32;
+b b:# c:# = CheckCrc32;
+
+a$_ const:# = CheckKeyword;
+
+a$_ {X:Type} t:# y:(Maybe ^X) = RefCombinatorInRefHelper X; 
+a$_ msg:^(RefCombinatorInRefHelper Any) = RefCombinatorInRef;
+
+bool_false$0 = Bool;
+bool_true$1 = Bool;
+
+_ a:Bool = BoolUser;
+
+anycast_info$_ depth:(#<= 30) { depth >= 1 }
+   rewrite_pfx:(bits depth) = Anycast;
+addr_std$10 anycast:(Maybe Anycast) 
+   workchain_id:int8 address:bits256  = MsgAddressInt;
+addr_var$11 anycast:(Maybe Anycast) addr_len:(## 9) 
+   workchain_id:int32 address:(bits addr_len) = MsgAddressInt;
+
+_ src:MsgAddressInt = AddressUser;
