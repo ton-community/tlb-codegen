@@ -221,6 +221,8 @@ export function getType(
       return { kind: "TLBAddressType" };
     } else if (expr.name == "Bit") {
       return { kind:"TLBBitsType", bits: new TLBNumberExpr(1) }
+    } else if (expr.name == "Grams") {
+      return { kind:"TLBCoinsType"}
     } else {
       if (constructor.variablesMap.get(expr.name)?.type == "#") {
         return {

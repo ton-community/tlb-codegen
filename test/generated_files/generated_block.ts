@@ -298,14 +298,9 @@ export interface VarInteger {
     readonly value: bigint;
 }
 
-export interface Grams {
-    readonly kind: 'Grams';
-    readonly amount: VarUInteger;
-}
-
 export interface Coins {
     readonly kind: 'Coins';
-    readonly grams: Grams;
+    readonly grams: bigint;
 }
 
 export interface ExtraCurrencyCollection {
@@ -315,7 +310,7 @@ export interface ExtraCurrencyCollection {
 
 export interface CurrencyCollection {
     readonly kind: 'CurrencyCollection';
-    readonly grams: Grams;
+    readonly grams: bigint;
     readonly other: ExtraCurrencyCollection;
 }
 
@@ -329,8 +324,8 @@ export interface CommonMsgInfo_int_msg_info {
     readonly src: Address;
     readonly dest: Address;
     readonly value: CurrencyCollection;
-    readonly ihr_fee: Grams;
-    readonly fwd_fee: Grams;
+    readonly ihr_fee: bigint;
+    readonly fwd_fee: bigint;
     readonly created_lt: number;
     readonly created_at: number;
 }
@@ -339,7 +334,7 @@ export interface CommonMsgInfo_ext_in_msg_info {
     readonly kind: 'CommonMsgInfo_ext_in_msg_info';
     readonly src: MsgAddressExt;
     readonly dest: Address;
-    readonly import_fee: Grams;
+    readonly import_fee: bigint;
 }
 
 export interface CommonMsgInfo_ext_out_msg_info {
@@ -360,8 +355,8 @@ export interface CommonMsgInfoRelaxed_int_msg_info {
     readonly src: MsgAddress;
     readonly dest: Address;
     readonly value: CurrencyCollection;
-    readonly ihr_fee: Grams;
-    readonly fwd_fee: Grams;
+    readonly ihr_fee: bigint;
+    readonly fwd_fee: bigint;
     readonly created_lt: number;
     readonly created_at: number;
 }
@@ -446,7 +441,7 @@ export interface MsgEnvelope {
     readonly kind: 'MsgEnvelope';
     readonly cur_addr: IntermediateAddress;
     readonly next_addr: IntermediateAddress;
-    readonly fwd_fee_remaining: Grams;
+    readonly fwd_fee_remaining: bigint;
     readonly msg: Message<Slice>;
 }
 
@@ -462,7 +457,7 @@ export interface InMsg_msg_import_ihr {
     readonly kind: 'InMsg_msg_import_ihr';
     readonly msg: Message<Slice>;
     readonly transaction: Transaction;
-    readonly ihr_fee: Grams;
+    readonly ihr_fee: bigint;
     readonly proof_created: Slice;
 }
 
@@ -470,41 +465,41 @@ export interface InMsg_msg_import_imm {
     readonly kind: 'InMsg_msg_import_imm';
     readonly in_msg: MsgEnvelope;
     readonly transaction: Transaction;
-    readonly fwd_fee: Grams;
+    readonly fwd_fee: bigint;
 }
 
 export interface InMsg_msg_import_fin {
     readonly kind: 'InMsg_msg_import_fin';
     readonly in_msg: MsgEnvelope;
     readonly transaction: Transaction;
-    readonly fwd_fee: Grams;
+    readonly fwd_fee: bigint;
 }
 
 export interface InMsg_msg_import_tr {
     readonly kind: 'InMsg_msg_import_tr';
     readonly in_msg: MsgEnvelope;
     readonly out_msg: MsgEnvelope;
-    readonly transit_fee: Grams;
+    readonly transit_fee: bigint;
 }
 
 export interface InMsg_msg_discard_fin {
     readonly kind: 'InMsg_msg_discard_fin';
     readonly in_msg: MsgEnvelope;
     readonly transaction_id: number;
-    readonly fwd_fee: Grams;
+    readonly fwd_fee: bigint;
 }
 
 export interface InMsg_msg_discard_tr {
     readonly kind: 'InMsg_msg_discard_tr';
     readonly in_msg: MsgEnvelope;
     readonly transaction_id: number;
-    readonly fwd_fee: Grams;
+    readonly fwd_fee: bigint;
     readonly proof_delivered: Slice;
 }
 
 export interface ImportFees {
     readonly kind: 'ImportFees';
-    readonly fees_collected: Grams;
+    readonly fees_collected: bigint;
     readonly value_imported: CurrencyCollection;
 }
 
@@ -627,7 +622,7 @@ export interface StorageInfo {
     readonly kind: 'StorageInfo';
     readonly used: StorageUsed;
     readonly last_paid: number;
-    readonly due_payment: Maybe<Grams>;
+    readonly due_payment: Maybe<bigint>;
 }
 
 export type Account = Account_account_none | Account_account;
@@ -754,8 +749,8 @@ export interface ShardAccountBlocks {
 
 export interface TrStoragePhase {
     readonly kind: 'TrStoragePhase';
-    readonly storage_fees_collected: Grams;
-    readonly storage_fees_due: Maybe<Grams>;
+    readonly storage_fees_collected: bigint;
+    readonly storage_fees_due: Maybe<bigint>;
     readonly status_change: AccStatusChange;
 }
 
@@ -775,7 +770,7 @@ export interface AccStatusChange_acst_deleted {
 
 export interface TrCreditPhase {
     readonly kind: 'TrCreditPhase';
-    readonly due_fees_collected: Maybe<Grams>;
+    readonly due_fees_collected: Maybe<bigint>;
     readonly credit: CurrencyCollection;
 }
 
@@ -791,7 +786,7 @@ export interface TrComputePhase_tr_phase_compute_vm {
     readonly success: boolean;
     readonly msg_state_used: boolean;
     readonly account_activated: boolean;
-    readonly gas_fees: Grams;
+    readonly gas_fees: bigint;
     readonly gas_used: VarUInteger;
     readonly gas_limit: VarUInteger;
     readonly gas_credit: Maybe<VarUInteger>;
@@ -827,8 +822,8 @@ export interface TrActionPhase {
     readonly valid: boolean;
     readonly no_funds: boolean;
     readonly status_change: AccStatusChange;
-    readonly total_fwd_fees: Maybe<Grams>;
-    readonly total_action_fees: Maybe<Grams>;
+    readonly total_fwd_fees: Maybe<bigint>;
+    readonly total_action_fees: Maybe<bigint>;
     readonly result_code: number;
     readonly result_arg: Maybe<number>;
     readonly tot_actions: number;
@@ -848,14 +843,14 @@ export interface TrBouncePhase_tr_phase_bounce_negfunds {
 export interface TrBouncePhase_tr_phase_bounce_nofunds {
     readonly kind: 'TrBouncePhase_tr_phase_bounce_nofunds';
     readonly msg_size: StorageUsedShort;
-    readonly req_fwd_fees: Grams;
+    readonly req_fwd_fees: bigint;
 }
 
 export interface TrBouncePhase_tr_phase_bounce_ok {
     readonly kind: 'TrBouncePhase_tr_phase_bounce_ok';
     readonly msg_size: StorageUsedShort;
-    readonly msg_fees: Grams;
-    readonly fwd_fees: Grams;
+    readonly msg_fees: bigint;
+    readonly fwd_fees: bigint;
 }
 
 export type TransactionDescr = TransactionDescr_trans_ord | TransactionDescr_trans_storage | TransactionDescr_trans_tick_tock | TransactionDescr_trans_split_prepare | TransactionDescr_trans_split_install | TransactionDescr_trans_merge_prepare | TransactionDescr_trans_merge_install;
@@ -1472,8 +1467,8 @@ export interface ConfigParam__5 {
 
 export interface ConfigParam__6 {
     readonly kind: 'ConfigParam__6';
-    readonly mint_new_price: Grams;
-    readonly mint_add_price: Grams;
+    readonly mint_new_price: bigint;
+    readonly mint_add_price: bigint;
 }
 
 export interface ConfigParam__7 {
@@ -1533,9 +1528,9 @@ export interface ConfigParam__16 {
 
 export interface ConfigParam__17 {
     readonly kind: 'ConfigParam__17';
-    readonly min_stake: Grams;
-    readonly max_stake: Grams;
-    readonly min_total_stake: Grams;
+    readonly min_stake: bigint;
+    readonly max_stake: bigint;
+    readonly min_total_stake: bigint;
     readonly max_stake_factor: number;
 }
 
@@ -1786,15 +1781,15 @@ export interface WorkchainDescr_workchain_v2 {
 
 export interface ComplaintPricing {
     readonly kind: 'ComplaintPricing';
-    readonly deposit: Grams;
-    readonly bit_price: Grams;
-    readonly _cell_price: Grams;
+    readonly deposit: bigint;
+    readonly bit_price: bigint;
+    readonly _cell_price: bigint;
 }
 
 export interface BlockCreateFees {
     readonly kind: 'BlockCreateFees';
-    readonly masterchain_block_fee: Grams;
-    readonly basechain_block_fee: Grams;
+    readonly masterchain_block_fee: bigint;
+    readonly basechain_block_fee: bigint;
 }
 
 export interface StoragePrices {
@@ -1955,7 +1950,7 @@ export interface ValidatorSignedTempKey {
 
 export interface MisbehaviourPunishmentConfig {
     readonly kind: 'MisbehaviourPunishmentConfig';
-    readonly default_flat_fine: Grams;
+    readonly default_flat_fine: bigint;
     readonly default_proportional_fine: number;
     readonly severity_flat_mult: number;
     readonly severity_proportional_mult: number;
@@ -2113,8 +2108,8 @@ export interface ValidatorComplaint {
     readonly created_at: number;
     readonly severity: number;
     readonly reward_addr: bigint;
-    readonly paid: Grams;
-    readonly suggested_fine: Grams;
+    readonly paid: bigint;
+    readonly suggested_fine: bigint;
     readonly suggested_fine_part: number;
 }
 
@@ -2441,7 +2436,7 @@ export interface ChanConfig {
     readonly a_addr: Address;
     readonly b_addr: Address;
     readonly channel_id: number;
-    readonly min_A_extra: Grams;
+    readonly min_A_extra: bigint;
 }
 
 export type ChanState = ChanState_chan_state_init | ChanState_chan_state_close | ChanState_chan_state_payout;
@@ -2450,35 +2445,35 @@ export interface ChanState_chan_state_init {
     readonly kind: 'ChanState_chan_state_init';
     readonly signed_A: boolean;
     readonly signed_B: boolean;
-    readonly min_A: Grams;
-    readonly min_B: Grams;
+    readonly min_A: bigint;
+    readonly min_B: bigint;
     readonly expire_at: number;
-    readonly A: Grams;
-    readonly B: Grams;
+    readonly A: bigint;
+    readonly B: bigint;
 }
 
 export interface ChanState_chan_state_close {
     readonly kind: 'ChanState_chan_state_close';
     readonly signed_A: boolean;
     readonly signed_B: boolean;
-    readonly promise_A: Grams;
-    readonly promise_B: Grams;
+    readonly promise_A: bigint;
+    readonly promise_B: bigint;
     readonly expire_at: number;
-    readonly A: Grams;
-    readonly B: Grams;
+    readonly A: bigint;
+    readonly B: bigint;
 }
 
 export interface ChanState_chan_state_payout {
     readonly kind: 'ChanState_chan_state_payout';
-    readonly A: Grams;
-    readonly B: Grams;
+    readonly A: bigint;
+    readonly B: bigint;
 }
 
 export interface ChanPromise {
     readonly kind: 'ChanPromise';
     readonly channel_id: number;
-    readonly promise_A: Grams;
-    readonly promise_B: Grams;
+    readonly promise_A: bigint;
+    readonly promise_B: bigint;
 }
 
 export interface ChanSignedPromise {
@@ -2491,17 +2486,17 @@ export type ChanMsg = ChanMsg_chan_msg_init | ChanMsg_chan_msg_close | ChanMsg_c
 
 export interface ChanMsg_chan_msg_init {
     readonly kind: 'ChanMsg_chan_msg_init';
-    readonly inc_A: Grams;
-    readonly inc_B: Grams;
-    readonly min_A: Grams;
-    readonly min_B: Grams;
+    readonly inc_A: bigint;
+    readonly inc_B: bigint;
+    readonly min_A: bigint;
+    readonly min_B: bigint;
     readonly channel_id: number;
 }
 
 export interface ChanMsg_chan_msg_close {
     readonly kind: 'ChanMsg_chan_msg_close';
-    readonly extra_A: Grams;
-    readonly extra_B: Grams;
+    readonly extra_A: bigint;
+    readonly extra_B: bigint;
     readonly promise: ChanSignedPromise;
 }
 
@@ -3710,28 +3705,10 @@ export function storeVarInteger(varInteger: VarInteger): (builder: Builder) => v
 
 }
 
-// nanograms$_ amount:(VarUInteger 16) = Grams;
-
-export function loadGrams(slice: Slice): Grams {
-    let amount: VarUInteger = loadVarUInteger(slice, 16);
-    return {
-        kind: 'Grams',
-        amount: amount,
-    }
-
-}
-
-export function storeGrams(grams: Grams): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        storeVarUInteger(grams.amount)(builder);
-    })
-
-}
-
 // _ grams:Grams = Coins;
 
 export function loadCoins(slice: Slice): Coins {
-    let grams: Grams = loadGrams(slice);
+    let grams: bigint = slice.loadCoins();
     return {
         kind: 'Coins',
         grams: grams,
@@ -3741,7 +3718,7 @@ export function loadCoins(slice: Slice): Coins {
 
 export function storeCoins(coins: Coins): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeGrams(coins.grams)(builder);
+        builder.storeCoins(coins.grams);
     })
 
 }
@@ -3781,7 +3758,7 @@ currencies$_ grams:Grams other:ExtraCurrencyCollection
 */
 
 export function loadCurrencyCollection(slice: Slice): CurrencyCollection {
-    let grams: Grams = loadGrams(slice);
+    let grams: bigint = slice.loadCoins();
     let other: ExtraCurrencyCollection = loadExtraCurrencyCollection(slice);
     return {
         kind: 'CurrencyCollection',
@@ -3793,7 +3770,7 @@ export function loadCurrencyCollection(slice: Slice): CurrencyCollection {
 
 export function storeCurrencyCollection(currencyCollection: CurrencyCollection): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeGrams(currencyCollection.grams)(builder);
+        builder.storeCoins(currencyCollection.grams);
         storeExtraCurrencyCollection(currencyCollection.other)(builder);
     })
 
@@ -3825,8 +3802,8 @@ export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
         let src: Address = slice.loadAddress();
         let dest: Address = slice.loadAddress();
         let value: CurrencyCollection = loadCurrencyCollection(slice);
-        let ihr_fee: Grams = loadGrams(slice);
-        let fwd_fee: Grams = loadGrams(slice);
+        let ihr_fee: bigint = slice.loadCoins();
+        let fwd_fee: bigint = slice.loadCoins();
         let created_lt: number = slice.loadUint(64);
         let created_at: number = slice.loadUint(32);
         return {
@@ -3848,7 +3825,7 @@ export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
         slice.loadUint(2);
         let src: MsgAddressExt = loadMsgAddressExt(slice);
         let dest: Address = slice.loadAddress();
-        let import_fee: Grams = loadGrams(slice);
+        let import_fee: bigint = slice.loadCoins();
         return {
             kind: 'CommonMsgInfo_ext_in_msg_info',
             src: src,
@@ -3885,8 +3862,8 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
             builder.storeAddress(commonMsgInfo.src);
             builder.storeAddress(commonMsgInfo.dest);
             storeCurrencyCollection(commonMsgInfo.value)(builder);
-            storeGrams(commonMsgInfo.ihr_fee)(builder);
-            storeGrams(commonMsgInfo.fwd_fee)(builder);
+            builder.storeCoins(commonMsgInfo.ihr_fee);
+            builder.storeCoins(commonMsgInfo.fwd_fee);
             builder.storeUint(commonMsgInfo.created_lt, 64);
             builder.storeUint(commonMsgInfo.created_at, 32);
         })
@@ -3897,7 +3874,7 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
             builder.storeUint(0b10, 2);
             storeMsgAddressExt(commonMsgInfo.src)(builder);
             builder.storeAddress(commonMsgInfo.dest);
-            storeGrams(commonMsgInfo.import_fee)(builder);
+            builder.storeCoins(commonMsgInfo.import_fee);
         })
 
     }
@@ -3935,8 +3912,8 @@ export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
         let src: MsgAddress = loadMsgAddress(slice);
         let dest: Address = slice.loadAddress();
         let value: CurrencyCollection = loadCurrencyCollection(slice);
-        let ihr_fee: Grams = loadGrams(slice);
-        let fwd_fee: Grams = loadGrams(slice);
+        let ihr_fee: bigint = slice.loadCoins();
+        let fwd_fee: bigint = slice.loadCoins();
         let created_lt: number = slice.loadUint(64);
         let created_at: number = slice.loadUint(32);
         return {
@@ -3982,8 +3959,8 @@ export function storeCommonMsgInfoRelaxed(commonMsgInfoRelaxed: CommonMsgInfoRel
             storeMsgAddress(commonMsgInfoRelaxed.src)(builder);
             builder.storeAddress(commonMsgInfoRelaxed.dest);
             storeCurrencyCollection(commonMsgInfoRelaxed.value)(builder);
-            storeGrams(commonMsgInfoRelaxed.ihr_fee)(builder);
-            storeGrams(commonMsgInfoRelaxed.fwd_fee)(builder);
+            builder.storeCoins(commonMsgInfoRelaxed.ihr_fee);
+            builder.storeCoins(commonMsgInfoRelaxed.fwd_fee);
             builder.storeUint(commonMsgInfoRelaxed.created_lt, 64);
             builder.storeUint(commonMsgInfoRelaxed.created_at, 32);
         })
@@ -4425,7 +4402,7 @@ export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
         slice.loadUint(4);
         let cur_addr: IntermediateAddress = loadIntermediateAddress(slice);
         let next_addr: IntermediateAddress = loadIntermediateAddress(slice);
-        let fwd_fee_remaining: Grams = loadGrams(slice);
+        let fwd_fee_remaining: bigint = slice.loadCoins();
         let slice1 = slice.loadRef().beginParse();
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
             return slice
@@ -4448,7 +4425,7 @@ export function storeMsgEnvelope(msgEnvelope: MsgEnvelope): (builder: Builder) =
         builder.storeUint(0x4, 4);
         storeIntermediateAddress(msgEnvelope.cur_addr)(builder);
         storeIntermediateAddress(msgEnvelope.next_addr)(builder);
-        storeGrams(msgEnvelope.fwd_fee_remaining)(builder);
+        builder.storeCoins(msgEnvelope.fwd_fee_remaining);
         let cell1 = beginCell();
         storeMessage<Slice>(msgEnvelope.msg, ((arg: Slice) => {
             return ((builder: Builder) => {
@@ -4522,7 +4499,7 @@ export function loadInMsg(slice: Slice): InMsg {
         }));
         let slice2 = slice.loadRef().beginParse();
         let transaction: Transaction = loadTransaction(slice2);
-        let ihr_fee: Grams = loadGrams(slice);
+        let ihr_fee: bigint = slice.loadCoins();
         let slice3 = slice.loadRef().beginParse();
         let proof_created: Slice = slice3;
         return {
@@ -4540,7 +4517,7 @@ export function loadInMsg(slice: Slice): InMsg {
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
         let slice2 = slice.loadRef().beginParse();
         let transaction: Transaction = loadTransaction(slice2);
-        let fwd_fee: Grams = loadGrams(slice);
+        let fwd_fee: bigint = slice.loadCoins();
         return {
             kind: 'InMsg_msg_import_imm',
             in_msg: in_msg,
@@ -4555,7 +4532,7 @@ export function loadInMsg(slice: Slice): InMsg {
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
         let slice2 = slice.loadRef().beginParse();
         let transaction: Transaction = loadTransaction(slice2);
-        let fwd_fee: Grams = loadGrams(slice);
+        let fwd_fee: bigint = slice.loadCoins();
         return {
             kind: 'InMsg_msg_import_fin',
             in_msg: in_msg,
@@ -4570,7 +4547,7 @@ export function loadInMsg(slice: Slice): InMsg {
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
         let slice2 = slice.loadRef().beginParse();
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice2);
-        let transit_fee: Grams = loadGrams(slice);
+        let transit_fee: bigint = slice.loadCoins();
         return {
             kind: 'InMsg_msg_import_tr',
             in_msg: in_msg,
@@ -4584,7 +4561,7 @@ export function loadInMsg(slice: Slice): InMsg {
         let slice1 = slice.loadRef().beginParse();
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
         let transaction_id: number = slice.loadUint(64);
-        let fwd_fee: Grams = loadGrams(slice);
+        let fwd_fee: bigint = slice.loadCoins();
         return {
             kind: 'InMsg_msg_discard_fin',
             in_msg: in_msg,
@@ -4598,7 +4575,7 @@ export function loadInMsg(slice: Slice): InMsg {
         let slice1 = slice.loadRef().beginParse();
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
         let transaction_id: number = slice.loadUint(64);
-        let fwd_fee: Grams = loadGrams(slice);
+        let fwd_fee: bigint = slice.loadCoins();
         let slice2 = slice.loadRef().beginParse();
         let proof_delivered: Slice = slice2;
         return {
@@ -4645,7 +4622,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             let cell2 = beginCell();
             storeTransaction(inMsg.transaction)(cell2);
             builder.storeRef(cell2);
-            storeGrams(inMsg.ihr_fee)(builder);
+            builder.storeCoins(inMsg.ihr_fee);
             let cell3 = beginCell();
             cell3.storeSlice(inMsg.proof_created);
             builder.storeRef(cell3);
@@ -4661,7 +4638,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             let cell2 = beginCell();
             storeTransaction(inMsg.transaction)(cell2);
             builder.storeRef(cell2);
-            storeGrams(inMsg.fwd_fee)(builder);
+            builder.storeCoins(inMsg.fwd_fee);
         })
 
     }
@@ -4674,7 +4651,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             let cell2 = beginCell();
             storeTransaction(inMsg.transaction)(cell2);
             builder.storeRef(cell2);
-            storeGrams(inMsg.fwd_fee)(builder);
+            builder.storeCoins(inMsg.fwd_fee);
         })
 
     }
@@ -4687,7 +4664,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             let cell2 = beginCell();
             storeMsgEnvelope(inMsg.out_msg)(cell2);
             builder.storeRef(cell2);
-            storeGrams(inMsg.transit_fee)(builder);
+            builder.storeCoins(inMsg.transit_fee);
         })
 
     }
@@ -4698,7 +4675,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             storeMsgEnvelope(inMsg.in_msg)(cell1);
             builder.storeRef(cell1);
             builder.storeUint(inMsg.transaction_id, 64);
-            storeGrams(inMsg.fwd_fee)(builder);
+            builder.storeCoins(inMsg.fwd_fee);
         })
 
     }
@@ -4709,7 +4686,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             storeMsgEnvelope(inMsg.in_msg)(cell1);
             builder.storeRef(cell1);
             builder.storeUint(inMsg.transaction_id, 64);
-            storeGrams(inMsg.fwd_fee)(builder);
+            builder.storeCoins(inMsg.fwd_fee);
             let cell2 = beginCell();
             cell2.storeSlice(inMsg.proof_delivered);
             builder.storeRef(cell2);
@@ -4725,7 +4702,7 @@ import_fees$_ fees_collected:Grams
 */
 
 export function loadImportFees(slice: Slice): ImportFees {
-    let fees_collected: Grams = loadGrams(slice);
+    let fees_collected: bigint = slice.loadCoins();
     let value_imported: CurrencyCollection = loadCurrencyCollection(slice);
     return {
         kind: 'ImportFees',
@@ -4737,7 +4714,7 @@ export function loadImportFees(slice: Slice): ImportFees {
 
 export function storeImportFees(importFees: ImportFees): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeGrams(importFees.fees_collected)(builder);
+        builder.storeCoins(importFees.fees_collected);
         storeCurrencyCollection(importFees.value_imported)(builder);
     })
 
@@ -5250,7 +5227,10 @@ storage_info$_ used:StorageUsed last_paid:uint32
 export function loadStorageInfo(slice: Slice): StorageInfo {
     let used: StorageUsed = loadStorageUsed(slice);
     let last_paid: number = slice.loadUint(32);
-    let due_payment: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
+    let due_payment: Maybe<bigint> = loadMaybe<bigint>(slice, ((slice: Slice) => {
+        return slice.loadCoins()
+
+    }));
     return {
         kind: 'StorageInfo',
         used: used,
@@ -5264,7 +5244,12 @@ export function storeStorageInfo(storageInfo: StorageInfo): (builder: Builder) =
     return ((builder: Builder) => {
         storeStorageUsed(storageInfo.used)(builder);
         builder.storeUint(storageInfo.last_paid, 32);
-        storeMaybe<Grams>(storageInfo.due_payment, storeGrams)(builder);
+        storeMaybe<bigint>(storageInfo.due_payment, ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeCoins(arg);
+            })
+
+        }))(builder);
     })
 
 }
@@ -5836,8 +5821,11 @@ tr_phase_storage$_ storage_fees_collected:Grams
 */
 
 export function loadTrStoragePhase(slice: Slice): TrStoragePhase {
-    let storage_fees_collected: Grams = loadGrams(slice);
-    let storage_fees_due: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
+    let storage_fees_collected: bigint = slice.loadCoins();
+    let storage_fees_due: Maybe<bigint> = loadMaybe<bigint>(slice, ((slice: Slice) => {
+        return slice.loadCoins()
+
+    }));
     let status_change: AccStatusChange = loadAccStatusChange(slice);
     return {
         kind: 'TrStoragePhase',
@@ -5850,8 +5838,13 @@ export function loadTrStoragePhase(slice: Slice): TrStoragePhase {
 
 export function storeTrStoragePhase(trStoragePhase: TrStoragePhase): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeGrams(trStoragePhase.storage_fees_collected)(builder);
-        storeMaybe<Grams>(trStoragePhase.storage_fees_due, storeGrams)(builder);
+        builder.storeCoins(trStoragePhase.storage_fees_collected);
+        storeMaybe<bigint>(trStoragePhase.storage_fees_due, ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeCoins(arg);
+            })
+
+        }))(builder);
         storeAccStatusChange(trStoragePhase.status_change)(builder);
     })
 
@@ -5916,7 +5909,10 @@ tr_phase_credit$_ due_fees_collected:(Maybe Grams)
 */
 
 export function loadTrCreditPhase(slice: Slice): TrCreditPhase {
-    let due_fees_collected: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
+    let due_fees_collected: Maybe<bigint> = loadMaybe<bigint>(slice, ((slice: Slice) => {
+        return slice.loadCoins()
+
+    }));
     let credit: CurrencyCollection = loadCurrencyCollection(slice);
     return {
         kind: 'TrCreditPhase',
@@ -5928,7 +5924,12 @@ export function loadTrCreditPhase(slice: Slice): TrCreditPhase {
 
 export function storeTrCreditPhase(trCreditPhase: TrCreditPhase): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeMaybe<Grams>(trCreditPhase.due_fees_collected, storeGrams)(builder);
+        storeMaybe<bigint>(trCreditPhase.due_fees_collected, ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeCoins(arg);
+            })
+
+        }))(builder);
         storeCurrencyCollection(trCreditPhase.credit)(builder);
     })
 
@@ -5965,7 +5966,7 @@ export function loadTrComputePhase(slice: Slice): TrComputePhase {
         let success: boolean = slice.loadBoolean();
         let msg_state_used: boolean = slice.loadBoolean();
         let account_activated: boolean = slice.loadBoolean();
-        let gas_fees: Grams = loadGrams(slice);
+        let gas_fees: bigint = slice.loadCoins();
         let slice1 = slice.loadRef().beginParse();
         let gas_used: VarUInteger = loadVarUInteger(slice1, 7);
         let gas_limit: VarUInteger = loadVarUInteger(slice1, 7);
@@ -6017,7 +6018,7 @@ export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: B
             builder.storeBit(trComputePhase.success);
             builder.storeBit(trComputePhase.msg_state_used);
             builder.storeBit(trComputePhase.account_activated);
-            storeGrams(trComputePhase.gas_fees)(builder);
+            builder.storeCoins(trComputePhase.gas_fees);
             let cell1 = beginCell();
             storeVarUInteger(trComputePhase.gas_used)(cell1);
             storeVarUInteger(trComputePhase.gas_limit)(cell1);
@@ -6128,8 +6129,14 @@ export function loadTrActionPhase(slice: Slice): TrActionPhase {
     let valid: boolean = slice.loadBoolean();
     let no_funds: boolean = slice.loadBoolean();
     let status_change: AccStatusChange = loadAccStatusChange(slice);
-    let total_fwd_fees: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
-    let total_action_fees: Maybe<Grams> = loadMaybe<Grams>(slice, loadGrams);
+    let total_fwd_fees: Maybe<bigint> = loadMaybe<bigint>(slice, ((slice: Slice) => {
+        return slice.loadCoins()
+
+    }));
+    let total_action_fees: Maybe<bigint> = loadMaybe<bigint>(slice, ((slice: Slice) => {
+        return slice.loadCoins()
+
+    }));
     let result_code: number = slice.loadInt(32);
     let result_arg: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
         return slice.loadInt(32)
@@ -6167,8 +6174,18 @@ export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Buil
         builder.storeBit(trActionPhase.valid);
         builder.storeBit(trActionPhase.no_funds);
         storeAccStatusChange(trActionPhase.status_change)(builder);
-        storeMaybe<Grams>(trActionPhase.total_fwd_fees, storeGrams)(builder);
-        storeMaybe<Grams>(trActionPhase.total_action_fees, storeGrams)(builder);
+        storeMaybe<bigint>(trActionPhase.total_fwd_fees, ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeCoins(arg);
+            })
+
+        }))(builder);
+        storeMaybe<bigint>(trActionPhase.total_action_fees, ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeCoins(arg);
+            })
+
+        }))(builder);
         builder.storeInt(trActionPhase.result_code, 32);
         storeMaybe<number>(trActionPhase.result_arg, ((arg: number) => {
             return ((builder: Builder) => {
@@ -6209,7 +6226,7 @@ export function loadTrBouncePhase(slice: Slice): TrBouncePhase {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
         slice.loadUint(2);
         let msg_size: StorageUsedShort = loadStorageUsedShort(slice);
-        let req_fwd_fees: Grams = loadGrams(slice);
+        let req_fwd_fees: bigint = slice.loadCoins();
         return {
             kind: 'TrBouncePhase_tr_phase_bounce_nofunds',
             msg_size: msg_size,
@@ -6220,8 +6237,8 @@ export function loadTrBouncePhase(slice: Slice): TrBouncePhase {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
         let msg_size: StorageUsedShort = loadStorageUsedShort(slice);
-        let msg_fees: Grams = loadGrams(slice);
-        let fwd_fees: Grams = loadGrams(slice);
+        let msg_fees: bigint = slice.loadCoins();
+        let fwd_fees: bigint = slice.loadCoins();
         return {
             kind: 'TrBouncePhase_tr_phase_bounce_ok',
             msg_size: msg_size,
@@ -6244,7 +6261,7 @@ export function storeTrBouncePhase(trBouncePhase: TrBouncePhase): (builder: Buil
         return ((builder: Builder) => {
             builder.storeUint(0b01, 2);
             storeStorageUsedShort(trBouncePhase.msg_size)(builder);
-            storeGrams(trBouncePhase.req_fwd_fees)(builder);
+            builder.storeCoins(trBouncePhase.req_fwd_fees);
         })
 
     }
@@ -6252,8 +6269,8 @@ export function storeTrBouncePhase(trBouncePhase: TrBouncePhase): (builder: Buil
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
             storeStorageUsedShort(trBouncePhase.msg_size)(builder);
-            storeGrams(trBouncePhase.msg_fees)(builder);
-            storeGrams(trBouncePhase.fwd_fees)(builder);
+            builder.storeCoins(trBouncePhase.msg_fees);
+            builder.storeCoins(trBouncePhase.fwd_fees);
         })
 
     }
@@ -8988,8 +9005,8 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 6)) {
-        let mint_new_price: Grams = loadGrams(slice);
-        let mint_add_price: Grams = loadGrams(slice);
+        let mint_new_price: bigint = slice.loadCoins();
+        let mint_add_price: bigint = slice.loadCoins();
         return {
             kind: 'ConfigParam__6',
             mint_new_price: mint_new_price,
@@ -9097,9 +9114,9 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 17)) {
-        let min_stake: Grams = loadGrams(slice);
-        let max_stake: Grams = loadGrams(slice);
-        let min_total_stake: Grams = loadGrams(slice);
+        let min_stake: bigint = slice.loadCoins();
+        let max_stake: bigint = slice.loadCoins();
+        let min_total_stake: bigint = slice.loadCoins();
         let max_stake_factor: number = slice.loadUint(32);
         return {
             kind: 'ConfigParam__17',
@@ -9368,8 +9385,8 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__6')) {
         return ((builder: Builder) => {
-            storeGrams(configParam.mint_new_price)(builder);
-            storeGrams(configParam.mint_add_price)(builder);
+            builder.storeCoins(configParam.mint_new_price);
+            builder.storeCoins(configParam.mint_add_price);
         })
 
     }
@@ -9449,9 +9466,9 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__17')) {
         return ((builder: Builder) => {
-            storeGrams(configParam.min_stake)(builder);
-            storeGrams(configParam.max_stake)(builder);
-            storeGrams(configParam.min_total_stake)(builder);
+            builder.storeCoins(configParam.min_stake);
+            builder.storeCoins(configParam.max_stake);
+            builder.storeCoins(configParam.min_total_stake);
             builder.storeUint(configParam.max_stake_factor, 32);
         })
 
@@ -10168,9 +10185,9 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
 export function loadComplaintPricing(slice: Slice): ComplaintPricing {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x1a))) {
         slice.loadUint(8);
-        let deposit: Grams = loadGrams(slice);
-        let bit_price: Grams = loadGrams(slice);
-        let _cell_price: Grams = loadGrams(slice);
+        let deposit: bigint = slice.loadCoins();
+        let bit_price: bigint = slice.loadCoins();
+        let _cell_price: bigint = slice.loadCoins();
         return {
             kind: 'ComplaintPricing',
             deposit: deposit,
@@ -10185,9 +10202,9 @@ export function loadComplaintPricing(slice: Slice): ComplaintPricing {
 export function storeComplaintPricing(complaintPricing: ComplaintPricing): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x1a, 8);
-        storeGrams(complaintPricing.deposit)(builder);
-        storeGrams(complaintPricing.bit_price)(builder);
-        storeGrams(complaintPricing._cell_price)(builder);
+        builder.storeCoins(complaintPricing.deposit);
+        builder.storeCoins(complaintPricing.bit_price);
+        builder.storeCoins(complaintPricing._cell_price);
     })
 
 }
@@ -10200,8 +10217,8 @@ block_grams_created#6b masterchain_block_fee:Grams basechain_block_fee:Grams
 export function loadBlockCreateFees(slice: Slice): BlockCreateFees {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x6b))) {
         slice.loadUint(8);
-        let masterchain_block_fee: Grams = loadGrams(slice);
-        let basechain_block_fee: Grams = loadGrams(slice);
+        let masterchain_block_fee: bigint = slice.loadCoins();
+        let basechain_block_fee: bigint = slice.loadCoins();
         return {
             kind: 'BlockCreateFees',
             masterchain_block_fee: masterchain_block_fee,
@@ -10215,8 +10232,8 @@ export function loadBlockCreateFees(slice: Slice): BlockCreateFees {
 export function storeBlockCreateFees(blockCreateFees: BlockCreateFees): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x6b, 8);
-        storeGrams(blockCreateFees.masterchain_block_fee)(builder);
-        storeGrams(blockCreateFees.basechain_block_fee)(builder);
+        builder.storeCoins(blockCreateFees.masterchain_block_fee);
+        builder.storeCoins(blockCreateFees.basechain_block_fee);
     })
 
 }
@@ -10901,7 +10918,7 @@ misbehaviour_punishment_config_v1#01
 export function loadMisbehaviourPunishmentConfig(slice: Slice): MisbehaviourPunishmentConfig {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x01))) {
         slice.loadUint(8);
-        let default_flat_fine: Grams = loadGrams(slice);
+        let default_flat_fine: bigint = slice.loadCoins();
         let default_proportional_fine: number = slice.loadUint(32);
         let severity_flat_mult: number = slice.loadUint(16);
         let severity_proportional_mult: number = slice.loadUint(16);
@@ -10934,7 +10951,7 @@ export function loadMisbehaviourPunishmentConfig(slice: Slice): MisbehaviourPuni
 export function storeMisbehaviourPunishmentConfig(misbehaviourPunishmentConfig: MisbehaviourPunishmentConfig): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x01, 8);
-        storeGrams(misbehaviourPunishmentConfig.default_flat_fine)(builder);
+        builder.storeCoins(misbehaviourPunishmentConfig.default_flat_fine);
         builder.storeUint(misbehaviourPunishmentConfig.default_proportional_fine, 32);
         builder.storeUint(misbehaviourPunishmentConfig.severity_flat_mult, 16);
         builder.storeUint(misbehaviourPunishmentConfig.severity_proportional_mult, 16);
@@ -11584,8 +11601,8 @@ export function loadValidatorComplaint(slice: Slice): ValidatorComplaint {
         let created_at: number = slice.loadUint(32);
         let severity: number = slice.loadUint(8);
         let reward_addr: bigint = slice.loadUintBig(256);
-        let paid: Grams = loadGrams(slice);
-        let suggested_fine: Grams = loadGrams(slice);
+        let paid: bigint = slice.loadCoins();
+        let suggested_fine: bigint = slice.loadCoins();
         let suggested_fine_part: number = slice.loadUint(32);
         return {
             kind: 'ValidatorComplaint',
@@ -11613,8 +11630,8 @@ export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint):
         builder.storeUint(validatorComplaint.created_at, 32);
         builder.storeUint(validatorComplaint.severity, 8);
         builder.storeUint(validatorComplaint.reward_addr, 256);
-        storeGrams(validatorComplaint.paid)(builder);
-        storeGrams(validatorComplaint.suggested_fine)(builder);
+        builder.storeCoins(validatorComplaint.paid);
+        builder.storeCoins(validatorComplaint.suggested_fine);
         builder.storeUint(validatorComplaint.suggested_fine_part, 32);
     })
 
@@ -12894,7 +12911,7 @@ export function loadChanConfig(slice: Slice): ChanConfig {
     let slice2 = slice.loadRef().beginParse();
     let b_addr: Address = slice2.loadAddress();
     let channel_id: number = slice.loadUint(64);
-    let min_A_extra: Grams = loadGrams(slice);
+    let min_A_extra: bigint = slice.loadCoins();
     return {
         kind: 'ChanConfig',
         init_timeout: init_timeout,
@@ -12922,7 +12939,7 @@ export function storeChanConfig(chanConfig: ChanConfig): (builder: Builder) => v
         cell2.storeAddress(chanConfig.b_addr);
         builder.storeRef(cell2);
         builder.storeUint(chanConfig.channel_id, 64);
-        storeGrams(chanConfig.min_A_extra)(builder);
+        builder.storeCoins(chanConfig.min_A_extra);
     })
 
 }
@@ -12938,11 +12955,11 @@ export function loadChanState(slice: Slice): ChanState {
         slice.loadUint(3);
         let signed_A: boolean = slice.loadBoolean();
         let signed_B: boolean = slice.loadBoolean();
-        let min_A: Grams = loadGrams(slice);
-        let min_B: Grams = loadGrams(slice);
+        let min_A: bigint = slice.loadCoins();
+        let min_B: bigint = slice.loadCoins();
         let expire_at: number = slice.loadUint(32);
-        let A: Grams = loadGrams(slice);
-        let B: Grams = loadGrams(slice);
+        let A: bigint = slice.loadCoins();
+        let B: bigint = slice.loadCoins();
         return {
             kind: 'ChanState_chan_state_init',
             signed_A: signed_A,
@@ -12959,11 +12976,11 @@ export function loadChanState(slice: Slice): ChanState {
         slice.loadUint(3);
         let signed_A: boolean = slice.loadBoolean();
         let signed_B: boolean = slice.loadBoolean();
-        let promise_A: Grams = loadGrams(slice);
-        let promise_B: Grams = loadGrams(slice);
+        let promise_A: bigint = slice.loadCoins();
+        let promise_B: bigint = slice.loadCoins();
         let expire_at: number = slice.loadUint(32);
-        let A: Grams = loadGrams(slice);
-        let B: Grams = loadGrams(slice);
+        let A: bigint = slice.loadCoins();
+        let B: bigint = slice.loadCoins();
         return {
             kind: 'ChanState_chan_state_close',
             signed_A: signed_A,
@@ -12978,8 +12995,8 @@ export function loadChanState(slice: Slice): ChanState {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b010))) {
         slice.loadUint(3);
-        let A: Grams = loadGrams(slice);
-        let B: Grams = loadGrams(slice);
+        let A: bigint = slice.loadCoins();
+        let B: bigint = slice.loadCoins();
         return {
             kind: 'ChanState_chan_state_payout',
             A: A,
@@ -12996,11 +13013,11 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
             builder.storeUint(0b000, 3);
             builder.storeBit(chanState.signed_A);
             builder.storeBit(chanState.signed_B);
-            storeGrams(chanState.min_A)(builder);
-            storeGrams(chanState.min_B)(builder);
+            builder.storeCoins(chanState.min_A);
+            builder.storeCoins(chanState.min_B);
             builder.storeUint(chanState.expire_at, 32);
-            storeGrams(chanState.A)(builder);
-            storeGrams(chanState.B)(builder);
+            builder.storeCoins(chanState.A);
+            builder.storeCoins(chanState.B);
         })
 
     }
@@ -13009,19 +13026,19 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
             builder.storeUint(0b001, 3);
             builder.storeBit(chanState.signed_A);
             builder.storeBit(chanState.signed_B);
-            storeGrams(chanState.promise_A)(builder);
-            storeGrams(chanState.promise_B)(builder);
+            builder.storeCoins(chanState.promise_A);
+            builder.storeCoins(chanState.promise_B);
             builder.storeUint(chanState.expire_at, 32);
-            storeGrams(chanState.A)(builder);
-            storeGrams(chanState.B)(builder);
+            builder.storeCoins(chanState.A);
+            builder.storeCoins(chanState.B);
         })
 
     }
     if ((chanState.kind == 'ChanState_chan_state_payout')) {
         return ((builder: Builder) => {
             builder.storeUint(0b010, 3);
-            storeGrams(chanState.A)(builder);
-            storeGrams(chanState.B)(builder);
+            builder.storeCoins(chanState.A);
+            builder.storeCoins(chanState.B);
         })
 
     }
@@ -13032,8 +13049,8 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
 
 export function loadChanPromise(slice: Slice): ChanPromise {
     let channel_id: number = slice.loadUint(64);
-    let promise_A: Grams = loadGrams(slice);
-    let promise_B: Grams = loadGrams(slice);
+    let promise_A: bigint = slice.loadCoins();
+    let promise_B: bigint = slice.loadCoins();
     return {
         kind: 'ChanPromise',
         channel_id: channel_id,
@@ -13046,8 +13063,8 @@ export function loadChanPromise(slice: Slice): ChanPromise {
 export function storeChanPromise(chanPromise: ChanPromise): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(chanPromise.channel_id, 64);
-        storeGrams(chanPromise.promise_A)(builder);
-        storeGrams(chanPromise.promise_B)(builder);
+        builder.storeCoins(chanPromise.promise_A);
+        builder.storeCoins(chanPromise.promise_B);
     })
 
 }
@@ -13096,10 +13113,10 @@ export function storeChanSignedPromise(chanSignedPromise: ChanSignedPromise): (b
 export function loadChanMsg(slice: Slice): ChanMsg {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x27317822))) {
         slice.loadUint(32);
-        let inc_A: Grams = loadGrams(slice);
-        let inc_B: Grams = loadGrams(slice);
-        let min_A: Grams = loadGrams(slice);
-        let min_B: Grams = loadGrams(slice);
+        let inc_A: bigint = slice.loadCoins();
+        let inc_B: bigint = slice.loadCoins();
+        let min_A: bigint = slice.loadCoins();
+        let min_B: bigint = slice.loadCoins();
         let channel_id: number = slice.loadUint(64);
         return {
             kind: 'ChanMsg_chan_msg_init',
@@ -13113,8 +13130,8 @@ export function loadChanMsg(slice: Slice): ChanMsg {
     }
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xf28ae183))) {
         slice.loadUint(32);
-        let extra_A: Grams = loadGrams(slice);
-        let extra_B: Grams = loadGrams(slice);
+        let extra_A: bigint = slice.loadCoins();
+        let extra_B: bigint = slice.loadCoins();
         let promise: ChanSignedPromise = loadChanSignedPromise(slice);
         return {
             kind: 'ChanMsg_chan_msg_close',
@@ -13145,10 +13162,10 @@ export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
     if ((chanMsg.kind == 'ChanMsg_chan_msg_init')) {
         return ((builder: Builder) => {
             builder.storeUint(0x27317822, 32);
-            storeGrams(chanMsg.inc_A)(builder);
-            storeGrams(chanMsg.inc_B)(builder);
-            storeGrams(chanMsg.min_A)(builder);
-            storeGrams(chanMsg.min_B)(builder);
+            builder.storeCoins(chanMsg.inc_A);
+            builder.storeCoins(chanMsg.inc_B);
+            builder.storeCoins(chanMsg.min_A);
+            builder.storeCoins(chanMsg.min_B);
             builder.storeUint(chanMsg.channel_id, 64);
         })
 
@@ -13156,8 +13173,8 @@ export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
     if ((chanMsg.kind == 'ChanMsg_chan_msg_close')) {
         return ((builder: Builder) => {
             builder.storeUint(0xf28ae183, 32);
-            storeGrams(chanMsg.extra_A)(builder);
-            storeGrams(chanMsg.extra_B)(builder);
+            builder.storeCoins(chanMsg.extra_A);
+            builder.storeCoins(chanMsg.extra_B);
             storeChanSignedPromise(chanMsg.promise)(builder);
         })
 

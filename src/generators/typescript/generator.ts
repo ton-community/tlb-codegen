@@ -711,6 +711,14 @@ export class TypescriptGenerator implements CodeGenerator {
         fieldLoadSuffix: "Boolean",
         fieldStoreSuffix: "Bit",
       };
+    } else if (fieldType.kind == "TLBCoinsType") {
+      exprForParam = {
+        argLoadExpr: undefined,
+        argStoreExpr: undefined,
+        paramType: "bigint",
+        fieldLoadSuffix: "Coins",
+        fieldStoreSuffix: "Coins",
+      };
     } else if (fieldType.kind == "TLBAddressType") {
       exprForParam = {
         argLoadExpr: undefined,

@@ -505,6 +505,11 @@ export interface BitUser {
     readonly b: boolean;
 }
 
+export interface GramsUser {
+    readonly kind: 'GramsUser';
+    readonly g: bigint;
+}
+
 // tmpa$_ a:# b:# = Simple;
 
 export function loadSimple(slice: Slice): Simple {
@@ -2579,6 +2584,24 @@ export function loadBitUser(slice: Slice): BitUser {
 export function storeBitUser(bitUser: BitUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeBit(bitUser.b);
+    })
+
+}
+
+// a$_ g:Grams = GramsUser;
+
+export function loadGramsUser(slice: Slice): GramsUser {
+    let g: bigint = slice.loadCoins();
+    return {
+        kind: 'GramsUser',
+        g: g,
+    }
+
+}
+
+export function storeGramsUser(gramsUser: GramsUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeCoins(gramsUser.g);
     })
 
 }
