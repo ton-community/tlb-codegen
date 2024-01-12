@@ -1,3 +1,4 @@
+import { Identifier } from "typescript";
 import {
   TLBCode,
   TLBConstructor,
@@ -62,7 +63,6 @@ import {
   TypeParametersExpression,
   TypedIdentifier,
   id,
-  tArrowFunctionExpression,
   tComment,
   tExpressionStatement,
   tFunctionCall,
@@ -94,6 +94,7 @@ import {
   getTypeParametersExpression,
   isBigInt,
 } from "./utils";
+import { dictKeyExpr, dictLoadExpr, dictValueStore, dictTypeParamExpr, dictStoreStmt } from "./complex_expr";
 
 /*
 
@@ -589,9 +590,6 @@ export class TypescriptGenerator implements CodeGenerator {
         );
       });
     } else if (field.subFields.length == 0) {
-      if (field == undefined) {
-        throw new Error("");
-      }
       let fieldInfo = this.handleType(
         field,
         field.fieldType,
@@ -902,6 +900,25 @@ export class TypescriptGenerator implements CodeGenerator {
       if (subExprInfo.storeStmtInside) {
         result.storeStmtInside = storeInNewCell(currentCell, subExprInfo.storeStmtInside);
       }
+    } else if (fieldType.kind == "TLBHashmapType") {
+      let keyForLoad: Expression = dictKeyExpr(fieldType.key, ctx);
+      let keyForStore: Expression = dictKeyExpr(fieldType.key, ctx, ctx.typeName);
+      let subExprInfo = this.handleType(
+        field,
+        fieldType.value,
+        false,
+        ctx,
+        slicePrefix,
+        argIndex
+      );
+      
+      if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeFunctionExpr) {
+        result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice)
+        let valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr)
+        result.typeParamExpr = dictTypeParamExpr(fieldType, subExprInfo.typeParamExpr) 
+        result.storeStmtInside = dictStoreStmt(currentCell, storeParametersInside, keyForStore, valueStore)
+        result.storeStmtOutside = dictStoreStmt(currentCell, storeParametersOutside, keyForStore, valueStore)
+      }
     } else if (fieldType.kind == "TLBNamedType" && fieldType.arguments.length) {
       let typeName = fieldType.name;
 
@@ -1021,3 +1038,4 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
+

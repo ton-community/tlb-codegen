@@ -161,6 +161,16 @@ export function getType(
           constructor
         ),
       };
+    } else if (expr.name == "HashmapE") {
+      if (expr.args.length != 2) {
+        throw new Error('')
+      }
+      let key = getType(expr.args[0], constructor, fieldTypeName)
+      let value = getType(expr.args[1], constructor, fieldTypeName)
+      if (key.kind != 'TLBExprMathType') {
+        throw new Error('Hashmap key should be number')
+      }
+      return { kind: "TLBHashmapType", key: key, value: value };
     } else if (
       expr.name == "VarUInteger" &&
       (expr.args[0] instanceof MathExpr ||

@@ -91,6 +91,12 @@ export type TLBVarIntegerType = {
   n: TLBMathExpr;
 }
 
+export type TLBHashmapType = {
+  kind: "TLBHashmapType";
+  key: TLBMathExprType,
+  value: TLBFieldType
+}
+
 export type TLBCellType = {
   kind: "TLBCellType";
 };
@@ -136,6 +142,7 @@ export type TLBFieldType =
   | TLBBoolType
   | TLBCoinsType
   | TLBAddressType
+  | TLBHashmapType
   | TLBVarIntegerType
   | TLBCellType
   | TLBMathExprType

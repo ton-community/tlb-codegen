@@ -3,6 +3,7 @@ import {
   TLBCode,
   TLBConstructor,
   TLBMathExpr,
+  TLBMathExprType,
   TLBNumberExpr,
   TLBNumberType,
   TLBParameter,
@@ -213,6 +214,13 @@ export function getCondition(conditions: Array<BinaryExpression>): Expression {
   } else {
     return id("true");
   }
+}
+
+export function isBigIntExpr(fieldType: TLBMathExprType) {
+  if (fieldType.expr instanceof TLBNumberExpr && fieldType.expr.n <= 64) {
+    return false;
+  }
+  return true;
 }
 
 export function isBigInt(fieldType: TLBNumberType) {

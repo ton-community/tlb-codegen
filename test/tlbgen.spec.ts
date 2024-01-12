@@ -1,16 +1,28 @@
 import path from 'path';
 
-import { Address, BitString, Cell, ExternalAddress, Slice } from 'ton';
+import { Address, BitString, Cell, Dictionary, DictionaryKeyTypes, ExternalAddress, Slice } from 'ton';
 
 import { describe, expect, test } from '@jest/globals';
 import { beginCell } from 'ton';
 import { loadBlock, storeBlock } from './generated_files/generated_block';
-import { AddressUser, AnonymousData, AnyAddressUser, BitLenArg, BitLenArgUser, BitSelection, BitUser, BoolUser, CellTypedField, CellsSimple, CheckCrc32, CheckKeyword, CombArgCellRefUser, ComplexTypedField, ConditionalField, ConditionalRef, ConstructorOrder, DollarTag, EmptyTag, EqualityExpression, ExprArgUser, ExtAddressUser, FalseAnonField, GramsUser, HashmapEUser, ImplicitCondition, IntBitsOutside, IntBitsParametrizedOutside, LessThan, LoadFromNegationOutsideExpr, ManyComb, MathExprAsCombArg, MultipleEmptyConstructor, NegationFromImplicit, ParamConst, ParamDifNames, ParamDifNamesUser, ParamNamedArgInSecondConstr, RefCombinatorAny, RefCombinatorInRef, SharpConstructor, SharpTag, Simple, True, TupleCheck, TwoConstructors, TypedField, TypedParam, Unary, UnaryUserCheckOrder, VarIntegerUser, VarUIntegerUser, loadAddressUser, loadAnonymousData, loadAnyAddressUser, loadBitLenArg, loadBitLenArgUser, loadBitSelection, loadBitUser, loadBoolUser, loadCellTypedField, loadCellsSimple, loadCheckCrc32, loadCheckKeyword, loadCombArgCellRefUser, loadComplexTypedField, loadConditionalField, loadConditionalRef, loadConstructorOrder, loadDollarTag, loadEmptyTag, loadEqualityExpression, loadExprArgUser, loadExtAddressUser, loadFalseAnonField, loadGramsUser, loadHashmapEUser, loadImplicitCondition, loadIntBitsOutside, loadIntBitsParametrizedOutside, loadLessThan, loadLoadFromNegationOutsideExpr, loadManyComb, loadMathExprAsCombArg, loadMultipleEmptyConstructor, loadNegationFromImplicit, loadParamConst, loadParamDifNames, loadParamDifNamesUser, loadParamNamedArgInSecondConstr, loadRefCombinatorAny, loadRefCombinatorInRef, loadSharpConstructor, loadSharpTag, loadSimple, loadTrue, loadTupleCheck, loadTwoConstructors, loadTypedField, loadTypedParam, loadUnary, loadUnaryUserCheckOrder, loadVarIntegerUser, loadVarUIntegerUser, storeAddressUser, storeAnonymousData, storeAnyAddressUser, storeBitLenArg, storeBitLenArgUser, storeBitSelection, storeBitUser, storeBoolUser, storeCellTypedField, storeCellsSimple, storeCheckCrc32, storeCheckKeyword, storeCombArgCellRefUser, storeComplexTypedField, storeConditionalField, storeConditionalRef, storeConstructorOrder, storeDollarTag, storeEmptyTag, storeEqualityExpression, storeExprArgUser, storeExtAddressUser, storeFalseAnonField, storeGramsUser, storeHashmapEUser, storeImplicitCondition, storeIntBitsOutside, storeIntBitsParametrizedOutside, storeLessThan, storeLoadFromNegationOutsideExpr, storeManyComb, storeMathExprAsCombArg, storeMultipleEmptyConstructor, storeNegationFromImplicit, storeParamConst, storeParamDifNames, storeParamDifNamesUser, storeParamNamedArgInSecondConstr, storeRefCombinatorAny, storeRefCombinatorInRef, storeSharpConstructor, storeSharpTag, storeSimple, storeTrue, storeTupleCheck, storeTwoConstructors, storeTypedField, storeTypedParam, storeUnary, storeUnaryUserCheckOrder, storeVarIntegerUser, storeVarUIntegerUser } from './generated_files/generated_test';
+import { AddressUser, AnonymousData, AnyAddressUser, BitLenArg, BitLenArgUser, BitSelection, BitUser, BoolUser, CellTypedField, CellsSimple, CheckCrc32, CheckKeyword, CombArgCellRefUser, ComplexTypedField, ConditionalField, ConditionalRef, ConstructorOrder, DollarTag, EmptyTag, EqualityExpression, ExprArgUser, ExtAddressUser, FalseAnonField, GramsUser, HashmapEUser, HashmapExprKeyUser, HashmapOneCombUser, HashmapTPCell, HashmapVUIUser, HashmapVarKeyUser, ImplicitCondition, IntBitsOutside, IntBitsParametrizedOutside, LessThan, LoadFromNegationOutsideExpr, ManyComb, MathExprAsCombArg, MultipleEmptyConstructor, NegationFromImplicit, OneComb, ParamConst, ParamDifNames, ParamDifNamesUser, ParamNamedArgInSecondConstr, RefCombinatorAny, RefCombinatorInRef, SharpConstructor, SharpTag, Simple, True, TupleCheck, TwoConstructors, TypedField, TypedParam, Unary, UnaryUserCheckOrder, VarIntegerUser, VarUIntegerUser, loadAddressUser, loadAnonymousData, loadAnyAddressUser, loadBitLenArg, loadBitLenArgUser, loadBitSelection, loadBitUser, loadBoolUser, loadCellTypedField, loadCellsSimple, loadCheckCrc32, loadCheckKeyword, loadCombArgCellRefUser, loadComplexTypedField, loadConditionalField, loadConditionalRef, loadConstructorOrder, loadDollarTag, loadEmptyTag, loadEqualityExpression, loadExprArgUser, loadExtAddressUser, loadFalseAnonField, loadGramsUser, loadHashmapEUser, loadHashmapExprKeyUser, loadHashmapOneCombUser, loadHashmapTPCell, loadHashmapVUIUser, loadHashmapVarKeyUser, loadImplicitCondition, loadIntBitsOutside, loadIntBitsParametrizedOutside, loadLessThan, loadLoadFromNegationOutsideExpr, loadManyComb, loadMathExprAsCombArg, loadMultipleEmptyConstructor, loadNegationFromImplicit, loadParamConst, loadParamDifNames, loadParamDifNamesUser, loadParamNamedArgInSecondConstr, loadRefCombinatorAny, loadRefCombinatorInRef, loadSharpConstructor, loadSharpTag, loadSimple, loadTrue, loadTupleCheck, loadTwoConstructors, loadTypedField, loadTypedParam, loadUnary, loadUnaryUserCheckOrder, loadVarIntegerUser, loadVarUIntegerUser, storeAddressUser, storeAnonymousData, storeAnyAddressUser, storeBitLenArg, storeBitLenArgUser, storeBitSelection, storeBitUser, storeBoolUser, storeCellTypedField, storeCellsSimple, storeCheckCrc32, storeCheckKeyword, storeCombArgCellRefUser, storeComplexTypedField, storeConditionalField, storeConditionalRef, storeConstructorOrder, storeDollarTag, storeEmptyTag, storeEqualityExpression, storeExprArgUser, storeExtAddressUser, storeFalseAnonField, storeGramsUser, storeHashmapEUser, storeHashmapExprKeyUser, storeHashmapOneCombUser, storeHashmapTPCell, storeHashmapVUIUser, storeHashmapVarKeyUser, storeImplicitCondition, storeIntBitsOutside, storeIntBitsParametrizedOutside, storeLessThan, storeLoadFromNegationOutsideExpr, storeManyComb, storeMathExprAsCombArg, storeMultipleEmptyConstructor, storeNegationFromImplicit, storeParamConst, storeParamDifNames, storeParamDifNamesUser, storeParamNamedArgInSecondConstr, storeRefCombinatorAny, storeRefCombinatorInRef, storeSharpConstructor, storeSharpTag, storeSimple, storeTrue, storeTupleCheck, storeTwoConstructors, storeTypedField, storeTypedParam, storeUnary, storeUnaryUserCheckOrder, storeVarIntegerUser, storeVarUIntegerUser } from './generated_files/generated_test';
 import { randomInt } from 'crypto';
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
 
-function deepEqual(object1: any, object2: any) {
+function isPrimitive(input: any) {
+    if (input == null) {
+      // This is here to correctly handle document.all.
+      return input === null || input === undefined;
+    }
+    const type = typeof input;
+    return type !== "object" && type !== "function";
+  }
+
+function deepEqual(object1: any, object2: any): boolean {
+    if (isPrimitive(object1) && isPrimitive(object2)) {
+        return object1 == object2;
+    }
     if (object1 instanceof BitString && object2 instanceof BitString) {
         return object1.equals(object2);
     }
@@ -19,6 +31,25 @@ function deepEqual(object1: any, object2: any) {
     }
     if (object1 instanceof Address && object2 instanceof Address) {
         return object1.equals(object2);
+    }
+
+    if (object1 instanceof Dictionary && object2 instanceof Dictionary) {
+        if (object1.size != object2.size) {
+            return false;
+        }
+        let ok = true;
+        object1.keys().forEach((key) => {
+            let value1 = object1.get(key);
+            if (!object2.has(key)) {
+                ok = false;
+            }
+            let value2 = object2.get(key);
+            let equal = deepEqual(value1, value2);
+            if (!equal) {
+                ok = false;
+            }
+        })
+        return ok;
     }
 
     const keys1 = Object.keys(object1);
@@ -190,6 +221,40 @@ describe('Generating tlb code', () => {
 
         let varIntegerUser: VarIntegerUser = { kind: 'VarIntegerUser', v: BigInt(-6) }
         checkSameOnStoreLoad(varIntegerUser, loadVarIntegerUser, storeVarIntegerUser)
+
+        let simpleDict: Dictionary<number, number> = Dictionary.empty()
+        simpleDict.set(1, 6);
+        simpleDict.set(2, 7);
+        simpleDict.set(0, 5);
+        let hashmapEUser: HashmapEUser = { kind: 'HashmapEUser', x: simpleDict }
+        checkSameOnStoreLoad(hashmapEUser, loadHashmapEUser, storeHashmapEUser);
+
+        let vuiDict: Dictionary<bigint, VarUIntegerUser> = Dictionary.empty()
+        vuiDict.set(BigInt(6), {kind: 'VarUIntegerUser', v: BigInt(5)})      
+        vuiDict.set(BigInt(7), {kind: 'VarUIntegerUser', v: BigInt(3)})      
+        let hashmapVUIUser: HashmapVUIUser = { kind: 'HashmapVUIUser', 'x': vuiDict}
+        checkSameOnStoreLoad(hashmapVUIUser, loadHashmapVUIUser, storeHashmapVUIUser);
+
+        let tpcDict: Dictionary<bigint, TypedParam> = Dictionary.empty()
+        tpcDict.set(BigInt(5), {kind: 'TypedParam', x: {kind: 'Maybe_just', value: {kind: 'SharpConstructor', c: 3, y: {kind: 'FixedIntParam', y: 4}}}})
+        tpcDict.set(BigInt(3), {kind: 'TypedParam', x: {kind: 'Maybe_just', value: {kind: 'SharpConstructor', c: 9, y: {kind: 'FixedIntParam', y: 8}}}})
+        let hashmapTPCell: HashmapTPCell = { kind: 'HashmapTPCell', x: tpcDict}
+        checkSameOnStoreLoad(hashmapTPCell, loadHashmapTPCell, storeHashmapTPCell);
+
+        let vkDict: Dictionary<bigint, number> = Dictionary.empty()
+        vkDict.set(BigInt(3), 6)      
+        vkDict.set(BigInt(7), 9)      
+        let hashmapVarKeyUser: HashmapVarKeyUser = { kind: 'HashmapVarKeyUser', x: {kind: 'HashmapVarKey', n: 5, x: vkDict }}
+        checkSameOnStoreLoad(hashmapVarKeyUser, loadHashmapVarKeyUser, storeHashmapVarKeyUser);
+    
+        let hashmapExprKeyUser: HashmapExprKeyUser = { kind: 'HashmapExprKeyUser', x: {kind: 'HashmapExprKey', n: 5, x: vkDict }}
+        checkSameOnStoreLoad(hashmapExprKeyUser, loadHashmapExprKeyUser, storeHashmapExprKeyUser);
+
+        let ocuDict: Dictionary<bigint, OneComb<number>> = Dictionary.empty()
+        ocuDict.set(BigInt(1), { kind: 'OneComb', t: 3, x: 6 })
+        ocuDict.set(BigInt(19), { kind: 'OneComb', t: 5, x: 4 })
+        let hashmapOneCombUser: HashmapOneCombUser = { kind: 'HashmapOneCombUser', x: {kind: 'HashmapOneComb', x: ocuDict }}
+        checkSameOnStoreLoad(hashmapOneCombUser, loadHashmapOneCombUser, storeHashmapOneCombUser);
     })
 
     test('Combinators', () => {
@@ -277,97 +342,6 @@ describe('Generating tlb code', () => {
 
         let equalityExpressionIncorrect: EqualityExpression = { kind: 'EqualityExpression', n: 3 }
         checkThrowOnStoreLoad(equalityExpressionIncorrect, loadEqualityExpression, storeEqualityExpression);
-    })
-
-    test('Builtins', () => {
-        expect.hasAssertions()
-
-        let hashmapEUser: HashmapEUser = {
-            kind: 'HashmapEUser',
-            x: {
-                kind: 'HashmapE_hme_root',
-                n: 8,
-                root: {
-                    kind: 'Hashmap',
-                    l: 0, m: 8, n: 8,
-                    label: {
-                        kind: 'HmLabel_hml_short',
-                        n: 0, m: 8,
-                        len: { kind: 'Unary_unary_zero' },
-                        s: []
-                    },
-                    node: {
-                        kind: 'HashmapNode_hmn_fork',
-                        n: 7,
-                        left: {
-                            kind: 'Hashmap',
-                            n: 7,
-                            m: 5,
-                            l: 2,
-                            label: {
-                                kind: 'HmLabel_hml_long',
-                                m: 7,
-                                n: 2,
-                                s: getBooleanArray('00')
-                            },
-                            node: {
-                                kind: 'HashmapNode_hmn_fork',
-                                n: 4,
-                                left: {
-                                    kind: 'Hashmap',
-                                    n: 4,
-                                    m: 0,
-                                    l: 4,
-                                    label: {
-                                        kind: 'HmLabel_hml_long',
-                                        m: 4,
-                                        n: 4,
-                                        s: getBooleanArray('0001')
-                                    },
-                                    node: {
-                                        kind: 'HashmapNode_hmn_leaf',
-                                        value: 777
-                                    }
-                                },
-                                right: {
-                                    kind: 'Hashmap',
-                                    n: 4,
-                                    m: 0,
-                                    l: 4,
-                                    label: {
-                                        kind: 'HmLabel_hml_long',
-                                        m: 4,
-                                        n: 4,
-                                        s: getBooleanArray('0001')
-                                    },
-                                    node: {
-                                        kind: 'HashmapNode_hmn_leaf',
-                                        value: 111
-                                    }
-                                }
-                            }
-                        },
-                        right: {
-                            kind: 'Hashmap',
-                            n: 7,
-                            m: 0,
-                            l: 7,
-                            label: {
-                                kind: 'HmLabel_hml_long',
-                                m: 7,
-                                n: 7,
-                                s: getBooleanArray('0000000')
-                            },
-                            node: {
-                                kind: 'HashmapNode_hmn_leaf',
-                                value: 777
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        checkSameOnStoreLoad(hashmapEUser, loadHashmapEUser, storeHashmapEUser);
     })
 
     test('Constructor Tags', () => {

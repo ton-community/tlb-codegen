@@ -432,6 +432,7 @@ function checkAndRemovePrimitives(
   typesToDelete.set("MsgAddress", ["606aa05e", "21d0382b"])
   typesToDelete.set("VarUInteger", ["11d56c2e"])
   typesToDelete.set("VarInteger", ["d466ed5"])
+  typesToDelete.set("HashmapE", ["32bae5cb", "28fa3979"])
 
   typesToDelete.forEach((opCodesExpected: string[], typeName: string) => {
     let typeItems = typeDeclarations.get(typeName);

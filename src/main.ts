@@ -27,6 +27,8 @@ export function generate(tree: Program, input: string) {
   codeGenerator.addTonCoreClassUsage("Cell");
   codeGenerator.addTonCoreClassUsage("Address");
   codeGenerator.addTonCoreClassUsage("ExternalAddress");
+  codeGenerator.addTonCoreClassUsage("Dictionary")
+  codeGenerator.addTonCoreClassUsage("DictionaryValue")
 
   codeGenerator.addBitLenFunction();
 
