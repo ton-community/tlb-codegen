@@ -1046,7 +1046,7 @@ export interface Transaction {
     readonly orig_status: AccountStatus;
     readonly end_status: AccountStatus;
     readonly in_msg: Maybe<Message<Slice>>;
-    readonly out_msgs: Dictionary<number, Slice>;
+    readonly out_msgs: Dictionary<number, Message<Slice>>;
     readonly total_fees: CurrencyCollection;
     readonly state_update: HASH_UPDATE<Account>;
     readonly description: TransactionDescr;
@@ -6682,8 +6682,7 @@ export function loadTransaction(slice: Slice): Transaction {
             }))
 
         }));
-        let out_msgs: Dictionary<number, Slice> = Dictionary.load(Dictionary.Keys.Uint(15), createSliceValue(), slice1);
-        console.log('dictionary loaded')
+        let out_msgs: Dictionary<number, Message<Slice>> = Dictionary.load(Dictionary.Keys.Uint(15), createMessageSliceValue(), slice1);
         
         // loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
         //     let slice1 = slice.loadRef().beginParse();
@@ -9753,6 +9752,39 @@ function createSliceValue(): DictionaryValue<Slice> {
         },
         parse: (src) => {
             return src;
+        }
+    }
+}
+
+// function createNumberValue(): DictionaryValue<bigint> {
+//     return {
+//         serialize: (src, buidler) => {
+//             buidler.storeUint(src.);
+//         },
+//         parse: (src) => {
+//             return src;
+//         }
+//     }
+// }
+
+
+function createMessageSliceValue(): DictionaryValue<Message<Slice>> {
+    return {
+        serialize: (src, buidler) => {
+            let cell1 = beginCell();
+            storeMessage<Slice>(src, ((arg: Slice) => {
+                return ((builder: Builder) => {
+                    builder.storeSlice(arg);
+                })
+
+            }))(cell1);
+            buidler.storeRef(cell1);
+        },
+        parse: (slice) => {
+            let slice1 = slice.loadRef().beginParse();
+            return loadMessage<Slice>(slice1, ((slice: Slice) => {
+                return slice
+            }))
         }
     }
 }
