@@ -9,11 +9,17 @@ export function bitLen(n: number) {
     return n.toString(2).length;;
 }
 
+// tmpa$_ a:# b:# = Simple;
+
 export interface Simple {
     readonly kind: 'Simple';
     readonly a: number;
     readonly b: number;
 }
+
+// bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
+
+// bool_true$1 b:# = TwoConstructors;
 
 export type TwoConstructors = TwoConstructors_bool_false | TwoConstructors_bool_true;
 
@@ -29,10 +35,14 @@ export interface TwoConstructors_bool_true {
     readonly b: number;
 }
 
+// tmpb$_ y:(## 5) = FixedIntParam;
+
 export interface FixedIntParam {
     readonly kind: 'FixedIntParam';
     readonly y: number;
 }
+
+// tmpc$_ y:FixedIntParam c:# = TypedField;
 
 export interface TypedField {
     readonly kind: 'TypedField';
@@ -40,11 +50,17 @@ export interface TypedField {
     readonly c: number;
 }
 
+// tmpd#_ y:FixedIntParam c:# = SharpConstructor;
+
 export interface SharpConstructor {
     readonly kind: 'SharpConstructor';
     readonly y: FixedIntParam;
     readonly c: number;
 }
+
+// nothing$0 {TheType:Type} = Maybe TheType;
+
+// just$1 {TheType:Type} value:TheType = Maybe TheType;
 
 export type Maybe<TheType> = Maybe_nothing<TheType> | Maybe_just<TheType>;
 
@@ -57,10 +73,16 @@ export interface Maybe_just<TheType> {
     readonly value: TheType;
 }
 
+// thejust$_ x:(Maybe SharpConstructor) = TypedParam;
+
 export interface TypedParam {
     readonly kind: 'TypedParam';
     readonly x: Maybe<SharpConstructor>;
 }
+
+// left$0 {X:Type} {Y:Type} value:X = Either X Y;
+
+// right$1 {X:Type} {Y:Type} value:Y = Either X Y;
 
 export type Either<X, Y> = Either_left<X, Y> | Either_right<X, Y>;
 
@@ -74,16 +96,22 @@ export interface Either_right<X, Y> {
     readonly value: Y;
 }
 
+// a$_ {x:#} value:(## x) = BitLenArg x;
+
 export interface BitLenArg {
     readonly kind: 'BitLenArg';
     readonly x: number;
     readonly value: bigint;
 }
 
+// a$_ t:(BitLenArg 4) = BitLenArgUser;
+
 export interface BitLenArgUser {
     readonly kind: 'BitLenArgUser';
     readonly t: BitLenArg;
 }
+
+// a$_ {x:#} value:(## x) = ExprArg (2 + x);
 
 export interface ExprArg {
     readonly kind: 'ExprArg';
@@ -91,20 +119,28 @@ export interface ExprArg {
     readonly value: bigint;
 }
 
+// a$_ t:(ExprArg 6) = ExprArgUser;
+
 export interface ExprArgUser {
     readonly kind: 'ExprArgUser';
     readonly t: ExprArg;
 }
+
+// a$_ a:ExprArgUser = ComplexTypedField;
 
 export interface ComplexTypedField {
     readonly kind: 'ComplexTypedField';
     readonly a: ExprArgUser;
 }
 
+// a$_ a:^ExprArgUser = CellTypedField;
+
 export interface CellTypedField {
     readonly kind: 'CellTypedField';
     readonly a: ExprArgUser;
 }
+
+// a$_ t:# ^[ q:# ] ^[ a:(## 32) ^[ e:# ] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = CellsSimple;
 
 export interface CellsSimple {
     readonly kind: 'CellsSimple';
@@ -117,6 +153,8 @@ export interface CellsSimple {
     readonly c: number;
 }
 
+// b$_ d:int11 g:bits2 {Arg:Type} arg:Arg x:Any = IntBits Arg;
+
 export interface IntBits<Arg> {
     readonly kind: 'IntBits';
     readonly d: number;
@@ -125,16 +163,22 @@ export interface IntBits<Arg> {
     readonly x: Slice;
 }
 
+// a$_ {x:#} a:(IntBits (int (1 + x))) = IntBitsInside (x * 2);
+
 export interface IntBitsInside {
     readonly kind: 'IntBitsInside';
     readonly x: number;
     readonly a: IntBits<bigint>;
 }
 
+// a$_ x:(IntBitsInside 6) = IntBitsOutside;
+
 export interface IntBitsOutside {
     readonly kind: 'IntBitsOutside';
     readonly x: IntBitsInside;
 }
+
+// a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntBitsParametrized e;
 
 export interface IntBitsParametrized {
     readonly kind: 'IntBitsParametrized';
@@ -147,16 +191,22 @@ export interface IntBitsParametrized {
     readonly tc: Slice;
 }
 
+// a$_ {x:#} a:(IntBitsParametrized x) = IntBitsParametrizedInside x;
+
 export interface IntBitsParametrizedInside {
     readonly kind: 'IntBitsParametrizedInside';
     readonly x: number;
     readonly a: IntBitsParametrized;
 }
 
+// a$_ x:(IntBitsParametrizedInside 5) = IntBitsParametrizedOutside;
+
 export interface IntBitsParametrizedOutside {
     readonly kind: 'IntBitsParametrizedOutside';
     readonly x: IntBitsParametrizedInside;
 }
+
+// a$_ x:(#< 4) y:(#<= 4) = LessThan;
 
 export interface LessThan {
     readonly kind: 'LessThan';
@@ -164,16 +214,24 @@ export interface LessThan {
     readonly y: number;
 }
 
+// a$_ {A:Type} t:# x:A = OneComb A;
+
 export interface OneComb<A> {
     readonly kind: 'OneComb';
     readonly t: number;
     readonly x: A;
 }
 
+// a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;
+
 export interface ManyComb {
     readonly kind: 'ManyComb';
     readonly y: OneComb<OneComb<OneComb<number>>>;
 }
+
+// unary_zero$0 = Unary ~0;
+
+// unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
 
 export type Unary = Unary_unary_zero | Unary_unary_succ;
 
@@ -186,6 +244,14 @@ export interface Unary_unary_succ {
     readonly n: number;
     readonly x: Unary;
 }
+
+// b$01 m:# k:# = ParamConst 2 1;
+
+// c$01 n:# m:# k:# = ParamConst 3 3;
+
+// a$_ n:# = ParamConst 1 1;
+
+// d$_ n:# m:# k:# l:# = ParamConst 4 2;
 
 export type ParamConst = ParamConst_b | ParamConst_c | ParamConst_a | ParamConst_d;
 
@@ -215,6 +281,14 @@ export interface ParamConst_d {
     readonly l: number;
 }
 
+// a$0 = ParamDifNames 2 ~1;
+
+// b$1 = ParamDifNames 3 ~1;
+
+// c$1 {n:#} x:(ParamDifNames 2 ~n) = ParamDifNames 2 ~(n + 1);
+
+// d$0 {m:#} x:(ParamDifNames 3 ~m) = ParamDifNames 3 ~(m * 2);
+
 export type ParamDifNames = ParamDifNames_a | ParamDifNames_b | ParamDifNames_c | ParamDifNames_d;
 
 export interface ParamDifNames_a {
@@ -237,11 +311,15 @@ export interface ParamDifNames_d {
     readonly x: ParamDifNames;
 }
 
+// e$0 {k:#} x:(ParamDifNames 2 ~k) = ParamDifNamesUser;
+
 export interface ParamDifNamesUser {
     readonly kind: 'ParamDifNamesUser';
     readonly k: number;
     readonly x: ParamDifNames;
 }
+
+// b$1 {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit ~(y + 1);
 
 export interface NegationFromImplicit {
     readonly kind: 'NegationFromImplicit';
@@ -250,12 +328,21 @@ export interface NegationFromImplicit {
     readonly z: number;
 }
 
+// hm_edge#_ {l:#} {m:#} label:(Unary ~l) {7 = (~m) + l} = UnaryUserCheckOrder;
+
 export interface UnaryUserCheckOrder {
     readonly kind: 'UnaryUserCheckOrder';
     readonly l: number;
     readonly m: number;
     readonly label: Unary;
 }
+
+/*
+a$_ {X:Type} info:int32
+  init:(Maybe (Either X ^int22))
+  other:(Either X ^(OneComb X))
+  body:(Either X ^X) = CombArgCellRef X;
+*/
 
 export interface CombArgCellRef<X> {
     readonly kind: 'CombArgCellRef';
@@ -265,10 +352,14 @@ export interface CombArgCellRef<X> {
     readonly body: Either<X, X>;
 }
 
+// a$_ x:(CombArgCellRef int12) = CombArgCellRefUser;
+
 export interface CombArgCellRefUser {
     readonly kind: 'CombArgCellRefUser';
     readonly x: CombArgCellRef<number>;
 }
+
+// a$_ {n:#} ref:^(BitLenArg (n + 2)) = MathExprAsCombArg (n + 2);
 
 export interface MathExprAsCombArg {
     readonly kind: 'MathExprAsCombArg';
@@ -276,25 +367,38 @@ export interface MathExprAsCombArg {
     readonly ref: BitLenArg;
 }
 
+// _ a:# = EmptyTag;
+
 export interface EmptyTag {
     readonly kind: 'EmptyTag';
     readonly a: number;
 }
+
+// a#f4 x:# = SharpTag;
 
 export interface SharpTag {
     readonly kind: 'SharpTag';
     readonly x: number;
 }
 
+// a$1011 x:# = DollarTag;
+
 export interface DollarTag {
     readonly kind: 'DollarTag';
     readonly x: number;
 }
 
+// a$_ s:(3 * int5) = TupleCheck;
+
 export interface TupleCheck {
     readonly kind: 'TupleCheck';
     readonly s: Array<number>;
 }
+
+/*
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+          {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
+*/
 
 export interface Hashmap<X> {
     readonly kind: 'Hashmap';
@@ -304,6 +408,13 @@ export interface Hashmap<X> {
     readonly label: HmLabel;
     readonly node: HashmapNode<X>;
 }
+
+// hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
+
+/*
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+           right:^(Hashmap n X) = HashmapNode (n + 1) X;
+*/
 
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 
@@ -318,6 +429,12 @@ export interface HashmapNode_hmn_fork<X> {
     readonly left: Hashmap<X>;
     readonly right: Hashmap<X>;
 }
+
+// hml_short$0 {m:#} {n:#} len:(Unary ~n) {n <= m} s:(n * Bit) = HmLabel ~n m;
+
+// hml_long$10 {m:#} n:(#<= m) s:(n * Bit) = HmLabel ~n m;
+
+// hml_same$11 {m:#} v:Bit n:(#<= m) = HmLabel ~n m;
 
 export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
 
@@ -343,6 +460,10 @@ export interface HmLabel_hml_same {
     readonly n: number;
 }
 
+// hme_empty$0 {n:#} {X:Type} = HashmapE n X;
+
+// hme_root$1 {n:#} {X:Type} root:^(Hashmap n X) = HashmapE n X;
+
 export type HashmapE<X> = HashmapE_hme_empty<X> | HashmapE_hme_root<X>;
 
 export interface HashmapE_hme_empty<X> {
@@ -356,10 +477,14 @@ export interface HashmapE_hme_root<X> {
     readonly root: Hashmap<X>;
 }
 
+// a$_ x:(HashmapE 8 uint16) = HashmapEUser;
+
 export interface HashmapEUser {
     readonly kind: 'HashmapEUser';
     readonly x: HashmapE<number>;
 }
+
+// _ a:(## 1) b:a?(## 32) = ConditionalField;
 
 export interface ConditionalField {
     readonly kind: 'ConditionalField';
@@ -367,16 +492,26 @@ export interface ConditionalField {
     readonly b: number | undefined;
 }
 
+// _ a:(## 6) b:(a . 2)?(## 32) = BitSelection;
+
 export interface BitSelection {
     readonly kind: 'BitSelection';
     readonly a: number;
     readonly b: number | undefined;
 }
 
+// _ flags:(## 10) { flags <= 100 } = ImplicitCondition;
+
 export interface ImplicitCondition {
     readonly kind: 'ImplicitCondition';
     readonly flags: number;
 }
+
+// _ a:# = MultipleEmptyConstructor 0;
+
+// _ b:(## 5) = MultipleEmptyConstructor 1;
+
+// a$_ x:(## 6) = MultipleEmptyConstructor 2;
 
 export type MultipleEmptyConstructor = MultipleEmptyConstructor__ | MultipleEmptyConstructor__1 | MultipleEmptyConstructor_a;
 
@@ -395,9 +530,15 @@ export interface MultipleEmptyConstructor_a {
     readonly x: number;
 }
 
+// true$_ = True;
+
 export interface True {
     readonly kind: 'True';
 }
+
+// a$0 {n:#} = ParamNamedArgInSecondConstr n;
+
+// b$1 {n:#} = ParamNamedArgInSecondConstr (n + 1);
 
 export type ParamNamedArgInSecondConstr = ParamNamedArgInSecondConstr_a | ParamNamedArgInSecondConstr_b;
 
@@ -411,15 +552,21 @@ export interface ParamNamedArgInSecondConstr_b {
     readonly n: number;
 }
 
+// a$_ msg:^(Maybe Any) = RefCombinatorAny;
+
 export interface RefCombinatorAny {
     readonly kind: 'RefCombinatorAny';
     readonly msg: Maybe<Slice>;
 }
 
+// a$_ n:# { 5 + n = 7 } = EqualityExpression;
+
 export interface EqualityExpression {
     readonly kind: 'EqualityExpression';
     readonly n: number;
 }
+
+// a$_ x:(## 1) y:x?^Simple = ConditionalRef;
 
 export interface ConditionalRef {
     readonly kind: 'ConditionalRef';
@@ -427,11 +574,15 @@ export interface ConditionalRef {
     readonly y: Simple | undefined;
 }
 
+// block_info#9bc7a987 seq_no:# { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no } = LoadFromNegationOutsideExpr;
+
 export interface LoadFromNegationOutsideExpr {
     readonly kind: 'LoadFromNegationOutsideExpr';
     readonly prev_seq_no: number;
     readonly seq_no: number;
 }
+
+// bit$_ (## 1) anon0:# = AnonymousData;
 
 export interface AnonymousData {
     readonly kind: 'AnonymousData';
@@ -439,10 +590,16 @@ export interface AnonymousData {
     readonly anon0_0: number;
 }
 
+// vm_stk_int#0201_ value:int257 = FalseAnonField;
+
 export interface FalseAnonField {
     readonly kind: 'FalseAnonField';
     readonly value: bigint;
 }
+
+// b$1 Simple = ConstructorOrder;
+
+// a$0 a:Simple = ConstructorOrder;
 
 export type ConstructorOrder = ConstructorOrder_b | ConstructorOrder_a;
 
@@ -455,6 +612,10 @@ export interface ConstructorOrder_a {
     readonly kind: 'ConstructorOrder_a';
     readonly a: Simple;
 }
+
+// a a:#  = CheckCrc32;
+
+// b b:# c:# = CheckCrc32;
 
 export type CheckCrc32 = CheckCrc32_a | CheckCrc32_b;
 
@@ -469,10 +630,14 @@ export interface CheckCrc32_b {
     readonly c: number;
 }
 
+// a$_ const:# = CheckKeyword;
+
 export interface CheckKeyword {
     readonly kind: 'CheckKeyword';
     readonly const0: number;
 }
+
+// a$_ {X:Type} t:# y:(Maybe ^X) = RefCombinatorInRefHelper X;
 
 export interface RefCombinatorInRefHelper<X> {
     readonly kind: 'RefCombinatorInRefHelper';
@@ -480,15 +645,24 @@ export interface RefCombinatorInRefHelper<X> {
     readonly y: Maybe<X>;
 }
 
+// a$_ msg:^(RefCombinatorInRefHelper Any) = RefCombinatorInRef;
+
 export interface RefCombinatorInRef {
     readonly kind: 'RefCombinatorInRef';
     readonly msg: RefCombinatorInRefHelper<Slice>;
 }
 
+// _ a:Bool = BoolUser;
+
 export interface BoolUser {
     readonly kind: 'BoolUser';
     readonly a: boolean;
 }
+
+/*
+anycast_info$_ depth:(#<= 30) { depth >= 1 }
+   rewrite_pfx:(bits depth) = Anycast;
+*/
 
 export interface Anycast {
     readonly kind: 'Anycast';
@@ -496,35 +670,49 @@ export interface Anycast {
     readonly rewrite_pfx: BitString;
 }
 
+// _ src:MsgAddressInt = AddressUser;
+
 export interface AddressUser {
     readonly kind: 'AddressUser';
     readonly src: Address;
 }
+
+// _ src:MsgAddressExt = ExtAddressUser;
 
 export interface ExtAddressUser {
     readonly kind: 'ExtAddressUser';
     readonly src: ExternalAddress | null;
 }
 
+// _ src:MsgAddress = AnyAddressUser;
+
 export interface AnyAddressUser {
     readonly kind: 'AnyAddressUser';
     readonly src: Address | ExternalAddress | null;
 }
+
+// a$_ b:Bit = BitUser;
 
 export interface BitUser {
     readonly kind: 'BitUser';
     readonly b: boolean;
 }
 
+// a$_ v:(VarUInteger 5) = VarUIntegerUser;
+
 export interface VarUIntegerUser {
     readonly kind: 'VarUIntegerUser';
     readonly v: bigint;
 }
 
+// a$_ v:(VarInteger 5) = VarIntegerUser;
+
 export interface VarIntegerUser {
     readonly kind: 'VarIntegerUser';
     readonly v: bigint;
 }
+
+// a$_ g:Grams = GramsUser;
 
 export interface GramsUser {
     readonly kind: 'GramsUser';

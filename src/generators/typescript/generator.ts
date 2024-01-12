@@ -334,6 +334,7 @@ export class TypescriptGenerator implements CodeGenerator {
       constructorsDeclarations.push(structX);
 
       this.jsCodeFunctionsDeclarations.push(tComment(constructor.declaration));
+      this.jsCodeConstructorDeclarations.push(tComment(constructor.declaration));
     });
 
     this.addExceptionStmts(tlbType, loadStatements, storeStatements);

@@ -9,21 +9,33 @@ export function bitLen(n: number) {
     return n.toString(2).length;;
 }
 
+// unit$_ = Unit;
+
 export interface Unit {
     readonly kind: 'Unit';
 }
+
+// true$_ = True;
 
 export interface True {
     readonly kind: 'True';
 }
 
+// bool_false$0 = BoolFalse;
+
 export interface BoolFalse {
     readonly kind: 'BoolFalse';
 }
 
+// bool_true$1 = BoolTrue;
+
 export interface BoolTrue {
     readonly kind: 'BoolTrue';
 }
+
+// nothing$0 {X:Type} = Maybe X;
+
+// just$1 {X:Type} value:X = Maybe X;
 
 export type Maybe<X> = Maybe_nothing<X> | Maybe_just<X>;
 
@@ -35,6 +47,10 @@ export interface Maybe_just<X> {
     readonly kind: 'Maybe_just';
     readonly value: X;
 }
+
+// left$0 {X:Type} {Y:Type} value:X = Either X Y;
+
+// right$1 {X:Type} {Y:Type} value:Y = Either X Y;
 
 export type Either<X, Y> = Either_left<X, Y> | Either_right<X, Y>;
 
@@ -48,11 +64,18 @@ export interface Either_right<X, Y> {
     readonly value: Y;
 }
 
+// pair$_ {X:Type} {Y:Type} first:X second:Y = Both X Y;
+
 export interface Both<X, Y> {
     readonly kind: 'Both';
     readonly first: X;
     readonly second: Y;
 }
+
+/*
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+          {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
+*/
 
 export interface Hashmap<X> {
     readonly kind: 'Hashmap';
@@ -62,6 +85,13 @@ export interface Hashmap<X> {
     readonly label: HmLabel;
     readonly node: HashmapNode<X>;
 }
+
+// hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
+
+/*
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+           right:^(Hashmap n X) = HashmapNode (n + 1) X;
+*/
 
 export type HashmapNode<X> = HashmapNode_hmn_leaf<X> | HashmapNode_hmn_fork<X>;
 
@@ -76,6 +106,12 @@ export interface HashmapNode_hmn_fork<X> {
     readonly left: Hashmap<X>;
     readonly right: Hashmap<X>;
 }
+
+// hml_short$0 {m:#} {n:#} len:(Unary ~n) {n <= m} s:(n * Bit) = HmLabel ~n m;
+
+// hml_long$10 {m:#} n:(#<= m) s:(n * Bit) = HmLabel ~n m;
+
+// hml_same$11 {m:#} v:Bit n:(#<= m) = HmLabel ~n m;
 
 export type HmLabel = HmLabel_hml_short | HmLabel_hml_long | HmLabel_hml_same;
 
@@ -101,6 +137,10 @@ export interface HmLabel_hml_same {
     readonly n: number;
 }
 
+// unary_zero$0 = Unary ~0;
+
+// unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
+
 export type Unary = Unary_unary_zero | Unary_unary_succ;
 
 export interface Unary_unary_zero {
@@ -112,6 +152,10 @@ export interface Unary_unary_succ {
     readonly n: number;
     readonly x: Unary;
 }
+
+// hme_empty$0 {n:#} {X:Type} = HashmapE n X;
+
+// hme_root$1 {n:#} {X:Type} root:^(Hashmap n X) = HashmapE n X;
 
 export type HashmapE<X> = HashmapE_hme_empty<X> | HashmapE_hme_root<X>;
 
@@ -126,11 +170,19 @@ export interface HashmapE_hme_root<X> {
     readonly root: Hashmap<X>;
 }
 
+// _ {n:#} _:(Hashmap n True) = BitstringSet n;
+
 export interface BitstringSet {
     readonly kind: 'BitstringSet';
     readonly n: number;
     readonly _: Hashmap<True>;
 }
+
+/*
+ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} 
+  label:(HmLabel ~l n) {n = (~m) + l} 
+  node:(HashmapAugNode m X Y) = HashmapAug n X Y;
+*/
 
 export interface HashmapAug<X, Y> {
     readonly kind: 'HashmapAug';
@@ -140,6 +192,13 @@ export interface HashmapAug<X, Y> {
     readonly label: HmLabel;
     readonly node: HashmapAugNode<X, Y>;
 }
+
+// ahmn_leaf#_ {X:Type} {Y:Type} extra:Y value:X = HashmapAugNode 0 X Y;
+
+/*
+ahmn_fork#_ {n:#} {X:Type} {Y:Type} left:^(HashmapAug n X Y)
+  right:^(HashmapAug n X Y) extra:Y = HashmapAugNode (n + 1) X Y;
+*/
 
 export type HashmapAugNode<X, Y> = HashmapAugNode_ahmn_leaf<X, Y> | HashmapAugNode_ahmn_fork<X, Y>;
 
@@ -157,6 +216,16 @@ export interface HashmapAugNode_ahmn_fork<X, Y> {
     readonly extra: Y;
 }
 
+/*
+ahme_empty$0 {n:#} {X:Type} {Y:Type} extra:Y 
+          = HashmapAugE n X Y;
+*/
+
+/*
+ahme_root$1 {n:#} {X:Type} {Y:Type} root:^(HashmapAug n X Y) 
+  extra:Y = HashmapAugE n X Y;
+*/
+
 export type HashmapAugE<X, Y> = HashmapAugE_ahme_empty<X, Y> | HashmapAugE_ahme_root<X, Y>;
 
 export interface HashmapAugE_ahme_empty<X, Y> {
@@ -172,6 +241,12 @@ export interface HashmapAugE_ahme_root<X, Y> {
     readonly extra: Y;
 }
 
+/*
+vhm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+           {n = (~m) + l} node:(VarHashmapNode m X) 
+           = VarHashmap n X;
+*/
+
 export interface VarHashmap<X> {
     readonly kind: 'VarHashmap';
     readonly n: number;
@@ -180,6 +255,19 @@ export interface VarHashmap<X> {
     readonly label: HmLabel;
     readonly node: VarHashmapNode<X>;
 }
+
+// vhmn_leaf$00 {n:#} {X:Type} value:X = VarHashmapNode n X;
+
+/*
+vhmn_fork$01 {n:#} {X:Type} left:^(VarHashmap n X) 
+             right:^(VarHashmap n X) value:(Maybe X) 
+             = VarHashmapNode (n + 1) X;
+*/
+
+/*
+vhmn_cont$1 {n:#} {X:Type} branch:Bit child:^(VarHashmap n X) 
+            value:X = VarHashmapNode (n + 1) X;
+*/
 
 export type VarHashmapNode<X> = VarHashmapNode_vhmn_leaf<X> | VarHashmapNode_vhmn_fork<X> | VarHashmapNode_vhmn_cont<X>;
 
@@ -205,6 +293,13 @@ export interface VarHashmapNode_vhmn_cont<X> {
     readonly value: X;
 }
 
+// vhme_empty$0 {n:#} {X:Type} = VarHashmapE n X;
+
+/*
+vhme_root$1 {n:#} {X:Type} root:^(VarHashmap n X) 
+            = VarHashmapE n X;
+*/
+
 export type VarHashmapE<X> = VarHashmapE_vhme_empty<X> | VarHashmapE_vhme_root<X>;
 
 export interface VarHashmapE_vhme_empty<X> {
@@ -218,6 +313,12 @@ export interface VarHashmapE_vhme_root<X> {
     readonly root: VarHashmap<X>;
 }
 
+/*
+phm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+           {n = (~m) + l} node:(PfxHashmapNode m X) 
+           = PfxHashmap n X;
+*/
+
 export interface PfxHashmap<X> {
     readonly kind: 'PfxHashmap';
     readonly n: number;
@@ -226,6 +327,13 @@ export interface PfxHashmap<X> {
     readonly label: HmLabel;
     readonly node: PfxHashmapNode<X>;
 }
+
+// phmn_leaf$0 {n:#} {X:Type} value:X = PfxHashmapNode n X;
+
+/*
+phmn_fork$1 {n:#} {X:Type} left:^(PfxHashmap n X) 
+            right:^(PfxHashmap n X) = PfxHashmapNode (n + 1) X;
+*/
 
 export type PfxHashmapNode<X> = PfxHashmapNode_phmn_leaf<X> | PfxHashmapNode_phmn_fork<X>;
 
@@ -242,6 +350,13 @@ export interface PfxHashmapNode_phmn_fork<X> {
     readonly right: PfxHashmap<X>;
 }
 
+// phme_empty$0 {n:#} {X:Type} = PfxHashmapE n X;
+
+/*
+phme_root$1 {n:#} {X:Type} root:^(PfxHashmap n X) 
+            = PfxHashmapE n X;
+*/
+
 export type PfxHashmapE<X> = PfxHashmapE_phme_empty<X> | PfxHashmapE_phme_root<X>;
 
 export interface PfxHashmapE_phme_empty<X> {
@@ -255,27 +370,61 @@ export interface PfxHashmapE_phme_root<X> {
     readonly root: PfxHashmap<X>;
 }
 
+/*
+anycast_info$_ depth:(#<= 30) { depth >= 1 }
+   rewrite_pfx:(bits depth) = Anycast;
+*/
+
 export interface Anycast {
     readonly kind: 'Anycast';
     readonly depth: number;
     readonly rewrite_pfx: BitString;
 }
 
+// _ grams:Grams = Coins;
+
 export interface Coins {
     readonly kind: 'Coins';
     readonly grams: bigint;
 }
+
+/*
+extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32)) 
+                 = ExtraCurrencyCollection;
+*/
 
 export interface ExtraCurrencyCollection {
     readonly kind: 'ExtraCurrencyCollection';
     readonly dict: HashmapE<bigint>;
 }
 
+/*
+currencies$_ grams:Grams other:ExtraCurrencyCollection 
+           = CurrencyCollection;
+*/
+
 export interface CurrencyCollection {
     readonly kind: 'CurrencyCollection';
     readonly grams: bigint;
     readonly other: ExtraCurrencyCollection;
 }
+
+/*
+int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
+  src:MsgAddressInt dest:MsgAddressInt 
+  value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
+  created_lt:uint64 created_at:uint32 = CommonMsgInfo;
+*/
+
+/*
+ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt 
+  import_fee:Grams = CommonMsgInfo;
+*/
+
+/*
+ext_out_msg_info$11 src:MsgAddressInt dest:MsgAddressExt
+  created_lt:uint64 created_at:uint32 = CommonMsgInfo;
+*/
 
 export type CommonMsgInfo = CommonMsgInfo_int_msg_info | CommonMsgInfo_ext_in_msg_info | CommonMsgInfo_ext_out_msg_info;
 
@@ -308,6 +457,18 @@ export interface CommonMsgInfo_ext_out_msg_info {
     readonly created_at: number;
 }
 
+/*
+int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
+  src:MsgAddress dest:MsgAddressInt 
+  value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
+  created_lt:uint64 created_at:uint32 = CommonMsgInfoRelaxed;
+*/
+
+/*
+ext_out_msg_info$11 src:MsgAddress dest:MsgAddressExt
+  created_lt:uint64 created_at:uint32 = CommonMsgInfoRelaxed;
+*/
+
 export type CommonMsgInfoRelaxed = CommonMsgInfoRelaxed_int_msg_info | CommonMsgInfoRelaxed_ext_out_msg_info;
 
 export interface CommonMsgInfoRelaxed_int_msg_info {
@@ -332,11 +493,19 @@ export interface CommonMsgInfoRelaxed_ext_out_msg_info {
     readonly created_at: number;
 }
 
+// tick_tock$_ tick:Bool tock:Bool = TickTock;
+
 export interface TickTock {
     readonly kind: 'TickTock';
     readonly tick: boolean;
     readonly tock: boolean;
 }
+
+/*
+_ split_depth:(Maybe (## 5)) special:(Maybe TickTock)
+  code:(Maybe ^Cell) data:(Maybe ^Cell)
+  library:(Maybe ^Cell) = StateInit;
+*/
 
 export interface StateInit {
     readonly kind: 'StateInit';
@@ -347,6 +516,12 @@ export interface StateInit {
     readonly library: Maybe<Slice>;
 }
 
+/*
+_ split_depth:(Maybe (## 5)) special:(Maybe TickTock)
+  code:(Maybe ^Cell) data:(Maybe ^Cell)
+  library:(HashmapE 256 SimpleLib) = StateInitWithLibs;
+*/
+
 export interface StateInitWithLibs {
     readonly kind: 'StateInitWithLibs';
     readonly split_depth: Maybe<number>;
@@ -356,11 +531,19 @@ export interface StateInitWithLibs {
     readonly library: HashmapE<SimpleLib>;
 }
 
+// simple_lib$_ public:Bool root:^Cell = SimpleLib;
+
 export interface SimpleLib {
     readonly kind: 'SimpleLib';
     readonly public0: boolean;
     readonly root: Slice;
 }
+
+/*
+message$_ {X:Type} info:CommonMsgInfo
+  init:(Maybe (Either StateInit ^StateInit))
+  body:(Either X ^X) = Message X;
+*/
 
 export interface Message<X> {
     readonly kind: 'Message';
@@ -369,6 +552,12 @@ export interface Message<X> {
     readonly body: Either<X, X>;
 }
 
+/*
+message$_ {X:Type} info:CommonMsgInfoRelaxed
+  init:(Maybe (Either StateInit ^StateInit))
+  body:(Either X ^X) = MessageRelaxed X;
+*/
+
 export interface MessageRelaxed<X> {
     readonly kind: 'MessageRelaxed';
     readonly info: CommonMsgInfoRelaxed;
@@ -376,10 +565,27 @@ export interface MessageRelaxed<X> {
     readonly body: Either<X, X>;
 }
 
+// _ (Message Any) = MessageAny;
+
 export interface MessageAny {
     readonly kind: 'MessageAny';
     readonly anon0: Message<Slice>;
 }
+
+/*
+interm_addr_regular$0 use_dest_bits:(#<= 96) 
+  = IntermediateAddress;
+*/
+
+/*
+interm_addr_simple$10 workchain_id:int8 addr_pfx:uint64 
+  = IntermediateAddress;
+*/
+
+/*
+interm_addr_ext$11 workchain_id:int32 addr_pfx:uint64
+  = IntermediateAddress;
+*/
 
 export type IntermediateAddress = IntermediateAddress_interm_addr_regular | IntermediateAddress_interm_addr_simple | IntermediateAddress_interm_addr_ext;
 
@@ -400,6 +606,12 @@ export interface IntermediateAddress_interm_addr_ext {
     readonly addr_pfx: number;
 }
 
+/*
+msg_envelope#4 cur_addr:IntermediateAddress 
+  next_addr:IntermediateAddress fwd_fee_remaining:Grams 
+  msg:^(Message Any) = MsgEnvelope;
+*/
+
 export interface MsgEnvelope {
     readonly kind: 'MsgEnvelope';
     readonly cur_addr: IntermediateAddress;
@@ -407,6 +619,41 @@ export interface MsgEnvelope {
     readonly fwd_fee_remaining: bigint;
     readonly msg: Message<Slice>;
 }
+
+/*
+msg_import_ext$000 msg:^(Message Any) transaction:^Transaction 
+              = InMsg;
+*/
+
+/*
+msg_import_ihr$010 msg:^(Message Any) transaction:^Transaction 
+    ihr_fee:Grams proof_created:^Cell = InMsg;
+*/
+
+/*
+msg_import_imm$011 in_msg:^MsgEnvelope
+    transaction:^Transaction fwd_fee:Grams = InMsg;
+*/
+
+/*
+msg_import_fin$100 in_msg:^MsgEnvelope 
+    transaction:^Transaction fwd_fee:Grams = InMsg;
+*/
+
+/*
+msg_import_tr$101  in_msg:^MsgEnvelope out_msg:^MsgEnvelope 
+    transit_fee:Grams = InMsg;
+*/
+
+/*
+msg_discard_fin$110 in_msg:^MsgEnvelope transaction_id:uint64 
+    fwd_fee:Grams = InMsg;
+*/
+
+/*
+msg_discard_tr$111 in_msg:^MsgEnvelope transaction_id:uint64 
+    fwd_fee:Grams proof_delivered:^Cell = InMsg;
+*/
 
 export type InMsg = InMsg_msg_import_ext | InMsg_msg_import_ihr | InMsg_msg_import_imm | InMsg_msg_import_fin | InMsg_msg_import_tr | InMsg_msg_discard_fin | InMsg_msg_discard_tr;
 
@@ -460,16 +707,64 @@ export interface InMsg_msg_discard_tr {
     readonly proof_delivered: Slice;
 }
 
+/*
+import_fees$_ fees_collected:Grams 
+  value_imported:CurrencyCollection = ImportFees;
+*/
+
 export interface ImportFees {
     readonly kind: 'ImportFees';
     readonly fees_collected: bigint;
     readonly value_imported: CurrencyCollection;
 }
 
+// _ (HashmapAugE 256 InMsg ImportFees) = InMsgDescr;
+
 export interface InMsgDescr {
     readonly kind: 'InMsgDescr';
     readonly anon0: HashmapAugE<InMsg, ImportFees>;
 }
+
+/*
+msg_export_ext$000 msg:^(Message Any)
+    transaction:^Transaction = OutMsg;
+*/
+
+/*
+msg_export_imm$010 out_msg:^MsgEnvelope 
+    transaction:^Transaction reimport:^InMsg = OutMsg;
+*/
+
+/*
+msg_export_new$001 out_msg:^MsgEnvelope 
+    transaction:^Transaction = OutMsg;
+*/
+
+/*
+msg_export_tr$011  out_msg:^MsgEnvelope 
+    imported:^InMsg = OutMsg;
+*/
+
+/*
+msg_export_deq$1100 out_msg:^MsgEnvelope
+    import_block_lt:uint63 = OutMsg;
+*/
+
+/*
+msg_export_deq_short$1101 msg_env_hash:bits256
+    next_workchain:int32 next_addr_pfx:uint64
+    import_block_lt:uint64 = OutMsg;
+*/
+
+/*
+msg_export_tr_req$111 out_msg:^MsgEnvelope 
+    imported:^InMsg = OutMsg;
+*/
+
+/*
+msg_export_deq_imm$100 out_msg:^MsgEnvelope 
+    reimport:^InMsg = OutMsg;
+*/
 
 export type OutMsg = OutMsg_msg_export_ext | OutMsg_msg_export_imm | OutMsg_msg_export_new | OutMsg_msg_export_tr | OutMsg_msg_export_deq | OutMsg_msg_export_deq_short | OutMsg_msg_export_tr_req | OutMsg_msg_export_deq_imm;
 
@@ -524,21 +819,29 @@ export interface OutMsg_msg_export_deq_imm {
     readonly reimport: InMsg;
 }
 
+// _ enqueued_lt:uint64 out_msg:^MsgEnvelope = EnqueuedMsg;
+
 export interface EnqueuedMsg {
     readonly kind: 'EnqueuedMsg';
     readonly enqueued_lt: number;
     readonly out_msg: MsgEnvelope;
 }
 
+// _ (HashmapAugE 256 OutMsg CurrencyCollection) = OutMsgDescr;
+
 export interface OutMsgDescr {
     readonly kind: 'OutMsgDescr';
     readonly anon0: HashmapAugE<OutMsg, CurrencyCollection>;
 }
 
+// _ (HashmapAugE 352 EnqueuedMsg uint64) = OutMsgQueue;
+
 export interface OutMsgQueue {
     readonly kind: 'OutMsgQueue';
     readonly anon0: HashmapAugE<EnqueuedMsg, number>;
 }
+
+// processed_upto$_ last_msg_lt:uint64 last_msg_hash:bits256 = ProcessedUpto;
 
 export interface ProcessedUpto {
     readonly kind: 'ProcessedUpto';
@@ -546,20 +849,31 @@ export interface ProcessedUpto {
     readonly last_msg_hash: BitString;
 }
 
+// _ (HashmapE 96 ProcessedUpto) = ProcessedInfo;
+
 export interface ProcessedInfo {
     readonly kind: 'ProcessedInfo';
     readonly anon0: HashmapE<ProcessedUpto>;
 }
+
+// ihr_pending$_ import_lt:uint64 = IhrPendingSince;
 
 export interface IhrPendingSince {
     readonly kind: 'IhrPendingSince';
     readonly import_lt: number;
 }
 
+// _ (HashmapE 320 IhrPendingSince) = IhrPendingInfo;
+
 export interface IhrPendingInfo {
     readonly kind: 'IhrPendingInfo';
     readonly anon0: HashmapE<IhrPendingSince>;
 }
+
+/*
+_ out_queue:OutMsgQueue proc_info:ProcessedInfo
+  ihr_pending:IhrPendingInfo = OutMsgQueueInfo;
+*/
 
 export interface OutMsgQueueInfo {
     readonly kind: 'OutMsgQueueInfo';
@@ -568,6 +882,11 @@ export interface OutMsgQueueInfo {
     readonly ihr_pending: IhrPendingInfo;
 }
 
+/*
+storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7) 
+  public_cells:(VarUInteger 7) = StorageUsed;
+*/
+
 export interface StorageUsed {
     readonly kind: 'StorageUsed';
     readonly _cells: bigint;
@@ -575,11 +894,21 @@ export interface StorageUsed {
     readonly public_cells: bigint;
 }
 
+/*
+storage_used_short$_ cells:(VarUInteger 7) 
+  bits:(VarUInteger 7) = StorageUsedShort;
+*/
+
 export interface StorageUsedShort {
     readonly kind: 'StorageUsedShort';
     readonly _cells: bigint;
     readonly bits: bigint;
 }
+
+/*
+storage_info$_ used:StorageUsed last_paid:uint32
+              due_payment:(Maybe Grams) = StorageInfo;
+*/
 
 export interface StorageInfo {
     readonly kind: 'StorageInfo';
@@ -587,6 +916,13 @@ export interface StorageInfo {
     readonly last_paid: number;
     readonly due_payment: Maybe<bigint>;
 }
+
+// account_none$0 = Account;
+
+/*
+account$1 addr:MsgAddressInt storage_stat:StorageInfo
+          storage:AccountStorage = Account;
+*/
 
 export type Account = Account_account_none | Account_account;
 
@@ -601,12 +937,24 @@ export interface Account_account {
     readonly storage: AccountStorage;
 }
 
+/*
+account_storage$_ last_trans_lt:uint64
+    balance:CurrencyCollection state:AccountState 
+  = AccountStorage;
+*/
+
 export interface AccountStorage {
     readonly kind: 'AccountStorage';
     readonly last_trans_lt: number;
     readonly balance: CurrencyCollection;
     readonly state: AccountState;
 }
+
+// account_uninit$00 = AccountState;
+
+// account_active$1 _:StateInit = AccountState;
+
+// account_frozen$01 state_hash:bits256 = AccountState;
 
 export type AccountState = AccountState_account_uninit | AccountState_account_active | AccountState_account_frozen;
 
@@ -623,6 +971,14 @@ export interface AccountState_account_frozen {
     readonly kind: 'AccountState_account_frozen';
     readonly state_hash: BitString;
 }
+
+// acc_state_uninit$00 = AccountStatus;
+
+// acc_state_frozen$01 = AccountStatus;
+
+// acc_state_active$10 = AccountStatus;
+
+// acc_state_nonexist$11 = AccountStatus;
 
 export type AccountStatus = AccountStatus_acc_state_uninit | AccountStatus_acc_state_frozen | AccountStatus_acc_state_active | AccountStatus_acc_state_nonexist;
 
@@ -642,6 +998,11 @@ export interface AccountStatus_acc_state_nonexist {
     readonly kind: 'AccountStatus_acc_state_nonexist';
 }
 
+/*
+account_descr$_ account:^Account last_trans_hash:bits256 
+  last_trans_lt:uint64 = ShardAccount;
+*/
+
 export interface ShardAccount {
     readonly kind: 'ShardAccount';
     readonly account: Account;
@@ -649,16 +1010,30 @@ export interface ShardAccount {
     readonly last_trans_lt: number;
 }
 
+// depth_balance$_ split_depth:(#<= 30) balance:CurrencyCollection = DepthBalanceInfo;
+
 export interface DepthBalanceInfo {
     readonly kind: 'DepthBalanceInfo';
     readonly split_depth: number;
     readonly balance: CurrencyCollection;
 }
 
+// _ (HashmapAugE 256 ShardAccount DepthBalanceInfo) = ShardAccounts;
+
 export interface ShardAccounts {
     readonly kind: 'ShardAccounts';
     readonly anon0: HashmapAugE<ShardAccount, DepthBalanceInfo>;
 }
+
+/*
+transaction$0111 account_addr:bits256 lt:uint64 
+  prev_trans_hash:bits256 prev_trans_lt:uint64 now:uint32
+  outmsg_cnt:uint15
+  orig_status:AccountStatus end_status:AccountStatus
+  ^[ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) ]
+  total_fees:CurrencyCollection state_update:^(HASH_UPDATE Account)
+  description:^TransactionDescr = Transaction;
+*/
 
 export interface Transaction {
     readonly kind: 'Transaction';
@@ -677,6 +1052,11 @@ export interface Transaction {
     readonly description: TransactionDescr;
 }
 
+/*
+merkle_update#02 {X:Type} old_hash:bits256 new_hash:bits256
+  old:^X new:^X = MERKLE_UPDATE X;
+*/
+
 export interface MERKLE_UPDATE<X> {
     readonly kind: 'MERKLE_UPDATE';
     readonly old_hash: BitString;
@@ -685,11 +1065,18 @@ export interface MERKLE_UPDATE<X> {
     readonly new0: X;
 }
 
+/*
+update_hashes#72 {X:Type} old_hash:bits256 new_hash:bits256
+  = HASH_UPDATE X;
+*/
+
 export interface HASH_UPDATE<X> {
     readonly kind: 'HASH_UPDATE';
     readonly old_hash: BitString;
     readonly new_hash: BitString;
 }
+
+// merkle_proof#03 {X:Type} virtual_hash:bits256 depth:uint16 virtual_root:^X = MERKLE_PROOF X;
 
 export interface MERKLE_PROOF<X> {
     readonly kind: 'MERKLE_PROOF';
@@ -698,6 +1085,13 @@ export interface MERKLE_PROOF<X> {
     readonly virtual_root: X;
 }
 
+/*
+acc_trans#5 account_addr:bits256
+            transactions:(HashmapAug 64 ^Transaction CurrencyCollection)
+            state_update:^(HASH_UPDATE Account)
+          = AccountBlock;
+*/
+
 export interface AccountBlock {
     readonly kind: 'AccountBlock';
     readonly account_addr: BitString;
@@ -705,10 +1099,19 @@ export interface AccountBlock {
     readonly state_update: HASH_UPDATE<Account>;
 }
 
+// _ (HashmapAugE 256 AccountBlock CurrencyCollection) = ShardAccountBlocks;
+
 export interface ShardAccountBlocks {
     readonly kind: 'ShardAccountBlocks';
     readonly anon0: HashmapAugE<AccountBlock, CurrencyCollection>;
 }
+
+/*
+tr_phase_storage$_ storage_fees_collected:Grams 
+  storage_fees_due:(Maybe Grams)
+  status_change:AccStatusChange
+  = TrStoragePhase;
+*/
 
 export interface TrStoragePhase {
     readonly kind: 'TrStoragePhase';
@@ -716,6 +1119,12 @@ export interface TrStoragePhase {
     readonly storage_fees_due: Maybe<bigint>;
     readonly status_change: AccStatusChange;
 }
+
+// acst_unchanged$0 = AccStatusChange;
+
+// acst_frozen$10 = AccStatusChange;
+
+// acst_deleted$11 = AccStatusChange;
 
 export type AccStatusChange = AccStatusChange_acst_unchanged | AccStatusChange_acst_frozen | AccStatusChange_acst_deleted;
 
@@ -731,11 +1140,32 @@ export interface AccStatusChange_acst_deleted {
     readonly kind: 'AccStatusChange_acst_deleted';
 }
 
+/*
+tr_phase_credit$_ due_fees_collected:(Maybe Grams)
+  credit:CurrencyCollection = TrCreditPhase;
+*/
+
 export interface TrCreditPhase {
     readonly kind: 'TrCreditPhase';
     readonly due_fees_collected: Maybe<bigint>;
     readonly credit: CurrencyCollection;
 }
+
+/*
+tr_phase_compute_skipped$0 reason:ComputeSkipReason
+  = TrComputePhase;
+*/
+
+/*
+tr_phase_compute_vm$1 success:Bool msg_state_used:Bool 
+  account_activated:Bool gas_fees:Grams
+  ^[ gas_used:(VarUInteger 7)
+  gas_limit:(VarUInteger 7) gas_credit:(Maybe (VarUInteger 3))
+  mode:int8 exit_code:int32 exit_arg:(Maybe int32)
+  vm_steps:uint32
+  vm_init_state_hash:bits256 vm_final_state_hash:bits256 ]
+  = TrComputePhase;
+*/
 
 export type TrComputePhase = TrComputePhase_tr_phase_compute_skipped | TrComputePhase_tr_phase_compute_vm;
 
@@ -761,6 +1191,14 @@ export interface TrComputePhase_tr_phase_compute_vm {
     readonly vm_final_state_hash: BitString;
 }
 
+// cskip_no_state$00 = ComputeSkipReason;
+
+// cskip_bad_state$01 = ComputeSkipReason;
+
+// cskip_no_gas$10 = ComputeSkipReason;
+
+// cskip_suspended$110 = ComputeSkipReason;
+
 export type ComputeSkipReason = ComputeSkipReason_cskip_no_state | ComputeSkipReason_cskip_bad_state | ComputeSkipReason_cskip_no_gas | ComputeSkipReason_cskip_suspended;
 
 export interface ComputeSkipReason_cskip_no_state {
@@ -778,6 +1216,16 @@ export interface ComputeSkipReason_cskip_no_gas {
 export interface ComputeSkipReason_cskip_suspended {
     readonly kind: 'ComputeSkipReason_cskip_suspended';
 }
+
+/*
+tr_phase_action$_ success:Bool valid:Bool no_funds:Bool
+  status_change:AccStatusChange
+  total_fwd_fees:(Maybe Grams) total_action_fees:(Maybe Grams)
+  result_code:int32 result_arg:(Maybe int32) tot_actions:uint16
+  spec_actions:uint16 skipped_actions:uint16 msgs_created:uint16 
+  action_list_hash:bits256 tot_msg_size:StorageUsedShort 
+  = TrActionPhase;
+*/
 
 export interface TrActionPhase {
     readonly kind: 'TrActionPhase';
@@ -797,6 +1245,18 @@ export interface TrActionPhase {
     readonly tot_msg_size: StorageUsedShort;
 }
 
+// tr_phase_bounce_negfunds$00 = TrBouncePhase;
+
+/*
+tr_phase_bounce_nofunds$01 msg_size:StorageUsedShort
+  req_fwd_fees:Grams = TrBouncePhase;
+*/
+
+/*
+tr_phase_bounce_ok$1 msg_size:StorageUsedShort 
+  msg_fees:Grams fwd_fees:Grams = TrBouncePhase;
+*/
+
 export type TrBouncePhase = TrBouncePhase_tr_phase_bounce_negfunds | TrBouncePhase_tr_phase_bounce_nofunds | TrBouncePhase_tr_phase_bounce_ok;
 
 export interface TrBouncePhase_tr_phase_bounce_negfunds {
@@ -815,6 +1275,57 @@ export interface TrBouncePhase_tr_phase_bounce_ok {
     readonly msg_fees: bigint;
     readonly fwd_fees: bigint;
 }
+
+/*
+trans_ord$0000 credit_first:Bool
+  storage_ph:(Maybe TrStoragePhase)
+  credit_ph:(Maybe TrCreditPhase)
+  compute_ph:TrComputePhase action:(Maybe ^TrActionPhase)
+  aborted:Bool bounce:(Maybe TrBouncePhase)
+  destroyed:Bool
+  = TransactionDescr;
+*/
+
+/*
+trans_storage$0001 storage_ph:TrStoragePhase
+  = TransactionDescr;
+*/
+
+/*
+trans_tick_tock$001 is_tock:Bool storage_ph:TrStoragePhase
+  compute_ph:TrComputePhase action:(Maybe ^TrActionPhase)
+  aborted:Bool destroyed:Bool = TransactionDescr;
+*/
+
+/*
+trans_split_prepare$0100 split_info:SplitMergeInfo
+  storage_ph:(Maybe TrStoragePhase)
+  compute_ph:TrComputePhase action:(Maybe ^TrActionPhase)
+  aborted:Bool destroyed:Bool
+  = TransactionDescr;
+*/
+
+/*
+trans_split_install$0101 split_info:SplitMergeInfo
+  prepare_transaction:^Transaction
+  installed:Bool = TransactionDescr;
+*/
+
+/*
+trans_merge_prepare$0110 split_info:SplitMergeInfo
+  storage_ph:TrStoragePhase aborted:Bool
+  = TransactionDescr;
+*/
+
+/*
+trans_merge_install$0111 split_info:SplitMergeInfo
+  prepare_transaction:^Transaction
+  storage_ph:(Maybe TrStoragePhase)
+  credit_ph:(Maybe TrCreditPhase)
+  compute_ph:TrComputePhase action:(Maybe ^TrActionPhase)
+  aborted:Bool destroyed:Bool
+  = TransactionDescr;
+*/
 
 export type TransactionDescr = TransactionDescr_trans_ord | TransactionDescr_trans_storage | TransactionDescr_trans_tick_tock | TransactionDescr_trans_split_prepare | TransactionDescr_trans_split_install | TransactionDescr_trans_merge_prepare | TransactionDescr_trans_merge_install;
 
@@ -881,6 +1392,12 @@ export interface TransactionDescr_trans_merge_install {
     readonly destroyed: boolean;
 }
 
+/*
+split_merge_info$_ cur_shard_pfx_len:(## 6)
+  acc_split_depth:(## 6) this_addr:bits256 sibling_addr:bits256
+  = SplitMergeInfo;
+*/
+
 export interface SplitMergeInfo {
     readonly kind: 'SplitMergeInfo';
     readonly cur_shard_pfx_len: number;
@@ -888,6 +1405,13 @@ export interface SplitMergeInfo {
     readonly this_addr: BitString;
     readonly sibling_addr: BitString;
 }
+
+/*
+smc_info#076ef1ea actions:uint16 msgs_sent:uint16
+  unixtime:uint32 block_lt:uint64 trans_lt:uint64 
+  rand_seed:bits256 balance_remaining:CurrencyCollection
+  myself:MsgAddressInt global_config:(Maybe Cell) = SmartContractInfo;
+*/
 
 export interface SmartContractInfo {
     readonly kind: 'SmartContractInfo';
@@ -902,6 +1426,13 @@ export interface SmartContractInfo {
     readonly global_config: Maybe<Slice>;
 }
 
+// out_list_empty$_ = OutList 0;
+
+/*
+out_list$_ {n:#} prev:^(OutList n) action:OutAction
+  = OutList (n + 1);
+*/
+
 export type OutList = OutList_out_list_empty | OutList_out_list;
 
 export interface OutList_out_list_empty {
@@ -914,6 +1445,23 @@ export interface OutList_out_list {
     readonly prev: OutList;
     readonly action: OutAction;
 }
+
+/*
+action_send_msg#0ec3c86d mode:(## 8) 
+  out_msg:^(MessageRelaxed Any) = OutAction;
+*/
+
+// action_set_code#ad4de08e new_code:^Cell = OutAction;
+
+/*
+action_reserve_currency#36e6b809 mode:(## 8)
+  currency:CurrencyCollection = OutAction;
+*/
+
+/*
+action_change_library#26fa1dd4 mode:(## 7)
+  libref:LibRef = OutAction;
+*/
 
 export type OutAction = OutAction_action_send_msg | OutAction_action_set_code | OutAction_action_reserve_currency | OutAction_action_change_library;
 
@@ -940,6 +1488,10 @@ export interface OutAction_action_change_library {
     readonly libref: LibRef;
 }
 
+// libref_hash$0 lib_hash:bits256 = LibRef;
+
+// libref_ref$1 library:^Cell = LibRef;
+
 export type LibRef = LibRef_libref_hash | LibRef_libref_ref;
 
 export interface LibRef_libref_hash {
@@ -952,11 +1504,18 @@ export interface LibRef_libref_ref {
     readonly library: Slice;
 }
 
+// out_list_node$_ prev:^Cell action:OutAction = OutListNode;
+
 export interface OutListNode {
     readonly kind: 'OutListNode';
     readonly prev: Slice;
     readonly action: OutAction;
 }
+
+/*
+shard_ident$00 shard_pfx_bits:(#<= 60) 
+  workchain_id:int32 shard_prefix:uint64 = ShardIdent;
+*/
 
 export interface ShardIdent {
     readonly kind: 'ShardIdent';
@@ -964,6 +1523,12 @@ export interface ShardIdent {
     readonly workchain_id: number;
     readonly shard_prefix: number;
 }
+
+/*
+ext_blk_ref$_ end_lt:uint64
+  seq_no:uint32 root_hash:bits256 file_hash:bits256 
+  = ExtBlkRef;
+*/
 
 export interface ExtBlkRef {
     readonly kind: 'ExtBlkRef';
@@ -973,6 +1538,11 @@ export interface ExtBlkRef {
     readonly file_hash: BitString;
 }
 
+/*
+block_id_ext$_ shard_id:ShardIdent seq_no:uint32
+  root_hash:bits256 file_hash:bits256 = BlockIdExt;
+*/
+
 export interface BlockIdExt {
     readonly kind: 'BlockIdExt';
     readonly shard_id: ShardIdent;
@@ -981,10 +1551,30 @@ export interface BlockIdExt {
     readonly file_hash: BitString;
 }
 
+// master_info$_ master:ExtBlkRef = BlkMasterInfo;
+
 export interface BlkMasterInfo {
     readonly kind: 'BlkMasterInfo';
     readonly master: ExtBlkRef;
 }
+
+/*
+shard_state#9023afe2 global_id:int32
+  shard_id:ShardIdent 
+  seq_no:uint32 vert_seq_no:#
+  gen_utime:uint32 gen_lt:uint64
+  min_ref_mc_seqno:uint32
+  out_msg_queue_info:^OutMsgQueueInfo
+  before_split:(## 1)
+  accounts:^ShardAccounts
+  ^[ overload_history:uint64 underload_history:uint64
+  total_balance:CurrencyCollection
+  total_validator_fees:CurrencyCollection
+  libraries:(HashmapE 256 LibDescr)
+  master_ref:(Maybe BlkMasterInfo) ]
+  custom:(Maybe ^McStateExtra)
+  = ShardStateUnsplit;
+*/
 
 export interface ShardStateUnsplit {
     readonly kind: 'ShardStateUnsplit';
@@ -1007,6 +1597,10 @@ export interface ShardStateUnsplit {
     readonly custom: Maybe<McStateExtra>;
 }
 
+// split_state#5f327da5 left:^ShardStateUnsplit right:^ShardStateUnsplit = ShardState;
+
+// _ ShardStateUnsplit = ShardState;
+
 export type ShardState = ShardState_split_state | ShardState__;
 
 export interface ShardState_split_state {
@@ -1020,11 +1614,39 @@ export interface ShardState__ {
     readonly anon0: ShardStateUnsplit;
 }
 
+/*
+shared_lib_descr$00 lib:^Cell publishers:(Hashmap 256 True)
+  = LibDescr;
+*/
+
 export interface LibDescr {
     readonly kind: 'LibDescr';
     readonly lib: Slice;
     readonly publishers: Hashmap<True>;
 }
+
+/*
+block_info#9bc7a987 version:uint32 
+  not_master:(## 1) 
+  after_merge:(## 1) before_split:(## 1) 
+  after_split:(## 1) 
+  want_split:Bool want_merge:Bool
+  key_block:Bool vert_seqno_incr:(## 1)
+  flags:(## 8) { flags <= 1 }
+  seq_no:# vert_seq_no:# { vert_seq_no >= vert_seqno_incr } 
+  { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no } 
+  shard:ShardIdent gen_utime:uint32
+  start_lt:uint64 end_lt:uint64
+  gen_validator_list_hash_short:uint32
+  gen_catchain_seqno:uint32
+  min_ref_mc_seqno:uint32
+  prev_key_block_seqno:uint32
+  gen_software:flags . 0?GlobalVersion
+  master_ref:not_master?^BlkMasterInfo 
+  prev_ref:^(BlkPrevInfo after_merge)
+  prev_vert_ref:vert_seqno_incr?^(BlkPrevInfo 0)
+  = BlockInfo;
+*/
 
 export interface BlockInfo {
     readonly kind: 'BlockInfo';
@@ -1055,6 +1677,10 @@ export interface BlockInfo {
     readonly prev_vert_ref: BlkPrevInfo | undefined;
 }
 
+// prev_blk_info$_ prev:ExtBlkRef = BlkPrevInfo 0;
+
+// prev_blks_info$_ prev1:^ExtBlkRef prev2:^ExtBlkRef = BlkPrevInfo 1;
+
 export type BlkPrevInfo = BlkPrevInfo_prev_blk_info | BlkPrevInfo_prev_blks_info;
 
 export interface BlkPrevInfo_prev_blk_info {
@@ -1068,6 +1694,13 @@ export interface BlkPrevInfo_prev_blks_info {
     readonly prev2: ExtBlkRef;
 }
 
+/*
+block#11ef55aa global_id:int32
+  info:^BlockInfo value_flow:^ValueFlow
+  state_update:^(MERKLE_UPDATE ShardState) 
+  extra:^BlockExtra = Block;
+*/
+
 export interface Block {
     readonly kind: 'Block';
     readonly global_id: number;
@@ -1076,6 +1709,15 @@ export interface Block {
     readonly state_update: Cell;
     readonly extra: BlockExtra;
 }
+
+/*
+block_extra in_msg_descr:^InMsgDescr
+  out_msg_descr:^OutMsgDescr
+  account_blocks:^ShardAccountBlocks
+  rand_seed:bits256
+  created_by:bits256
+  custom:(Maybe ^McBlockExtra) = BlockExtra;
+*/
 
 export interface BlockExtra {
     readonly kind: 'BlockExtra';
@@ -1086,6 +1728,35 @@ export interface BlockExtra {
     readonly created_by: BitString;
     readonly custom: Maybe<McBlockExtra>;
 }
+
+/*
+value_flow#b8e48dfb ^[ from_prev_blk:CurrencyCollection 
+  to_next_blk:CurrencyCollection
+  imported:CurrencyCollection
+  exported:CurrencyCollection ]
+  fees_collected:CurrencyCollection
+  ^[
+  fees_imported:CurrencyCollection
+  recovered:CurrencyCollection
+  created:CurrencyCollection
+  minted:CurrencyCollection
+  ] = ValueFlow;
+*/
+
+/*
+value_flow_v2#3ebf98b7 ^[ from_prev_blk:CurrencyCollection
+  to_next_blk:CurrencyCollection
+  imported:CurrencyCollection
+  exported:CurrencyCollection ]
+  fees_collected:CurrencyCollection
+  burned:CurrencyCollection
+  ^[
+  fees_imported:CurrencyCollection
+  recovered:CurrencyCollection
+  created:CurrencyCollection
+  minted:CurrencyCollection
+  ] = ValueFlow;
+*/
 
 export type ValueFlow = ValueFlow_value_flow | ValueFlow_value_flow_v2;
 
@@ -1116,6 +1787,13 @@ export interface ValueFlow_value_flow_v2 {
     readonly minted: CurrencyCollection;
 }
 
+// bt_leaf$0 {X:Type} leaf:X = BinTree X;
+
+/*
+bt_fork$1 {X:Type} left:^(BinTree X) right:^(BinTree X) 
+          = BinTree X;
+*/
+
 export type BinTree<X> = BinTree_bt_leaf<X> | BinTree_bt_fork<X>;
 
 export interface BinTree_bt_leaf<X> {
@@ -1128,6 +1806,12 @@ export interface BinTree_bt_fork<X> {
     readonly left: BinTree<X>;
     readonly right: BinTree<X>;
 }
+
+// fsm_none$0 = FutureSplitMerge;
+
+// fsm_split$10 split_utime:uint32 interval:uint32 = FutureSplitMerge;
+
+// fsm_merge$11 merge_utime:uint32 interval:uint32 = FutureSplitMerge;
 
 export type FutureSplitMerge = FutureSplitMerge_fsm_none | FutureSplitMerge_fsm_split | FutureSplitMerge_fsm_merge;
 
@@ -1146,6 +1830,34 @@ export interface FutureSplitMerge_fsm_merge {
     readonly merge_utime: number;
     readonly interval: number;
 }
+
+/*
+shard_descr#b seq_no:uint32 reg_mc_seqno:uint32
+  start_lt:uint64 end_lt:uint64
+  root_hash:bits256 file_hash:bits256 
+  before_split:Bool before_merge:Bool
+  want_split:Bool want_merge:Bool
+  nx_cc_updated:Bool flags:(## 3) { flags = 0 }
+  next_catchain_seqno:uint32 next_validator_shard:uint64
+  min_ref_mc_seqno:uint32 gen_utime:uint32
+  split_merge_at:FutureSplitMerge
+  fees_collected:CurrencyCollection
+  funds_created:CurrencyCollection = ShardDescr;
+*/
+
+/*
+shard_descr_new#a seq_no:uint32 reg_mc_seqno:uint32
+  start_lt:uint64 end_lt:uint64
+  root_hash:bits256 file_hash:bits256 
+  before_split:Bool before_merge:Bool
+  want_split:Bool want_merge:Bool
+  nx_cc_updated:Bool flags:(## 3) { flags = 0 }
+  next_catchain_seqno:uint32 next_validator_shard:uint64
+  min_ref_mc_seqno:uint32 gen_utime:uint32
+  split_merge_at:FutureSplitMerge
+  ^[ fees_collected:CurrencyCollection
+     funds_created:CurrencyCollection ] = ShardDescr;
+*/
 
 export type ShardDescr = ShardDescr_shard_descr | ShardDescr_shard_descr_new;
 
@@ -1195,10 +1907,19 @@ export interface ShardDescr_shard_descr_new {
     readonly funds_created: CurrencyCollection;
 }
 
+// _ (HashmapE 32 ^(BinTree ShardDescr)) = ShardHashes;
+
 export interface ShardHashes {
     readonly kind: 'ShardHashes';
     readonly anon0: HashmapE<BinTree<ShardDescr>>;
 }
+
+// bta_leaf$0 {X:Type} {Y:Type} extra:Y leaf:X = BinTreeAug X Y;
+
+/*
+bta_fork$1 {X:Type} {Y:Type} left:^(BinTreeAug X Y) 
+           right:^(BinTreeAug X Y) extra:Y = BinTreeAug X Y;
+*/
 
 export type BinTreeAug<X, Y> = BinTreeAug_bta_leaf<X, Y> | BinTreeAug_bta_fork<X, Y>;
 
@@ -1215,22 +1936,39 @@ export interface BinTreeAug_bta_fork<X, Y> {
     readonly extra: Y;
 }
 
+// _ fees:CurrencyCollection create:CurrencyCollection = ShardFeeCreated;
+
 export interface ShardFeeCreated {
     readonly kind: 'ShardFeeCreated';
     readonly fees: CurrencyCollection;
     readonly create: CurrencyCollection;
 }
 
+// _ (HashmapAugE 96 ShardFeeCreated ShardFeeCreated) = ShardFees;
+
 export interface ShardFees {
     readonly kind: 'ShardFees';
     readonly anon0: HashmapAugE<ShardFeeCreated, ShardFeeCreated>;
 }
+
+/*
+_ config_addr:bits256 config:^(Hashmap 32 ^Cell) 
+  = ConfigParams;
+*/
 
 export interface ConfigParams {
     readonly kind: 'ConfigParams';
     readonly config_addr: BitString;
     readonly config: Hashmap<Slice>;
 }
+
+/*
+validator_info$_
+  validator_list_hash_short:uint32 
+  catchain_seqno:uint32
+  nx_cc_updated:Bool
+= ValidatorInfo;
+*/
 
 export interface ValidatorInfo {
     readonly kind: 'ValidatorInfo';
@@ -1239,11 +1977,20 @@ export interface ValidatorInfo {
     readonly nx_cc_updated: boolean;
 }
 
+/*
+validator_base_info$_
+  validator_list_hash_short:uint32 
+  catchain_seqno:uint32
+= ValidatorBaseInfo;
+*/
+
 export interface ValidatorBaseInfo {
     readonly kind: 'ValidatorBaseInfo';
     readonly validator_list_hash_short: number;
     readonly catchain_seqno: number;
 }
+
+// _ key:Bool max_end_lt:uint64 = KeyMaxLt;
 
 export interface KeyMaxLt {
     readonly kind: 'KeyMaxLt';
@@ -1251,16 +1998,22 @@ export interface KeyMaxLt {
     readonly max_end_lt: number;
 }
 
+// _ key:Bool blk_ref:ExtBlkRef = KeyExtBlkRef;
+
 export interface KeyExtBlkRef {
     readonly kind: 'KeyExtBlkRef';
     readonly key: boolean;
     readonly blk_ref: ExtBlkRef;
 }
 
+// _ (HashmapAugE 32 KeyExtBlkRef KeyMaxLt) = OldMcBlocksInfo;
+
 export interface OldMcBlocksInfo {
     readonly kind: 'OldMcBlocksInfo';
     readonly anon0: HashmapAugE<KeyExtBlkRef, KeyMaxLt>;
 }
+
+// counters#_ last_updated:uint32 total:uint64 cnt2048:uint64 cnt65536:uint64 = Counters;
 
 export interface Counters {
     readonly kind: 'Counters';
@@ -1270,11 +2023,17 @@ export interface Counters {
     readonly cnt65536: number;
 }
 
+// creator_info#4 mc_blocks:Counters shard_blocks:Counters = CreatorStats;
+
 export interface CreatorStats {
     readonly kind: 'CreatorStats';
     readonly mc_blocks: Counters;
     readonly shard_blocks: Counters;
 }
+
+// block_create_stats#17 counters:(HashmapE 256 CreatorStats) = BlockCreateStats;
+
+// block_create_stats_ext#34 counters:(HashmapAugE 256 CreatorStats uint32) = BlockCreateStats;
 
 export type BlockCreateStats = BlockCreateStats_block_create_stats | BlockCreateStats_block_create_stats_ext;
 
@@ -1287,6 +2046,20 @@ export interface BlockCreateStats_block_create_stats_ext {
     readonly kind: 'BlockCreateStats_block_create_stats_ext';
     readonly counters: HashmapAugE<CreatorStats, number>;
 }
+
+/*
+masterchain_state_extra#cc26
+  shard_hashes:ShardHashes
+  config:ConfigParams
+  ^[ flags:(## 16) { flags <= 1 }
+     validator_info:ValidatorInfo
+     prev_blocks:OldMcBlocksInfo
+     after_key_block:Bool
+     last_key_block:(Maybe ExtBlkRef)
+     block_create_stats:(flags . 0)?BlockCreateStats ]
+  global_balance:CurrencyCollection
+= McStateExtra;
+*/
 
 export interface McStateExtra {
     readonly kind: 'McStateExtra';
@@ -1301,16 +2074,27 @@ export interface McStateExtra {
     readonly global_balance: CurrencyCollection;
 }
 
+// ed25519_pubkey#8e81278a pubkey:bits256 = SigPubKey;
+
 export interface SigPubKey {
     readonly kind: 'SigPubKey';
     readonly pubkey: BitString;
 }
+
+// ed25519_signature#5 R:bits256 s:bits256 = CryptoSignatureSimple;
 
 export interface CryptoSignatureSimple {
     readonly kind: 'CryptoSignatureSimple';
     readonly R: BitString;
     readonly s: BitString;
 }
+
+/*
+chained_signature#f signed_cert:^SignedCertificate temp_key_signature:CryptoSignatureSimple
+  = CryptoSignature;
+*/
+
+// _ CryptoSignatureSimple = CryptoSignature;
 
 export type CryptoSignature = CryptoSignature_chained_signature | CryptoSignature__;
 
@@ -1325,11 +2109,15 @@ export interface CryptoSignature__ {
     readonly anon0: CryptoSignatureSimple;
 }
 
+// sig_pair$_ node_id_short:bits256 sign:CryptoSignature = CryptoSignaturePair;
+
 export interface CryptoSignaturePair {
     readonly kind: 'CryptoSignaturePair';
     readonly node_id_short: BitString;
     readonly sign: CryptoSignature;
 }
+
+// certificate#4 temp_key:SigPubKey valid_since:uint32 valid_until:uint32 = Certificate;
 
 export interface Certificate {
     readonly kind: 'Certificate';
@@ -1338,16 +2126,35 @@ export interface Certificate {
     readonly valid_until: number;
 }
 
+// certificate_env#a419b7d certificate:Certificate = CertificateEnv;
+
 export interface CertificateEnv {
     readonly kind: 'CertificateEnv';
     readonly certificate: Certificate;
 }
+
+/*
+signed_certificate$_ certificate:Certificate certificate_signature:CryptoSignature
+  = SignedCertificate;
+*/
 
 export interface SignedCertificate {
     readonly kind: 'SignedCertificate';
     readonly certificate: Certificate;
     readonly certificate_signature: CryptoSignature;
 }
+
+/*
+masterchain_block_extra#cca5
+  key_block:(## 1)
+  shard_hashes:ShardHashes
+  shard_fees:ShardFees
+  ^[ prev_blk_signatures:(HashmapE 16 CryptoSignaturePair)
+     recover_create_msg:(Maybe ^InMsg)
+     mint_msg:(Maybe ^InMsg) ]
+  config:key_block?ConfigParams
+= McBlockExtra;
+*/
 
 export interface McBlockExtra {
     readonly kind: 'McBlockExtra';
@@ -1359,6 +2166,10 @@ export interface McBlockExtra {
     readonly mint_msg: Maybe<InMsg>;
     readonly config: ConfigParams | undefined;
 }
+
+// validator#53 public_key:SigPubKey weight:uint64 = ValidatorDescr;
+
+// validator_addr#73 public_key:SigPubKey weight:uint64 adnl_addr:bits256 = ValidatorDescr;
 
 export type ValidatorDescr = ValidatorDescr_validator | ValidatorDescr_validator_addr;
 
@@ -1374,6 +2185,18 @@ export interface ValidatorDescr_validator_addr {
     readonly weight: number;
     readonly adnl_addr: BitString;
 }
+
+/*
+validators#11 utime_since:uint32 utime_until:uint32 
+  total:(## 16) main:(## 16) { main <= total } { main >= 1 } 
+  list:(Hashmap 16 ValidatorDescr) = ValidatorSet;
+*/
+
+/*
+validators_ext#12 utime_since:uint32 utime_until:uint32 
+  total:(## 16) main:(## 16) { main <= total } { main >= 1 } 
+  total_weight:uint64 list:(HashmapE 16 ValidatorDescr) = ValidatorSet;
+*/
 
 export type ValidatorSet = ValidatorSet_validators | ValidatorSet_validators_ext;
 
@@ -1395,6 +2218,106 @@ export interface ValidatorSet_validators_ext {
     readonly total_weight: number;
     readonly list: HashmapE<ValidatorDescr>;
 }
+
+// _ config_addr:bits256 = ConfigParam 0;
+
+// _ elector_addr:bits256 = ConfigParam 1;
+
+// _ minter_addr:bits256 = ConfigParam 2;
+
+// _ fee_collector_addr:bits256 = ConfigParam 3;
+
+// _ dns_root_addr:bits256 = ConfigParam 4;
+
+// _ BurningConfig = ConfigParam 5;
+
+// _ mint_new_price:Grams mint_add_price:Grams = ConfigParam 6;
+
+// _ to_mint:ExtraCurrencyCollection = ConfigParam 7;
+
+// _ GlobalVersion = ConfigParam 8;
+
+// _ mandatory_params:(Hashmap 32 True) = ConfigParam 9;
+
+// _ critical_params:(Hashmap 32 True) = ConfigParam 10;
+
+// _ ConfigVotingSetup = ConfigParam 11;
+
+// _ workchains:(HashmapE 32 WorkchainDescr) = ConfigParam 12;
+
+// _ ComplaintPricing = ConfigParam 13;
+
+// _ BlockCreateFees = ConfigParam 14;
+
+/*
+_ validators_elected_for:uint32 elections_start_before:uint32 
+  elections_end_before:uint32 stake_held_for:uint32
+  = ConfigParam 15;
+*/
+
+/*
+_ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16) 
+  { max_validators >= max_main_validators } 
+  { max_main_validators >= min_validators } 
+  { min_validators >= 1 }
+  = ConfigParam 16;
+*/
+
+// _ min_stake:Grams max_stake:Grams min_total_stake:Grams max_stake_factor:uint32 = ConfigParam 17;
+
+// _ (Hashmap 32 StoragePrices) = ConfigParam 18;
+
+// _ global_id:int32 = ConfigParam 19;
+
+// config_mc_gas_prices#_ GasLimitsPrices = ConfigParam 20;
+
+// config_gas_prices#_ GasLimitsPrices = ConfigParam 21;
+
+// config_mc_block_limits#_ BlockLimits = ConfigParam 22;
+
+// config_block_limits#_ BlockLimits = ConfigParam 23;
+
+// config_mc_fwd_prices#_ MsgForwardPrices = ConfigParam 24;
+
+// config_fwd_prices#_ MsgForwardPrices = ConfigParam 25;
+
+// _ CatchainConfig = ConfigParam 28;
+
+// _ ConsensusConfig = ConfigParam 29;
+
+// _ fundamental_smc_addr:(HashmapE 256 True) = ConfigParam 31;
+
+// _ prev_validators:ValidatorSet = ConfigParam 32;
+
+// _ prev_temp_validators:ValidatorSet = ConfigParam 33;
+
+// _ cur_validators:ValidatorSet = ConfigParam 34;
+
+// _ cur_temp_validators:ValidatorSet = ConfigParam 35;
+
+// _ next_validators:ValidatorSet = ConfigParam 36;
+
+// _ next_temp_validators:ValidatorSet = ConfigParam 37;
+
+// _ (HashmapE 256 ValidatorSignedTempKey) = ConfigParam 39;
+
+// _ MisbehaviourPunishmentConfig = ConfigParam 40;
+
+// _ SizeLimitsConfig = ConfigParam 43;
+
+// _ SuspendedAddressList = ConfigParam 44;
+
+// _ OracleBridgeParams = ConfigParam 71;
+
+// _ OracleBridgeParams = ConfigParam 72;
+
+// _ OracleBridgeParams = ConfigParam 73;
+
+// _ JettonBridgeParams = ConfigParam 79;
+
+// _ JettonBridgeParams = ConfigParam 81;
+
+// _ JettonBridgeParams = ConfigParam 82;
 
 export type ConfigParam = ConfigParam__ | ConfigParam__1 | ConfigParam__2 | ConfigParam__3 | ConfigParam__4 | ConfigParam__5 | ConfigParam__6 | ConfigParam__7 | ConfigParam__8 | ConfigParam__9 | ConfigParam__10 | ConfigParam__11 | ConfigParam__12 | ConfigParam__13 | ConfigParam__14 | ConfigParam__15 | ConfigParam__16 | ConfigParam__17 | ConfigParam__18 | ConfigParam__19 | ConfigParam_config_mc_gas_prices | ConfigParam_config_gas_prices | ConfigParam_config_mc_block_limits | ConfigParam_config_block_limits | ConfigParam_config_mc_fwd_prices | ConfigParam_config_fwd_prices | ConfigParam__26 | ConfigParam__27 | ConfigParam__28 | ConfigParam__29 | ConfigParam__30 | ConfigParam__31 | ConfigParam__32 | ConfigParam__33 | ConfigParam__34 | ConfigParam__35 | ConfigParam__36 | ConfigParam__37 | ConfigParam__38 | ConfigParam__39 | ConfigParam__40 | ConfigParam__41 | ConfigParam__42 | ConfigParam__43 | ConfigParam__44;
 
@@ -1632,6 +2555,12 @@ export interface ConfigParam__44 {
     readonly anon0: JettonBridgeParams;
 }
 
+/*
+burning_config#01
+  blackhole_addr:(Maybe bits256)
+  fee_burn_num:# fee_burn_denom:# { fee_burn_num <= fee_burn_denom } { fee_burn_denom >= 1 } = BurningConfig;
+*/
+
 export interface BurningConfig {
     readonly kind: 'BurningConfig';
     readonly blackhole_addr: Maybe<BitString>;
@@ -1639,11 +2568,15 @@ export interface BurningConfig {
     readonly fee_burn_denom: number;
 }
 
+// capabilities#c4 version:uint32 capabilities:uint64 = GlobalVersion;
+
 export interface GlobalVersion {
     readonly kind: 'GlobalVersion';
     readonly version: number;
     readonly capabilities: number;
 }
+
+// cfg_vote_cfg#36 min_tot_rounds:uint8 max_tot_rounds:uint8 min_wins:uint8 max_losses:uint8 min_store_sec:uint32 max_store_sec:uint32 bit_price:uint32 cell_price:uint32 = ConfigProposalSetup;
 
 export interface ConfigProposalSetup {
     readonly kind: 'ConfigProposalSetup';
@@ -1657,11 +2590,18 @@ export interface ConfigProposalSetup {
     readonly _cell_price: number;
 }
 
+// cfg_vote_setup#91 normal_params:^ConfigProposalSetup critical_params:^ConfigProposalSetup = ConfigVotingSetup;
+
 export interface ConfigVotingSetup {
     readonly kind: 'ConfigVotingSetup';
     readonly normal_params: ConfigProposalSetup;
     readonly critical_params: ConfigProposalSetup;
 }
+
+/*
+cfg_proposal#f3 param_id:int32 param_value:(Maybe ^Cell) if_hash_equal:(Maybe uint256) 
+  = ConfigProposal;
+*/
 
 export interface ConfigProposal {
     readonly kind: 'ConfigProposal';
@@ -1669,6 +2609,12 @@ export interface ConfigProposal {
     readonly param_value: Maybe<Slice>;
     readonly if_hash_equal: Maybe<bigint>;
 }
+
+/*
+cfg_proposal_status#ce expires:uint32 proposal:^ConfigProposal is_critical:Bool
+  voters:(HashmapE 16 True) remaining_weight:int64 validator_set_id:uint256 
+  rounds_remaining:uint8 wins:uint8 losses:uint8 = ConfigProposalStatus;
+*/
 
 export interface ConfigProposalStatus {
     readonly kind: 'ConfigProposalStatus';
@@ -1682,6 +2628,16 @@ export interface ConfigProposalStatus {
     readonly wins: number;
     readonly losses: number;
 }
+
+// wfmt_basic#1 vm_version:int32 vm_mode:uint64 = WorkchainFormat 1;
+
+/*
+wfmt_ext#0 min_addr_len:(## 12) max_addr_len:(## 12) addr_len_step:(## 12)
+  { min_addr_len >= 64 } { min_addr_len <= max_addr_len } 
+  { max_addr_len <= 1023 } { addr_len_step <= 1023 }
+  workchain_type_id:(## 32) { workchain_type_id >= 1 }
+  = WorkchainFormat 0;
+*/
 
 export type WorkchainFormat = WorkchainFormat_wfmt_basic | WorkchainFormat_wfmt_ext;
 
@@ -1699,6 +2655,13 @@ export interface WorkchainFormat_wfmt_ext {
     readonly workchain_type_id: number;
 }
 
+/*
+wc_split_merge_timings#0
+  split_merge_delay:uint32 split_merge_interval:uint32
+  min_split_merge_interval:uint32 max_split_merge_delay:uint32
+  = WcSplitMergeTimings;
+*/
+
 export interface WcSplitMergeTimings {
     readonly kind: 'WcSplitMergeTimings';
     readonly split_merge_delay: number;
@@ -1706,6 +2669,25 @@ export interface WcSplitMergeTimings {
     readonly min_split_merge_interval: number;
     readonly max_split_merge_delay: number;
 }
+
+/*
+workchain#a6 enabled_since:uint32 actual_min_split:(## 8) 
+  min_split:(## 8) max_split:(## 8) { actual_min_split <= min_split }
+  basic:(## 1) active:Bool accept_msgs:Bool flags:(## 13) { flags = 0 }
+  zerostate_root_hash:bits256 zerostate_file_hash:bits256
+  version:uint32 format:(WorkchainFormat basic)
+  = WorkchainDescr;
+*/
+
+/*
+workchain_v2#a7 enabled_since:uint32 actual_min_split:(## 8)
+  min_split:(## 8) max_split:(## 8) { actual_min_split <= min_split }
+  basic:(## 1) active:Bool accept_msgs:Bool flags:(## 13) { flags = 0 }
+  zerostate_root_hash:bits256 zerostate_file_hash:bits256
+  version:uint32 format:(WorkchainFormat basic)
+  split_merge_timings:WcSplitMergeTimings
+  = WorkchainDescr;
+*/
 
 export type WorkchainDescr = WorkchainDescr_workchain | WorkchainDescr_workchain_v2;
 
@@ -1742,6 +2724,8 @@ export interface WorkchainDescr_workchain_v2 {
     readonly split_merge_timings: WcSplitMergeTimings;
 }
 
+// complaint_prices#1a deposit:Grams bit_price:Grams cell_price:Grams = ComplaintPricing;
+
 export interface ComplaintPricing {
     readonly kind: 'ComplaintPricing';
     readonly deposit: bigint;
@@ -1749,11 +2733,21 @@ export interface ComplaintPricing {
     readonly _cell_price: bigint;
 }
 
+/*
+block_grams_created#6b masterchain_block_fee:Grams basechain_block_fee:Grams
+  = BlockCreateFees;
+*/
+
 export interface BlockCreateFees {
     readonly kind: 'BlockCreateFees';
     readonly masterchain_block_fee: bigint;
     readonly basechain_block_fee: bigint;
 }
+
+/*
+_#cc utime_since:uint32 bit_price_ps:uint64 cell_price_ps:uint64 
+  mc_bit_price_ps:uint64 mc_cell_price_ps:uint64 = StoragePrices;
+*/
 
 export interface StoragePrices {
     readonly kind: 'StoragePrices';
@@ -1763,6 +2757,23 @@ export interface StoragePrices {
     readonly mc_bit_price_ps: number;
     readonly mc_cell_price_ps: number;
 }
+
+/*
+gas_prices#dd gas_price:uint64 gas_limit:uint64 gas_credit:uint64 
+  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64 
+  = GasLimitsPrices;
+*/
+
+/*
+gas_prices_ext#de gas_price:uint64 gas_limit:uint64 special_gas_limit:uint64 gas_credit:uint64 
+  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64 
+  = GasLimitsPrices;
+*/
+
+/*
+gas_flat_pfx#d1 flat_gas_limit:uint64 flat_gas_price:uint64 other:GasLimitsPrices
+  = GasLimitsPrices;
+*/
 
 export type GasLimitsPrices = GasLimitsPrices_gas_prices | GasLimitsPrices_gas_prices_ext | GasLimitsPrices_gas_flat_pfx;
 
@@ -1794,6 +2805,11 @@ export interface GasLimitsPrices_gas_flat_pfx {
     readonly other: GasLimitsPrices;
 }
 
+/*
+param_limits#c3 underload:# soft_limit:# { underload <= soft_limit }
+  hard_limit:# { soft_limit <= hard_limit } = ParamLimits;
+*/
+
 export interface ParamLimits {
     readonly kind: 'ParamLimits';
     readonly underload: number;
@@ -1801,12 +2817,22 @@ export interface ParamLimits {
     readonly hard_limit: number;
 }
 
+/*
+block_limits#5d bytes:ParamLimits gas:ParamLimits lt_delta:ParamLimits
+  = BlockLimits;
+*/
+
 export interface BlockLimits {
     readonly kind: 'BlockLimits';
     readonly bytes: ParamLimits;
     readonly gas: ParamLimits;
     readonly lt_delta: ParamLimits;
 }
+
+/*
+msg_forward_prices#ea lump_price:uint64 bit_price:uint64 cell_price:uint64
+  ihr_price_factor:uint32 first_frac:uint16 next_frac:uint16 = MsgForwardPrices;
+*/
 
 export interface MsgForwardPrices {
     readonly kind: 'MsgForwardPrices';
@@ -1817,6 +2843,17 @@ export interface MsgForwardPrices {
     readonly first_frac: number;
     readonly next_frac: number;
 }
+
+/*
+catchain_config#c1 mc_catchain_lifetime:uint32 shard_catchain_lifetime:uint32 
+  shard_validators_lifetime:uint32 shard_validators_num:uint32 = CatchainConfig;
+*/
+
+/*
+catchain_config_new#c2 flags:(## 7) { flags = 0 } shuffle_mc_validators:Bool
+  mc_catchain_lifetime:uint32 shard_catchain_lifetime:uint32
+  shard_validators_lifetime:uint32 shard_validators_num:uint32 = CatchainConfig;
+*/
 
 export type CatchainConfig = CatchainConfig_catchain_config | CatchainConfig_catchain_config_new;
 
@@ -1837,6 +2874,39 @@ export interface CatchainConfig_catchain_config_new {
     readonly shard_validators_lifetime: number;
     readonly shard_validators_num: number;
 }
+
+/*
+consensus_config#d6 round_candidates:# { round_candidates >= 1 }
+  next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32
+  fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32
+  max_block_bytes:uint32 max_collated_bytes:uint32 = ConsensusConfig;
+*/
+
+/*
+consensus_config_new#d7 flags:(## 7) { flags = 0 } new_catchain_ids:Bool
+  round_candidates:(## 8) { round_candidates >= 1 }
+  next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32
+  fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32
+  max_block_bytes:uint32 max_collated_bytes:uint32 = ConsensusConfig;
+*/
+
+/*
+consensus_config_v3#d8 flags:(## 7) { flags = 0 } new_catchain_ids:Bool
+  round_candidates:(## 8) { round_candidates >= 1 }
+  next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32
+  fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32
+  max_block_bytes:uint32 max_collated_bytes:uint32 
+  proto_version:uint16 = ConsensusConfig;
+*/
+
+/*
+consensus_config_v4#d9 flags:(## 7) { flags = 0 } new_catchain_ids:Bool
+  round_candidates:(## 8) { round_candidates >= 1 }
+  next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32
+  fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32
+  max_block_bytes:uint32 max_collated_bytes:uint32
+  proto_version:uint16 catchain_max_blocks_coeff:uint32 = ConsensusConfig;
+*/
 
 export type ConsensusConfig = ConsensusConfig_consensus_config | ConsensusConfig_consensus_config_new | ConsensusConfig_consensus_config_v3 | ConsensusConfig_consensus_config_v4;
 
@@ -1897,6 +2967,8 @@ export interface ConsensusConfig_consensus_config_v4 {
     readonly catchain_max_blocks_coeff: number;
 }
 
+// validator_temp_key#3 adnl_addr:bits256 temp_public_key:SigPubKey seqno:# valid_until:uint32 = ValidatorTempKey;
+
 export interface ValidatorTempKey {
     readonly kind: 'ValidatorTempKey';
     readonly adnl_addr: BitString;
@@ -1905,11 +2977,23 @@ export interface ValidatorTempKey {
     readonly valid_until: number;
 }
 
+// signed_temp_key#4 key:^ValidatorTempKey signature:CryptoSignature = ValidatorSignedTempKey;
+
 export interface ValidatorSignedTempKey {
     readonly kind: 'ValidatorSignedTempKey';
     readonly key: ValidatorTempKey;
     readonly signature: CryptoSignature;
 }
+
+/*
+misbehaviour_punishment_config_v1#01 
+  default_flat_fine:Grams default_proportional_fine:uint32
+  severity_flat_mult:uint16 severity_proportional_mult:uint16
+  unpunishable_interval:uint16
+  long_interval:uint16 long_flat_mult:uint16 long_proportional_mult:uint16
+  medium_interval:uint16 medium_flat_mult:uint16 medium_proportional_mult:uint16
+   = MisbehaviourPunishmentConfig;
+*/
 
 export interface MisbehaviourPunishmentConfig {
     readonly kind: 'MisbehaviourPunishmentConfig';
@@ -1925,6 +3009,17 @@ export interface MisbehaviourPunishmentConfig {
     readonly medium_flat_mult: number;
     readonly medium_proportional_mult: number;
 }
+
+/*
+size_limits_config#01 max_msg_bits:uint32 max_msg_cells:uint32 max_library_cells:uint32 max_vm_data_depth:uint16
+  max_ext_msg_size:uint32 max_ext_msg_depth:uint16 = SizeLimitsConfig;
+*/
+
+/*
+size_limits_config_v2#02 max_msg_bits:uint32 max_msg_cells:uint32 max_library_cells:uint32 max_vm_data_depth:uint16
+  max_ext_msg_size:uint32 max_ext_msg_depth:uint16 max_acc_state_cells:uint32 max_acc_state_bits:uint32
+  max_acc_public_libraries:uint32 = SizeLimitsConfig;
+*/
 
 export type SizeLimitsConfig = SizeLimitsConfig_size_limits_config | SizeLimitsConfig_size_limits_config_v2;
 
@@ -1951,11 +3046,15 @@ export interface SizeLimitsConfig_size_limits_config_v2 {
     readonly max_acc_public_libraries: number;
 }
 
+// suspended_address_list#00 addresses:(HashmapE 288 Unit) suspended_until:uint32 = SuspendedAddressList;
+
 export interface SuspendedAddressList {
     readonly kind: 'SuspendedAddressList';
     readonly addresses: HashmapE<Unit>;
     readonly suspended_until: number;
 }
+
+// oracle_bridge_params#_ bridge_address:bits256 oracle_mutlisig_address:bits256 oracles:(HashmapE 256 uint256) external_chain_address:bits256 = OracleBridgeParams;
 
 export interface OracleBridgeParams {
     readonly kind: 'OracleBridgeParams';
@@ -1964,6 +3063,14 @@ export interface OracleBridgeParams {
     readonly oracles: HashmapE<bigint>;
     readonly external_chain_address: BitString;
 }
+
+/*
+jetton_bridge_prices#_ bridge_burn_fee:Coins bridge_mint_fee:Coins 
+                       wallet_min_tons_for_storage:Coins
+                       wallet_gas_consumption:Coins
+                       minter_min_tons_for_storage:Coins
+                       discover_gas_consumption:Coins = JettonBridgePrices;
+*/
 
 export interface JettonBridgePrices {
     readonly kind: 'JettonBridgePrices';
@@ -1974,6 +3081,10 @@ export interface JettonBridgePrices {
     readonly minter_min_tons_for_storage: Coins;
     readonly discover_gas_consumption: Coins;
 }
+
+// jetton_bridge_params_v0#00 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 burn_bridge_fee:Coins = JettonBridgeParams;
+
+// jetton_bridge_params_v1#01 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 prices:^JettonBridgePrices external_chain_address:bits256 = JettonBridgeParams;
 
 export type JettonBridgeParams = JettonBridgeParams_jetton_bridge_params_v0 | JettonBridgeParams_jetton_bridge_params_v1;
 
@@ -1996,6 +3107,11 @@ export interface JettonBridgeParams_jetton_bridge_params_v1 {
     readonly external_chain_address: BitString;
 }
 
+/*
+block_signatures_pure#_ sig_count:uint32 sig_weight:uint64
+  signatures:(HashmapE 16 CryptoSignaturePair) = BlockSignaturesPure;
+*/
+
 export interface BlockSignaturesPure {
     readonly kind: 'BlockSignaturesPure';
     readonly sig_count: number;
@@ -2003,11 +3119,15 @@ export interface BlockSignaturesPure {
     readonly signatures: HashmapE<CryptoSignaturePair>;
 }
 
+// block_signatures#11 validator_info:ValidatorBaseInfo pure_signatures:BlockSignaturesPure = BlockSignatures;
+
 export interface BlockSignatures {
     readonly kind: 'BlockSignatures';
     readonly validator_info: ValidatorBaseInfo;
     readonly pure_signatures: BlockSignaturesPure;
 }
+
+// block_proof#c3 proof_for:BlockIdExt root:^Cell signatures:(Maybe ^BlockSignatures) = BlockProof;
 
 export interface BlockProof {
     readonly kind: 'BlockProof';
@@ -2015,6 +3135,10 @@ export interface BlockProof {
     readonly root: Slice;
     readonly signatures: Maybe<BlockSignatures>;
 }
+
+// chain_empty$_ = ProofChain 0;
+
+// chain_link$_ {n:#} root:^Cell prev:n?^(ProofChain n) = ProofChain (n + 1);
 
 export type ProofChain = ProofChain_chain_empty | ProofChain_chain_link;
 
@@ -2029,6 +3153,11 @@ export interface ProofChain_chain_link {
     readonly prev: ProofChain | undefined;
 }
 
+/*
+top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures) 
+  len:(## 8) { len >= 1 } { len <= 8 } chain:(ProofChain len) = TopBlockDescr;
+*/
+
 export interface TopBlockDescr {
     readonly kind: 'TopBlockDescr';
     readonly proof_for: BlockIdExt;
@@ -2037,10 +3166,17 @@ export interface TopBlockDescr {
     readonly chain: ProofChain;
 }
 
+// top_block_descr_set#4ac789f3 collection:(HashmapE 96 ^TopBlockDescr) = TopBlockDescrSet;
+
 export interface TopBlockDescrSet {
     readonly kind: 'TopBlockDescrSet';
     readonly collection: HashmapE<TopBlockDescr>;
 }
+
+/*
+prod_info#34 utime:uint32 mc_blk_ref:ExtBlkRef state_proof:^(MERKLE_PROOF Block)
+  prod_proof:^(MERKLE_PROOF ShardState) = ProducerInfo;
+*/
 
 export interface ProducerInfo {
     readonly kind: 'ProducerInfo';
@@ -2049,6 +3185,10 @@ export interface ProducerInfo {
     readonly state_proof: MERKLE_PROOF<Block>;
     readonly prod_proof: MERKLE_PROOF<ShardState>;
 }
+
+// no_blk_gen from_utime:uint32 prod_info:^ProducerInfo = ComplaintDescr;
+
+// no_blk_gen_diff prod_info_old:^ProducerInfo prod_info_new:^ProducerInfo = ComplaintDescr;
 
 export type ComplaintDescr = ComplaintDescr_no_blk_gen | ComplaintDescr_no_blk_gen_diff;
 
@@ -2064,6 +3204,8 @@ export interface ComplaintDescr_no_blk_gen_diff {
     readonly prod_info_new: ProducerInfo;
 }
 
+// validator_complaint#bc validator_pubkey:bits256 description:^ComplaintDescr created_at:uint32 severity:uint8 reward_addr:uint256 paid:Grams suggested_fine:Grams suggested_fine_part:uint32 = ValidatorComplaint;
+
 export interface ValidatorComplaint {
     readonly kind: 'ValidatorComplaint';
     readonly validator_pubkey: BitString;
@@ -2076,6 +3218,8 @@ export interface ValidatorComplaint {
     readonly suggested_fine_part: number;
 }
 
+// complaint_status#2d complaint:^ValidatorComplaint voters:(HashmapE 16 True) vset_id:uint256 weight_remaining:int64 = ValidatorComplaintStatus;
+
 export interface ValidatorComplaintStatus {
     readonly kind: 'ValidatorComplaintStatus';
     readonly complaint: ValidatorComplaint;
@@ -2083,6 +3227,24 @@ export interface ValidatorComplaintStatus {
     readonly vset_id: bigint;
     readonly weight_remaining: number;
 }
+
+// vm_stk_null#00 = VmStackValue;
+
+// vm_stk_tinyint#01 value:int64 = VmStackValue;
+
+// vm_stk_int#0201_ value:int257 = VmStackValue;
+
+// vm_stk_nan#02ff = VmStackValue;
+
+// vm_stk_cell#03 cell:^Cell = VmStackValue;
+
+// vm_stk_slice#04 _:VmCellSlice = VmStackValue;
+
+// vm_stk_builder#05 cell:^Cell = VmStackValue;
+
+// vm_stk_cont#06 cont:VmCont = VmStackValue;
+
+// vm_stk_tuple#07 len:(## 16) data:(VmTuple len) = VmStackValue;
 
 export type VmStackValue = VmStackValue_vm_stk_null | VmStackValue_vm_stk_tinyint | VmStackValue_vm_stk_int | VmStackValue_vm_stk_nan | VmStackValue_vm_stk_cell | VmStackValue_vm_stk_slice | VmStackValue_vm_stk_builder | VmStackValue_vm_stk_cont | VmStackValue_vm_stk_tuple;
 
@@ -2130,6 +3292,11 @@ export interface VmStackValue_vm_stk_tuple {
     readonly data: VmTuple;
 }
 
+/*
+_ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits }
+  st_ref:(#<= 4) end_ref:(#<= 4) { st_ref <= end_ref } = VmCellSlice;
+*/
+
 export interface VmCellSlice {
     readonly kind: 'VmCellSlice';
     readonly _cell: Slice;
@@ -2138,6 +3305,12 @@ export interface VmCellSlice {
     readonly st_ref: number;
     readonly end_ref: number;
 }
+
+// vm_tupref_nil$_ = VmTupleRef 0;
+
+// vm_tupref_single$_ entry:^VmStackValue = VmTupleRef 1;
+
+// vm_tupref_any$_ {n:#} ref:^(VmTuple (n + 2)) = VmTupleRef (n + 2);
 
 export type VmTupleRef = VmTupleRef_vm_tupref_nil | VmTupleRef_vm_tupref_single | VmTupleRef_vm_tupref_any;
 
@@ -2156,6 +3329,10 @@ export interface VmTupleRef_vm_tupref_any {
     readonly ref: VmTuple;
 }
 
+// vm_tuple_nil$_ = VmTuple 0;
+
+// vm_tuple_tcons$_ {n:#} head:(VmTupleRef n) tail:^VmStackValue = VmTuple (n + 1);
+
 export type VmTuple = VmTuple_vm_tuple_nil | VmTuple_vm_tuple_tcons;
 
 export interface VmTuple_vm_tuple_nil {
@@ -2169,11 +3346,17 @@ export interface VmTuple_vm_tuple_tcons {
     readonly tail: VmStackValue;
 }
 
+// vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
+
 export interface VmStack {
     readonly kind: 'VmStack';
     readonly depth: number;
     readonly stack: VmStackList;
 }
+
+// vm_stk_nil#_ = VmStackList 0;
+
+// vm_stk_cons#_ {n:#} rest:^(VmStackList n) tos:VmStackValue = VmStackList (n + 1);
 
 export type VmStackList = VmStackList_vm_stk_nil | VmStackList_vm_stk_cons;
 
@@ -2188,10 +3371,17 @@ export interface VmStackList_vm_stk_cons {
     readonly tos: VmStackValue;
 }
 
+// _ cregs:(HashmapE 4 VmStackValue) = VmSaveList;
+
 export interface VmSaveList {
     readonly kind: 'VmSaveList';
     readonly cregs: HashmapE<VmStackValue>;
 }
+
+/*
+gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ]
+  = VmGasLimits;
+*/
 
 export interface VmGasLimits {
     readonly kind: 'VmGasLimits';
@@ -2201,10 +3391,17 @@ export interface VmGasLimits {
     readonly credit: number;
 }
 
+// _ libraries:(HashmapE 256 ^Cell) = VmLibraries;
+
 export interface VmLibraries {
     readonly kind: 'VmLibraries';
     readonly libraries: HashmapE<Slice>;
 }
+
+/*
+vm_ctl_data$_ nargs:(Maybe uint13) stack:(Maybe VmStack) save:VmSaveList
+cp:(Maybe int16) = VmControlData;
+*/
 
 export interface VmControlData {
     readonly kind: 'VmControlData';
@@ -2213,6 +3410,32 @@ export interface VmControlData {
     readonly save: VmSaveList;
     readonly cp: Maybe<number>;
 }
+
+// vmc_std$00 cdata:VmControlData code:VmCellSlice = VmCont;
+
+// vmc_envelope$01 cdata:VmControlData next:^VmCont = VmCont;
+
+// vmc_quit$1000 exit_code:int32 = VmCont;
+
+// vmc_quit_exc$1001 = VmCont;
+
+// vmc_repeat$10100 count:uint63 body:^VmCont after:^VmCont = VmCont;
+
+// vmc_until$110000 body:^VmCont after:^VmCont = VmCont;
+
+// vmc_again$110001 body:^VmCont = VmCont;
+
+/*
+vmc_while_cond$110010 cond:^VmCont body:^VmCont
+after:^VmCont = VmCont;
+*/
+
+/*
+vmc_while_body$110011 cond:^VmCont body:^VmCont
+after:^VmCont = VmCont;
+*/
+
+// vmc_pushint$1111 value:int32 next:^VmCont = VmCont;
 
 export type VmCont = VmCont_vmc_std | VmCont_vmc_envelope | VmCont_vmc_quit | VmCont_vmc_quit_exc | VmCont_vmc_repeat | VmCont_vmc_until | VmCont_vmc_again | VmCont_vmc_while_cond | VmCont_vmc_while_body | VmCont_vmc_pushint;
 
@@ -2275,10 +3498,16 @@ export interface VmCont_vmc_pushint {
     readonly next: VmCont;
 }
 
+// _ (HashmapE 256 ^DNSRecord) = DNS_RecordSet;
+
 export interface DNS_RecordSet {
     readonly kind: 'DNS_RecordSet';
     readonly anon0: HashmapE<DNSRecord>;
 }
+
+// chunk_ref_empty$_ = TextChunkRef 0;
+
+// chunk_ref$_ {n:#} ref:^(TextChunks (n + 1)) = TextChunkRef (n + 1);
 
 export type TextChunkRef = TextChunkRef_chunk_ref_empty | TextChunkRef_chunk_ref;
 
@@ -2291,6 +3520,10 @@ export interface TextChunkRef_chunk_ref {
     readonly n: number;
     readonly ref: TextChunks;
 }
+
+// text_chunk_empty$_ = TextChunks 0;
+
+// text_chunk$_ {n:#} len:(## 8) data:(bits (len * 8)) next:(TextChunkRef n) = TextChunks (n + 1);
 
 export type TextChunks = TextChunks_text_chunk_empty | TextChunks_text_chunk;
 
@@ -2306,11 +3539,29 @@ export interface TextChunks_text_chunk {
     readonly next: TextChunkRef;
 }
 
+// text$_ chunks:(## 8) rest:(TextChunks chunks) = Text;
+
 export interface Text {
     readonly kind: 'Text';
     readonly chunks: number;
     readonly rest: TextChunks;
 }
+
+// dns_text#1eda _:Text = DNSRecord;
+
+// dns_next_resolver#ba93 resolver:MsgAddressInt = DNSRecord;
+
+/*
+dns_adnl_address#ad01 adnl_addr:bits256 flags:(## 8) { flags <= 1 }
+  proto_list:flags . 0?ProtoList = DNSRecord;
+*/
+
+/*
+dns_smc_address#9fd3 smc_addr:MsgAddressInt flags:(## 8) { flags <= 1 }
+  cap_list:flags . 0?SmcCapList = DNSRecord;
+*/
+
+// dns_storage_address#7473 bag_id:bits256 = DNSRecord;
 
 export type DNSRecord = DNSRecord_dns_text | DNSRecord_dns_next_resolver | DNSRecord_dns_adnl_address | DNSRecord_dns_smc_address | DNSRecord_dns_storage_address;
 
@@ -2343,6 +3594,10 @@ export interface DNSRecord_dns_storage_address {
     readonly bag_id: BitString;
 }
 
+// proto_list_nil$0 = ProtoList;
+
+// proto_list_next$1 head:Protocol tail:ProtoList = ProtoList;
+
 export type ProtoList = ProtoList_proto_list_nil | ProtoList_proto_list_next;
 
 export interface ProtoList_proto_list_nil {
@@ -2355,9 +3610,15 @@ export interface ProtoList_proto_list_next {
     readonly tail: ProtoList;
 }
 
+// proto_http#4854 = Protocol;
+
 export interface Protocol {
     readonly kind: 'Protocol';
 }
+
+// cap_list_nil$0 = SmcCapList;
+
+// cap_list_next$1 head:SmcCapability tail:SmcCapList = SmcCapList;
 
 export type SmcCapList = SmcCapList_cap_list_nil | SmcCapList_cap_list_next;
 
@@ -2370,6 +3631,14 @@ export interface SmcCapList_cap_list_next {
     readonly head: SmcCapability;
     readonly tail: SmcCapList;
 }
+
+// cap_method_seqno#5371 = SmcCapability;
+
+// cap_method_pubkey#71f4 = SmcCapability;
+
+// cap_is_wallet#2177 = SmcCapability;
+
+// cap_name#ff name:Text = SmcCapability;
 
 export type SmcCapability = SmcCapability_cap_method_seqno | SmcCapability_cap_method_pubkey | SmcCapability_cap_is_wallet | SmcCapability_cap_name;
 
@@ -2390,6 +3659,11 @@ export interface SmcCapability_cap_name {
     readonly name: Text;
 }
 
+/*
+chan_config$_  init_timeout:uint32 close_timeout:uint32 a_key:bits256 b_key:bits256 
+  a_addr:^MsgAddressInt b_addr:^MsgAddressInt channel_id:uint64 min_A_extra:Grams = ChanConfig;
+*/
+
 export interface ChanConfig {
     readonly kind: 'ChanConfig';
     readonly init_timeout: number;
@@ -2401,6 +3675,12 @@ export interface ChanConfig {
     readonly channel_id: number;
     readonly min_A_extra: bigint;
 }
+
+// chan_state_init$000  signed_A:Bool signed_B:Bool min_A:Grams min_B:Grams expire_at:uint32 A:Grams B:Grams = ChanState;
+
+// chan_state_close$001 signed_A:Bool signed_B:Bool promise_A:Grams promise_B:Grams expire_at:uint32 A:Grams B:Grams = ChanState;
+
+// chan_state_payout$010 A:Grams B:Grams = ChanState;
 
 export type ChanState = ChanState_chan_state_init | ChanState_chan_state_close | ChanState_chan_state_payout;
 
@@ -2432,6 +3712,8 @@ export interface ChanState_chan_state_payout {
     readonly B: bigint;
 }
 
+// chan_promise$_ channel_id:uint64 promise_A:Grams promise_B:Grams = ChanPromise;
+
 export interface ChanPromise {
     readonly kind: 'ChanPromise';
     readonly channel_id: number;
@@ -2439,11 +3721,21 @@ export interface ChanPromise {
     readonly promise_B: bigint;
 }
 
+// chan_signed_promise#_ sig:(Maybe ^bits512) promise:ChanPromise = ChanSignedPromise;
+
 export interface ChanSignedPromise {
     readonly kind: 'ChanSignedPromise';
     readonly sig: Maybe<BitString>;
     readonly promise: ChanPromise;
 }
+
+// chan_msg_init#27317822 inc_A:Grams inc_B:Grams min_A:Grams min_B:Grams channel_id:uint64 = ChanMsg;
+
+// chan_msg_close#f28ae183 extra_A:Grams extra_B:Grams promise:ChanSignedPromise  = ChanMsg;
+
+// chan_msg_timeout#43278a28 = ChanMsg;
+
+// chan_msg_payout#37fe7810 = ChanMsg;
 
 export type ChanMsg = ChanMsg_chan_msg_init | ChanMsg_chan_msg_close | ChanMsg_chan_msg_timeout | ChanMsg_chan_msg_payout;
 
@@ -2471,6 +3763,8 @@ export interface ChanMsg_chan_msg_payout {
     readonly kind: 'ChanMsg_chan_msg_payout';
 }
 
+// chan_signed_msg$_ sig_A:(Maybe ^bits512) sig_B:(Maybe ^bits512) msg:ChanMsg = ChanSignedMsg;
+
 export interface ChanSignedMsg {
     readonly kind: 'ChanSignedMsg';
     readonly sig_A: Maybe<BitString>;
@@ -2478,10 +3772,14 @@ export interface ChanSignedMsg {
     readonly msg: ChanMsg;
 }
 
+// chan_op_cmd#912838d1 msg:ChanSignedMsg = ChanOp;
+
 export interface ChanOp {
     readonly kind: 'ChanOp';
     readonly msg: ChanSignedMsg;
 }
+
+// chan_data$_ config:^ChanConfig state:^ChanState = ChanData;
 
 export interface ChanData {
     readonly kind: 'ChanData';
