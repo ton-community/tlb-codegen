@@ -71,7 +71,15 @@ function getBitStringOne(bit: boolean): BitString {
 function getBitStringArray(bitString: string) {
     let result: BitString[] = [];
     for (let i = 0; i < bitString.length; i++) {
-        result.push(getBitStringOne(bitString[i] == '0'))
+        result.push(getBitStringOne(bitString[i] == '1'))
+    }
+    return result;
+}
+
+function getBooleanArray(bitString: string) {
+    let result: boolean[] = [];
+    for (let i = 0; i < bitString.length; i++) {
+        result.push(bitString[i] == '1')
     }
     return result;
 }
@@ -243,8 +251,11 @@ describe('Generating tlb code', () => {
         checkThrowOnStoreLoad(equalityExpressionIncorrect, loadEqualityExpression, storeEqualityExpression);
     })
 
-    test('Hashmap', () => {
+    test('Builtins', () => {
         expect.hasAssertions()
+
+        let boolUser: BoolUser = { kind: 'BoolUser', a: true }
+        checkSameOnStoreLoad(boolUser, loadBoolUser, storeBoolUser);
 
         let hashmapEUser: HashmapEUser = {
             kind: 'HashmapEUser',
@@ -272,7 +283,7 @@ describe('Generating tlb code', () => {
                                 kind: 'HmLabel_hml_long',
                                 m: 7,
                                 n: 2,
-                                s: getBitStringArray('00')
+                                s: getBooleanArray('00')
                             },
                             node: {
                                 kind: 'HashmapNode_hmn_fork',
@@ -286,7 +297,7 @@ describe('Generating tlb code', () => {
                                         kind: 'HmLabel_hml_long',
                                         m: 4,
                                         n: 4,
-                                        s: getBitStringArray('0001')
+                                        s: getBooleanArray('0001')
                                     },
                                     node: {
                                         kind: 'HashmapNode_hmn_leaf',
@@ -302,7 +313,7 @@ describe('Generating tlb code', () => {
                                         kind: 'HmLabel_hml_long',
                                         m: 4,
                                         n: 4,
-                                        s: getBitStringArray('0001')
+                                        s: getBooleanArray('0001')
                                     },
                                     node: {
                                         kind: 'HashmapNode_hmn_leaf',
@@ -320,7 +331,7 @@ describe('Generating tlb code', () => {
                                 kind: 'HmLabel_hml_long',
                                 m: 7,
                                 n: 7,
-                                s: getBitStringArray('0000000')
+                                s: getBooleanArray('0000000')
                             },
                             node: {
                                 kind: 'HashmapNode_hmn_leaf',

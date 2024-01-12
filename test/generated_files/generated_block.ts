@@ -53,11 +53,6 @@ export interface Both<X, Y> {
     readonly second: Y;
 }
 
-export interface Bit {
-    readonly kind: 'Bit';
-    readonly anon0: number;
-}
-
 export interface Hashmap<X> {
     readonly kind: 'Hashmap';
     readonly n: number;
@@ -88,20 +83,20 @@ export interface HmLabel_hml_short {
     readonly m: number;
     readonly n: number;
     readonly len: Unary;
-    readonly s: Array<BitString>;
+    readonly s: Array<boolean>;
 }
 
 export interface HmLabel_hml_long {
     readonly kind: 'HmLabel_hml_long';
     readonly m: number;
     readonly n: number;
-    readonly s: Array<BitString>;
+    readonly s: Array<boolean>;
 }
 
 export interface HmLabel_hml_same {
     readonly kind: 'HmLabel_hml_same';
     readonly m: number;
-    readonly v: BitString;
+    readonly v: boolean;
     readonly n: number;
 }
 
@@ -204,7 +199,7 @@ export interface VarHashmapNode_vhmn_fork<X> {
 export interface VarHashmapNode_vhmn_cont<X> {
     readonly kind: 'VarHashmapNode_vhmn_cont';
     readonly n: number;
-    readonly branch: BitString;
+    readonly branch: boolean;
     readonly child: VarHashmap<X>;
     readonly value: X;
 }
@@ -2712,24 +2707,6 @@ export function storeBoth<X, Y>(both: Both<X, Y>, storeX: (x: X) => (builder: Bu
 
 }
 
-// bit$_ (## 1) = Bit;
-
-export function loadBit(slice: Slice): Bit {
-    let anon0: number = slice.loadUint(1);
-    return {
-        kind: 'Bit',
-        anon0: anon0,
-    }
-
-}
-
-export function storeBit(bit: Bit): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeUint(bit.anon0, 1);
-    })
-
-}
-
 export function hashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
         let n = label.n;
@@ -2854,8 +2831,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         slice.loadUint(1);
         let len: Unary = loadUnary(slice);
         let n = hmLabel_hml_short_get_n(len);
-        let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBits(1)
+        let s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
+            return slice.loadBit()
 
         }));
         if ((!(n <= m))) {
@@ -2873,8 +2850,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
         slice.loadUint(2);
         let n: number = slice.loadUint(bitLen(m));
-        let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBits(1)
+        let s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
+            return slice.loadBit()
 
         }));
         return {
@@ -2887,7 +2864,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
     }
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
         slice.loadUint(2);
-        let v: BitString = slice.loadBits(1);
+        let v: boolean = slice.loadBit();
         let n: number = slice.loadUint(bitLen(m));
         return {
             kind: 'HmLabel_hml_same',
@@ -2905,8 +2882,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
             storeUnary(hmLabel.len)(builder);
-            hmLabel.s.forEach(((arg: BitString) => {
-                builder.storeBits(arg);
+            hmLabel.s.forEach(((arg: boolean) => {
+                builder.storeBit(arg);
             }));
             if ((!(hmLabel.n <= hmLabel.m))) {
                 throw new Error('Condition (hmLabel.n <= hmLabel.m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -2918,8 +2895,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b10, 2);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
-            hmLabel.s.forEach(((arg: BitString) => {
-                builder.storeBits(arg);
+            hmLabel.s.forEach(((arg: boolean) => {
+                builder.storeBit(arg);
             }));
         })
 
@@ -2927,7 +2904,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
     if ((hmLabel.kind == 'HmLabel_hml_same')) {
         return ((builder: Builder) => {
             builder.storeUint(0b11, 2);
-            builder.storeBits(hmLabel.v);
+            builder.storeBit(hmLabel.v);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
         })
 
@@ -3311,7 +3288,7 @@ export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice:
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let branch: BitString = slice.loadBits(1);
+        let branch: boolean = slice.loadBit();
         let slice1 = slice.loadRef().beginParse();
         let child: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX);
         let value: X = loadX(slice);
@@ -3351,7 +3328,7 @@ export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX
     if ((varHashmapNode.kind == 'VarHashmapNode_vhmn_cont')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
-            builder.storeBits(varHashmapNode.branch);
+            builder.storeBit(varHashmapNode.branch);
             let cell1 = beginCell();
             storeVarHashmap<X>(varHashmapNode.child, storeX)(cell1);
             builder.storeRef(cell1);

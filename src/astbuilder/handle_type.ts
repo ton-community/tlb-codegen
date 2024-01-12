@@ -219,6 +219,8 @@ export function getType(
       return { kind: "TLBBoolType" };
     } else if (expr.name == "MsgAddressInt") {
       return { kind: "TLBAddressType" };
+    } else if (expr.name == "Bit") {
+      return { kind:"TLBBitsType", bits: new TLBNumberExpr(1) }
     } else {
       if (constructor.variablesMap.get(expr.name)?.type == "#") {
         return {

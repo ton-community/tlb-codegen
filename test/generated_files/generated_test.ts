@@ -325,20 +325,20 @@ export interface HmLabel_hml_short {
     readonly m: number;
     readonly n: number;
     readonly len: Unary;
-    readonly s: Array<BitString>;
+    readonly s: Array<boolean>;
 }
 
 export interface HmLabel_hml_long {
     readonly kind: 'HmLabel_hml_long';
     readonly m: number;
     readonly n: number;
-    readonly s: Array<BitString>;
+    readonly s: Array<boolean>;
 }
 
 export interface HmLabel_hml_same {
     readonly kind: 'HmLabel_hml_same';
     readonly m: number;
-    readonly v: BitString;
+    readonly v: boolean;
     readonly n: number;
 }
 
@@ -498,6 +498,11 @@ export interface Anycast {
 export interface AddressUser {
     readonly kind: 'AddressUser';
     readonly src: Address;
+}
+
+export interface BitUser {
+    readonly kind: 'BitUser';
+    readonly b: boolean;
 }
 
 // tmpa$_ a:# b:# = Simple;
@@ -1840,8 +1845,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         slice.loadUint(1);
         let len: Unary = loadUnary(slice);
         let n = hmLabel_hml_short_get_n(len);
-        let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBits(1)
+        let s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
+            return slice.loadBit()
 
         }));
         if ((!(n <= m))) {
@@ -1859,8 +1864,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
         slice.loadUint(2);
         let n: number = slice.loadUint(bitLen(m));
-        let s: Array<BitString> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBits(1)
+        let s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
+            return slice.loadBit()
 
         }));
         return {
@@ -1873,7 +1878,7 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
     }
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
         slice.loadUint(2);
-        let v: BitString = slice.loadBits(1);
+        let v: boolean = slice.loadBit();
         let n: number = slice.loadUint(bitLen(m));
         return {
             kind: 'HmLabel_hml_same',
@@ -1891,8 +1896,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
             storeUnary(hmLabel.len)(builder);
-            hmLabel.s.forEach(((arg: BitString) => {
-                builder.storeBits(arg);
+            hmLabel.s.forEach(((arg: boolean) => {
+                builder.storeBit(arg);
             }));
             if ((!(hmLabel.n <= hmLabel.m))) {
                 throw new Error('Condition (hmLabel.n <= hmLabel.m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -1904,8 +1909,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b10, 2);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
-            hmLabel.s.forEach(((arg: BitString) => {
-                builder.storeBits(arg);
+            hmLabel.s.forEach(((arg: boolean) => {
+                builder.storeBit(arg);
             }));
         })
 
@@ -1913,7 +1918,7 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
     if ((hmLabel.kind == 'HmLabel_hml_same')) {
         return ((builder: Builder) => {
             builder.storeUint(0b11, 2);
-            builder.storeBits(hmLabel.v);
+            builder.storeBit(hmLabel.v);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
         })
 
@@ -2556,6 +2561,24 @@ export function loadAddressUser(slice: Slice): AddressUser {
 export function storeAddressUser(addressUser: AddressUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeAddress(addressUser.src);
+    })
+
+}
+
+// a$_ b:Bit = BitUser;
+
+export function loadBitUser(slice: Slice): BitUser {
+    let b: boolean = slice.loadBit();
+    return {
+        kind: 'BitUser',
+        b: b,
+    }
+
+}
+
+export function storeBitUser(bitUser: BitUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeBit(bitUser.b);
     })
 
 }

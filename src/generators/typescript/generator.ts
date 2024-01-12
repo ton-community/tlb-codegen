@@ -4,6 +4,7 @@ import {
   TLBField,
   TLBFieldType,
   TLBMathExpr,
+  TLBNumberExpr,
   TLBType,
   TLBVariable,
 } from "../../ast";
@@ -68,6 +69,7 @@ import {
   tIfStatement,
   tImportDeclaration,
   tMemberExpression,
+  tNumericLiteral,
   tObjectExpression,
   tObjectProperty,
   tReturnStatement,
@@ -672,17 +674,27 @@ export class TypescriptGenerator implements CodeGenerator {
         exprForParam.paramType = "bigint";
       }
     } else if (fieldType.kind == "TLBBitsType") {
-      exprForParam = {
-        argLoadExpr: convertToAST(fieldType.bits, ctx.constructor),
-        argStoreExpr: convertToAST(
-          fieldType.bits,
-          ctx.constructor,
-          id(ctx.name)
-        ),
-        paramType: "BitString",
-        fieldLoadSuffix: "Bits",
-        fieldStoreSuffix: "Bits",
-      };
+      if (fieldType.bits instanceof TLBNumberExpr && fieldType.bits.n == 1) {
+        exprForParam = {
+          argLoadExpr: undefined,
+          argStoreExpr: undefined,
+          paramType: "boolean",
+          fieldLoadSuffix: "Bit",
+          fieldStoreSuffix: "Bit"
+        }
+      } else {
+        exprForParam = {
+          argLoadExpr: convertToAST(fieldType.bits, ctx.constructor),
+          argStoreExpr: convertToAST(
+            fieldType.bits,
+            ctx.constructor,
+            id(ctx.name)
+          ),
+          paramType: "BitString",
+          fieldLoadSuffix: "Bits",
+          fieldStoreSuffix: "Bits",
+        };
+      }
     } else if (fieldType.kind == "TLBCellType") {
       exprForParam = {
         argLoadExpr: id(theSlice),
