@@ -218,11 +218,15 @@ export function getType(
     } else if (expr.name == "Bool") {
       return { kind: "TLBBoolType" };
     } else if (expr.name == "MsgAddressInt") {
-      return { kind: "TLBAddressType" };
+      return { kind: "TLBAddressType", addrType: "Internal" };
+    } else if (expr.name == "MsgAddressExt") {
+      return { kind: "TLBAddressType", addrType: "External" };
+    } else if (expr.name == "MsgAddress") {
+      return { kind: "TLBAddressType", addrType: "Any" };
     } else if (expr.name == "Bit") {
-      return { kind:"TLBBitsType", bits: new TLBNumberExpr(1) }
+      return { kind: "TLBBitsType", bits: new TLBNumberExpr(1) }
     } else if (expr.name == "Grams") {
-      return { kind:"TLBCoinsType"}
+      return { kind: "TLBCoinsType"}
     } else {
       if (constructor.variablesMap.get(expr.name)?.type == "#") {
         return {

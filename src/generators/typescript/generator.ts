@@ -62,6 +62,7 @@ import {
   TypeParametersExpression,
   TypedIdentifier,
   id,
+  tArrowFunctionExpression,
   tComment,
   tExpressionStatement,
   tFunctionCall,
@@ -720,13 +721,33 @@ export class TypescriptGenerator implements CodeGenerator {
         fieldStoreSuffix: "Coins",
       };
     } else if (fieldType.kind == "TLBAddressType") {
-      exprForParam = {
-        argLoadExpr: undefined,
-        argStoreExpr: undefined,
-        paramType: "Address",
-        fieldLoadSuffix: "Address",
-        fieldStoreSuffix: "Address",
-      };
+      if (fieldType.addrType == "Internal") {
+        exprForParam = {
+          argLoadExpr: undefined,
+          argStoreExpr: undefined,
+          paramType: "Address",
+          fieldLoadSuffix: "Address",
+          fieldStoreSuffix: "Address",
+        };
+      } else if (fieldType.addrType == "External") {
+        exprForParam = {
+          argLoadExpr: undefined,
+          argStoreExpr: undefined,
+          paramType: "ExternalAddress | null",
+          fieldLoadSuffix: "MaybeExternalAddress",
+          fieldStoreSuffix: "Address",
+        };
+      } else if (fieldType.addrType == "Any") {
+        exprForParam = {
+          argLoadExpr: undefined,
+          argStoreExpr: undefined,
+          paramType: "Address | ExternalAddress | null",
+          fieldLoadSuffix: "AddressAny",
+          fieldStoreSuffix: "Address"
+        }
+      } else {
+        throw new Error("Address has type other than ['Internal', 'External', 'Any']")
+      }
     } else if (fieldType.kind == "TLBExprMathType") {
       result.loadExpr = convertToAST(fieldType.expr, ctx.constructor);
       result.storeStmtOutside = tExpressionStatement(result.loadExpr);

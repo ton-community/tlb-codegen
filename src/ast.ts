@@ -82,6 +82,7 @@ export type TLBCoinsType = {
 
 export type TLBAddressType = {
   kind: "TLBAddressType";
+  addrType: "Internal" | "External" | "Any"
 };
 
 export type TLBCellType = {

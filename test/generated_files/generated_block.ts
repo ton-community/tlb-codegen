@@ -4,6 +4,7 @@ import { beginCell } from 'ton'
 import { BitString } from 'ton'
 import { Cell } from 'ton'
 import { Address } from 'ton'
+import { ExternalAddress } from 'ton'
 export function bitLen(n: number) {
     return n.toString(2).length;;
 }
@@ -254,34 +255,10 @@ export interface PfxHashmapE_phme_root<X> {
     readonly root: PfxHashmap<X>;
 }
 
-export type MsgAddressExt = MsgAddressExt_addr_none | MsgAddressExt_addr_extern;
-
-export interface MsgAddressExt_addr_none {
-    readonly kind: 'MsgAddressExt_addr_none';
-}
-
-export interface MsgAddressExt_addr_extern {
-    readonly kind: 'MsgAddressExt_addr_extern';
-    readonly len: number;
-    readonly external_address: BitString;
-}
-
 export interface Anycast {
     readonly kind: 'Anycast';
     readonly depth: number;
     readonly rewrite_pfx: BitString;
-}
-
-export type MsgAddress = MsgAddress__ | MsgAddress__1;
-
-export interface MsgAddress__ {
-    readonly kind: 'MsgAddress__';
-    readonly _: Address;
-}
-
-export interface MsgAddress__1 {
-    readonly kind: 'MsgAddress__1';
-    readonly _: MsgAddressExt;
 }
 
 export interface VarUInteger {
@@ -332,7 +309,7 @@ export interface CommonMsgInfo_int_msg_info {
 
 export interface CommonMsgInfo_ext_in_msg_info {
     readonly kind: 'CommonMsgInfo_ext_in_msg_info';
-    readonly src: MsgAddressExt;
+    readonly src: ExternalAddress | null;
     readonly dest: Address;
     readonly import_fee: bigint;
 }
@@ -340,7 +317,7 @@ export interface CommonMsgInfo_ext_in_msg_info {
 export interface CommonMsgInfo_ext_out_msg_info {
     readonly kind: 'CommonMsgInfo_ext_out_msg_info';
     readonly src: Address;
-    readonly dest: MsgAddressExt;
+    readonly dest: ExternalAddress | null;
     readonly created_lt: number;
     readonly created_at: number;
 }
@@ -352,7 +329,7 @@ export interface CommonMsgInfoRelaxed_int_msg_info {
     readonly ihr_disabled: boolean;
     readonly bounce: boolean;
     readonly bounced: boolean;
-    readonly src: MsgAddress;
+    readonly src: Address | ExternalAddress | null;
     readonly dest: Address;
     readonly value: CurrencyCollection;
     readonly ihr_fee: bigint;
@@ -363,8 +340,8 @@ export interface CommonMsgInfoRelaxed_int_msg_info {
 
 export interface CommonMsgInfoRelaxed_ext_out_msg_info {
     readonly kind: 'CommonMsgInfoRelaxed_ext_out_msg_info';
-    readonly src: MsgAddress;
-    readonly dest: MsgAddressExt;
+    readonly src: Address | ExternalAddress | null;
+    readonly dest: ExternalAddress | null;
     readonly created_lt: number;
     readonly created_at: number;
 }
@@ -3538,53 +3515,6 @@ export function storePfxHashmapE<X>(pfxHashmapE: PfxHashmapE<X>, storeX: (x: X) 
     throw new Error('Expected one of "PfxHashmapE_phme_empty", "PfxHashmapE_phme_root" in loading "PfxHashmapE", but data does not satisfy any constructor');
 }
 
-// addr_none$00 = MsgAddressExt;
-
-/*
-addr_extern$01 len:(## 9) external_address:(bits len) 
-             = MsgAddressExt;
-*/
-
-export function loadMsgAddressExt(slice: Slice): MsgAddressExt {
-    if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
-        slice.loadUint(2);
-        return {
-            kind: 'MsgAddressExt_addr_none',
-        }
-
-    }
-    if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
-        slice.loadUint(2);
-        let len: number = slice.loadUint(9);
-        let external_address: BitString = slice.loadBits(len);
-        return {
-            kind: 'MsgAddressExt_addr_extern',
-            len: len,
-            external_address: external_address,
-        }
-
-    }
-    throw new Error('Expected one of "MsgAddressExt_addr_none", "MsgAddressExt_addr_extern" in loading "MsgAddressExt", but data does not satisfy any constructor');
-}
-
-export function storeMsgAddressExt(msgAddressExt: MsgAddressExt): (builder: Builder) => void {
-    if ((msgAddressExt.kind == 'MsgAddressExt_addr_none')) {
-        return ((builder: Builder) => {
-            builder.storeUint(0b00, 2);
-        })
-
-    }
-    if ((msgAddressExt.kind == 'MsgAddressExt_addr_extern')) {
-        return ((builder: Builder) => {
-            builder.storeUint(0b01, 2);
-            builder.storeUint(msgAddressExt.len, 9);
-            builder.storeBits(msgAddressExt.external_address);
-        })
-
-    }
-    throw new Error('Expected one of "MsgAddressExt_addr_none", "MsgAddressExt_addr_extern" in loading "MsgAddressExt", but data does not satisfy any constructor');
-}
-
 /*
 anycast_info$_ depth:(#<= 30) { depth >= 1 }
    rewrite_pfx:(bits depth) = Anycast;
@@ -3613,46 +3543,6 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
         }
     })
 
-}
-
-// _ _:MsgAddressInt = MsgAddress;
-
-// _ _:MsgAddressExt = MsgAddress;
-
-export function loadMsgAddress(slice: Slice): MsgAddress {
-    if (true) {
-        let _: Address = slice.loadAddress();
-        return {
-            kind: 'MsgAddress__',
-            _: _,
-        }
-
-    }
-    if (true) {
-        let _: MsgAddressExt = loadMsgAddressExt(slice);
-        return {
-            kind: 'MsgAddress__1',
-            _: _,
-        }
-
-    }
-    throw new Error('Expected one of "MsgAddress__", "MsgAddress__1" in loading "MsgAddress", but data does not satisfy any constructor');
-}
-
-export function storeMsgAddress(msgAddress: MsgAddress): (builder: Builder) => void {
-    if ((msgAddress.kind == 'MsgAddress__')) {
-        return ((builder: Builder) => {
-            builder.storeAddress(msgAddress._);
-        })
-
-    }
-    if ((msgAddress.kind == 'MsgAddress__1')) {
-        return ((builder: Builder) => {
-            storeMsgAddressExt(msgAddress._)(builder);
-        })
-
-    }
-    throw new Error('Expected one of "MsgAddress__", "MsgAddress__1" in loading "MsgAddress", but data does not satisfy any constructor');
 }
 
 /*
@@ -3823,7 +3713,7 @@ export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
     }
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
         slice.loadUint(2);
-        let src: MsgAddressExt = loadMsgAddressExt(slice);
+        let src: ExternalAddress | null = slice.loadMaybeExternalAddress();
         let dest: Address = slice.loadAddress();
         let import_fee: bigint = slice.loadCoins();
         return {
@@ -3837,7 +3727,7 @@ export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
         slice.loadUint(2);
         let src: Address = slice.loadAddress();
-        let dest: MsgAddressExt = loadMsgAddressExt(slice);
+        let dest: ExternalAddress | null = slice.loadMaybeExternalAddress();
         let created_lt: number = slice.loadUint(64);
         let created_at: number = slice.loadUint(32);
         return {
@@ -3872,7 +3762,7 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
     if ((commonMsgInfo.kind == 'CommonMsgInfo_ext_in_msg_info')) {
         return ((builder: Builder) => {
             builder.storeUint(0b10, 2);
-            storeMsgAddressExt(commonMsgInfo.src)(builder);
+            builder.storeAddress(commonMsgInfo.src);
             builder.storeAddress(commonMsgInfo.dest);
             builder.storeCoins(commonMsgInfo.import_fee);
         })
@@ -3882,7 +3772,7 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
         return ((builder: Builder) => {
             builder.storeUint(0b11, 2);
             builder.storeAddress(commonMsgInfo.src);
-            storeMsgAddressExt(commonMsgInfo.dest)(builder);
+            builder.storeAddress(commonMsgInfo.dest);
             builder.storeUint(commonMsgInfo.created_lt, 64);
             builder.storeUint(commonMsgInfo.created_at, 32);
         })
@@ -3909,7 +3799,7 @@ export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
         let ihr_disabled: boolean = slice.loadBoolean();
         let bounce: boolean = slice.loadBoolean();
         let bounced: boolean = slice.loadBoolean();
-        let src: MsgAddress = loadMsgAddress(slice);
+        let src: Address | ExternalAddress | null = slice.loadAddressAny();
         let dest: Address = slice.loadAddress();
         let value: CurrencyCollection = loadCurrencyCollection(slice);
         let ihr_fee: bigint = slice.loadCoins();
@@ -3933,8 +3823,8 @@ export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
     }
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
         slice.loadUint(2);
-        let src: MsgAddress = loadMsgAddress(slice);
-        let dest: MsgAddressExt = loadMsgAddressExt(slice);
+        let src: Address | ExternalAddress | null = slice.loadAddressAny();
+        let dest: ExternalAddress | null = slice.loadMaybeExternalAddress();
         let created_lt: number = slice.loadUint(64);
         let created_at: number = slice.loadUint(32);
         return {
@@ -3956,7 +3846,7 @@ export function storeCommonMsgInfoRelaxed(commonMsgInfoRelaxed: CommonMsgInfoRel
             builder.storeBit(commonMsgInfoRelaxed.ihr_disabled);
             builder.storeBit(commonMsgInfoRelaxed.bounce);
             builder.storeBit(commonMsgInfoRelaxed.bounced);
-            storeMsgAddress(commonMsgInfoRelaxed.src)(builder);
+            builder.storeAddress(commonMsgInfoRelaxed.src);
             builder.storeAddress(commonMsgInfoRelaxed.dest);
             storeCurrencyCollection(commonMsgInfoRelaxed.value)(builder);
             builder.storeCoins(commonMsgInfoRelaxed.ihr_fee);
@@ -3969,8 +3859,8 @@ export function storeCommonMsgInfoRelaxed(commonMsgInfoRelaxed: CommonMsgInfoRel
     if ((commonMsgInfoRelaxed.kind == 'CommonMsgInfoRelaxed_ext_out_msg_info')) {
         return ((builder: Builder) => {
             builder.storeUint(0b11, 2);
-            storeMsgAddress(commonMsgInfoRelaxed.src)(builder);
-            storeMsgAddressExt(commonMsgInfoRelaxed.dest)(builder);
+            builder.storeAddress(commonMsgInfoRelaxed.src);
+            builder.storeAddress(commonMsgInfoRelaxed.dest);
             builder.storeUint(commonMsgInfoRelaxed.created_lt, 64);
             builder.storeUint(commonMsgInfoRelaxed.created_at, 32);
         })

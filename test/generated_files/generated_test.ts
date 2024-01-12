@@ -4,6 +4,7 @@ import { beginCell } from 'ton'
 import { BitString } from 'ton'
 import { Cell } from 'ton'
 import { Address } from 'ton'
+import { ExternalAddress } from 'ton'
 export function bitLen(n: number) {
     return n.toString(2).length;;
 }
@@ -443,16 +444,16 @@ export interface FalseAnonField {
     readonly value: bigint;
 }
 
-export type ConstructorOrder = ConstructorOrder_a | ConstructorOrder__;
+export type ConstructorOrder = ConstructorOrder_b | ConstructorOrder_a;
+
+export interface ConstructorOrder_b {
+    readonly kind: 'ConstructorOrder_b';
+    readonly anon0: Simple;
+}
 
 export interface ConstructorOrder_a {
     readonly kind: 'ConstructorOrder_a';
     readonly a: Simple;
-}
-
-export interface ConstructorOrder__ {
-    readonly kind: 'ConstructorOrder__';
-    readonly anon0: Simple;
 }
 
 export type CheckCrc32 = CheckCrc32_a | CheckCrc32_b;
@@ -500,9 +501,33 @@ export interface AddressUser {
     readonly src: Address;
 }
 
+export interface ExtAddressUser {
+    readonly kind: 'ExtAddressUser';
+    readonly src: ExternalAddress | null;
+}
+
+export interface AnyAddressUser {
+    readonly kind: 'AnyAddressUser';
+    readonly src: Address | ExternalAddress | null;
+}
+
 export interface BitUser {
     readonly kind: 'BitUser';
     readonly b: boolean;
+}
+
+export interface VarUInteger {
+    readonly kind: 'VarUInteger';
+    readonly n: number;
+    readonly len: number;
+    readonly value: bigint;
+}
+
+export interface VarInteger {
+    readonly kind: 'VarInteger';
+    readonly n: number;
+    readonly len: number;
+    readonly value: bigint;
 }
 
 export interface GramsUser {
@@ -2335,11 +2360,20 @@ export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: B
 
 }
 
+// b$1 Simple = ConstructorOrder;
+
 // a$0 a:Simple = ConstructorOrder;
 
-// _ Simple = ConstructorOrder;
-
 export function loadConstructorOrder(slice: Slice): ConstructorOrder {
+    if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+        slice.loadUint(1);
+        let anon0: Simple = loadSimple(slice);
+        return {
+            kind: 'ConstructorOrder_b',
+            anon0: anon0,
+        }
+
+    }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
         let a: Simple = loadSimple(slice);
@@ -2349,18 +2383,17 @@ export function loadConstructorOrder(slice: Slice): ConstructorOrder {
         }
 
     }
-    if (true) {
-        let anon0: Simple = loadSimple(slice);
-        return {
-            kind: 'ConstructorOrder__',
-            anon0: anon0,
-        }
-
-    }
-    throw new Error('Expected one of "ConstructorOrder_a", "ConstructorOrder__" in loading "ConstructorOrder", but data does not satisfy any constructor');
+    throw new Error('Expected one of "ConstructorOrder_b", "ConstructorOrder_a" in loading "ConstructorOrder", but data does not satisfy any constructor');
 }
 
 export function storeConstructorOrder(constructorOrder: ConstructorOrder): (builder: Builder) => void {
+    if ((constructorOrder.kind == 'ConstructorOrder_b')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b1, 1);
+            storeSimple(constructorOrder.anon0)(builder);
+        })
+
+    }
     if ((constructorOrder.kind == 'ConstructorOrder_a')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
@@ -2368,13 +2401,7 @@ export function storeConstructorOrder(constructorOrder: ConstructorOrder): (buil
         })
 
     }
-    if ((constructorOrder.kind == 'ConstructorOrder__')) {
-        return ((builder: Builder) => {
-            storeSimple(constructorOrder.anon0)(builder);
-        })
-
-    }
-    throw new Error('Expected one of "ConstructorOrder_a", "ConstructorOrder__" in loading "ConstructorOrder", but data does not satisfy any constructor');
+    throw new Error('Expected one of "ConstructorOrder_b", "ConstructorOrder_a" in loading "ConstructorOrder", but data does not satisfy any constructor');
 }
 
 // a a:#  = CheckCrc32;
@@ -2570,6 +2597,42 @@ export function storeAddressUser(addressUser: AddressUser): (builder: Builder) =
 
 }
 
+// _ src:MsgAddressExt = ExtAddressUser;
+
+export function loadExtAddressUser(slice: Slice): ExtAddressUser {
+    let src: ExternalAddress | null = slice.loadMaybeExternalAddress();
+    return {
+        kind: 'ExtAddressUser',
+        src: src,
+    }
+
+}
+
+export function storeExtAddressUser(extAddressUser: ExtAddressUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeAddress(extAddressUser.src);
+    })
+
+}
+
+// _ src:MsgAddress = AnyAddressUser;
+
+export function loadAnyAddressUser(slice: Slice): AnyAddressUser {
+    let src: Address | ExternalAddress | null = slice.loadAddressAny();
+    return {
+        kind: 'AnyAddressUser',
+        src: src,
+    }
+
+}
+
+export function storeAnyAddressUser(anyAddressUser: AnyAddressUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeAddress(anyAddressUser.src);
+    })
+
+}
+
 // a$_ b:Bit = BitUser;
 
 export function loadBitUser(slice: Slice): BitUser {
@@ -2584,6 +2647,56 @@ export function loadBitUser(slice: Slice): BitUser {
 export function storeBitUser(bitUser: BitUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeBit(bitUser.b);
+    })
+
+}
+
+/*
+var_uint$_ {n:#} len:(#< n) value:(uint (len * 8))
+         = VarUInteger n;
+*/
+
+export function loadVarUInteger(slice: Slice, n: number): VarUInteger {
+    let len: number = slice.loadUint(bitLen((n - 1)));
+    let value: bigint = slice.loadUintBig((len * 8));
+    return {
+        kind: 'VarUInteger',
+        n: n,
+        len: len,
+        value: value,
+    }
+
+}
+
+export function storeVarUInteger(varUInteger: VarUInteger): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(varUInteger.len, bitLen((varUInteger.n - 1)));
+        builder.storeUint(varUInteger.value, (varUInteger.len * 8));
+    })
+
+}
+
+/*
+var_int$_ {n:#} len:(#< n) value:(int (len * 8)) 
+        = VarInteger n;
+*/
+
+export function loadVarInteger(slice: Slice, n: number): VarInteger {
+    let len: number = slice.loadUint(bitLen((n - 1)));
+    let value: bigint = slice.loadIntBig((len * 8));
+    return {
+        kind: 'VarInteger',
+        n: n,
+        len: len,
+        value: value,
+    }
+
+}
+
+export function storeVarInteger(varInteger: VarInteger): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(varInteger.len, bitLen((varInteger.n - 1)));
+        builder.storeInt(varInteger.value, (varInteger.len * 8));
     })
 
 }

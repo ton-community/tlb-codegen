@@ -26,6 +26,7 @@ export function generate(tree: Program, input: string) {
   codeGenerator.addTonCoreClassUsage("BitString");
   codeGenerator.addTonCoreClassUsage("Cell");
   codeGenerator.addTonCoreClassUsage("Address");
+  codeGenerator.addTonCoreClassUsage("ExternalAddress");
 
   codeGenerator.addBitLenFunction();
 

@@ -114,7 +114,7 @@ bit$_ (## 1) anon0:# = AnonymousData;
 
 vm_stk_int#0201_ value:int257 = FalseAnonField;
 
-_ Simple = ConstructorOrder;
+b$1 Simple = ConstructorOrder;
 a$0 a:Simple = ConstructorOrder;
 
 a a:#  = CheckCrc32;
@@ -136,11 +136,23 @@ addr_std$10 anycast:(Maybe Anycast)
    workchain_id:int8 address:bits256  = MsgAddressInt;
 addr_var$11 anycast:(Maybe Anycast) addr_len:(## 9) 
    workchain_id:int32 address:(bits addr_len) = MsgAddressInt;
+addr_none$00 = MsgAddressExt;
+addr_extern$01 len:(## 9) external_address:(bits len) 
+             = MsgAddressExt;
+_ _:MsgAddressInt = MsgAddress;
+_ _:MsgAddressExt = MsgAddress;
 
 _ src:MsgAddressInt = AddressUser;
+_ src:MsgAddressExt = ExtAddressUser;
+_ src:MsgAddress = AnyAddressUser;
 
 bit$_ (## 1) = Bit;
 a$_ b:Bit = BitUser;
+
+var_uint$_ {n:#} len:(#< n) value:(uint (len * 8))
+         = VarUInteger n;
+var_int$_ {n:#} len:(#< n) value:(int (len * 8)) 
+        = VarInteger n;
 
 nanograms$_ amount:(VarUInteger 16) = Grams;
 a$_ g:Grams = GramsUser;

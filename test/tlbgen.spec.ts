@@ -1,11 +1,12 @@
 import path from 'path';
 
-import { Address, BitString, Cell, Slice } from 'ton';
+import { Address, BitString, Cell, ExternalAddress, Slice } from 'ton';
 
 import { describe, expect, test } from '@jest/globals';
 import { beginCell } from 'ton';
 import { loadBlock, storeBlock } from './generated_files/generated_block';
-import { AddressUser, AnonymousData, BitLenArg, BitLenArgUser, BitSelection, BoolUser, CellTypedField, CellsSimple, CheckCrc32, CheckKeyword, CombArgCellRefUser, ComplexTypedField, ConditionalField, ConditionalRef, ConstructorOrder, DollarTag, EmptyTag, EqualityExpression, ExprArgUser, FalseAnonField, GramsUser, HashmapEUser, ImplicitCondition, IntBitsOutside, IntBitsParametrizedOutside, LessThan, LoadFromNegationOutsideExpr, ManyComb, MathExprAsCombArg, MultipleEmptyConstructor, NegationFromImplicit, ParamConst, ParamDifNames, ParamDifNamesUser, ParamNamedArgInSecondConstr, RefCombinatorAny, RefCombinatorInRef, SharpConstructor, SharpTag, Simple, True, TupleCheck, TwoConstructors, TypedField, TypedParam, Unary, UnaryUserCheckOrder, loadAddressUser, loadAnonymousData, loadBitLenArg, loadBitLenArgUser, loadBitSelection, loadBoolUser, loadCellTypedField, loadCellsSimple, loadCheckCrc32, loadCheckKeyword, loadCombArgCellRefUser, loadComplexTypedField, loadConditionalField, loadConditionalRef, loadConstructorOrder, loadDollarTag, loadEmptyTag, loadEqualityExpression, loadExprArgUser, loadFalseAnonField, loadGramsUser, loadHashmapEUser, loadImplicitCondition, loadIntBitsOutside, loadIntBitsParametrizedOutside, loadLessThan, loadLoadFromNegationOutsideExpr, loadManyComb, loadMathExprAsCombArg, loadMultipleEmptyConstructor, loadNegationFromImplicit, loadParamConst, loadParamDifNames, loadParamDifNamesUser, loadParamNamedArgInSecondConstr, loadRefCombinatorAny, loadRefCombinatorInRef, loadSharpConstructor, loadSharpTag, loadSimple, loadTrue, loadTupleCheck, loadTwoConstructors, loadTypedField, loadTypedParam, loadUnary, loadUnaryUserCheckOrder, storeAddressUser, storeAnonymousData, storeBitLenArg, storeBitLenArgUser, storeBitSelection, storeBoolUser, storeCellTypedField, storeCellsSimple, storeCheckCrc32, storeCheckKeyword, storeCombArgCellRefUser, storeComplexTypedField, storeConditionalField, storeConditionalRef, storeConstructorOrder, storeDollarTag, storeEmptyTag, storeEqualityExpression, storeExprArgUser, storeFalseAnonField, storeGramsUser, storeHashmapEUser, storeImplicitCondition, storeIntBitsOutside, storeIntBitsParametrizedOutside, storeLessThan, storeLoadFromNegationOutsideExpr, storeManyComb, storeMathExprAsCombArg, storeMultipleEmptyConstructor, storeNegationFromImplicit, storeParamConst, storeParamDifNames, storeParamDifNamesUser, storeParamNamedArgInSecondConstr, storeRefCombinatorAny, storeRefCombinatorInRef, storeSharpConstructor, storeSharpTag, storeSimple, storeTrue, storeTupleCheck, storeTwoConstructors, storeTypedField, storeTypedParam, storeUnary, storeUnaryUserCheckOrder } from './generated_files/generated_test';
+import { AddressUser, AnonymousData, AnyAddressUser, BitLenArg, BitLenArgUser, BitSelection, BitUser, BoolUser, CellTypedField, CellsSimple, CheckCrc32, CheckKeyword, CombArgCellRefUser, ComplexTypedField, ConditionalField, ConditionalRef, ConstructorOrder, DollarTag, EmptyTag, EqualityExpression, ExprArgUser, ExtAddressUser, FalseAnonField, GramsUser, HashmapEUser, ImplicitCondition, IntBitsOutside, IntBitsParametrizedOutside, LessThan, LoadFromNegationOutsideExpr, ManyComb, MathExprAsCombArg, MultipleEmptyConstructor, NegationFromImplicit, ParamConst, ParamDifNames, ParamDifNamesUser, ParamNamedArgInSecondConstr, RefCombinatorAny, RefCombinatorInRef, SharpConstructor, SharpTag, Simple, True, TupleCheck, TwoConstructors, TypedField, TypedParam, Unary, UnaryUserCheckOrder, loadAddressUser, loadAnonymousData, loadAnyAddressUser, loadBitLenArg, loadBitLenArgUser, loadBitSelection, loadBitUser, loadBoolUser, loadCellTypedField, loadCellsSimple, loadCheckCrc32, loadCheckKeyword, loadCombArgCellRefUser, loadComplexTypedField, loadConditionalField, loadConditionalRef, loadConstructorOrder, loadDollarTag, loadEmptyTag, loadEqualityExpression, loadExprArgUser, loadExtAddressUser, loadFalseAnonField, loadGramsUser, loadHashmapEUser, loadImplicitCondition, loadIntBitsOutside, loadIntBitsParametrizedOutside, loadLessThan, loadLoadFromNegationOutsideExpr, loadManyComb, loadMathExprAsCombArg, loadMultipleEmptyConstructor, loadNegationFromImplicit, loadParamConst, loadParamDifNames, loadParamDifNamesUser, loadParamNamedArgInSecondConstr, loadRefCombinatorAny, loadRefCombinatorInRef, loadSharpConstructor, loadSharpTag, loadSimple, loadTrue, loadTupleCheck, loadTwoConstructors, loadTypedField, loadTypedParam, loadUnary, loadUnaryUserCheckOrder, storeAddressUser, storeAnonymousData, storeAnyAddressUser, storeBitLenArg, storeBitLenArgUser, storeBitSelection, storeBitUser, storeBoolUser, storeCellTypedField, storeCellsSimple, storeCheckCrc32, storeCheckKeyword, storeCombArgCellRefUser, storeComplexTypedField, storeConditionalField, storeConditionalRef, storeConstructorOrder, storeDollarTag, storeEmptyTag, storeEqualityExpression, storeExprArgUser, storeExtAddressUser, storeFalseAnonField, storeGramsUser, storeHashmapEUser, storeImplicitCondition, storeIntBitsOutside, storeIntBitsParametrizedOutside, storeLessThan, storeLoadFromNegationOutsideExpr, storeManyComb, storeMathExprAsCombArg, storeMultipleEmptyConstructor, storeNegationFromImplicit, storeParamConst, storeParamDifNames, storeParamDifNamesUser, storeParamNamedArgInSecondConstr, storeRefCombinatorAny, storeRefCombinatorInRef, storeSharpConstructor, storeSharpTag, storeSimple, storeTrue, storeTupleCheck, storeTwoConstructors, storeTypedField, storeTypedParam, storeUnary, storeUnaryUserCheckOrder } from './generated_files/generated_test';
+import { randomInt } from 'crypto';
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
 
@@ -162,6 +163,27 @@ describe('Generating tlb code', () => {
 
         let expectedAddressUser: AddressUser = { kind: 'AddressUser', src: Address.parseFriendly('EQBmzW4wYlFW0tiBgj5sP1CgSlLdYs-VpjPWM7oPYPYWQEdT').address }
         checkSameOnStoreLoad(expectedAddressUser, loadAddressUser, storeAddressUser)
+
+        let bitUser: BitUser = { kind: 'BitUser', b: false } 
+        checkSameOnStoreLoad(bitUser, loadBitUser, storeBitUser);
+
+        let gramsUser: GramsUser = { kind: 'GramsUser', g: BigInt(100000) }
+        checkSameOnStoreLoad(gramsUser, loadGramsUser, storeGramsUser)
+
+        let extAddressUser: ExtAddressUser = { kind: 'ExtAddressUser', src: new ExternalAddress(BigInt(5623048054), 48)  }
+        checkSameOnStoreLoad(extAddressUser, loadExtAddressUser, storeExtAddressUser)
+
+        let extAddressUserNull: ExtAddressUser = { kind: 'ExtAddressUser', src: null  }
+        checkSameOnStoreLoad(extAddressUserNull, loadExtAddressUser, storeExtAddressUser)
+
+        let anyAddressUserInt: AnyAddressUser = { kind: 'AnyAddressUser', src: Address.parseFriendly('EQBmzW4wYlFW0tiBgj5sP1CgSlLdYs-VpjPWM7oPYPYWQEdT').address }
+        checkSameOnStoreLoad(anyAddressUserInt, loadAnyAddressUser, storeAnyAddressUser)
+
+        let anyAddressUserExt: AnyAddressUser = { kind: 'AnyAddressUser', src: new ExternalAddress(BigInt(5623048054), 48) }
+        checkSameOnStoreLoad(anyAddressUserExt, loadAnyAddressUser, storeAnyAddressUser)
+
+        let anyAddressUserNull: AnyAddressUser = { kind: 'AnyAddressUser', src: null }
+        checkSameOnStoreLoad(anyAddressUserNull, loadAnyAddressUser, storeAnyAddressUser)
     })
 
     test('Combinators', () => {
@@ -253,12 +275,6 @@ describe('Generating tlb code', () => {
 
     test('Builtins', () => {
         expect.hasAssertions()
-
-        let boolUser: BoolUser = { kind: 'BoolUser', a: true }
-        checkSameOnStoreLoad(boolUser, loadBoolUser, storeBoolUser);
-
-        let gramsUser: GramsUser = { kind: 'GramsUser', g: BigInt(100000) }
-        checkSameOnStoreLoad(gramsUser, loadGramsUser, storeGramsUser)
 
         let hashmapEUser: HashmapEUser = {
             kind: 'HashmapEUser',
