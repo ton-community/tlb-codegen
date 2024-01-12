@@ -1,4 +1,4 @@
-import { Builder } from 'ton'
+import { Builder, Dictionary, DictionaryValue } from 'ton'
 import { Slice } from 'ton'
 import { beginCell } from 'ton'
 import { BitString } from 'ton'
@@ -1046,7 +1046,7 @@ export interface Transaction {
     readonly orig_status: AccountStatus;
     readonly end_status: AccountStatus;
     readonly in_msg: Maybe<Message<Slice>>;
-    readonly out_msgs: HashmapE<Message<Slice>>;
+    readonly out_msgs: Dictionary<number, Slice>;
     readonly total_fees: CurrencyCollection;
     readonly state_update: HASH_UPDATE<Account>;
     readonly description: TransactionDescr;
@@ -2161,7 +2161,7 @@ export interface McBlockExtra {
     readonly key_block: number;
     readonly shard_hashes: ShardHashes;
     readonly shard_fees: ShardFees;
-    readonly prev_blk_signatures: HashmapE<CryptoSignaturePair>;
+    readonly prev_blk_signatures: Dictionary<number, Slice>;
     readonly recover_create_msg: Maybe<InMsg>;
     readonly mint_msg: Maybe<InMsg>;
     readonly config: ConfigParams | undefined;
@@ -6682,14 +6682,17 @@ export function loadTransaction(slice: Slice): Transaction {
             }))
 
         }));
-        let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
-            return loadMessage<Slice>(slice1, ((slice: Slice) => {
-                return slice
+        let out_msgs: Dictionary<number, Slice> = Dictionary.load(Dictionary.Keys.Uint(15), createSliceValue(), slice1);
+        console.log('dictionary loaded')
+        
+        // loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
+        //     let slice1 = slice.loadRef().beginParse();
+        //     return loadMessage<Slice>(slice1, ((slice: Slice) => {
+        //         return slice
 
-            }))
+        //     }))
 
-        }));
+        // }));
         let total_fees: CurrencyCollection = loadCurrencyCollection(slice);
         let slice2 = slice.loadRef().beginParse();
         let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount);
@@ -6742,20 +6745,7 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
             })
 
         }))(cell1);
-        storeHashmapE<Message<Slice>>(transaction.out_msgs, ((arg: Message<Slice>) => {
-            return ((builder: Builder) => {
-                let cell1 = beginCell();
-                storeMessage<Slice>(arg, ((arg: Slice) => {
-                    return ((builder: Builder) => {
-                        builder.storeSlice(arg);
-                    })
-
-                }))(cell1);
-                builder.storeRef(cell1);
-
-            })
-
-        }))(cell1);
+        cell1.storeDict(transaction.out_msgs)
         builder.storeRef(cell1);
         storeCurrencyCollection(transaction.total_fees)(builder);
         let cell2 = beginCell();
@@ -9755,6 +9745,18 @@ masterchain_block_extra#cca5
 = McBlockExtra;
 */
 
+
+function createSliceValue(): DictionaryValue<Slice> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeSlice(src);
+        },
+        parse: (src) => {
+            return src;
+        }
+    }
+}
+
 export function loadMcBlockExtra(slice: Slice): McBlockExtra {
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0xcca5))) {
         slice.loadUint(16);
@@ -9762,7 +9764,7 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
         let shard_hashes: ShardHashes = loadShardHashes(slice);
         let shard_fees: ShardFees = loadShardFees(slice);
         let slice1 = slice.loadRef().beginParse();
-        let prev_blk_signatures: HashmapE<CryptoSignaturePair> = loadHashmapE<CryptoSignaturePair>(slice1, 16, loadCryptoSignaturePair);
+        let prev_blk_signatures: Dictionary<number, Slice> = Dictionary.load(Dictionary.Keys.Uint(16), createSliceValue(), slice1) //loadHashmapE<CryptoSignaturePair>(slice1, 16, loadCryptoSignaturePair);
         let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse();
             return loadInMsg(slice1)
@@ -9796,7 +9798,7 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
         storeShardHashes(mcBlockExtra.shard_hashes)(builder);
         storeShardFees(mcBlockExtra.shard_fees)(builder);
         let cell1 = beginCell();
-        storeHashmapE<CryptoSignaturePair>(mcBlockExtra.prev_blk_signatures, storeCryptoSignaturePair)(cell1);
+        cell1.storeDict(mcBlockExtra.prev_blk_signatures)
         storeMaybe<InMsg>(mcBlockExtra.recover_create_msg, ((arg: InMsg) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
