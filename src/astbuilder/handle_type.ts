@@ -161,6 +161,31 @@ export function getType(
           constructor
         ),
       };
+    } else if (
+      expr.name == "VarUInteger" &&
+      (expr.args[0] instanceof MathExpr ||
+        expr.args[0] instanceof NumberExpr ||
+        expr.args[0] instanceof NameExpr)
+    ) {
+      return {
+        kind: "TLBVarIntegerType",
+        n: new TLBUnaryOp(
+          new TLBBinaryOp(convertToMathExpr(expr.args[0]), new TLBNumberExpr(1), '-'),
+          "."
+        ),
+        signed: false,
+      };
+    } else if (
+      expr.name == "VarInteger" &&
+      (expr.args[0] instanceof MathExpr ||
+        expr.args[0] instanceof NumberExpr ||
+        expr.args[0] instanceof NameExpr)
+    ) {
+      return {
+        kind: "TLBVarIntegerType",
+        n: convertToMathExpr(expr.args[0]),
+        signed: true,
+      };
     } else {
       let argumentTypes: TLBFieldType[] = [];
       expr.args.forEach((arg) => {
@@ -224,9 +249,9 @@ export function getType(
     } else if (expr.name == "MsgAddress") {
       return { kind: "TLBAddressType", addrType: "Any" };
     } else if (expr.name == "Bit") {
-      return { kind: "TLBBitsType", bits: new TLBNumberExpr(1) }
+      return { kind: "TLBBitsType", bits: new TLBNumberExpr(1) };
     } else if (expr.name == "Grams") {
-      return { kind: "TLBCoinsType"}
+      return { kind: "TLBCoinsType" };
     } else {
       if (constructor.variablesMap.get(expr.name)?.type == "#") {
         return {

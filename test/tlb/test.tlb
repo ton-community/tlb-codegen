@@ -154,5 +154,8 @@ var_uint$_ {n:#} len:(#< n) value:(uint (len * 8))
 var_int$_ {n:#} len:(#< n) value:(int (len * 8)) 
         = VarInteger n;
 
+a$_ v:(VarUInteger 5) = VarUIntegerUser;
+a$_ v:(VarInteger 5) = VarIntegerUser;
+
 nanograms$_ amount:(VarUInteger 16) = Grams;
 a$_ g:Grams = GramsUser;

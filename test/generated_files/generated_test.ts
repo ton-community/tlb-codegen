@@ -516,18 +516,14 @@ export interface BitUser {
     readonly b: boolean;
 }
 
-export interface VarUInteger {
-    readonly kind: 'VarUInteger';
-    readonly n: number;
-    readonly len: number;
-    readonly value: bigint;
+export interface VarUIntegerUser {
+    readonly kind: 'VarUIntegerUser';
+    readonly v: bigint;
 }
 
-export interface VarInteger {
-    readonly kind: 'VarInteger';
-    readonly n: number;
-    readonly len: number;
-    readonly value: bigint;
+export interface VarIntegerUser {
+    readonly kind: 'VarIntegerUser';
+    readonly v: bigint;
 }
 
 export interface GramsUser {
@@ -2651,52 +2647,38 @@ export function storeBitUser(bitUser: BitUser): (builder: Builder) => void {
 
 }
 
-/*
-var_uint$_ {n:#} len:(#< n) value:(uint (len * 8))
-         = VarUInteger n;
-*/
+// a$_ v:(VarUInteger 5) = VarUIntegerUser;
 
-export function loadVarUInteger(slice: Slice, n: number): VarUInteger {
-    let len: number = slice.loadUint(bitLen((n - 1)));
-    let value: bigint = slice.loadUintBig((len * 8));
+export function loadVarUIntegerUser(slice: Slice): VarUIntegerUser {
+    let v: bigint = slice.loadVarUintBig(bitLen((5 - 1)));
     return {
-        kind: 'VarUInteger',
-        n: n,
-        len: len,
-        value: value,
+        kind: 'VarUIntegerUser',
+        v: v,
     }
 
 }
 
-export function storeVarUInteger(varUInteger: VarUInteger): (builder: Builder) => void {
+export function storeVarUIntegerUser(varUIntegerUser: VarUIntegerUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeUint(varUInteger.len, bitLen((varUInteger.n - 1)));
-        builder.storeUint(varUInteger.value, (varUInteger.len * 8));
+        builder.storeVarUint(varUIntegerUser.v, bitLen((5 - 1)));
     })
 
 }
 
-/*
-var_int$_ {n:#} len:(#< n) value:(int (len * 8)) 
-        = VarInteger n;
-*/
+// a$_ v:(VarInteger 5) = VarIntegerUser;
 
-export function loadVarInteger(slice: Slice, n: number): VarInteger {
-    let len: number = slice.loadUint(bitLen((n - 1)));
-    let value: bigint = slice.loadIntBig((len * 8));
+export function loadVarIntegerUser(slice: Slice): VarIntegerUser {
+    let v: bigint = slice.loadVarIntBig(5);
     return {
-        kind: 'VarInteger',
-        n: n,
-        len: len,
-        value: value,
+        kind: 'VarIntegerUser',
+        v: v,
     }
 
 }
 
-export function storeVarInteger(varInteger: VarInteger): (builder: Builder) => void {
+export function storeVarIntegerUser(varIntegerUser: VarIntegerUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeUint(varInteger.len, bitLen((varInteger.n - 1)));
-        builder.storeInt(varInteger.value, (varInteger.len * 8));
+        builder.storeVarInt(varIntegerUser.v, 5);
     })
 
 }

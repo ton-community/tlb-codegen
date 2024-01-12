@@ -85,6 +85,12 @@ export type TLBAddressType = {
   addrType: "Internal" | "External" | "Any"
 };
 
+export type TLBVarIntegerType = {
+  kind: "TLBVarIntegerType";
+  signed: boolean;
+  n: TLBMathExpr;
+}
+
 export type TLBCellType = {
   kind: "TLBCellType";
 };
@@ -130,6 +136,7 @@ export type TLBFieldType =
   | TLBBoolType
   | TLBCoinsType
   | TLBAddressType
+  | TLBVarIntegerType
   | TLBCellType
   | TLBMathExprType
   | TLBNegatedType

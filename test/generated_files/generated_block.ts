@@ -261,20 +261,6 @@ export interface Anycast {
     readonly rewrite_pfx: BitString;
 }
 
-export interface VarUInteger {
-    readonly kind: 'VarUInteger';
-    readonly n: number;
-    readonly len: number;
-    readonly value: bigint;
-}
-
-export interface VarInteger {
-    readonly kind: 'VarInteger';
-    readonly n: number;
-    readonly len: number;
-    readonly value: bigint;
-}
-
 export interface Coins {
     readonly kind: 'Coins';
     readonly grams: bigint;
@@ -282,7 +268,7 @@ export interface Coins {
 
 export interface ExtraCurrencyCollection {
     readonly kind: 'ExtraCurrencyCollection';
-    readonly dict: HashmapE<VarUInteger>;
+    readonly dict: HashmapE<bigint>;
 }
 
 export interface CurrencyCollection {
@@ -584,15 +570,15 @@ export interface OutMsgQueueInfo {
 
 export interface StorageUsed {
     readonly kind: 'StorageUsed';
-    readonly _cells: VarUInteger;
-    readonly bits: VarUInteger;
-    readonly public_cells: VarUInteger;
+    readonly _cells: bigint;
+    readonly bits: bigint;
+    readonly public_cells: bigint;
 }
 
 export interface StorageUsedShort {
     readonly kind: 'StorageUsedShort';
-    readonly _cells: VarUInteger;
-    readonly bits: VarUInteger;
+    readonly _cells: bigint;
+    readonly bits: bigint;
 }
 
 export interface StorageInfo {
@@ -764,9 +750,9 @@ export interface TrComputePhase_tr_phase_compute_vm {
     readonly msg_state_used: boolean;
     readonly account_activated: boolean;
     readonly gas_fees: bigint;
-    readonly gas_used: VarUInteger;
-    readonly gas_limit: VarUInteger;
-    readonly gas_credit: Maybe<VarUInteger>;
+    readonly gas_used: bigint;
+    readonly gas_limit: bigint;
+    readonly gas_credit: Maybe<bigint>;
     readonly mode: number;
     readonly exit_code: number;
     readonly exit_arg: Maybe<number>;
@@ -3545,56 +3531,6 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
 
 }
 
-/*
-var_uint$_ {n:#} len:(#< n) value:(uint (len * 8))
-         = VarUInteger n;
-*/
-
-export function loadVarUInteger(slice: Slice, n: number): VarUInteger {
-    let len: number = slice.loadUint(bitLen((n - 1)));
-    let value: bigint = slice.loadUintBig((len * 8));
-    return {
-        kind: 'VarUInteger',
-        n: n,
-        len: len,
-        value: value,
-    }
-
-}
-
-export function storeVarUInteger(varUInteger: VarUInteger): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeUint(varUInteger.len, bitLen((varUInteger.n - 1)));
-        builder.storeUint(varUInteger.value, (varUInteger.len * 8));
-    })
-
-}
-
-/*
-var_int$_ {n:#} len:(#< n) value:(int (len * 8)) 
-        = VarInteger n;
-*/
-
-export function loadVarInteger(slice: Slice, n: number): VarInteger {
-    let len: number = slice.loadUint(bitLen((n - 1)));
-    let value: bigint = slice.loadIntBig((len * 8));
-    return {
-        kind: 'VarInteger',
-        n: n,
-        len: len,
-        value: value,
-    }
-
-}
-
-export function storeVarInteger(varInteger: VarInteger): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeUint(varInteger.len, bitLen((varInteger.n - 1)));
-        builder.storeInt(varInteger.value, (varInteger.len * 8));
-    })
-
-}
-
 // _ grams:Grams = Coins;
 
 export function loadCoins(slice: Slice): Coins {
@@ -3619,8 +3555,8 @@ extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32))
 */
 
 export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollection {
-    let dict: HashmapE<VarUInteger> = loadHashmapE<VarUInteger>(slice, 32, ((slice: Slice) => {
-        return loadVarUInteger(slice, 32)
+    let dict: HashmapE<bigint> = loadHashmapE<bigint>(slice, 32, ((slice: Slice) => {
+        return slice.loadVarUintBig(bitLen((32 - 1)))
 
     }));
     return {
@@ -3632,9 +3568,9 @@ export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollecti
 
 export function storeExtraCurrencyCollection(extraCurrencyCollection: ExtraCurrencyCollection): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapE<VarUInteger>(extraCurrencyCollection.dict, ((arg: VarUInteger) => {
+        storeHashmapE<bigint>(extraCurrencyCollection.dict, ((arg: bigint) => {
             return ((builder: Builder) => {
-                storeVarUInteger(arg)(builder);
+                builder.storeVarUint(arg, bitLen((32 - 1)));
             })
 
         }))(builder);
@@ -5064,9 +5000,9 @@ storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7)
 */
 
 export function loadStorageUsed(slice: Slice): StorageUsed {
-    let _cells: VarUInteger = loadVarUInteger(slice, 7);
-    let bits: VarUInteger = loadVarUInteger(slice, 7);
-    let public_cells: VarUInteger = loadVarUInteger(slice, 7);
+    let _cells: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
+    let bits: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
+    let public_cells: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
     return {
         kind: 'StorageUsed',
         _cells: _cells,
@@ -5078,9 +5014,9 @@ export function loadStorageUsed(slice: Slice): StorageUsed {
 
 export function storeStorageUsed(storageUsed: StorageUsed): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeVarUInteger(storageUsed._cells)(builder);
-        storeVarUInteger(storageUsed.bits)(builder);
-        storeVarUInteger(storageUsed.public_cells)(builder);
+        builder.storeVarUint(storageUsed._cells, bitLen((7 - 1)));
+        builder.storeVarUint(storageUsed.bits, bitLen((7 - 1)));
+        builder.storeVarUint(storageUsed.public_cells, bitLen((7 - 1)));
     })
 
 }
@@ -5091,8 +5027,8 @@ storage_used_short$_ cells:(VarUInteger 7)
 */
 
 export function loadStorageUsedShort(slice: Slice): StorageUsedShort {
-    let _cells: VarUInteger = loadVarUInteger(slice, 7);
-    let bits: VarUInteger = loadVarUInteger(slice, 7);
+    let _cells: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
+    let bits: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
     return {
         kind: 'StorageUsedShort',
         _cells: _cells,
@@ -5103,8 +5039,8 @@ export function loadStorageUsedShort(slice: Slice): StorageUsedShort {
 
 export function storeStorageUsedShort(storageUsedShort: StorageUsedShort): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeVarUInteger(storageUsedShort._cells)(builder);
-        storeVarUInteger(storageUsedShort.bits)(builder);
+        builder.storeVarUint(storageUsedShort._cells, bitLen((7 - 1)));
+        builder.storeVarUint(storageUsedShort.bits, bitLen((7 - 1)));
     })
 
 }
@@ -5858,10 +5794,10 @@ export function loadTrComputePhase(slice: Slice): TrComputePhase {
         let account_activated: boolean = slice.loadBoolean();
         let gas_fees: bigint = slice.loadCoins();
         let slice1 = slice.loadRef().beginParse();
-        let gas_used: VarUInteger = loadVarUInteger(slice1, 7);
-        let gas_limit: VarUInteger = loadVarUInteger(slice1, 7);
-        let gas_credit: Maybe<VarUInteger> = loadMaybe<VarUInteger>(slice1, ((slice: Slice) => {
-            return loadVarUInteger(slice, 3)
+        let gas_used: bigint = slice1.loadVarUintBig(bitLen((7 - 1)));
+        let gas_limit: bigint = slice1.loadVarUintBig(bitLen((7 - 1)));
+        let gas_credit: Maybe<bigint> = loadMaybe<bigint>(slice1, ((slice: Slice) => {
+            return slice1.loadVarUintBig(bitLen((3 - 1)))
 
         }));
         let mode: number = slice1.loadInt(8);
@@ -5910,11 +5846,11 @@ export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: B
             builder.storeBit(trComputePhase.account_activated);
             builder.storeCoins(trComputePhase.gas_fees);
             let cell1 = beginCell();
-            storeVarUInteger(trComputePhase.gas_used)(cell1);
-            storeVarUInteger(trComputePhase.gas_limit)(cell1);
-            storeMaybe<VarUInteger>(trComputePhase.gas_credit, ((arg: VarUInteger) => {
+            cell1.storeVarUint(trComputePhase.gas_used, bitLen((7 - 1)));
+            cell1.storeVarUint(trComputePhase.gas_limit, bitLen((7 - 1)));
+            storeMaybe<bigint>(trComputePhase.gas_credit, ((arg: bigint) => {
                 return ((builder: Builder) => {
-                    storeVarUInteger(arg)(builder);
+                    builder.storeVarUint(arg, bitLen((3 - 1)));
                 })
 
             }))(cell1);

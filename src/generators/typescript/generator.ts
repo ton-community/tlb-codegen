@@ -720,6 +720,18 @@ export class TypescriptGenerator implements CodeGenerator {
         fieldLoadSuffix: "Coins",
         fieldStoreSuffix: "Coins",
       };
+    } else if (fieldType.kind == "TLBVarIntegerType") {
+      exprForParam = {
+        argLoadExpr: convertToAST(fieldType.n, ctx.constructor),
+        argStoreExpr: convertToAST(
+          fieldType.n,
+          ctx.constructor,
+          id(ctx.name)
+        ),
+        paramType: "bigint",
+        fieldLoadSuffix: fieldType.signed ? "VarIntBig" : "VarUintBig",
+        fieldStoreSuffix: fieldType.signed ? "VarInt" : "VarUint"
+      }
     } else if (fieldType.kind == "TLBAddressType") {
       if (fieldType.addrType == "Internal") {
         exprForParam = {
