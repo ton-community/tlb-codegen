@@ -247,7 +247,7 @@ describe('Generating tlb code', () => {
         let hashmapVarKeyUser: HashmapVarKeyUser = { kind: 'HashmapVarKeyUser', x: {kind: 'HashmapVarKey', n: 5, x: vkDict }}
         checkSameOnStoreLoad(hashmapVarKeyUser, loadHashmapVarKeyUser, storeHashmapVarKeyUser);
     
-        let hashmapExprKeyUser: HashmapExprKeyUser = { kind: 'HashmapExprKeyUser', x: {kind: 'HashmapVarKey', n: 5, x: vkDict }}
+        let hashmapExprKeyUser: HashmapExprKeyUser = { kind: 'HashmapExprKeyUser', x: {kind: 'HashmapExprKey', n: 5, x: vkDict }}
         checkSameOnStoreLoad(hashmapExprKeyUser, loadHashmapExprKeyUser, storeHashmapExprKeyUser);
     })
 

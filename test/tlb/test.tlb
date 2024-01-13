@@ -165,6 +165,6 @@ a$_ x:(HashmapE 100 ^TypedParam) = HashmapTPCell;
 a$_ {n:#} x:(HashmapE n uint5) = HashmapVarKey n;
 a$_ x:(HashmapVarKey 5) = HashmapVarKeyUser;
 a$_ {n:#} x:(HashmapE (n+2) uint5) = HashmapExprKey n;
-a$_ x:(HashmapVarKey 5) = HashmapExprKeyUser;
+a$_ x:(HashmapExprKey 5) = HashmapExprKeyUser;
 //a$_ {A: Type} x:(HashmapE 200 (OneComb A)) = HashmapOneComb A;
 //a$_ x:(HashmapOneComb uint5) = HashmapOneCombUser;

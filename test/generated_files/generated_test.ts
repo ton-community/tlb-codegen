@@ -758,11 +758,11 @@ export interface HashmapExprKey {
     readonly x: Dictionary<bigint, number>;
 }
 
-// a$_ x:(HashmapVarKey 5) = HashmapExprKeyUser;
+// a$_ x:(HashmapExprKey 5) = HashmapExprKeyUser;
 
 export interface HashmapExprKeyUser {
     readonly kind: 'HashmapExprKeyUser';
-    readonly x: HashmapVarKey;
+    readonly x: HashmapExprKey;
 }
 
 // tmpa$_ a:# b:# = Simple;
@@ -3105,10 +3105,10 @@ export function storeHashmapExprKey(hashmapExprKey: HashmapExprKey): (builder: B
 
 }
 
-// a$_ x:(HashmapVarKey 5) = HashmapExprKeyUser;
+// a$_ x:(HashmapExprKey 5) = HashmapExprKeyUser;
 
 export function loadHashmapExprKeyUser(slice: Slice): HashmapExprKeyUser {
-    let x: HashmapVarKey = loadHashmapVarKey(slice, 5);
+    let x: HashmapExprKey = loadHashmapExprKey(slice, 5);
     return {
         kind: 'HashmapExprKeyUser',
         x: x,
@@ -3118,7 +3118,7 @@ export function loadHashmapExprKeyUser(slice: Slice): HashmapExprKeyUser {
 
 export function storeHashmapExprKeyUser(hashmapExprKeyUser: HashmapExprKeyUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapVarKey(hashmapExprKeyUser.x)(builder);
+        storeHashmapExprKey(hashmapExprKeyUser.x)(builder);
     })
 
 }
