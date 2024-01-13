@@ -530,7 +530,7 @@ export interface StateInitWithLibs {
     readonly special: Maybe<TickTock>;
     readonly code: Maybe<Slice>;
     readonly data: Maybe<Slice>;
-    readonly library: Dictionary<number, SimpleLib>;
+    readonly library: Dictionary<bigint, SimpleLib>;
 }
 
 // simple_lib$_ public:Bool root:^Cell = SimpleLib;
@@ -855,7 +855,7 @@ export interface ProcessedUpto {
 
 export interface ProcessedInfo {
     readonly kind: 'ProcessedInfo';
-    readonly anon0: Dictionary<number, ProcessedUpto>;
+    readonly anon0: Dictionary<bigint, ProcessedUpto>;
 }
 
 // ihr_pending$_ import_lt:uint64 = IhrPendingSince;
@@ -869,7 +869,7 @@ export interface IhrPendingSince {
 
 export interface IhrPendingInfo {
     readonly kind: 'IhrPendingInfo';
-    readonly anon0: Dictionary<number, IhrPendingSince>;
+    readonly anon0: Dictionary<bigint, IhrPendingSince>;
 }
 
 /*
@@ -1594,7 +1594,7 @@ export interface ShardStateUnsplit {
     readonly underload_history: number;
     readonly total_balance: CurrencyCollection;
     readonly total_validator_fees: CurrencyCollection;
-    readonly libraries: Dictionary<number, LibDescr>;
+    readonly libraries: Dictionary<bigint, LibDescr>;
     readonly master_ref: Maybe<BlkMasterInfo>;
     readonly custom: Maybe<McStateExtra>;
 }
@@ -2041,7 +2041,7 @@ export type BlockCreateStats = BlockCreateStats_block_create_stats | BlockCreate
 
 export interface BlockCreateStats_block_create_stats {
     readonly kind: 'BlockCreateStats_block_create_stats';
-    readonly counters: Dictionary<number, CreatorStats>;
+    readonly counters: Dictionary<bigint, CreatorStats>;
 }
 
 export interface BlockCreateStats_block_create_stats_ext {
@@ -2474,7 +2474,7 @@ export interface ConfigParam__27 {
 
 export interface ConfigParam__28 {
     readonly kind: 'ConfigParam__28';
-    readonly fundamental_smc_addr: Dictionary<number, True>;
+    readonly fundamental_smc_addr: Dictionary<bigint, True>;
 }
 
 export interface ConfigParam__29 {
@@ -2509,7 +2509,7 @@ export interface ConfigParam__34 {
 
 export interface ConfigParam__35 {
     readonly kind: 'ConfigParam__35';
-    readonly anon0: Dictionary<number, ValidatorSignedTempKey>;
+    readonly anon0: Dictionary<bigint, ValidatorSignedTempKey>;
 }
 
 export interface ConfigParam__36 {
@@ -3052,7 +3052,7 @@ export interface SizeLimitsConfig_size_limits_config_v2 {
 
 export interface SuspendedAddressList {
     readonly kind: 'SuspendedAddressList';
-    readonly addresses: Dictionary<number, Unit>;
+    readonly addresses: Dictionary<bigint, Unit>;
     readonly suspended_until: number;
 }
 
@@ -3062,7 +3062,7 @@ export interface OracleBridgeParams {
     readonly kind: 'OracleBridgeParams';
     readonly bridge_address: BitString;
     readonly oracle_mutlisig_address: BitString;
-    readonly oracles: Dictionary<number, bigint>;
+    readonly oracles: Dictionary<bigint, bigint>;
     readonly external_chain_address: BitString;
 }
 
@@ -3094,7 +3094,7 @@ export interface JettonBridgeParams_jetton_bridge_params_v0 {
     readonly kind: 'JettonBridgeParams_jetton_bridge_params_v0';
     readonly bridge_address: BitString;
     readonly oracles_address: BitString;
-    readonly oracles: Dictionary<number, bigint>;
+    readonly oracles: Dictionary<bigint, bigint>;
     readonly state_flags: number;
     readonly burn_bridge_fee: Coins;
 }
@@ -3103,7 +3103,7 @@ export interface JettonBridgeParams_jetton_bridge_params_v1 {
     readonly kind: 'JettonBridgeParams_jetton_bridge_params_v1';
     readonly bridge_address: BitString;
     readonly oracles_address: BitString;
-    readonly oracles: Dictionary<number, bigint>;
+    readonly oracles: Dictionary<bigint, bigint>;
     readonly state_flags: number;
     readonly prices: JettonBridgePrices;
     readonly external_chain_address: BitString;
@@ -3172,7 +3172,7 @@ export interface TopBlockDescr {
 
 export interface TopBlockDescrSet {
     readonly kind: 'TopBlockDescrSet';
-    readonly collection: Dictionary<number, TopBlockDescr>;
+    readonly collection: Dictionary<bigint, TopBlockDescr>;
 }
 
 /*
@@ -3397,7 +3397,7 @@ export interface VmGasLimits {
 
 export interface VmLibraries {
     readonly kind: 'VmLibraries';
-    readonly libraries: Dictionary<number, Slice>;
+    readonly libraries: Dictionary<bigint, Slice>;
 }
 
 /*
@@ -3504,7 +3504,7 @@ export interface VmCont_vmc_pushint {
 
 export interface DNS_RecordSet {
     readonly kind: 'DNS_RecordSet';
-    readonly anon0: Dictionary<number, DNSRecord>;
+    readonly anon0: Dictionary<bigint, DNSRecord>;
 }
 
 // chunk_ref_empty$_ = TextChunkRef 0;
@@ -4849,7 +4849,7 @@ export function storeCoins(coins: Coins): (builder: Builder) => void {
 
 }
 
-export function createTheFunctionve0sp(): DictionaryValue<bigint> {
+export function createTheFunctionbvt21k(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
         builder.storeVarUint(arg, bitLen((32 - 1)));
@@ -4868,7 +4868,7 @@ extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32))
 */
 
 export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollection {
-    let dict: Dictionary<number, bigint> = Dictionary.load(Dictionary.Keys.Uint(32), createTheFunctionve0sp(), slice);
+    let dict: Dictionary<number, bigint> = Dictionary.load(Dictionary.Keys.Uint(32), createTheFunctionbvt21k(), slice);
     return {
         kind: 'ExtraCurrencyCollection',
         dict: dict,
@@ -4878,7 +4878,7 @@ export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollecti
 
 export function storeExtraCurrencyCollection(extraCurrencyCollection: ExtraCurrencyCollection): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(extraCurrencyCollection.dict, Dictionary.Keys.Uint(32), createTheFunctionve0sp());
+        builder.storeDict(extraCurrencyCollection.dict, Dictionary.Keys.Uint(32), createTheFunctionbvt21k());
     })
 
 }
@@ -5209,7 +5209,7 @@ export function storeStateInit(stateInit: StateInit): (builder: Builder) => void
 
 }
 
-export function createTheFunction9lwom(): DictionaryValue<SimpleLib> {
+export function createTheFunction4phcd(): DictionaryValue<SimpleLib> {
     return {
         serialize: ((arg: SimpleLib, builder: Builder) => {
         storeSimpleLib;
@@ -5241,7 +5241,7 @@ export function loadStateInitWithLibs(slice: Slice): StateInitWithLibs {
         return slice1
 
     }));
-    let library: Dictionary<number, SimpleLib> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunction9lwom(), slice);
+    let library: Dictionary<bigint, SimpleLib> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunction4phcd(), slice);
     return {
         kind: 'StateInitWithLibs',
         split_depth: split_depth,
@@ -5280,7 +5280,7 @@ export function storeStateInitWithLibs(stateInitWithLibs: StateInitWithLibs): (b
             })
 
         }))(builder);
-        builder.storeDict(stateInitWithLibs.library, Dictionary.Keys.Uint(256), createTheFunction9lwom());
+        builder.storeDict(stateInitWithLibs.library, Dictionary.Keys.BigUint(256), createTheFunction4phcd());
     })
 
 }
@@ -6228,7 +6228,7 @@ export function storeProcessedUpto(processedUpto: ProcessedUpto): (builder: Buil
 
 }
 
-export function createTheFunctiondtzm3(): DictionaryValue<ProcessedUpto> {
+export function createTheFunctionad1tz(): DictionaryValue<ProcessedUpto> {
     return {
         serialize: ((arg: ProcessedUpto, builder: Builder) => {
         storeProcessedUpto;
@@ -6241,7 +6241,7 @@ export function createTheFunctiondtzm3(): DictionaryValue<ProcessedUpto> {
 // _ (HashmapE 96 ProcessedUpto) = ProcessedInfo;
 
 export function loadProcessedInfo(slice: Slice): ProcessedInfo {
-    let anon0: Dictionary<number, ProcessedUpto> = Dictionary.load(Dictionary.Keys.Uint(96), createTheFunctiondtzm3(), slice);
+    let anon0: Dictionary<bigint, ProcessedUpto> = Dictionary.load(Dictionary.Keys.BigUint(96), createTheFunctionad1tz(), slice);
     return {
         kind: 'ProcessedInfo',
         anon0: anon0,
@@ -6251,7 +6251,7 @@ export function loadProcessedInfo(slice: Slice): ProcessedInfo {
 
 export function storeProcessedInfo(processedInfo: ProcessedInfo): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(processedInfo.anon0, Dictionary.Keys.Uint(96), createTheFunctiondtzm3());
+        builder.storeDict(processedInfo.anon0, Dictionary.Keys.BigUint(96), createTheFunctionad1tz());
     })
 
 }
@@ -6274,7 +6274,7 @@ export function storeIhrPendingSince(ihrPendingSince: IhrPendingSince): (builder
 
 }
 
-export function createTheFunctionyy697(): DictionaryValue<IhrPendingSince> {
+export function createTheFunction1epi5(): DictionaryValue<IhrPendingSince> {
     return {
         serialize: ((arg: IhrPendingSince, builder: Builder) => {
         storeIhrPendingSince;
@@ -6287,7 +6287,7 @@ export function createTheFunctionyy697(): DictionaryValue<IhrPendingSince> {
 // _ (HashmapE 320 IhrPendingSince) = IhrPendingInfo;
 
 export function loadIhrPendingInfo(slice: Slice): IhrPendingInfo {
-    let anon0: Dictionary<number, IhrPendingSince> = Dictionary.load(Dictionary.Keys.Uint(320), createTheFunctionyy697(), slice);
+    let anon0: Dictionary<bigint, IhrPendingSince> = Dictionary.load(Dictionary.Keys.BigUint(320), createTheFunction1epi5(), slice);
     return {
         kind: 'IhrPendingInfo',
         anon0: anon0,
@@ -6297,7 +6297,7 @@ export function loadIhrPendingInfo(slice: Slice): IhrPendingInfo {
 
 export function storeIhrPendingInfo(ihrPendingInfo: IhrPendingInfo): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(ihrPendingInfo.anon0, Dictionary.Keys.Uint(320), createTheFunctionyy697());
+        builder.storeDict(ihrPendingInfo.anon0, Dictionary.Keys.BigUint(320), createTheFunction1epi5());
     })
 
 }
@@ -6689,7 +6689,7 @@ export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Buil
 
 }
 
-export function createTheFunctionuqvvt(): DictionaryValue<Message<Slice>> {
+export function createTheFunctionbn1dkh(): DictionaryValue<Message<Slice>> {
     return {
         serialize: ((arg: Message<Slice>, builder: Builder) => {
         let cell1 = beginCell();
@@ -6744,7 +6744,7 @@ export function loadTransaction(slice: Slice): Transaction {
             }))
 
         }));
-        let out_msgs: Dictionary<number, Message<Slice>> = Dictionary.load(Dictionary.Keys.Uint(15), createTheFunctionuqvvt(), slice1);
+        let out_msgs: Dictionary<number, Message<Slice>> = Dictionary.load(Dictionary.Keys.Uint(15), createTheFunctionbn1dkh(), slice1);
         let total_fees: CurrencyCollection = loadCurrencyCollection(slice);
         let slice2 = slice.loadRef().beginParse();
         let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount);
@@ -6797,7 +6797,7 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
             })
 
         }))(cell1);
-        cell1.storeDict(transaction.out_msgs, Dictionary.Keys.Uint(15), createTheFunctionuqvvt());
+        cell1.storeDict(transaction.out_msgs, Dictionary.Keys.Uint(15), createTheFunctionbn1dkh());
         builder.storeRef(cell1);
         storeCurrencyCollection(transaction.total_fees)(builder);
         let cell2 = beginCell();
@@ -8184,7 +8184,7 @@ export function storeBlkMasterInfo(blkMasterInfo: BlkMasterInfo): (builder: Buil
 
 }
 
-export function createTheFunction90t5h(): DictionaryValue<LibDescr> {
+export function createTheFunctiont2fvh(): DictionaryValue<LibDescr> {
     return {
         serialize: ((arg: LibDescr, builder: Builder) => {
         storeLibDescr;
@@ -8232,7 +8232,7 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
         let underload_history: number = slice3.loadUint(64);
         let total_balance: CurrencyCollection = loadCurrencyCollection(slice3);
         let total_validator_fees: CurrencyCollection = loadCurrencyCollection(slice3);
-        let libraries: Dictionary<number, LibDescr> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunction90t5h(), slice3);
+        let libraries: Dictionary<bigint, LibDescr> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunctiont2fvh(), slice3);
         let master_ref: Maybe<BlkMasterInfo> = loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo);
         let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse();
@@ -8286,7 +8286,7 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
         cell3.storeUint(shardStateUnsplit.underload_history, 64);
         storeCurrencyCollection(shardStateUnsplit.total_balance)(cell3);
         storeCurrencyCollection(shardStateUnsplit.total_validator_fees)(cell3);
-        cell3.storeDict(shardStateUnsplit.libraries, Dictionary.Keys.Uint(256), createTheFunction90t5h());
+        cell3.storeDict(shardStateUnsplit.libraries, Dictionary.Keys.BigUint(256), createTheFunctiont2fvh());
         storeMaybe<BlkMasterInfo>(shardStateUnsplit.master_ref, storeBlkMasterInfo)(cell3);
         builder.storeRef(cell3);
         storeMaybe<McStateExtra>(shardStateUnsplit.custom, ((arg: McStateExtra) => {
@@ -9143,7 +9143,7 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
     throw new Error('Expected one of "ShardDescr_shard_descr", "ShardDescr_shard_descr_new" in loading "ShardDescr", but data does not satisfy any constructor');
 }
 
-export function createTheFunctionvqnxt(): DictionaryValue<BinTree<ShardDescr>> {
+export function createTheFunctionl86ux(): DictionaryValue<BinTree<ShardDescr>> {
     return {
         serialize: ((arg: BinTree<ShardDescr>, builder: Builder) => {
         let cell1 = beginCell();
@@ -9163,7 +9163,7 @@ export function createTheFunctionvqnxt(): DictionaryValue<BinTree<ShardDescr>> {
 // _ (HashmapE 32 ^(BinTree ShardDescr)) = ShardHashes;
 
 export function loadShardHashes(slice: Slice): ShardHashes {
-    let anon0: Dictionary<number, BinTree<ShardDescr>> = Dictionary.load(Dictionary.Keys.Uint(32), createTheFunctionvqnxt(), slice);
+    let anon0: Dictionary<number, BinTree<ShardDescr>> = Dictionary.load(Dictionary.Keys.Uint(32), createTheFunctionl86ux(), slice);
     return {
         kind: 'ShardHashes',
         anon0: anon0,
@@ -9173,7 +9173,7 @@ export function loadShardHashes(slice: Slice): ShardHashes {
 
 export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(shardHashes.anon0, Dictionary.Keys.Uint(32), createTheFunctionvqnxt());
+        builder.storeDict(shardHashes.anon0, Dictionary.Keys.Uint(32), createTheFunctionl86ux());
     })
 
 }
@@ -9487,7 +9487,7 @@ export function storeCreatorStats(creatorStats: CreatorStats): (builder: Builder
 
 }
 
-export function createTheFunctionfex3h(): DictionaryValue<CreatorStats> {
+export function createTheFunctionr2p2d(): DictionaryValue<CreatorStats> {
     return {
         serialize: ((arg: CreatorStats, builder: Builder) => {
         storeCreatorStats;
@@ -9504,7 +9504,7 @@ export function createTheFunctionfex3h(): DictionaryValue<CreatorStats> {
 export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x17))) {
         slice.loadUint(8);
-        let counters: Dictionary<number, CreatorStats> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunctionfex3h(), slice);
+        let counters: Dictionary<bigint, CreatorStats> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunctionr2p2d(), slice);
         return {
             kind: 'BlockCreateStats_block_create_stats',
             counters: counters,
@@ -9530,7 +9530,7 @@ export function storeBlockCreateStats(blockCreateStats: BlockCreateStats): (buil
     if ((blockCreateStats.kind == 'BlockCreateStats_block_create_stats')) {
         return ((builder: Builder) => {
             builder.storeUint(0x17, 8);
-            builder.storeDict(blockCreateStats.counters, Dictionary.Keys.Uint(256), createTheFunctionfex3h());
+            builder.storeDict(blockCreateStats.counters, Dictionary.Keys.BigUint(256), createTheFunctionr2p2d());
         })
 
     }
@@ -9810,7 +9810,7 @@ export function storeSignedCertificate(signedCertificate: SignedCertificate): (b
 
 }
 
-export function createTheFunctionheuph(): DictionaryValue<CryptoSignaturePair> {
+export function createTheFunctionuifu8(): DictionaryValue<CryptoSignaturePair> {
     return {
         serialize: ((arg: CryptoSignaturePair, builder: Builder) => {
         storeCryptoSignaturePair;
@@ -9839,7 +9839,7 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
         let shard_hashes: ShardHashes = loadShardHashes(slice);
         let shard_fees: ShardFees = loadShardFees(slice);
         let slice1 = slice.loadRef().beginParse();
-        let prev_blk_signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunctionheuph(), slice1);
+        let prev_blk_signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunctionuifu8(), slice1);
         let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse();
             return loadInMsg(slice1)
@@ -9873,7 +9873,7 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
         storeShardHashes(mcBlockExtra.shard_hashes)(builder);
         storeShardFees(mcBlockExtra.shard_fees)(builder);
         let cell1 = beginCell();
-        cell1.storeDict(mcBlockExtra.prev_blk_signatures, Dictionary.Keys.Uint(16), createTheFunctionheuph());
+        cell1.storeDict(mcBlockExtra.prev_blk_signatures, Dictionary.Keys.Uint(16), createTheFunctionuifu8());
         storeMaybe<InMsg>(mcBlockExtra.recover_create_msg, ((arg: InMsg) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
@@ -9959,7 +9959,7 @@ validators#11 utime_since:uint32 utime_until:uint32
   list:(Hashmap 16 ValidatorDescr) = ValidatorSet;
 */
 
-export function createTheFunctionn45pu(): DictionaryValue<ValidatorDescr> {
+export function createTheFunction4oskr(): DictionaryValue<ValidatorDescr> {
     return {
         serialize: ((arg: ValidatorDescr, builder: Builder) => {
         storeValidatorDescr;
@@ -10006,7 +10006,7 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
         let total: number = slice.loadUint(16);
         let main: number = slice.loadUint(16);
         let total_weight: number = slice.loadUint(64);
-        let list: Dictionary<number, ValidatorDescr> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunctionn45pu(), slice);
+        let list: Dictionary<number, ValidatorDescr> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunction4oskr(), slice);
         if ((!(main <= total))) {
             throw new Error('Condition (main <= total) is not satisfied while loading "ValidatorSet_validators_ext" for type "ValidatorSet"');
         }
@@ -10053,7 +10053,7 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
             builder.storeUint(validatorSet.total, 16);
             builder.storeUint(validatorSet.main, 16);
             builder.storeUint(validatorSet.total_weight, 64);
-            builder.storeDict(validatorSet.list, Dictionary.Keys.Uint(16), createTheFunctionn45pu());
+            builder.storeDict(validatorSet.list, Dictionary.Keys.Uint(16), createTheFunction4oskr());
             if ((!(validatorSet.main <= validatorSet.total))) {
                 throw new Error('Condition (validatorSet.main <= validatorSet.total) is not satisfied while loading "ValidatorSet_validators_ext" for type "ValidatorSet"');
             }
@@ -10090,7 +10090,7 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 
 // _ ConfigVotingSetup = ConfigParam 11;
 
-export function createTheFunctiongt0f6(): DictionaryValue<WorkchainDescr> {
+export function createTheFunctiontemaa(): DictionaryValue<WorkchainDescr> {
     return {
         serialize: ((arg: WorkchainDescr, builder: Builder) => {
         storeWorkchainDescr;
@@ -10142,7 +10142,7 @@ _ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16)
 
 // _ ConsensusConfig = ConfigParam 29;
 
-export function createTheFunctiond9tr8(): DictionaryValue<True> {
+export function createTheFunctionug0d8(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
         storeTrue;
@@ -10166,7 +10166,7 @@ export function createTheFunctiond9tr8(): DictionaryValue<True> {
 
 // _ next_temp_validators:ValidatorSet = ConfigParam 37;
 
-export function createTheFunction8dq62g(): DictionaryValue<ValidatorSignedTempKey> {
+export function createTheFunction7hh5r(): DictionaryValue<ValidatorSignedTempKey> {
     return {
         serialize: ((arg: ValidatorSignedTempKey, builder: Builder) => {
         storeValidatorSignedTempKey;
@@ -10296,7 +10296,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 12)) {
-        let workchains: Dictionary<number, WorkchainDescr> = Dictionary.load(Dictionary.Keys.Uint(32), createTheFunctiongt0f6(), slice);
+        let workchains: Dictionary<number, WorkchainDescr> = Dictionary.load(Dictionary.Keys.Uint(32), createTheFunctiontemaa(), slice);
         return {
             kind: 'ConfigParam__12',
             workchains: workchains,
@@ -10449,7 +10449,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 31)) {
-        let fundamental_smc_addr: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunctiond9tr8(), slice);
+        let fundamental_smc_addr: Dictionary<bigint, True> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunctionug0d8(), slice);
         return {
             kind: 'ConfigParam__28',
             fundamental_smc_addr: fundamental_smc_addr,
@@ -10505,7 +10505,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 39)) {
-        let anon0: Dictionary<number, ValidatorSignedTempKey> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunction8dq62g(), slice);
+        let anon0: Dictionary<bigint, ValidatorSignedTempKey> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunction7hh5r(), slice);
         return {
             kind: 'ConfigParam__35',
             anon0: anon0,
@@ -10663,7 +10663,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__12')) {
         return ((builder: Builder) => {
-            builder.storeDict(configParam.workchains, Dictionary.Keys.Uint(32), createTheFunctiongt0f6());
+            builder.storeDict(configParam.workchains, Dictionary.Keys.Uint(32), createTheFunctiontemaa());
         })
 
     }
@@ -10776,7 +10776,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__28')) {
         return ((builder: Builder) => {
-            builder.storeDict(configParam.fundamental_smc_addr, Dictionary.Keys.Uint(256), createTheFunctiond9tr8());
+            builder.storeDict(configParam.fundamental_smc_addr, Dictionary.Keys.BigUint(256), createTheFunctionug0d8());
         })
 
     }
@@ -10818,7 +10818,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__35')) {
         return ((builder: Builder) => {
-            builder.storeDict(configParam.anon0, Dictionary.Keys.Uint(256), createTheFunction8dq62g());
+            builder.storeDict(configParam.anon0, Dictionary.Keys.BigUint(256), createTheFunction7hh5r());
         })
 
     }
@@ -11086,7 +11086,7 @@ export function storeConfigProposal(configProposal: ConfigProposal): (builder: B
 
 }
 
-export function createTheFunctionr3asa(): DictionaryValue<True> {
+export function createTheFunctionbjonhj(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
         storeTrue;
@@ -11109,7 +11109,7 @@ export function loadConfigProposalStatus(slice: Slice): ConfigProposalStatus {
         let slice1 = slice.loadRef().beginParse();
         let proposal: ConfigProposal = loadConfigProposal(slice1);
         let is_critical: boolean = slice.loadBoolean();
-        let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunctionr3asa(), slice);
+        let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunctionbjonhj(), slice);
         let remaining_weight: number = slice.loadInt(64);
         let validator_set_id: bigint = slice.loadUintBig(256);
         let rounds_remaining: number = slice.loadUint(8);
@@ -11140,7 +11140,7 @@ export function storeConfigProposalStatus(configProposalStatus: ConfigProposalSt
         storeConfigProposal(configProposalStatus.proposal)(cell1);
         builder.storeRef(cell1);
         builder.storeBit(configProposalStatus.is_critical);
-        builder.storeDict(configProposalStatus.voters, Dictionary.Keys.Uint(16), createTheFunctionr3asa());
+        builder.storeDict(configProposalStatus.voters, Dictionary.Keys.Uint(16), createTheFunctionbjonhj());
         builder.storeInt(configProposalStatus.remaining_weight, 64);
         builder.storeUint(configProposalStatus.validator_set_id, 256);
         builder.storeUint(configProposalStatus.rounds_remaining, 8);
@@ -12307,7 +12307,7 @@ export function storeSizeLimitsConfig(sizeLimitsConfig: SizeLimitsConfig): (buil
     throw new Error('Expected one of "SizeLimitsConfig_size_limits_config", "SizeLimitsConfig_size_limits_config_v2" in loading "SizeLimitsConfig", but data does not satisfy any constructor');
 }
 
-export function createTheFunctionzcilx(): DictionaryValue<Unit> {
+export function createTheFunction1j5wi(): DictionaryValue<Unit> {
     return {
         serialize: ((arg: Unit, builder: Builder) => {
         storeUnit;
@@ -12322,7 +12322,7 @@ export function createTheFunctionzcilx(): DictionaryValue<Unit> {
 export function loadSuspendedAddressList(slice: Slice): SuspendedAddressList {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x00))) {
         slice.loadUint(8);
-        let addresses: Dictionary<number, Unit> = Dictionary.load(Dictionary.Keys.Uint(288), createTheFunctionzcilx(), slice);
+        let addresses: Dictionary<bigint, Unit> = Dictionary.load(Dictionary.Keys.BigUint(288), createTheFunction1j5wi(), slice);
         let suspended_until: number = slice.loadUint(32);
         return {
             kind: 'SuspendedAddressList',
@@ -12337,13 +12337,13 @@ export function loadSuspendedAddressList(slice: Slice): SuspendedAddressList {
 export function storeSuspendedAddressList(suspendedAddressList: SuspendedAddressList): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x00, 8);
-        builder.storeDict(suspendedAddressList.addresses, Dictionary.Keys.Uint(288), createTheFunctionzcilx());
+        builder.storeDict(suspendedAddressList.addresses, Dictionary.Keys.BigUint(288), createTheFunction1j5wi());
         builder.storeUint(suspendedAddressList.suspended_until, 32);
     })
 
 }
 
-export function createTheFunction418gr(): DictionaryValue<bigint> {
+export function createTheFunctionioysl(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
         builder.storeUint(arg, 256);
@@ -12361,7 +12361,7 @@ export function createTheFunction418gr(): DictionaryValue<bigint> {
 export function loadOracleBridgeParams(slice: Slice): OracleBridgeParams {
     let bridge_address: BitString = slice.loadBits(256);
     let oracle_mutlisig_address: BitString = slice.loadBits(256);
-    let oracles: Dictionary<number, bigint> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunction418gr(), slice);
+    let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunctionioysl(), slice);
     let external_chain_address: BitString = slice.loadBits(256);
     return {
         kind: 'OracleBridgeParams',
@@ -12377,7 +12377,7 @@ export function storeOracleBridgeParams(oracleBridgeParams: OracleBridgeParams):
     return ((builder: Builder) => {
         builder.storeBits(oracleBridgeParams.bridge_address);
         builder.storeBits(oracleBridgeParams.oracle_mutlisig_address);
-        builder.storeDict(oracleBridgeParams.oracles, Dictionary.Keys.Uint(256), createTheFunction418gr());
+        builder.storeDict(oracleBridgeParams.oracles, Dictionary.Keys.BigUint(256), createTheFunctionioysl());
         builder.storeBits(oracleBridgeParams.external_chain_address);
     })
 
@@ -12422,7 +12422,7 @@ export function storeJettonBridgePrices(jettonBridgePrices: JettonBridgePrices):
 
 }
 
-export function createTheFunctioni0poef(): DictionaryValue<bigint> {
+export function createTheFunction23tv1(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
         builder.storeUint(arg, 256);
@@ -12437,7 +12437,7 @@ export function createTheFunctioni0poef(): DictionaryValue<bigint> {
 
 // jetton_bridge_params_v0#00 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 burn_bridge_fee:Coins = JettonBridgeParams;
 
-export function createTheFunction7c3ja(): DictionaryValue<bigint> {
+export function createTheFunctiongndtb(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
         builder.storeUint(arg, 256);
@@ -12457,7 +12457,7 @@ export function loadJettonBridgeParams(slice: Slice): JettonBridgeParams {
         slice.loadUint(8);
         let bridge_address: BitString = slice.loadBits(256);
         let oracles_address: BitString = slice.loadBits(256);
-        let oracles: Dictionary<number, bigint> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunctioni0poef(), slice);
+        let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunction23tv1(), slice);
         let state_flags: number = slice.loadUint(8);
         let burn_bridge_fee: Coins = loadCoins(slice);
         return {
@@ -12474,7 +12474,7 @@ export function loadJettonBridgeParams(slice: Slice): JettonBridgeParams {
         slice.loadUint(8);
         let bridge_address: BitString = slice.loadBits(256);
         let oracles_address: BitString = slice.loadBits(256);
-        let oracles: Dictionary<number, bigint> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunction7c3ja(), slice);
+        let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunctiongndtb(), slice);
         let state_flags: number = slice.loadUint(8);
         let slice1 = slice.loadRef().beginParse();
         let prices: JettonBridgePrices = loadJettonBridgePrices(slice1);
@@ -12499,7 +12499,7 @@ export function storeJettonBridgeParams(jettonBridgeParams: JettonBridgeParams):
             builder.storeUint(0x00, 8);
             builder.storeBits(jettonBridgeParams.bridge_address);
             builder.storeBits(jettonBridgeParams.oracles_address);
-            builder.storeDict(jettonBridgeParams.oracles, Dictionary.Keys.Uint(256), createTheFunctioni0poef());
+            builder.storeDict(jettonBridgeParams.oracles, Dictionary.Keys.BigUint(256), createTheFunction23tv1());
             builder.storeUint(jettonBridgeParams.state_flags, 8);
             storeCoins(jettonBridgeParams.burn_bridge_fee)(builder);
         })
@@ -12510,7 +12510,7 @@ export function storeJettonBridgeParams(jettonBridgeParams: JettonBridgeParams):
             builder.storeUint(0x01, 8);
             builder.storeBits(jettonBridgeParams.bridge_address);
             builder.storeBits(jettonBridgeParams.oracles_address);
-            builder.storeDict(jettonBridgeParams.oracles, Dictionary.Keys.Uint(256), createTheFunction7c3ja());
+            builder.storeDict(jettonBridgeParams.oracles, Dictionary.Keys.BigUint(256), createTheFunctiongndtb());
             builder.storeUint(jettonBridgeParams.state_flags, 8);
             let cell1 = beginCell();
             storeJettonBridgePrices(jettonBridgeParams.prices)(cell1);
@@ -12522,7 +12522,7 @@ export function storeJettonBridgeParams(jettonBridgeParams: JettonBridgeParams):
     throw new Error('Expected one of "JettonBridgeParams_jetton_bridge_params_v0", "JettonBridgeParams_jetton_bridge_params_v1" in loading "JettonBridgeParams", but data does not satisfy any constructor');
 }
 
-export function createTheFunction9hvl2(): DictionaryValue<CryptoSignaturePair> {
+export function createTheFunctionezg0x(): DictionaryValue<CryptoSignaturePair> {
     return {
         serialize: ((arg: CryptoSignaturePair, builder: Builder) => {
         storeCryptoSignaturePair;
@@ -12540,7 +12540,7 @@ block_signatures_pure#_ sig_count:uint32 sig_weight:uint64
 export function loadBlockSignaturesPure(slice: Slice): BlockSignaturesPure {
     let sig_count: number = slice.loadUint(32);
     let sig_weight: number = slice.loadUint(64);
-    let signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunction9hvl2(), slice);
+    let signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunctionezg0x(), slice);
     return {
         kind: 'BlockSignaturesPure',
         sig_count: sig_count,
@@ -12554,7 +12554,7 @@ export function storeBlockSignaturesPure(blockSignaturesPure: BlockSignaturesPur
     return ((builder: Builder) => {
         builder.storeUint(blockSignaturesPure.sig_count, 32);
         builder.storeUint(blockSignaturesPure.sig_weight, 64);
-        builder.storeDict(blockSignaturesPure.signatures, Dictionary.Keys.Uint(16), createTheFunction9hvl2());
+        builder.storeDict(blockSignaturesPure.signatures, Dictionary.Keys.Uint(16), createTheFunctionezg0x());
     })
 
 }
@@ -12741,7 +12741,7 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
 
 }
 
-export function createTheFunctiontftili(): DictionaryValue<TopBlockDescr> {
+export function createTheFunctionudyyp(): DictionaryValue<TopBlockDescr> {
     return {
         serialize: ((arg: TopBlockDescr, builder: Builder) => {
         let cell1 = beginCell();
@@ -12763,7 +12763,7 @@ export function createTheFunctiontftili(): DictionaryValue<TopBlockDescr> {
 export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x4ac789f3))) {
         slice.loadUint(32);
-        let collection: Dictionary<number, TopBlockDescr> = Dictionary.load(Dictionary.Keys.Uint(96), createTheFunctiontftili(), slice);
+        let collection: Dictionary<bigint, TopBlockDescr> = Dictionary.load(Dictionary.Keys.BigUint(96), createTheFunctionudyyp(), slice);
         return {
             kind: 'TopBlockDescrSet',
             collection: collection,
@@ -12776,7 +12776,7 @@ export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
 export function storeTopBlockDescrSet(topBlockDescrSet: TopBlockDescrSet): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x4ac789f3, 32);
-        builder.storeDict(topBlockDescrSet.collection, Dictionary.Keys.Uint(96), createTheFunctiontftili());
+        builder.storeDict(topBlockDescrSet.collection, Dictionary.Keys.BigUint(96), createTheFunctionudyyp());
     })
 
 }
@@ -12928,7 +12928,7 @@ export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint):
 
 }
 
-export function createTheFunctionv6lf7(): DictionaryValue<True> {
+export function createTheFunctionpdn0r(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
         storeTrue;
@@ -12945,7 +12945,7 @@ export function loadValidatorComplaintStatus(slice: Slice): ValidatorComplaintSt
         slice.loadUint(8);
         let slice1 = slice.loadRef().beginParse();
         let complaint: ValidatorComplaint = loadValidatorComplaint(slice1);
-        let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunctionv6lf7(), slice);
+        let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), createTheFunctionpdn0r(), slice);
         let vset_id: bigint = slice.loadUintBig(256);
         let weight_remaining: number = slice.loadInt(64);
         return {
@@ -12966,7 +12966,7 @@ export function storeValidatorComplaintStatus(validatorComplaintStatus: Validato
         let cell1 = beginCell();
         storeValidatorComplaint(validatorComplaintStatus.complaint)(cell1);
         builder.storeRef(cell1);
-        builder.storeDict(validatorComplaintStatus.voters, Dictionary.Keys.Uint(16), createTheFunctionv6lf7());
+        builder.storeDict(validatorComplaintStatus.voters, Dictionary.Keys.Uint(16), createTheFunctionpdn0r());
         builder.storeUint(validatorComplaintStatus.vset_id, 256);
         builder.storeInt(validatorComplaintStatus.weight_remaining, 64);
     })
@@ -13363,7 +13363,7 @@ export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) =
     throw new Error('Expected one of "VmStackList_vm_stk_nil", "VmStackList_vm_stk_cons" in loading "VmStackList", but data does not satisfy any constructor');
 }
 
-export function createTheFunctionx3ic2j(): DictionaryValue<VmStackValue> {
+export function createTheFunction9d9xu(): DictionaryValue<VmStackValue> {
     return {
         serialize: ((arg: VmStackValue, builder: Builder) => {
         storeVmStackValue;
@@ -13376,7 +13376,7 @@ export function createTheFunctionx3ic2j(): DictionaryValue<VmStackValue> {
 // _ cregs:(HashmapE 4 VmStackValue) = VmSaveList;
 
 export function loadVmSaveList(slice: Slice): VmSaveList {
-    let cregs: Dictionary<number, VmStackValue> = Dictionary.load(Dictionary.Keys.Uint(4), createTheFunctionx3ic2j(), slice);
+    let cregs: Dictionary<number, VmStackValue> = Dictionary.load(Dictionary.Keys.Uint(4), createTheFunction9d9xu(), slice);
     return {
         kind: 'VmSaveList',
         cregs: cregs,
@@ -13386,7 +13386,7 @@ export function loadVmSaveList(slice: Slice): VmSaveList {
 
 export function storeVmSaveList(vmSaveList: VmSaveList): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(vmSaveList.cregs, Dictionary.Keys.Uint(4), createTheFunctionx3ic2j());
+        builder.storeDict(vmSaveList.cregs, Dictionary.Keys.Uint(4), createTheFunction9d9xu());
     })
 
 }
@@ -13424,7 +13424,7 @@ export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) =
 
 }
 
-export function createTheFunctionhc2hz(): DictionaryValue<Slice> {
+export function createTheFunctionqz7lr(): DictionaryValue<Slice> {
     return {
         serialize: ((arg: Slice, builder: Builder) => {
         let cell1 = beginCell();
@@ -13444,7 +13444,7 @@ export function createTheFunctionhc2hz(): DictionaryValue<Slice> {
 // _ libraries:(HashmapE 256 ^Cell) = VmLibraries;
 
 export function loadVmLibraries(slice: Slice): VmLibraries {
-    let libraries: Dictionary<number, Slice> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunctionhc2hz(), slice);
+    let libraries: Dictionary<bigint, Slice> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunctionqz7lr(), slice);
     return {
         kind: 'VmLibraries',
         libraries: libraries,
@@ -13454,7 +13454,7 @@ export function loadVmLibraries(slice: Slice): VmLibraries {
 
 export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(vmLibraries.libraries, Dictionary.Keys.Uint(256), createTheFunctionhc2hz());
+        builder.storeDict(vmLibraries.libraries, Dictionary.Keys.BigUint(256), createTheFunctionqz7lr());
     })
 
 }
@@ -13765,7 +13765,7 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
     throw new Error('Expected one of "VmCont_vmc_std", "VmCont_vmc_envelope", "VmCont_vmc_quit", "VmCont_vmc_quit_exc", "VmCont_vmc_repeat", "VmCont_vmc_until", "VmCont_vmc_again", "VmCont_vmc_while_cond", "VmCont_vmc_while_body", "VmCont_vmc_pushint" in loading "VmCont", but data does not satisfy any constructor');
 }
 
-export function createTheFunctioncpt7pi(): DictionaryValue<DNSRecord> {
+export function createTheFunction2159rf(): DictionaryValue<DNSRecord> {
     return {
         serialize: ((arg: DNSRecord, builder: Builder) => {
         let cell1 = beginCell();
@@ -13785,7 +13785,7 @@ export function createTheFunctioncpt7pi(): DictionaryValue<DNSRecord> {
 // _ (HashmapE 256 ^DNSRecord) = DNS_RecordSet;
 
 export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
-    let anon0: Dictionary<number, DNSRecord> = Dictionary.load(Dictionary.Keys.Uint(256), createTheFunctioncpt7pi(), slice);
+    let anon0: Dictionary<bigint, DNSRecord> = Dictionary.load(Dictionary.Keys.BigUint(256), createTheFunction2159rf(), slice);
     return {
         kind: 'DNS_RecordSet',
         anon0: anon0,
@@ -13795,7 +13795,7 @@ export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
 
 export function storeDNS_RecordSet(dNS_RecordSet: DNS_RecordSet): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(dNS_RecordSet.anon0, Dictionary.Keys.Uint(256), createTheFunctioncpt7pi());
+        builder.storeDict(dNS_RecordSet.anon0, Dictionary.Keys.BigUint(256), createTheFunction2159rf());
     })
 
 }

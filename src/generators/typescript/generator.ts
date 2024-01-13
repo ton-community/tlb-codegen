@@ -93,6 +93,7 @@ import {
   getParamVarExpr,
   getTypeParametersExpression,
   isBigInt,
+  isBigIntExpr,
 } from "./utils";
 
 /*
@@ -589,9 +590,6 @@ export class TypescriptGenerator implements CodeGenerator {
         );
       });
     } else if (field.subFields.length == 0) {
-      if (field == undefined) {
-        throw new Error("");
-      }
       let fieldInfo = this.handleType(
         field,
         field.fieldType,
@@ -762,12 +760,7 @@ export class TypescriptGenerator implements CodeGenerator {
         throw new Error("Address has type other than ['Internal', 'External', 'Any']")
       }
     } else if (fieldType.kind == "TLBHashmapType") {
-      let key: Expression
-      if (fieldType.key.kind == 'TLBExprMathType') {
-        key = tFunctionCall(tMemberExpression(id('Dictionary.Keys'), id('Uint')), [convertToAST(fieldType.key.expr, ctx.constructor)]);
-      } else {
-        throw new Error('')
-      }
+      let key: Expression = tFunctionCall(tMemberExpression(id('Dictionary.Keys'), (isBigIntExpr(fieldType.key) ? id('BigUint') : id('Uint'))), [convertToAST(fieldType.key.expr, ctx.constructor)]);
       let subExprInfo = this.handleType(
         field,
         fieldType.value,
@@ -799,14 +792,12 @@ export class TypescriptGenerator implements CodeGenerator {
               )
             ]))]
           ))
-        result.typeParamExpr = tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([id('number'), subExprInfo.typeParamExpr])) 
+        result.typeParamExpr = tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([ (isBigIntExpr(fieldType.key) ? id('bigint') : id('number')), subExprInfo.typeParamExpr])) 
       }
       storeParametersInside = storeParametersInside.concat([key, value])
       storeParametersOutside = storeParametersOutside.concat([key, value])
       result.storeStmtInside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersInside))
       result.storeStmtOutside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersOutside))
-      if (subExprInfo.loadExpr)
-      console.log(toCode(subExprInfo.loadExpr).code)
     } else if (fieldType.kind == "TLBExprMathType") {
       result.loadExpr = convertToAST(fieldType.expr, ctx.constructor);
       result.storeStmtOutside = tExpressionStatement(result.loadExpr);

@@ -93,7 +93,7 @@ export type TLBVarIntegerType = {
 
 export type TLBHashmapType = {
   kind: "TLBHashmapType";
-  key: TLBFieldType,
+  key: TLBMathExprType,
   value: TLBFieldType
 }
 
