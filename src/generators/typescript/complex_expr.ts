@@ -1,8 +1,8 @@
-import { TLBCode, TLBConstructorTag, TLBField } from "../../ast";
+import { TLBCode, TLBConstructorTag, TLBField, TLBHashmapType, TLBMathExprType } from "../../ast";
 import { findNotReservedName, firstLower, getCurrentSlice } from "../../utils";
 import { ConstructorContext } from "./generator";
-import { BinaryExpression, Expression, GenDeclaration, Identifier, Statement, TypeExpression, TypeParametersExpression, TypedIdentifier, id, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tMultiStatement, tNumericLiteral, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnaryOpExpression, toCode } from "./tsgen";
-import { ExprForParam, getNegationDerivationFunctionBody } from "./utils";
+import { BinaryExpression, Expression, GenDeclaration, Identifier, ObjectExpression, Statement, TypeExpression, TypeParametersExpression, TypedIdentifier, id, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tMultiStatement, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnaryOpExpression, toCode } from "./tsgen";
+import { ExprForParam, convertToAST, getNegationDerivationFunctionBody, isBigIntExpr } from "./utils";
 
 export function tEqualExpression(left: Expression, right: Expression) {
     return tBinaryExpression(left, '==', right)
@@ -329,4 +329,42 @@ export function negationDerivationFuncDecl(
       fieldName
     )
   );
+}
+export function dictStoreStmt(currentCell: string, storeParametersInside: Expression[], keyForStore: Expression, valueStore: ObjectExpression): Statement | undefined {
+  return tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersInside.concat([keyForStore, valueStore])));
+}
+export function dictTypeParamExpr(fieldType: TLBHashmapType, typeParamExpr: TypeExpression): TypeExpression | undefined {
+  return tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([(isBigIntExpr(fieldType.key) ? id('bigint') : id('number')), typeParamExpr]));
+}
+export function dictValueStore(typeParamExpr: TypeExpression, storeFunctionExpr: Expression) {
+  return tObjectExpression([
+    tObjectProperty(id('serialize'),
+      tArrowFunctionExpression([tTypedIdentifier(id('arg'), typeParamExpr), tTypedIdentifier(id('builder'), id('Builder'))], [tExpressionStatement(tFunctionCall(tFunctionCall(storeFunctionExpr, [id('arg')]), [id('builder')]))])
+    ),
+    tObjectProperty(id('parse'),
+      id("() => { throw new Error('Not implemented') }")
+    )
+  ]);
+}
+export function dictLoadExpr(keyForLoad: Expression, loadFunctionExpr: Expression, currentSlice: string): Expression | undefined {
+  return tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [keyForLoad, dictValueLoad(loadFunctionExpr), id(currentSlice)]);
+}
+function dictValueLoad(loadFunctionExpr: Expression) {
+  return tObjectExpression([
+    tObjectProperty(id('serialize'),
+      id("() => { throw new Error('Not implemented') }")
+    ),
+    tObjectProperty(id('parse'),
+      loadFunctionExpr
+    )
+  ]);
+}
+export function dictKeyExpr(keyType: TLBMathExprType, ctx: ConstructorContext, objectId?: string): Expression {
+  let param: Expression;
+  if (objectId) {
+    param = convertToAST(keyType.expr, ctx.constructor, id(objectId));
+  } else {
+    param = convertToAST(keyType.expr, ctx.constructor);
+  }
+  return tFunctionCall(tMemberExpression(id('Dictionary.Keys'), (isBigIntExpr(keyType) ? id('BigUint') : id('Uint'))), [param]);
 }

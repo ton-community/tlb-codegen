@@ -4,9 +4,7 @@ import {
   TLBConstructor,
   TLBField,
   TLBFieldType,
-  TLBHashmapType,
   TLBMathExpr,
-  TLBMathExprType,
   TLBNumberExpr,
   TLBType,
   TLBVariable,
@@ -57,7 +55,6 @@ import {
   BinaryExpression,
   Expression,
   GenDeclaration,
-  ObjectExpression,
   ObjectProperty,
   Statement,
   StructDeclaration,
@@ -66,7 +63,6 @@ import {
   TypeParametersExpression,
   TypedIdentifier,
   id,
-  tArrowFunctionExpression,
   tComment,
   tExpressionStatement,
   tFunctionCall,
@@ -97,8 +93,8 @@ import {
   getParamVarExpr,
   getTypeParametersExpression,
   isBigInt,
-  isBigIntExpr,
 } from "./utils";
+import { dictKeyExpr, dictLoadExpr, dictValueStore, dictTypeParamExpr, dictStoreStmt } from "./complex_expr";
 
 /*
 
@@ -1041,48 +1037,5 @@ export class TypescriptGenerator implements CodeGenerator {
     result.storeStmtInside = result.storeStmtInside;
     return result;
   }
-}
-function dictStoreStmt(currentCell: string, storeParametersInside: Expression[], keyForStore: Expression, valueStore: ObjectExpression): Statement | undefined {
-  return tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersInside.concat([keyForStore, valueStore])));
-}
-
-function dictTypeParamExpr(fieldType: TLBHashmapType, typeParamExpr: TypeExpression): TypeExpression | undefined {
-  return tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([(isBigIntExpr(fieldType.key) ? id('bigint') : id('number')), typeParamExpr]));
-}
-
-function dictValueStore(typeParamExpr: TypeExpression, storeFunctionExpr: Expression) {
-  return tObjectExpression([
-    tObjectProperty(id('serialize'),
-      tArrowFunctionExpression([tTypedIdentifier(id('arg'), typeParamExpr), tTypedIdentifier(id('builder'), id('Builder'))], [tExpressionStatement(tFunctionCall(tFunctionCall(storeFunctionExpr, [id('arg')]), [id('builder')]))])
-    ),
-    tObjectProperty(id('parse'),
-      id("() => { throw new Error('Not implemented') }")
-    )
-  ]);
-}
-
-function dictLoadExpr(keyForLoad: Expression, loadFunctionExpr: Expression, currentSlice: string): Expression | undefined {
-  return tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [keyForLoad, dictValueLoad(loadFunctionExpr), id(currentSlice)]);
-}
-
-function dictValueLoad(loadFunctionExpr: Expression) {
-  return tObjectExpression([
-    tObjectProperty(id('serialize'),
-      id("() => { throw new Error('Not implemented') }")
-    ),
-    tObjectProperty(id('parse'),
-      loadFunctionExpr
-    )
-  ]);
-}
-
-function dictKeyExpr(keyType: TLBMathExprType, ctx: ConstructorContext, objectId?: string): Expression {
-  let param: Expression;
-  if (objectId) {
-    param = convertToAST(keyType.expr, ctx.constructor, id(objectId))
-  } else {
-    param = convertToAST(keyType.expr, ctx.constructor)
-  }
-  return tFunctionCall(tMemberExpression(id('Dictionary.Keys'), (isBigIntExpr(keyType) ? id('BigUint') : id('Uint'))), [param]);
 }
 
