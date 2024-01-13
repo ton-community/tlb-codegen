@@ -735,6 +735,36 @@ export interface HashmapTPCell {
     readonly x: Dictionary<bigint, TypedParam>;
 }
 
+// a$_ {n:#} x:(HashmapE n uint5) = HashmapVarKey n;
+
+export interface HashmapVarKey {
+    readonly kind: 'HashmapVarKey';
+    readonly n: number;
+    readonly x: Dictionary<bigint, number>;
+}
+
+// a$_ x:(HashmapVarKey 5) = HashmapVarKeyUser;
+
+export interface HashmapVarKeyUser {
+    readonly kind: 'HashmapVarKeyUser';
+    readonly x: HashmapVarKey;
+}
+
+// a$_ {n:#} x:(HashmapE (n+2) uint5) = HashmapExprKey n;
+
+export interface HashmapExprKey {
+    readonly kind: 'HashmapExprKey';
+    readonly n: number;
+    readonly x: Dictionary<bigint, number>;
+}
+
+// a$_ x:(HashmapVarKey 5) = HashmapExprKeyUser;
+
+export interface HashmapExprKeyUser {
+    readonly kind: 'HashmapExprKeyUser';
+    readonly x: HashmapVarKey;
+}
+
 // tmpa$_ a:# b:# = Simple;
 
 export function loadSimple(slice: Slice): Simple {
@@ -2979,6 +3009,116 @@ export function loadHashmapTPCell(slice: Slice): HashmapTPCell {
 export function storeHashmapTPCell(hashmapTPCell: HashmapTPCell): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeDict(hashmapTPCell.x, Dictionary.Keys.BigUint(100), dictValue_hashmapTPCell_x());
+    })
+
+}
+
+export function dictValue_hashmapVarKey_x(): DictionaryValue<number> {
+    return {
+        serialize: ((arg: number, builder: Builder) => {
+        ((arg: number) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 5);
+            })
+
+        })(arg)(builder);
+    }),
+        parse: ((slice: Slice) => {
+        return slice.loadUint(5)
+
+    }),
+    }
+
+}
+
+// a$_ {n:#} x:(HashmapE n uint5) = HashmapVarKey n;
+
+export function loadHashmapVarKey(slice: Slice, n: number): HashmapVarKey {
+    let x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint(n), dictValue_hashmapVarKey_x(), slice);
+    return {
+        kind: 'HashmapVarKey',
+        n: n,
+        x: x,
+    }
+
+}
+
+export function storeHashmapVarKey(hashmapVarKey: HashmapVarKey): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeDict(hashmapVarKey.x, Dictionary.Keys.BigUint(hashmapVarKey.n), dictValue_hashmapVarKey_x());
+    })
+
+}
+
+// a$_ x:(HashmapVarKey 5) = HashmapVarKeyUser;
+
+export function loadHashmapVarKeyUser(slice: Slice): HashmapVarKeyUser {
+    let x: HashmapVarKey = loadHashmapVarKey(slice, 5);
+    return {
+        kind: 'HashmapVarKeyUser',
+        x: x,
+    }
+
+}
+
+export function storeHashmapVarKeyUser(hashmapVarKeyUser: HashmapVarKeyUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeHashmapVarKey(hashmapVarKeyUser.x)(builder);
+    })
+
+}
+
+export function dictValue_hashmapExprKey_x(): DictionaryValue<number> {
+    return {
+        serialize: ((arg: number, builder: Builder) => {
+        ((arg: number) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 5);
+            })
+
+        })(arg)(builder);
+    }),
+        parse: ((slice: Slice) => {
+        return slice.loadUint(5)
+
+    }),
+    }
+
+}
+
+// a$_ {n:#} x:(HashmapE (n+2) uint5) = HashmapExprKey n;
+
+export function loadHashmapExprKey(slice: Slice, n: number): HashmapExprKey {
+    let x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint((n + 2)), dictValue_hashmapExprKey_x(), slice);
+    return {
+        kind: 'HashmapExprKey',
+        n: n,
+        x: x,
+    }
+
+}
+
+export function storeHashmapExprKey(hashmapExprKey: HashmapExprKey): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeDict(hashmapExprKey.x, Dictionary.Keys.BigUint((hashmapExprKey.n + 2)), dictValue_hashmapExprKey_x());
+    })
+
+}
+
+// a$_ x:(HashmapVarKey 5) = HashmapExprKeyUser;
+
+export function loadHashmapExprKeyUser(slice: Slice): HashmapExprKeyUser {
+    let x: HashmapVarKey = loadHashmapVarKey(slice, 5);
+    return {
+        kind: 'HashmapExprKeyUser',
+        x: x,
+    }
+
+}
+
+export function storeHashmapExprKeyUser(hashmapExprKeyUser: HashmapExprKeyUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeHashmapVarKey(hashmapExprKeyUser.x)(builder);
     })
 
 }
