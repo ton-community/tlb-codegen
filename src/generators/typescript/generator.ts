@@ -761,6 +761,52 @@ export class TypescriptGenerator implements CodeGenerator {
       } else {
         throw new Error("Address has type other than ['Internal', 'External', 'Any']")
       }
+    } else if (fieldType.kind == "TLBHashmapType") {
+      let key: Expression
+      if (fieldType.key.kind == 'TLBExprMathType') {
+        key = tFunctionCall(tMemberExpression(id('Dictionary.Keys'), id('Uint')), [convertToAST(fieldType.key.expr, ctx.constructor)]);
+      } else {
+        throw new Error('')
+      }
+      let subExprInfo = this.handleType(
+        field,
+        fieldType.value,
+        false,
+        ctx,
+        slicePrefix,
+        argIndex
+      );
+      let functionId = id('createTheFunction' + (Math.random() + 1).toString(36).substring(7))
+      let value = tFunctionCall(functionId, [])
+      result.loadExpr = tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [key, value, id(currentSlice)])
+      if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeStmtInside) {
+        this.jsCodeFunctionsDeclarations.push(
+          tFunctionDeclaration(
+            functionId, 
+            tTypeParametersExpression([]),
+              tTypeWithParameters(
+                id('DictionaryValue'), 
+                tTypeParametersExpression([ 
+                  subExprInfo.typeParamExpr
+                ])
+              )
+            , [], [tReturnStatement(tObjectExpression([
+              tObjectProperty(id('serialize'), 
+                tArrowFunctionExpression([tTypedIdentifier(id('arg'), subExprInfo.typeParamExpr), tTypedIdentifier(id('builder'), id('Builder'))], [subExprInfo.storeStmtInside])
+              ), 
+              tObjectProperty(id('parse'), 
+                subExprInfo.loadFunctionExpr
+              )
+            ]))]
+          ))
+        result.typeParamExpr = tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([id('number'), subExprInfo.typeParamExpr])) 
+      }
+      storeParametersInside = storeParametersInside.concat([key, value])
+      storeParametersOutside = storeParametersOutside.concat([key, value])
+      result.storeStmtInside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersInside))
+      result.storeStmtOutside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersOutside))
+      if (subExprInfo.loadExpr)
+      console.log(toCode(subExprInfo.loadExpr).code)
     } else if (fieldType.kind == "TLBExprMathType") {
       result.loadExpr = convertToAST(fieldType.expr, ctx.constructor);
       result.storeStmtOutside = tExpressionStatement(result.loadExpr);

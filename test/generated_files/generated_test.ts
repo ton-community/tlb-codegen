@@ -1,10 +1,12 @@
-import { Builder, Dictionary, DictionaryValue } from 'ton'
+import { Builder } from 'ton'
 import { Slice } from 'ton'
 import { beginCell } from 'ton'
 import { BitString } from 'ton'
 import { Cell } from 'ton'
 import { Address } from 'ton'
 import { ExternalAddress } from 'ton'
+import { Dictionary } from 'ton'
+import { DictionaryValue } from 'ton'
 export function bitLen(n: number) {
     return n.toString(2).length;;
 }
@@ -2186,22 +2188,23 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
     throw new Error('Expected one of "HashmapE_hme_empty", "HashmapE_hme_root" in loading "HashmapE", but data does not satisfy any constructor');
 }
 
-// a$_ x:(HashmapE 8 uint16) = HashmapEUser;
-
-
-function createNumberValue(): DictionaryValue<number> {
+export function createTheFunctionyuf4c(): DictionaryValue<number> {
     return {
-        serialize: (src, buidler) => {
-            buidler.storeUint(src, 16);
-        },
-        parse: (src) => {
-            return src.loadUint(16);
-        }
+        serialize: ((arg: number, builder: Builder) => {
+        builder.storeUint(arg, 16);
+    }),
+        parse: ((slice: Slice) => {
+        return slice.loadUint(16)
+
+    }),
     }
+
 }
 
+// a$_ x:(HashmapE 8 uint16) = HashmapEUser;
+
 export function loadHashmapEUser(slice: Slice): HashmapEUser {
-    let x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), createNumberValue(), slice)
+    let x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), createTheFunctionyuf4c(), slice);
     return {
         kind: 'HashmapEUser',
         x: x,
@@ -2211,7 +2214,7 @@ export function loadHashmapEUser(slice: Slice): HashmapEUser {
 
 export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(hashmapEUser.x, Dictionary.Keys.Uint(8), createNumberValue())
+        builder.storeDict(hashmapEUser.x, Dictionary.Keys.Uint(8), createTheFunctionyuf4c());
     })
 
 }
