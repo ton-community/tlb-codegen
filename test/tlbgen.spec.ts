@@ -10,17 +10,6 @@ import { randomInt } from 'crypto';
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
 
-function tonDictToMap<K extends DictionaryKeyTypes, V>(object: Dictionary<K, V>) {
-    let result = new Map<K, V>();
-    object.keys().forEach((key: K) => {
-        let value = object.get(key);
-        if (value) {
-            result.set(key, value);
-        }
-    })
-    return result;
-}
-
 function isPrimitive(input: any) {
     if (input == null) {
       // This is here to correctly handle document.all.
