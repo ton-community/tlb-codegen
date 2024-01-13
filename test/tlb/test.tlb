@@ -159,3 +159,6 @@ a$_ v:(VarInteger 5) = VarIntegerUser;
 
 nanograms$_ amount:(VarUInteger 16) = Grams;
 a$_ g:Grams = GramsUser;
+
+a$_ x:(HashmapE 100 VarUIntegerUser) = HashmapVUIUser;
+a$_ x:(HashmapE 100 ^TypedParam) = HashmapTPCell;

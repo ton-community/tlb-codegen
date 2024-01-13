@@ -721,6 +721,20 @@ export interface GramsUser {
     readonly g: bigint;
 }
 
+// a$_ x:(HashmapE 100 VarUIntegerUser) = HashmapVUIUser;
+
+export interface HashmapVUIUser {
+    readonly kind: 'HashmapVUIUser';
+    readonly x: Dictionary<bigint, VarUIntegerUser>;
+}
+
+// a$_ x:(HashmapE 100 ^TypedParam) = HashmapTPCell;
+
+export interface HashmapTPCell {
+    readonly kind: 'HashmapTPCell';
+    readonly x: Dictionary<bigint, TypedParam>;
+}
+
 // tmpa$_ a:# b:# = Simple;
 
 export function loadSimple(slice: Slice): Simple {
@@ -2897,6 +2911,74 @@ export function loadGramsUser(slice: Slice): GramsUser {
 export function storeGramsUser(gramsUser: GramsUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeCoins(gramsUser.g);
+    })
+
+}
+
+export function dictValue_hashmapVUIUser_x(): DictionaryValue<VarUIntegerUser> {
+    return {
+        serialize: ((arg: VarUIntegerUser, builder: Builder) => {
+        storeVarUIntegerUser(arg)(builder);
+    }),
+        parse: loadVarUIntegerUser,
+    }
+
+}
+
+// a$_ x:(HashmapE 100 VarUIntegerUser) = HashmapVUIUser;
+
+export function loadHashmapVUIUser(slice: Slice): HashmapVUIUser {
+    let x: Dictionary<bigint, VarUIntegerUser> = Dictionary.load(Dictionary.Keys.BigUint(100), dictValue_hashmapVUIUser_x(), slice);
+    return {
+        kind: 'HashmapVUIUser',
+        x: x,
+    }
+
+}
+
+export function storeHashmapVUIUser(hashmapVUIUser: HashmapVUIUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeDict(hashmapVUIUser.x, Dictionary.Keys.BigUint(100), dictValue_hashmapVUIUser_x());
+    })
+
+}
+
+export function dictValue_hashmapTPCell_x(): DictionaryValue<TypedParam> {
+    return {
+        serialize: ((arg: TypedParam, builder: Builder) => {
+        ((arg: TypedParam) => {
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeTypedParam(arg)(cell1);
+                builder.storeRef(cell1);
+
+            })
+
+        })(arg)(builder);
+    }),
+        parse: ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse();
+        return loadTypedParam(slice1)
+
+    }),
+    }
+
+}
+
+// a$_ x:(HashmapE 100 ^TypedParam) = HashmapTPCell;
+
+export function loadHashmapTPCell(slice: Slice): HashmapTPCell {
+    let x: Dictionary<bigint, TypedParam> = Dictionary.load(Dictionary.Keys.BigUint(100), dictValue_hashmapTPCell_x(), slice);
+    return {
+        kind: 'HashmapTPCell',
+        x: x,
+    }
+
+}
+
+export function storeHashmapTPCell(hashmapTPCell: HashmapTPCell): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeDict(hashmapTPCell.x, Dictionary.Keys.BigUint(100), dictValue_hashmapTPCell_x());
     })
 
 }
