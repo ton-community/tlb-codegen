@@ -4849,7 +4849,18 @@ export function storeCoins(coins: Coins): (builder: Builder) => void {
 
 }
 
-export function dictValue_extraCurrencyCollection_dict(): DictionaryValue<bigint> {
+export function dictValue_extraCurrencyCollection_dict_load(): DictionaryValue<bigint> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return slice.loadVarUintBig(bitLen((32 - 1)))
+
+    }),
+    }
+
+}
+
+export function dictValue_extraCurrencyCollection_dict_store(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
         ((arg: bigint) => {
@@ -4859,10 +4870,7 @@ export function dictValue_extraCurrencyCollection_dict(): DictionaryValue<bigint
 
         })(arg)(builder);
     }),
-        parse: ((slice: Slice) => {
-        return slice.loadVarUintBig(bitLen((32 - 1)))
-
-    }),
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -4873,7 +4881,7 @@ extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32))
 */
 
 export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollection {
-    let dict: Dictionary<number, bigint> = Dictionary.load(Dictionary.Keys.Uint(32), dictValue_extraCurrencyCollection_dict(), slice);
+    let dict: Dictionary<number, bigint> = Dictionary.load(Dictionary.Keys.Uint(32), dictValue_extraCurrencyCollection_dict_load(), slice);
     return {
         kind: 'ExtraCurrencyCollection',
         dict: dict,
@@ -4883,7 +4891,7 @@ export function loadExtraCurrencyCollection(slice: Slice): ExtraCurrencyCollecti
 
 export function storeExtraCurrencyCollection(extraCurrencyCollection: ExtraCurrencyCollection): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(extraCurrencyCollection.dict, Dictionary.Keys.Uint(32), dictValue_extraCurrencyCollection_dict());
+        builder.storeDict(extraCurrencyCollection.dict, Dictionary.Keys.Uint(32), dictValue_extraCurrencyCollection_dict_store());
     })
 
 }
@@ -5214,12 +5222,20 @@ export function storeStateInit(stateInit: StateInit): (builder: Builder) => void
 
 }
 
-export function dictValue_stateInitWithLibs_library(): DictionaryValue<SimpleLib> {
+export function dictValue_stateInitWithLibs_library_load(): DictionaryValue<SimpleLib> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadSimpleLib,
+    }
+
+}
+
+export function dictValue_stateInitWithLibs_library_store(): DictionaryValue<SimpleLib> {
     return {
         serialize: ((arg: SimpleLib, builder: Builder) => {
         storeSimpleLib(arg)(builder);
     }),
-        parse: loadSimpleLib,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -5246,7 +5262,7 @@ export function loadStateInitWithLibs(slice: Slice): StateInitWithLibs {
         return slice1
 
     }));
-    let library: Dictionary<bigint, SimpleLib> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_stateInitWithLibs_library(), slice);
+    let library: Dictionary<bigint, SimpleLib> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_stateInitWithLibs_library_load(), slice);
     return {
         kind: 'StateInitWithLibs',
         split_depth: split_depth,
@@ -5285,7 +5301,7 @@ export function storeStateInitWithLibs(stateInitWithLibs: StateInitWithLibs): (b
             })
 
         }))(builder);
-        builder.storeDict(stateInitWithLibs.library, Dictionary.Keys.BigUint(256), dictValue_stateInitWithLibs_library());
+        builder.storeDict(stateInitWithLibs.library, Dictionary.Keys.BigUint(256), dictValue_stateInitWithLibs_library_store());
     })
 
 }
@@ -6233,12 +6249,20 @@ export function storeProcessedUpto(processedUpto: ProcessedUpto): (builder: Buil
 
 }
 
-export function dictValue_processedInfo_anon0(): DictionaryValue<ProcessedUpto> {
+export function dictValue_processedInfo_anon0_load(): DictionaryValue<ProcessedUpto> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadProcessedUpto,
+    }
+
+}
+
+export function dictValue_processedInfo_anon0_store(): DictionaryValue<ProcessedUpto> {
     return {
         serialize: ((arg: ProcessedUpto, builder: Builder) => {
         storeProcessedUpto(arg)(builder);
     }),
-        parse: loadProcessedUpto,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -6246,7 +6270,7 @@ export function dictValue_processedInfo_anon0(): DictionaryValue<ProcessedUpto> 
 // _ (HashmapE 96 ProcessedUpto) = ProcessedInfo;
 
 export function loadProcessedInfo(slice: Slice): ProcessedInfo {
-    let anon0: Dictionary<bigint, ProcessedUpto> = Dictionary.load(Dictionary.Keys.BigUint(96), dictValue_processedInfo_anon0(), slice);
+    let anon0: Dictionary<bigint, ProcessedUpto> = Dictionary.load(Dictionary.Keys.BigUint(96), dictValue_processedInfo_anon0_load(), slice);
     return {
         kind: 'ProcessedInfo',
         anon0: anon0,
@@ -6256,7 +6280,7 @@ export function loadProcessedInfo(slice: Slice): ProcessedInfo {
 
 export function storeProcessedInfo(processedInfo: ProcessedInfo): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(processedInfo.anon0, Dictionary.Keys.BigUint(96), dictValue_processedInfo_anon0());
+        builder.storeDict(processedInfo.anon0, Dictionary.Keys.BigUint(96), dictValue_processedInfo_anon0_store());
     })
 
 }
@@ -6279,12 +6303,20 @@ export function storeIhrPendingSince(ihrPendingSince: IhrPendingSince): (builder
 
 }
 
-export function dictValue_ihrPendingInfo_anon0(): DictionaryValue<IhrPendingSince> {
+export function dictValue_ihrPendingInfo_anon0_load(): DictionaryValue<IhrPendingSince> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadIhrPendingSince,
+    }
+
+}
+
+export function dictValue_ihrPendingInfo_anon0_store(): DictionaryValue<IhrPendingSince> {
     return {
         serialize: ((arg: IhrPendingSince, builder: Builder) => {
         storeIhrPendingSince(arg)(builder);
     }),
-        parse: loadIhrPendingSince,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -6292,7 +6324,7 @@ export function dictValue_ihrPendingInfo_anon0(): DictionaryValue<IhrPendingSinc
 // _ (HashmapE 320 IhrPendingSince) = IhrPendingInfo;
 
 export function loadIhrPendingInfo(slice: Slice): IhrPendingInfo {
-    let anon0: Dictionary<bigint, IhrPendingSince> = Dictionary.load(Dictionary.Keys.BigUint(320), dictValue_ihrPendingInfo_anon0(), slice);
+    let anon0: Dictionary<bigint, IhrPendingSince> = Dictionary.load(Dictionary.Keys.BigUint(320), dictValue_ihrPendingInfo_anon0_load(), slice);
     return {
         kind: 'IhrPendingInfo',
         anon0: anon0,
@@ -6302,7 +6334,7 @@ export function loadIhrPendingInfo(slice: Slice): IhrPendingInfo {
 
 export function storeIhrPendingInfo(ihrPendingInfo: IhrPendingInfo): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(ihrPendingInfo.anon0, Dictionary.Keys.BigUint(320), dictValue_ihrPendingInfo_anon0());
+        builder.storeDict(ihrPendingInfo.anon0, Dictionary.Keys.BigUint(320), dictValue_ihrPendingInfo_anon0_store());
     })
 
 }
@@ -6694,7 +6726,22 @@ export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Buil
 
 }
 
-export function dictValue_transaction_out_msgs(): DictionaryValue<Message<Slice>> {
+export function dictValue_transaction_out_msgs_load(): DictionaryValue<Message<Slice>> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse();
+        return loadMessage<Slice>(slice1, ((slice: Slice) => {
+            return slice
+
+        }))
+
+    }),
+    }
+
+}
+
+export function dictValue_transaction_out_msgs_store(): DictionaryValue<Message<Slice>> {
     return {
         serialize: ((arg: Message<Slice>, builder: Builder) => {
         ((arg: Message<Slice>) => {
@@ -6712,14 +6759,7 @@ export function dictValue_transaction_out_msgs(): DictionaryValue<Message<Slice>
 
         })(arg)(builder);
     }),
-        parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return loadMessage<Slice>(slice1, ((slice: Slice) => {
-            return slice
-
-        }))
-
-    }),
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -6754,7 +6794,7 @@ export function loadTransaction(slice: Slice): Transaction {
             }))
 
         }));
-        let out_msgs: Dictionary<number, Message<Slice>> = Dictionary.load(Dictionary.Keys.Uint(15), dictValue_transaction_out_msgs(), slice1);
+        let out_msgs: Dictionary<number, Message<Slice>> = Dictionary.load(Dictionary.Keys.Uint(15), dictValue_transaction_out_msgs_load(), slice1);
         let total_fees: CurrencyCollection = loadCurrencyCollection(slice);
         let slice2 = slice.loadRef().beginParse();
         let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount);
@@ -6807,7 +6847,7 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
             })
 
         }))(cell1);
-        cell1.storeDict(transaction.out_msgs, Dictionary.Keys.Uint(15), dictValue_transaction_out_msgs());
+        cell1.storeDict(transaction.out_msgs, Dictionary.Keys.Uint(15), dictValue_transaction_out_msgs_store());
         builder.storeRef(cell1);
         storeCurrencyCollection(transaction.total_fees)(builder);
         let cell2 = beginCell();
@@ -8194,12 +8234,20 @@ export function storeBlkMasterInfo(blkMasterInfo: BlkMasterInfo): (builder: Buil
 
 }
 
-export function dictValue_shardStateUnsplit_libraries(): DictionaryValue<LibDescr> {
+export function dictValue_shardStateUnsplit_libraries_load(): DictionaryValue<LibDescr> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadLibDescr,
+    }
+
+}
+
+export function dictValue_shardStateUnsplit_libraries_store(): DictionaryValue<LibDescr> {
     return {
         serialize: ((arg: LibDescr, builder: Builder) => {
         storeLibDescr(arg)(builder);
     }),
-        parse: loadLibDescr,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -8242,7 +8290,7 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
         let underload_history: number = slice3.loadUint(64);
         let total_balance: CurrencyCollection = loadCurrencyCollection(slice3);
         let total_validator_fees: CurrencyCollection = loadCurrencyCollection(slice3);
-        let libraries: Dictionary<bigint, LibDescr> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_shardStateUnsplit_libraries(), slice3);
+        let libraries: Dictionary<bigint, LibDescr> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_shardStateUnsplit_libraries_load(), slice3);
         let master_ref: Maybe<BlkMasterInfo> = loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo);
         let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse();
@@ -8296,7 +8344,7 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
         cell3.storeUint(shardStateUnsplit.underload_history, 64);
         storeCurrencyCollection(shardStateUnsplit.total_balance)(cell3);
         storeCurrencyCollection(shardStateUnsplit.total_validator_fees)(cell3);
-        cell3.storeDict(shardStateUnsplit.libraries, Dictionary.Keys.BigUint(256), dictValue_shardStateUnsplit_libraries());
+        cell3.storeDict(shardStateUnsplit.libraries, Dictionary.Keys.BigUint(256), dictValue_shardStateUnsplit_libraries_store());
         storeMaybe<BlkMasterInfo>(shardStateUnsplit.master_ref, storeBlkMasterInfo)(cell3);
         builder.storeRef(cell3);
         storeMaybe<McStateExtra>(shardStateUnsplit.custom, ((arg: McStateExtra) => {
@@ -9153,7 +9201,19 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
     throw new Error('Expected one of "ShardDescr_shard_descr", "ShardDescr_shard_descr_new" in loading "ShardDescr", but data does not satisfy any constructor');
 }
 
-export function dictValue_shardHashes_anon0(): DictionaryValue<BinTree<ShardDescr>> {
+export function dictValue_shardHashes_anon0_load(): DictionaryValue<BinTree<ShardDescr>> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse();
+        return loadBinTree<ShardDescr>(slice1, loadShardDescr)
+
+    }),
+    }
+
+}
+
+export function dictValue_shardHashes_anon0_store(): DictionaryValue<BinTree<ShardDescr>> {
     return {
         serialize: ((arg: BinTree<ShardDescr>, builder: Builder) => {
         ((arg: BinTree<ShardDescr>) => {
@@ -9166,11 +9226,7 @@ export function dictValue_shardHashes_anon0(): DictionaryValue<BinTree<ShardDesc
 
         })(arg)(builder);
     }),
-        parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return loadBinTree<ShardDescr>(slice1, loadShardDescr)
-
-    }),
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -9178,7 +9234,7 @@ export function dictValue_shardHashes_anon0(): DictionaryValue<BinTree<ShardDesc
 // _ (HashmapE 32 ^(BinTree ShardDescr)) = ShardHashes;
 
 export function loadShardHashes(slice: Slice): ShardHashes {
-    let anon0: Dictionary<number, BinTree<ShardDescr>> = Dictionary.load(Dictionary.Keys.Uint(32), dictValue_shardHashes_anon0(), slice);
+    let anon0: Dictionary<number, BinTree<ShardDescr>> = Dictionary.load(Dictionary.Keys.Uint(32), dictValue_shardHashes_anon0_load(), slice);
     return {
         kind: 'ShardHashes',
         anon0: anon0,
@@ -9188,7 +9244,7 @@ export function loadShardHashes(slice: Slice): ShardHashes {
 
 export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(shardHashes.anon0, Dictionary.Keys.Uint(32), dictValue_shardHashes_anon0());
+        builder.storeDict(shardHashes.anon0, Dictionary.Keys.Uint(32), dictValue_shardHashes_anon0_store());
     })
 
 }
@@ -9502,12 +9558,20 @@ export function storeCreatorStats(creatorStats: CreatorStats): (builder: Builder
 
 }
 
-export function dictValue_blockCreateStats_block_create_stats_counters(): DictionaryValue<CreatorStats> {
+export function dictValue_blockCreateStats_block_create_stats_counters_load(): DictionaryValue<CreatorStats> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadCreatorStats,
+    }
+
+}
+
+export function dictValue_blockCreateStats_block_create_stats_counters_store(): DictionaryValue<CreatorStats> {
     return {
         serialize: ((arg: CreatorStats, builder: Builder) => {
         storeCreatorStats(arg)(builder);
     }),
-        parse: loadCreatorStats,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -9519,7 +9583,7 @@ export function dictValue_blockCreateStats_block_create_stats_counters(): Dictio
 export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x17))) {
         slice.loadUint(8);
-        let counters: Dictionary<bigint, CreatorStats> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_blockCreateStats_block_create_stats_counters(), slice);
+        let counters: Dictionary<bigint, CreatorStats> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_blockCreateStats_block_create_stats_counters_load(), slice);
         return {
             kind: 'BlockCreateStats_block_create_stats',
             counters: counters,
@@ -9545,7 +9609,7 @@ export function storeBlockCreateStats(blockCreateStats: BlockCreateStats): (buil
     if ((blockCreateStats.kind == 'BlockCreateStats_block_create_stats')) {
         return ((builder: Builder) => {
             builder.storeUint(0x17, 8);
-            builder.storeDict(blockCreateStats.counters, Dictionary.Keys.BigUint(256), dictValue_blockCreateStats_block_create_stats_counters());
+            builder.storeDict(blockCreateStats.counters, Dictionary.Keys.BigUint(256), dictValue_blockCreateStats_block_create_stats_counters_store());
         })
 
     }
@@ -9825,12 +9889,20 @@ export function storeSignedCertificate(signedCertificate: SignedCertificate): (b
 
 }
 
-export function dictValue_mcBlockExtra_prev_blk_signatures(): DictionaryValue<CryptoSignaturePair> {
+export function dictValue_mcBlockExtra_prev_blk_signatures_load(): DictionaryValue<CryptoSignaturePair> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadCryptoSignaturePair,
+    }
+
+}
+
+export function dictValue_mcBlockExtra_prev_blk_signatures_store(): DictionaryValue<CryptoSignaturePair> {
     return {
         serialize: ((arg: CryptoSignaturePair, builder: Builder) => {
         storeCryptoSignaturePair(arg)(builder);
     }),
-        parse: loadCryptoSignaturePair,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -9854,7 +9926,7 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
         let shard_hashes: ShardHashes = loadShardHashes(slice);
         let shard_fees: ShardFees = loadShardFees(slice);
         let slice1 = slice.loadRef().beginParse();
-        let prev_blk_signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_mcBlockExtra_prev_blk_signatures(), slice1);
+        let prev_blk_signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_mcBlockExtra_prev_blk_signatures_load(), slice1);
         let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse();
             return loadInMsg(slice1)
@@ -9888,7 +9960,7 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
         storeShardHashes(mcBlockExtra.shard_hashes)(builder);
         storeShardFees(mcBlockExtra.shard_fees)(builder);
         let cell1 = beginCell();
-        cell1.storeDict(mcBlockExtra.prev_blk_signatures, Dictionary.Keys.Uint(16), dictValue_mcBlockExtra_prev_blk_signatures());
+        cell1.storeDict(mcBlockExtra.prev_blk_signatures, Dictionary.Keys.Uint(16), dictValue_mcBlockExtra_prev_blk_signatures_store());
         storeMaybe<InMsg>(mcBlockExtra.recover_create_msg, ((arg: InMsg) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
@@ -9974,12 +10046,20 @@ validators#11 utime_since:uint32 utime_until:uint32
   list:(Hashmap 16 ValidatorDescr) = ValidatorSet;
 */
 
-export function dictValue_validatorSet_validators_ext_list(): DictionaryValue<ValidatorDescr> {
+export function dictValue_validatorSet_validators_ext_list_load(): DictionaryValue<ValidatorDescr> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadValidatorDescr,
+    }
+
+}
+
+export function dictValue_validatorSet_validators_ext_list_store(): DictionaryValue<ValidatorDescr> {
     return {
         serialize: ((arg: ValidatorDescr, builder: Builder) => {
         storeValidatorDescr(arg)(builder);
     }),
-        parse: loadValidatorDescr,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -10021,7 +10101,7 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
         let total: number = slice.loadUint(16);
         let main: number = slice.loadUint(16);
         let total_weight: number = slice.loadUint(64);
-        let list: Dictionary<number, ValidatorDescr> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_validatorSet_validators_ext_list(), slice);
+        let list: Dictionary<number, ValidatorDescr> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_validatorSet_validators_ext_list_load(), slice);
         if ((!(main <= total))) {
             throw new Error('Condition (main <= total) is not satisfied while loading "ValidatorSet_validators_ext" for type "ValidatorSet"');
         }
@@ -10068,7 +10148,7 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
             builder.storeUint(validatorSet.total, 16);
             builder.storeUint(validatorSet.main, 16);
             builder.storeUint(validatorSet.total_weight, 64);
-            builder.storeDict(validatorSet.list, Dictionary.Keys.Uint(16), dictValue_validatorSet_validators_ext_list());
+            builder.storeDict(validatorSet.list, Dictionary.Keys.Uint(16), dictValue_validatorSet_validators_ext_list_store());
             if ((!(validatorSet.main <= validatorSet.total))) {
                 throw new Error('Condition (validatorSet.main <= validatorSet.total) is not satisfied while loading "ValidatorSet_validators_ext" for type "ValidatorSet"');
             }
@@ -10105,12 +10185,20 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 
 // _ ConfigVotingSetup = ConfigParam 11;
 
-export function dictValue_configParam__12_workchains(): DictionaryValue<WorkchainDescr> {
+export function dictValue_configParam__12_workchains_load(): DictionaryValue<WorkchainDescr> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadWorkchainDescr,
+    }
+
+}
+
+export function dictValue_configParam__12_workchains_store(): DictionaryValue<WorkchainDescr> {
     return {
         serialize: ((arg: WorkchainDescr, builder: Builder) => {
         storeWorkchainDescr(arg)(builder);
     }),
-        parse: loadWorkchainDescr,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -10157,12 +10245,20 @@ _ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16)
 
 // _ ConsensusConfig = ConfigParam 29;
 
-export function dictValue_configParam__28_fundamental_smc_addr(): DictionaryValue<True> {
+export function dictValue_configParam__28_fundamental_smc_addr_load(): DictionaryValue<True> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadTrue,
+    }
+
+}
+
+export function dictValue_configParam__28_fundamental_smc_addr_store(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
         storeTrue(arg)(builder);
     }),
-        parse: loadTrue,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -10181,12 +10277,20 @@ export function dictValue_configParam__28_fundamental_smc_addr(): DictionaryValu
 
 // _ next_temp_validators:ValidatorSet = ConfigParam 37;
 
-export function dictValue_configParam__35_anon0(): DictionaryValue<ValidatorSignedTempKey> {
+export function dictValue_configParam__35_anon0_load(): DictionaryValue<ValidatorSignedTempKey> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadValidatorSignedTempKey,
+    }
+
+}
+
+export function dictValue_configParam__35_anon0_store(): DictionaryValue<ValidatorSignedTempKey> {
     return {
         serialize: ((arg: ValidatorSignedTempKey, builder: Builder) => {
         storeValidatorSignedTempKey(arg)(builder);
     }),
-        parse: loadValidatorSignedTempKey,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -10311,7 +10415,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 12)) {
-        let workchains: Dictionary<number, WorkchainDescr> = Dictionary.load(Dictionary.Keys.Uint(32), dictValue_configParam__12_workchains(), slice);
+        let workchains: Dictionary<number, WorkchainDescr> = Dictionary.load(Dictionary.Keys.Uint(32), dictValue_configParam__12_workchains_load(), slice);
         return {
             kind: 'ConfigParam__12',
             workchains: workchains,
@@ -10464,7 +10568,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 31)) {
-        let fundamental_smc_addr: Dictionary<bigint, True> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_configParam__28_fundamental_smc_addr(), slice);
+        let fundamental_smc_addr: Dictionary<bigint, True> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_configParam__28_fundamental_smc_addr_load(), slice);
         return {
             kind: 'ConfigParam__28',
             fundamental_smc_addr: fundamental_smc_addr,
@@ -10520,7 +10624,7 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 39)) {
-        let anon0: Dictionary<bigint, ValidatorSignedTempKey> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_configParam__35_anon0(), slice);
+        let anon0: Dictionary<bigint, ValidatorSignedTempKey> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_configParam__35_anon0_load(), slice);
         return {
             kind: 'ConfigParam__35',
             anon0: anon0,
@@ -10678,7 +10782,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__12')) {
         return ((builder: Builder) => {
-            builder.storeDict(configParam.workchains, Dictionary.Keys.Uint(32), dictValue_configParam__12_workchains());
+            builder.storeDict(configParam.workchains, Dictionary.Keys.Uint(32), dictValue_configParam__12_workchains_store());
         })
 
     }
@@ -10791,7 +10895,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__28')) {
         return ((builder: Builder) => {
-            builder.storeDict(configParam.fundamental_smc_addr, Dictionary.Keys.BigUint(256), dictValue_configParam__28_fundamental_smc_addr());
+            builder.storeDict(configParam.fundamental_smc_addr, Dictionary.Keys.BigUint(256), dictValue_configParam__28_fundamental_smc_addr_store());
         })
 
     }
@@ -10833,7 +10937,7 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__35')) {
         return ((builder: Builder) => {
-            builder.storeDict(configParam.anon0, Dictionary.Keys.BigUint(256), dictValue_configParam__35_anon0());
+            builder.storeDict(configParam.anon0, Dictionary.Keys.BigUint(256), dictValue_configParam__35_anon0_store());
         })
 
     }
@@ -11101,12 +11205,20 @@ export function storeConfigProposal(configProposal: ConfigProposal): (builder: B
 
 }
 
-export function dictValue_configProposalStatus_voters(): DictionaryValue<True> {
+export function dictValue_configProposalStatus_voters_load(): DictionaryValue<True> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadTrue,
+    }
+
+}
+
+export function dictValue_configProposalStatus_voters_store(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
         storeTrue(arg)(builder);
     }),
-        parse: loadTrue,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -11124,7 +11236,7 @@ export function loadConfigProposalStatus(slice: Slice): ConfigProposalStatus {
         let slice1 = slice.loadRef().beginParse();
         let proposal: ConfigProposal = loadConfigProposal(slice1);
         let is_critical: boolean = slice.loadBoolean();
-        let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_configProposalStatus_voters(), slice);
+        let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_configProposalStatus_voters_load(), slice);
         let remaining_weight: number = slice.loadInt(64);
         let validator_set_id: bigint = slice.loadUintBig(256);
         let rounds_remaining: number = slice.loadUint(8);
@@ -11155,7 +11267,7 @@ export function storeConfigProposalStatus(configProposalStatus: ConfigProposalSt
         storeConfigProposal(configProposalStatus.proposal)(cell1);
         builder.storeRef(cell1);
         builder.storeBit(configProposalStatus.is_critical);
-        builder.storeDict(configProposalStatus.voters, Dictionary.Keys.Uint(16), dictValue_configProposalStatus_voters());
+        builder.storeDict(configProposalStatus.voters, Dictionary.Keys.Uint(16), dictValue_configProposalStatus_voters_store());
         builder.storeInt(configProposalStatus.remaining_weight, 64);
         builder.storeUint(configProposalStatus.validator_set_id, 256);
         builder.storeUint(configProposalStatus.rounds_remaining, 8);
@@ -12322,12 +12434,20 @@ export function storeSizeLimitsConfig(sizeLimitsConfig: SizeLimitsConfig): (buil
     throw new Error('Expected one of "SizeLimitsConfig_size_limits_config", "SizeLimitsConfig_size_limits_config_v2" in loading "SizeLimitsConfig", but data does not satisfy any constructor');
 }
 
-export function dictValue_suspendedAddressList_addresses(): DictionaryValue<Unit> {
+export function dictValue_suspendedAddressList_addresses_load(): DictionaryValue<Unit> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadUnit,
+    }
+
+}
+
+export function dictValue_suspendedAddressList_addresses_store(): DictionaryValue<Unit> {
     return {
         serialize: ((arg: Unit, builder: Builder) => {
         storeUnit(arg)(builder);
     }),
-        parse: loadUnit,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -12337,7 +12457,7 @@ export function dictValue_suspendedAddressList_addresses(): DictionaryValue<Unit
 export function loadSuspendedAddressList(slice: Slice): SuspendedAddressList {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x00))) {
         slice.loadUint(8);
-        let addresses: Dictionary<bigint, Unit> = Dictionary.load(Dictionary.Keys.BigUint(288), dictValue_suspendedAddressList_addresses(), slice);
+        let addresses: Dictionary<bigint, Unit> = Dictionary.load(Dictionary.Keys.BigUint(288), dictValue_suspendedAddressList_addresses_load(), slice);
         let suspended_until: number = slice.loadUint(32);
         return {
             kind: 'SuspendedAddressList',
@@ -12352,13 +12472,24 @@ export function loadSuspendedAddressList(slice: Slice): SuspendedAddressList {
 export function storeSuspendedAddressList(suspendedAddressList: SuspendedAddressList): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x00, 8);
-        builder.storeDict(suspendedAddressList.addresses, Dictionary.Keys.BigUint(288), dictValue_suspendedAddressList_addresses());
+        builder.storeDict(suspendedAddressList.addresses, Dictionary.Keys.BigUint(288), dictValue_suspendedAddressList_addresses_store());
         builder.storeUint(suspendedAddressList.suspended_until, 32);
     })
 
 }
 
-export function dictValue_oracleBridgeParams_oracles(): DictionaryValue<bigint> {
+export function dictValue_oracleBridgeParams_oracles_load(): DictionaryValue<bigint> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return slice.loadUintBig(256)
+
+    }),
+    }
+
+}
+
+export function dictValue_oracleBridgeParams_oracles_store(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
         ((arg: bigint) => {
@@ -12368,10 +12499,7 @@ export function dictValue_oracleBridgeParams_oracles(): DictionaryValue<bigint> 
 
         })(arg)(builder);
     }),
-        parse: ((slice: Slice) => {
-        return slice.loadUintBig(256)
-
-    }),
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -12381,7 +12509,7 @@ export function dictValue_oracleBridgeParams_oracles(): DictionaryValue<bigint> 
 export function loadOracleBridgeParams(slice: Slice): OracleBridgeParams {
     let bridge_address: BitString = slice.loadBits(256);
     let oracle_mutlisig_address: BitString = slice.loadBits(256);
-    let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_oracleBridgeParams_oracles(), slice);
+    let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_oracleBridgeParams_oracles_load(), slice);
     let external_chain_address: BitString = slice.loadBits(256);
     return {
         kind: 'OracleBridgeParams',
@@ -12397,7 +12525,7 @@ export function storeOracleBridgeParams(oracleBridgeParams: OracleBridgeParams):
     return ((builder: Builder) => {
         builder.storeBits(oracleBridgeParams.bridge_address);
         builder.storeBits(oracleBridgeParams.oracle_mutlisig_address);
-        builder.storeDict(oracleBridgeParams.oracles, Dictionary.Keys.BigUint(256), dictValue_oracleBridgeParams_oracles());
+        builder.storeDict(oracleBridgeParams.oracles, Dictionary.Keys.BigUint(256), dictValue_oracleBridgeParams_oracles_store());
         builder.storeBits(oracleBridgeParams.external_chain_address);
     })
 
@@ -12442,16 +12570,9 @@ export function storeJettonBridgePrices(jettonBridgePrices: JettonBridgePrices):
 
 }
 
-export function dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles(): DictionaryValue<bigint> {
+export function dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles_load(): DictionaryValue<bigint> {
     return {
-        serialize: ((arg: bigint, builder: Builder) => {
-        ((arg: bigint) => {
-            return ((builder: Builder) => {
-                builder.storeUint(arg, 256);
-            })
-
-        })(arg)(builder);
-    }),
+        serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return slice.loadUintBig(256)
 
@@ -12460,9 +12581,7 @@ export function dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles(): 
 
 }
 
-// jetton_bridge_params_v0#00 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 burn_bridge_fee:Coins = JettonBridgeParams;
-
-export function dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles(): DictionaryValue<bigint> {
+export function dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles_store(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
         ((arg: bigint) => {
@@ -12472,10 +12591,35 @@ export function dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles(): 
 
         })(arg)(builder);
     }),
+        parse: () => { throw new Error('Not implemented') },
+    }
+
+}
+
+// jetton_bridge_params_v0#00 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 burn_bridge_fee:Coins = JettonBridgeParams;
+
+export function dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles_load(): DictionaryValue<bigint> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return slice.loadUintBig(256)
 
     }),
+    }
+
+}
+
+export function dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles_store(): DictionaryValue<bigint> {
+    return {
+        serialize: ((arg: bigint, builder: Builder) => {
+        ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 256);
+            })
+
+        })(arg)(builder);
+    }),
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -12487,7 +12631,7 @@ export function loadJettonBridgeParams(slice: Slice): JettonBridgeParams {
         slice.loadUint(8);
         let bridge_address: BitString = slice.loadBits(256);
         let oracles_address: BitString = slice.loadBits(256);
-        let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles(), slice);
+        let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles_load(), slice);
         let state_flags: number = slice.loadUint(8);
         let burn_bridge_fee: Coins = loadCoins(slice);
         return {
@@ -12504,7 +12648,7 @@ export function loadJettonBridgeParams(slice: Slice): JettonBridgeParams {
         slice.loadUint(8);
         let bridge_address: BitString = slice.loadBits(256);
         let oracles_address: BitString = slice.loadBits(256);
-        let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles(), slice);
+        let oracles: Dictionary<bigint, bigint> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles_load(), slice);
         let state_flags: number = slice.loadUint(8);
         let slice1 = slice.loadRef().beginParse();
         let prices: JettonBridgePrices = loadJettonBridgePrices(slice1);
@@ -12529,7 +12673,7 @@ export function storeJettonBridgeParams(jettonBridgeParams: JettonBridgeParams):
             builder.storeUint(0x00, 8);
             builder.storeBits(jettonBridgeParams.bridge_address);
             builder.storeBits(jettonBridgeParams.oracles_address);
-            builder.storeDict(jettonBridgeParams.oracles, Dictionary.Keys.BigUint(256), dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles());
+            builder.storeDict(jettonBridgeParams.oracles, Dictionary.Keys.BigUint(256), dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles_store());
             builder.storeUint(jettonBridgeParams.state_flags, 8);
             storeCoins(jettonBridgeParams.burn_bridge_fee)(builder);
         })
@@ -12540,7 +12684,7 @@ export function storeJettonBridgeParams(jettonBridgeParams: JettonBridgeParams):
             builder.storeUint(0x01, 8);
             builder.storeBits(jettonBridgeParams.bridge_address);
             builder.storeBits(jettonBridgeParams.oracles_address);
-            builder.storeDict(jettonBridgeParams.oracles, Dictionary.Keys.BigUint(256), dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles());
+            builder.storeDict(jettonBridgeParams.oracles, Dictionary.Keys.BigUint(256), dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles_store());
             builder.storeUint(jettonBridgeParams.state_flags, 8);
             let cell1 = beginCell();
             storeJettonBridgePrices(jettonBridgeParams.prices)(cell1);
@@ -12552,12 +12696,20 @@ export function storeJettonBridgeParams(jettonBridgeParams: JettonBridgeParams):
     throw new Error('Expected one of "JettonBridgeParams_jetton_bridge_params_v0", "JettonBridgeParams_jetton_bridge_params_v1" in loading "JettonBridgeParams", but data does not satisfy any constructor');
 }
 
-export function dictValue_blockSignaturesPure_signatures(): DictionaryValue<CryptoSignaturePair> {
+export function dictValue_blockSignaturesPure_signatures_load(): DictionaryValue<CryptoSignaturePair> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadCryptoSignaturePair,
+    }
+
+}
+
+export function dictValue_blockSignaturesPure_signatures_store(): DictionaryValue<CryptoSignaturePair> {
     return {
         serialize: ((arg: CryptoSignaturePair, builder: Builder) => {
         storeCryptoSignaturePair(arg)(builder);
     }),
-        parse: loadCryptoSignaturePair,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -12570,7 +12722,7 @@ block_signatures_pure#_ sig_count:uint32 sig_weight:uint64
 export function loadBlockSignaturesPure(slice: Slice): BlockSignaturesPure {
     let sig_count: number = slice.loadUint(32);
     let sig_weight: number = slice.loadUint(64);
-    let signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_blockSignaturesPure_signatures(), slice);
+    let signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_blockSignaturesPure_signatures_load(), slice);
     return {
         kind: 'BlockSignaturesPure',
         sig_count: sig_count,
@@ -12584,7 +12736,7 @@ export function storeBlockSignaturesPure(blockSignaturesPure: BlockSignaturesPur
     return ((builder: Builder) => {
         builder.storeUint(blockSignaturesPure.sig_count, 32);
         builder.storeUint(blockSignaturesPure.sig_weight, 64);
-        builder.storeDict(blockSignaturesPure.signatures, Dictionary.Keys.Uint(16), dictValue_blockSignaturesPure_signatures());
+        builder.storeDict(blockSignaturesPure.signatures, Dictionary.Keys.Uint(16), dictValue_blockSignaturesPure_signatures_store());
     })
 
 }
@@ -12771,7 +12923,19 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
 
 }
 
-export function dictValue_topBlockDescrSet_collection(): DictionaryValue<TopBlockDescr> {
+export function dictValue_topBlockDescrSet_collection_load(): DictionaryValue<TopBlockDescr> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse();
+        return loadTopBlockDescr(slice1)
+
+    }),
+    }
+
+}
+
+export function dictValue_topBlockDescrSet_collection_store(): DictionaryValue<TopBlockDescr> {
     return {
         serialize: ((arg: TopBlockDescr, builder: Builder) => {
         ((arg: TopBlockDescr) => {
@@ -12784,11 +12948,7 @@ export function dictValue_topBlockDescrSet_collection(): DictionaryValue<TopBloc
 
         })(arg)(builder);
     }),
-        parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return loadTopBlockDescr(slice1)
-
-    }),
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -12798,7 +12958,7 @@ export function dictValue_topBlockDescrSet_collection(): DictionaryValue<TopBloc
 export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x4ac789f3))) {
         slice.loadUint(32);
-        let collection: Dictionary<bigint, TopBlockDescr> = Dictionary.load(Dictionary.Keys.BigUint(96), dictValue_topBlockDescrSet_collection(), slice);
+        let collection: Dictionary<bigint, TopBlockDescr> = Dictionary.load(Dictionary.Keys.BigUint(96), dictValue_topBlockDescrSet_collection_load(), slice);
         return {
             kind: 'TopBlockDescrSet',
             collection: collection,
@@ -12811,7 +12971,7 @@ export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
 export function storeTopBlockDescrSet(topBlockDescrSet: TopBlockDescrSet): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0x4ac789f3, 32);
-        builder.storeDict(topBlockDescrSet.collection, Dictionary.Keys.BigUint(96), dictValue_topBlockDescrSet_collection());
+        builder.storeDict(topBlockDescrSet.collection, Dictionary.Keys.BigUint(96), dictValue_topBlockDescrSet_collection_store());
     })
 
 }
@@ -12963,12 +13123,20 @@ export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint):
 
 }
 
-export function dictValue_validatorComplaintStatus_voters(): DictionaryValue<True> {
+export function dictValue_validatorComplaintStatus_voters_load(): DictionaryValue<True> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadTrue,
+    }
+
+}
+
+export function dictValue_validatorComplaintStatus_voters_store(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
         storeTrue(arg)(builder);
     }),
-        parse: loadTrue,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -12980,7 +13148,7 @@ export function loadValidatorComplaintStatus(slice: Slice): ValidatorComplaintSt
         slice.loadUint(8);
         let slice1 = slice.loadRef().beginParse();
         let complaint: ValidatorComplaint = loadValidatorComplaint(slice1);
-        let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_validatorComplaintStatus_voters(), slice);
+        let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), dictValue_validatorComplaintStatus_voters_load(), slice);
         let vset_id: bigint = slice.loadUintBig(256);
         let weight_remaining: number = slice.loadInt(64);
         return {
@@ -13001,7 +13169,7 @@ export function storeValidatorComplaintStatus(validatorComplaintStatus: Validato
         let cell1 = beginCell();
         storeValidatorComplaint(validatorComplaintStatus.complaint)(cell1);
         builder.storeRef(cell1);
-        builder.storeDict(validatorComplaintStatus.voters, Dictionary.Keys.Uint(16), dictValue_validatorComplaintStatus_voters());
+        builder.storeDict(validatorComplaintStatus.voters, Dictionary.Keys.Uint(16), dictValue_validatorComplaintStatus_voters_store());
         builder.storeUint(validatorComplaintStatus.vset_id, 256);
         builder.storeInt(validatorComplaintStatus.weight_remaining, 64);
     })
@@ -13398,12 +13566,20 @@ export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) =
     throw new Error('Expected one of "VmStackList_vm_stk_nil", "VmStackList_vm_stk_cons" in loading "VmStackList", but data does not satisfy any constructor');
 }
 
-export function dictValue_vmSaveList_cregs(): DictionaryValue<VmStackValue> {
+export function dictValue_vmSaveList_cregs_load(): DictionaryValue<VmStackValue> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadVmStackValue,
+    }
+
+}
+
+export function dictValue_vmSaveList_cregs_store(): DictionaryValue<VmStackValue> {
     return {
         serialize: ((arg: VmStackValue, builder: Builder) => {
         storeVmStackValue(arg)(builder);
     }),
-        parse: loadVmStackValue,
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -13411,7 +13587,7 @@ export function dictValue_vmSaveList_cregs(): DictionaryValue<VmStackValue> {
 // _ cregs:(HashmapE 4 VmStackValue) = VmSaveList;
 
 export function loadVmSaveList(slice: Slice): VmSaveList {
-    let cregs: Dictionary<number, VmStackValue> = Dictionary.load(Dictionary.Keys.Uint(4), dictValue_vmSaveList_cregs(), slice);
+    let cregs: Dictionary<number, VmStackValue> = Dictionary.load(Dictionary.Keys.Uint(4), dictValue_vmSaveList_cregs_load(), slice);
     return {
         kind: 'VmSaveList',
         cregs: cregs,
@@ -13421,7 +13597,7 @@ export function loadVmSaveList(slice: Slice): VmSaveList {
 
 export function storeVmSaveList(vmSaveList: VmSaveList): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(vmSaveList.cregs, Dictionary.Keys.Uint(4), dictValue_vmSaveList_cregs());
+        builder.storeDict(vmSaveList.cregs, Dictionary.Keys.Uint(4), dictValue_vmSaveList_cregs_store());
     })
 
 }
@@ -13459,7 +13635,19 @@ export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) =
 
 }
 
-export function dictValue_vmLibraries_libraries(): DictionaryValue<Slice> {
+export function dictValue_vmLibraries_libraries_load(): DictionaryValue<Slice> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse();
+        return slice1
+
+    }),
+    }
+
+}
+
+export function dictValue_vmLibraries_libraries_store(): DictionaryValue<Slice> {
     return {
         serialize: ((arg: Slice, builder: Builder) => {
         ((arg: Slice) => {
@@ -13472,11 +13660,7 @@ export function dictValue_vmLibraries_libraries(): DictionaryValue<Slice> {
 
         })(arg)(builder);
     }),
-        parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return slice1
-
-    }),
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -13484,7 +13668,7 @@ export function dictValue_vmLibraries_libraries(): DictionaryValue<Slice> {
 // _ libraries:(HashmapE 256 ^Cell) = VmLibraries;
 
 export function loadVmLibraries(slice: Slice): VmLibraries {
-    let libraries: Dictionary<bigint, Slice> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_vmLibraries_libraries(), slice);
+    let libraries: Dictionary<bigint, Slice> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_vmLibraries_libraries_load(), slice);
     return {
         kind: 'VmLibraries',
         libraries: libraries,
@@ -13494,7 +13678,7 @@ export function loadVmLibraries(slice: Slice): VmLibraries {
 
 export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(vmLibraries.libraries, Dictionary.Keys.BigUint(256), dictValue_vmLibraries_libraries());
+        builder.storeDict(vmLibraries.libraries, Dictionary.Keys.BigUint(256), dictValue_vmLibraries_libraries_store());
     })
 
 }
@@ -13805,7 +13989,19 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
     throw new Error('Expected one of "VmCont_vmc_std", "VmCont_vmc_envelope", "VmCont_vmc_quit", "VmCont_vmc_quit_exc", "VmCont_vmc_repeat", "VmCont_vmc_until", "VmCont_vmc_again", "VmCont_vmc_while_cond", "VmCont_vmc_while_body", "VmCont_vmc_pushint" in loading "VmCont", but data does not satisfy any constructor');
 }
 
-export function dictValue_dNS_RecordSet_anon0(): DictionaryValue<DNSRecord> {
+export function dictValue_dNS_RecordSet_anon0_load(): DictionaryValue<DNSRecord> {
+    return {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse();
+        return loadDNSRecord(slice1)
+
+    }),
+    }
+
+}
+
+export function dictValue_dNS_RecordSet_anon0_store(): DictionaryValue<DNSRecord> {
     return {
         serialize: ((arg: DNSRecord, builder: Builder) => {
         ((arg: DNSRecord) => {
@@ -13818,11 +14014,7 @@ export function dictValue_dNS_RecordSet_anon0(): DictionaryValue<DNSRecord> {
 
         })(arg)(builder);
     }),
-        parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return loadDNSRecord(slice1)
-
-    }),
+        parse: () => { throw new Error('Not implemented') },
     }
 
 }
@@ -13830,7 +14022,7 @@ export function dictValue_dNS_RecordSet_anon0(): DictionaryValue<DNSRecord> {
 // _ (HashmapE 256 ^DNSRecord) = DNS_RecordSet;
 
 export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
-    let anon0: Dictionary<bigint, DNSRecord> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_dNS_RecordSet_anon0(), slice);
+    let anon0: Dictionary<bigint, DNSRecord> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValue_dNS_RecordSet_anon0_load(), slice);
     return {
         kind: 'DNS_RecordSet',
         anon0: anon0,
@@ -13840,7 +14032,7 @@ export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
 
 export function storeDNS_RecordSet(dNS_RecordSet: DNS_RecordSet): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(dNS_RecordSet.anon0, Dictionary.Keys.BigUint(256), dictValue_dNS_RecordSet_anon0());
+        builder.storeDict(dNS_RecordSet.anon0, Dictionary.Keys.BigUint(256), dictValue_dNS_RecordSet_anon0_store());
     })
 
 }

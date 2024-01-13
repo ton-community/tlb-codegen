@@ -770,13 +770,34 @@ export class TypescriptGenerator implements CodeGenerator {
         slicePrefix,
         argIndex
       );
-      let functionId = id('dictValue_' + ctx.name + '_' + fieldName)
-      let value = tFunctionCall(functionId, [])
-      result.loadExpr = tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [keyForLoad, value, id(currentSlice)])
+      let functionIdLoad = id('dictValue_' + ctx.name + '_' + fieldName + '_load')
+      let functionIdStore = id('dictValue_' + ctx.name + '_' + fieldName + '_store')
+      let valueLoad = tFunctionCall(functionIdLoad, [])
+      let valueStore = tFunctionCall(functionIdStore, [])
+      result.loadExpr = tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [keyForLoad, valueLoad, id(currentSlice)])
       if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeFunctionExpr) {
         this.jsCodeFunctionsDeclarations.push(
           tFunctionDeclaration(
-            functionId, 
+            functionIdLoad, 
+            tTypeParametersExpression([]),
+              tTypeWithParameters(
+                id('DictionaryValue'), 
+                tTypeParametersExpression([ 
+                  subExprInfo.typeParamExpr
+                ])
+              )
+            , [], [tReturnStatement(tObjectExpression([
+              tObjectProperty(id('serialize'), 
+                id("() => { throw new Error('Not implemented') }")
+              ), 
+              tObjectProperty(id('parse'), 
+                subExprInfo.loadFunctionExpr
+              )
+            ]))]
+          ))
+        this.jsCodeFunctionsDeclarations.push(
+          tFunctionDeclaration(
+            functionIdStore, 
             tTypeParametersExpression([]),
               tTypeWithParameters(
                 id('DictionaryValue'), 
@@ -789,14 +810,14 @@ export class TypescriptGenerator implements CodeGenerator {
                 tArrowFunctionExpression([tTypedIdentifier(id('arg'), subExprInfo.typeParamExpr), tTypedIdentifier(id('builder'), id('Builder'))], [tExpressionStatement(tFunctionCall(tFunctionCall(subExprInfo.storeFunctionExpr, [id('arg')]), [id('builder')]))])
               ), 
               tObjectProperty(id('parse'), 
-                subExprInfo.loadFunctionExpr
+                id("() => { throw new Error('Not implemented') }")
               )
             ]))]
           ))
         result.typeParamExpr = tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([ (isBigIntExpr(fieldType.key) ? id('bigint') : id('number')), subExprInfo.typeParamExpr])) 
       }
-      storeParametersInside = storeParametersInside.concat([keyForStore, value])
-      storeParametersOutside = storeParametersOutside.concat([keyForStore, value])
+      storeParametersInside = storeParametersInside.concat([keyForStore, valueStore])
+      storeParametersOutside = storeParametersOutside.concat([keyForStore, valueStore])
       result.storeStmtInside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersInside))
       result.storeStmtOutside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersOutside))
     } else if (fieldType.kind == "TLBExprMathType") {
