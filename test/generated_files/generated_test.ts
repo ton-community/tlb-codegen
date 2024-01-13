@@ -765,6 +765,20 @@ export interface HashmapExprKeyUser {
     readonly x: HashmapExprKey;
 }
 
+// a$_ {A: Type} x:(HashmapE 200 (OneComb A)) = HashmapOneComb A;
+
+export interface HashmapOneComb<A> {
+    readonly kind: 'HashmapOneComb';
+    readonly x: Dictionary<bigint, OneComb<A>>;
+}
+
+// a$_ x:(HashmapOneComb uint5) = HashmapOneCombUser;
+
+export interface HashmapOneCombUser {
+    readonly kind: 'HashmapOneCombUser';
+    readonly x: HashmapOneComb<number>;
+}
+
 // tmpa$_ a:# b:# = Simple;
 
 export function loadSimple(slice: Slice): Simple {
@@ -2232,36 +2246,16 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
     throw new Error('Expected one of "HashmapE_hme_empty", "HashmapE_hme_root" in loading "HashmapE", but data does not satisfy any constructor');
 }
 
-export function dictValue_hashmapEUser_x_load(): DictionaryValue<number> {
-    return {
+// a$_ x:(HashmapE 8 uint16) = HashmapEUser;
+
+export function loadHashmapEUser(slice: Slice): HashmapEUser {
+    let x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return slice.loadUint(16)
 
     }),
-    }
-
-}
-
-export function dictValue_hashmapEUser_x_store(): DictionaryValue<number> {
-    return {
-        serialize: ((arg: number, builder: Builder) => {
-        ((arg: number) => {
-            return ((builder: Builder) => {
-                builder.storeUint(arg, 16);
-            })
-
-        })(arg)(builder);
-    }),
-        parse: () => { throw new Error('Not implemented') },
-    }
-
-}
-
-// a$_ x:(HashmapE 8 uint16) = HashmapEUser;
-
-export function loadHashmapEUser(slice: Slice): HashmapEUser {
-    let x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), dictValue_hashmapEUser_x_load(), slice);
+    }, slice);
     return {
         kind: 'HashmapEUser',
         x: x,
@@ -2271,7 +2265,17 @@ export function loadHashmapEUser(slice: Slice): HashmapEUser {
 
 export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(hashmapEUser.x, Dictionary.Keys.Uint(8), dictValue_hashmapEUser_x_store());
+        builder.storeDict(hashmapEUser.x, Dictionary.Keys.Uint(8), {
+            serialize: ((arg: number, builder: Builder) => {
+            ((arg: number) => {
+                return ((builder: Builder) => {
+                    builder.storeUint(arg, 16);
+                })
+
+            })(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -2953,28 +2957,13 @@ export function storeGramsUser(gramsUser: GramsUser): (builder: Builder) => void
 
 }
 
-export function dictValue_hashmapVUIUser_x_load(): DictionaryValue<VarUIntegerUser> {
-    return {
-        serialize: () => { throw new Error('Not implemented') },
-        parse: loadVarUIntegerUser,
-    }
-
-}
-
-export function dictValue_hashmapVUIUser_x_store(): DictionaryValue<VarUIntegerUser> {
-    return {
-        serialize: ((arg: VarUIntegerUser, builder: Builder) => {
-        storeVarUIntegerUser(arg)(builder);
-    }),
-        parse: () => { throw new Error('Not implemented') },
-    }
-
-}
-
 // a$_ x:(HashmapE 100 VarUIntegerUser) = HashmapVUIUser;
 
 export function loadHashmapVUIUser(slice: Slice): HashmapVUIUser {
-    let x: Dictionary<bigint, VarUIntegerUser> = Dictionary.load(Dictionary.Keys.BigUint(100), dictValue_hashmapVUIUser_x_load(), slice);
+    let x: Dictionary<bigint, VarUIntegerUser> = Dictionary.load(Dictionary.Keys.BigUint(100), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadVarUIntegerUser,
+    }, slice);
     return {
         kind: 'HashmapVUIUser',
         x: x,
@@ -2984,45 +2973,27 @@ export function loadHashmapVUIUser(slice: Slice): HashmapVUIUser {
 
 export function storeHashmapVUIUser(hashmapVUIUser: HashmapVUIUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(hashmapVUIUser.x, Dictionary.Keys.BigUint(100), dictValue_hashmapVUIUser_x_store());
+        builder.storeDict(hashmapVUIUser.x, Dictionary.Keys.BigUint(100), {
+            serialize: ((arg: VarUIntegerUser, builder: Builder) => {
+            storeVarUIntegerUser(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
-
-}
-
-export function dictValue_hashmapTPCell_x_load(): DictionaryValue<TypedParam> {
-    return {
-        serialize: () => { throw new Error('Not implemented') },
-        parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
-        return loadTypedParam(slice1)
-
-    }),
-    }
-
-}
-
-export function dictValue_hashmapTPCell_x_store(): DictionaryValue<TypedParam> {
-    return {
-        serialize: ((arg: TypedParam, builder: Builder) => {
-        ((arg: TypedParam) => {
-            return ((builder: Builder) => {
-                let cell1 = beginCell();
-                storeTypedParam(arg)(cell1);
-                builder.storeRef(cell1);
-
-            })
-
-        })(arg)(builder);
-    }),
-        parse: () => { throw new Error('Not implemented') },
-    }
 
 }
 
 // a$_ x:(HashmapE 100 ^TypedParam) = HashmapTPCell;
 
 export function loadHashmapTPCell(slice: Slice): HashmapTPCell {
-    let x: Dictionary<bigint, TypedParam> = Dictionary.load(Dictionary.Keys.BigUint(100), dictValue_hashmapTPCell_x_load(), slice);
+    let x: Dictionary<bigint, TypedParam> = Dictionary.load(Dictionary.Keys.BigUint(100), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse();
+        return loadTypedParam(slice1)
+
+    }),
+    }, slice);
     return {
         kind: 'HashmapTPCell',
         x: x,
@@ -3032,41 +3003,34 @@ export function loadHashmapTPCell(slice: Slice): HashmapTPCell {
 
 export function storeHashmapTPCell(hashmapTPCell: HashmapTPCell): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(hashmapTPCell.x, Dictionary.Keys.BigUint(100), dictValue_hashmapTPCell_x_store());
+        builder.storeDict(hashmapTPCell.x, Dictionary.Keys.BigUint(100), {
+            serialize: ((arg: TypedParam, builder: Builder) => {
+            ((arg: TypedParam) => {
+                return ((builder: Builder) => {
+                    let cell1 = beginCell();
+                    storeTypedParam(arg)(cell1);
+                    builder.storeRef(cell1);
+
+                })
+
+            })(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
-
-}
-
-export function dictValue_hashmapVarKey_x_load(): DictionaryValue<number> {
-    return {
-        serialize: () => { throw new Error('Not implemented') },
-        parse: ((slice: Slice) => {
-        return slice.loadUint(5)
-
-    }),
-    }
-
-}
-
-export function dictValue_hashmapVarKey_x_store(): DictionaryValue<number> {
-    return {
-        serialize: ((arg: number, builder: Builder) => {
-        ((arg: number) => {
-            return ((builder: Builder) => {
-                builder.storeUint(arg, 5);
-            })
-
-        })(arg)(builder);
-    }),
-        parse: () => { throw new Error('Not implemented') },
-    }
 
 }
 
 // a$_ {n:#} x:(HashmapE n uint5) = HashmapVarKey n;
 
 export function loadHashmapVarKey(slice: Slice, n: number): HashmapVarKey {
-    let x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint(n), dictValue_hashmapVarKey_x_load(), slice);
+    let x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint(n), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return slice.loadUint(5)
+
+    }),
+    }, slice);
     return {
         kind: 'HashmapVarKey',
         n: n,
@@ -3077,7 +3041,17 @@ export function loadHashmapVarKey(slice: Slice, n: number): HashmapVarKey {
 
 export function storeHashmapVarKey(hashmapVarKey: HashmapVarKey): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(hashmapVarKey.x, Dictionary.Keys.BigUint(hashmapVarKey.n), dictValue_hashmapVarKey_x_store());
+        builder.storeDict(hashmapVarKey.x, Dictionary.Keys.BigUint(hashmapVarKey.n), {
+            serialize: ((arg: number, builder: Builder) => {
+            ((arg: number) => {
+                return ((builder: Builder) => {
+                    builder.storeUint(arg, 5);
+                })
+
+            })(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -3100,36 +3074,16 @@ export function storeHashmapVarKeyUser(hashmapVarKeyUser: HashmapVarKeyUser): (b
 
 }
 
-export function dictValue_hashmapExprKey_x_load(): DictionaryValue<number> {
-    return {
+// a$_ {n:#} x:(HashmapE (n+2) uint5) = HashmapExprKey n;
+
+export function loadHashmapExprKey(slice: Slice, n: number): HashmapExprKey {
+    let x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint((n + 2)), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return slice.loadUint(5)
 
     }),
-    }
-
-}
-
-export function dictValue_hashmapExprKey_x_store(): DictionaryValue<number> {
-    return {
-        serialize: ((arg: number, builder: Builder) => {
-        ((arg: number) => {
-            return ((builder: Builder) => {
-                builder.storeUint(arg, 5);
-            })
-
-        })(arg)(builder);
-    }),
-        parse: () => { throw new Error('Not implemented') },
-    }
-
-}
-
-// a$_ {n:#} x:(HashmapE (n+2) uint5) = HashmapExprKey n;
-
-export function loadHashmapExprKey(slice: Slice, n: number): HashmapExprKey {
-    let x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint((n + 2)), dictValue_hashmapExprKey_x_load(), slice);
+    }, slice);
     return {
         kind: 'HashmapExprKey',
         n: n,
@@ -3140,7 +3094,17 @@ export function loadHashmapExprKey(slice: Slice, n: number): HashmapExprKey {
 
 export function storeHashmapExprKey(hashmapExprKey: HashmapExprKey): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(hashmapExprKey.x, Dictionary.Keys.BigUint((hashmapExprKey.n + 2)), dictValue_hashmapExprKey_x_store());
+        builder.storeDict(hashmapExprKey.x, Dictionary.Keys.BigUint((hashmapExprKey.n + 2)), {
+            serialize: ((arg: number, builder: Builder) => {
+            ((arg: number) => {
+                return ((builder: Builder) => {
+                    builder.storeUint(arg, 5);
+                })
+
+            })(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -3159,6 +3123,66 @@ export function loadHashmapExprKeyUser(slice: Slice): HashmapExprKeyUser {
 export function storeHashmapExprKeyUser(hashmapExprKeyUser: HashmapExprKeyUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHashmapExprKey(hashmapExprKeyUser.x)(builder);
+    })
+
+}
+
+// a$_ {A: Type} x:(HashmapE 200 (OneComb A)) = HashmapOneComb A;
+
+export function loadHashmapOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): HashmapOneComb<A> {
+    let x: Dictionary<bigint, OneComb<A>> = Dictionary.load(Dictionary.Keys.BigUint(200), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return loadOneComb<A>(slice, loadA)
+
+    }),
+    }, slice);
+    return {
+        kind: 'HashmapOneComb',
+        x: x,
+    }
+
+}
+
+export function storeHashmapOneComb<A>(hashmapOneComb: HashmapOneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeDict(hashmapOneComb.x, Dictionary.Keys.BigUint(200), {
+            serialize: ((arg: OneComb<A>, builder: Builder) => {
+            ((arg: OneComb<A>) => {
+                return ((builder: Builder) => {
+                    storeOneComb<A>(arg, storeA)(builder);
+                })
+
+            })(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
+    })
+
+}
+
+// a$_ x:(HashmapOneComb uint5) = HashmapOneCombUser;
+
+export function loadHashmapOneCombUser(slice: Slice): HashmapOneCombUser {
+    let x: HashmapOneComb<number> = loadHashmapOneComb<number>(slice, ((slice: Slice) => {
+        return slice.loadUint(5)
+
+    }));
+    return {
+        kind: 'HashmapOneCombUser',
+        x: x,
+    }
+
+}
+
+export function storeHashmapOneCombUser(hashmapOneCombUser: HashmapOneCombUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeHashmapOneComb<number>(hashmapOneCombUser.x, ((arg: number) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 5);
+            })
+
+        }))(builder);
     })
 
 }

@@ -759,67 +759,6 @@ export class TypescriptGenerator implements CodeGenerator {
       } else {
         throw new Error("Address has type other than ['Internal', 'External', 'Any']")
       }
-    } else if (fieldType.kind == "TLBHashmapType") {
-      let keyForLoad: Expression = tFunctionCall(tMemberExpression(id('Dictionary.Keys'), (isBigIntExpr(fieldType.key) ? id('BigUint') : id('Uint'))), [convertToAST(fieldType.key.expr, ctx.constructor)]);
-      let keyForStore: Expression = tFunctionCall(tMemberExpression(id('Dictionary.Keys'), (isBigIntExpr(fieldType.key) ? id('BigUint') : id('Uint'))), [convertToAST(fieldType.key.expr, ctx.constructor, id(ctx.typeName))]);
-      let subExprInfo = this.handleType(
-        field,
-        fieldType.value,
-        false,
-        ctx,
-        slicePrefix,
-        argIndex
-      );
-      let functionIdLoad = id('dictValue_' + ctx.name + '_' + fieldName + '_load')
-      let functionIdStore = id('dictValue_' + ctx.name + '_' + fieldName + '_store')
-      let valueLoad = tFunctionCall(functionIdLoad, [])
-      let valueStore = tFunctionCall(functionIdStore, [])
-      result.loadExpr = tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [keyForLoad, valueLoad, id(currentSlice)])
-      if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeFunctionExpr) {
-        this.jsCodeFunctionsDeclarations.push(
-          tFunctionDeclaration(
-            functionIdLoad, 
-            tTypeParametersExpression([]),
-              tTypeWithParameters(
-                id('DictionaryValue'), 
-                tTypeParametersExpression([ 
-                  subExprInfo.typeParamExpr
-                ])
-              )
-            , [], [tReturnStatement(tObjectExpression([
-              tObjectProperty(id('serialize'), 
-                id("() => { throw new Error('Not implemented') }")
-              ), 
-              tObjectProperty(id('parse'), 
-                subExprInfo.loadFunctionExpr
-              )
-            ]))]
-          ))
-        this.jsCodeFunctionsDeclarations.push(
-          tFunctionDeclaration(
-            functionIdStore, 
-            tTypeParametersExpression([]),
-              tTypeWithParameters(
-                id('DictionaryValue'), 
-                tTypeParametersExpression([ 
-                  subExprInfo.typeParamExpr
-                ])
-              )
-            , [], [tReturnStatement(tObjectExpression([
-              tObjectProperty(id('serialize'), 
-                tArrowFunctionExpression([tTypedIdentifier(id('arg'), subExprInfo.typeParamExpr), tTypedIdentifier(id('builder'), id('Builder'))], [tExpressionStatement(tFunctionCall(tFunctionCall(subExprInfo.storeFunctionExpr, [id('arg')]), [id('builder')]))])
-              ), 
-              tObjectProperty(id('parse'), 
-                id("() => { throw new Error('Not implemented') }")
-              )
-            ]))]
-          ))
-        result.typeParamExpr = tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([ (isBigIntExpr(fieldType.key) ? id('bigint') : id('number')), subExprInfo.typeParamExpr])) 
-      }
-      storeParametersInside = storeParametersInside.concat([keyForStore, valueStore])
-      storeParametersOutside = storeParametersOutside.concat([keyForStore, valueStore])
-      result.storeStmtInside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersInside))
-      result.storeStmtOutside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersOutside))
     } else if (fieldType.kind == "TLBExprMathType") {
       result.loadExpr = convertToAST(fieldType.expr, ctx.constructor);
       result.storeStmtOutside = tExpressionStatement(result.loadExpr);
@@ -960,6 +899,42 @@ export class TypescriptGenerator implements CodeGenerator {
       }
       if (subExprInfo.storeStmtInside) {
         result.storeStmtInside = storeInNewCell(currentCell, subExprInfo.storeStmtInside);
+      }
+    } else if (fieldType.kind == "TLBHashmapType") {
+      let keyForLoad: Expression = tFunctionCall(tMemberExpression(id('Dictionary.Keys'), (isBigIntExpr(fieldType.key) ? id('BigUint') : id('Uint'))), [convertToAST(fieldType.key.expr, ctx.constructor)]);
+      let keyForStore: Expression = tFunctionCall(tMemberExpression(id('Dictionary.Keys'), (isBigIntExpr(fieldType.key) ? id('BigUint') : id('Uint'))), [convertToAST(fieldType.key.expr, ctx.constructor, id(ctx.typeName))]);
+      let subExprInfo = this.handleType(
+        field,
+        fieldType.value,
+        false,
+        ctx,
+        slicePrefix,
+        argIndex
+      );
+      
+      if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeFunctionExpr) {
+        let valueLoad = tObjectExpression([
+          tObjectProperty(id('serialize'), 
+            id("() => { throw new Error('Not implemented') }")
+          ), 
+          tObjectProperty(id('parse'), 
+            subExprInfo.loadFunctionExpr
+          )
+        ])
+        result.loadExpr = tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [keyForLoad, valueLoad, id(currentSlice)])
+        let valueStore = tObjectExpression([
+          tObjectProperty(id('serialize'), 
+            tArrowFunctionExpression([tTypedIdentifier(id('arg'), subExprInfo.typeParamExpr), tTypedIdentifier(id('builder'), id('Builder'))], [tExpressionStatement(tFunctionCall(tFunctionCall(subExprInfo.storeFunctionExpr, [id('arg')]), [id('builder')]))])
+          ), 
+          tObjectProperty(id('parse'), 
+            id("() => { throw new Error('Not implemented') }")
+          )
+        ])
+        result.typeParamExpr = tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([ (isBigIntExpr(fieldType.key) ? id('bigint') : id('number')), subExprInfo.typeParamExpr])) 
+        storeParametersInside = storeParametersInside.concat([keyForStore, valueStore])
+        storeParametersOutside = storeParametersOutside.concat([keyForStore, valueStore])
+        result.storeStmtInside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersInside))
+        result.storeStmtOutside = tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersOutside))
       }
     } else if (fieldType.kind == "TLBNamedType" && fieldType.arguments.length) {
       let typeName = fieldType.name;
