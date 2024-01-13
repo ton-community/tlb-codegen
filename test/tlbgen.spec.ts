@@ -221,6 +221,16 @@ describe('Generating tlb code', () => {
 
         let varIntegerUser: VarIntegerUser = { kind: 'VarIntegerUser', v: BigInt(-6) }
         checkSameOnStoreLoad(varIntegerUser, loadVarIntegerUser, storeVarIntegerUser)
+
+        let x:Dictionary<number, number> = Dictionary.empty()
+        x.set(1, 6);
+        x.set(2, 7);
+        x.set(0, 5);
+        let hashmapEUser: HashmapEUser = {
+            kind: 'HashmapEUser',
+            x: x
+        }
+        checkSameOnStoreLoad(hashmapEUser, loadHashmapEUser, storeHashmapEUser);
     })
 
     test('Combinators', () => {
@@ -308,111 +318,6 @@ describe('Generating tlb code', () => {
 
         let equalityExpressionIncorrect: EqualityExpression = { kind: 'EqualityExpression', n: 3 }
         checkThrowOnStoreLoad(equalityExpressionIncorrect, loadEqualityExpression, storeEqualityExpression);
-    })
-
-    test('Builtins', () => {
-        // expect.hasAssertions()
-
-        // let hashmapEUser: HashmapEUser = {
-        //     kind: 'HashmapEUser',
-        //     x: {
-        //         kind: 'HashmapE_hme_root',
-        //         n: 8,
-        //         root: {
-        //             kind: 'Hashmap',
-        //             l: 0, m: 8, n: 8,
-        //             label: {
-        //                 kind: 'HmLabel_hml_short',
-        //                 n: 0, m: 8,
-        //                 len: { kind: 'Unary_unary_zero' },
-        //                 s: []
-        //             },
-        //             node: {
-        //                 kind: 'HashmapNode_hmn_fork',
-        //                 n: 7,
-        //                 left: {
-        //                     kind: 'Hashmap',
-        //                     n: 7,
-        //                     m: 5,
-        //                     l: 2,
-        //                     label: {
-        //                         kind: 'HmLabel_hml_long',
-        //                         m: 7,
-        //                         n: 2,
-        //                         s: getBooleanArray('00')
-        //                     },
-        //                     node: {
-        //                         kind: 'HashmapNode_hmn_fork',
-        //                         n: 4,
-        //                         left: {
-        //                             kind: 'Hashmap',
-        //                             n: 4,
-        //                             m: 0,
-        //                             l: 4,
-        //                             label: {
-        //                                 kind: 'HmLabel_hml_long',
-        //                                 m: 4,
-        //                                 n: 4,
-        //                                 s: getBooleanArray('0001')
-        //                             },
-        //                             node: {
-        //                                 kind: 'HashmapNode_hmn_leaf',
-        //                                 value: 777
-        //                             }
-        //                         },
-        //                         right: {
-        //                             kind: 'Hashmap',
-        //                             n: 4,
-        //                             m: 0,
-        //                             l: 4,
-        //                             label: {
-        //                                 kind: 'HmLabel_hml_long',
-        //                                 m: 4,
-        //                                 n: 4,
-        //                                 s: getBooleanArray('0001')
-        //                             },
-        //                             node: {
-        //                                 kind: 'HashmapNode_hmn_leaf',
-        //                                 value: 111
-        //                             }
-        //                         }
-        //                     }
-        //                 },
-        //                 right: {
-        //                     kind: 'Hashmap',
-        //                     n: 7,
-        //                     m: 0,
-        //                     l: 7,
-        //                     label: {
-        //                         kind: 'HmLabel_hml_long',
-        //                         m: 7,
-        //                         n: 7,
-        //                         s: getBooleanArray('0000000')
-        //                     },
-        //                     node: {
-        //                         kind: 'HashmapNode_hmn_leaf',
-        //                         value: 777
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        let x:Dictionary<number, number> = Dictionary.empty()
-        x.set(1, 6);
-        x.set(2, 7);
-        x.set(0, 5);
-        let hashmapEUser: HashmapEUser = {
-            kind: 'HashmapEUser',
-            x: x
-        }
-        
-        let builder = beginCell();
-        storeHashmapEUser(hashmapEUser)(builder);
-        let newone = loadHashmapEUser(builder.endCell().beginParse());
-
-        checkSameOnStoreLoad(hashmapEUser, loadHashmapEUser, storeHashmapEUser);
     })
 
     test('Constructor Tags', () => {

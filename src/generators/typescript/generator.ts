@@ -772,7 +772,7 @@ export class TypescriptGenerator implements CodeGenerator {
       let functionId = id('dictValue_' + ctx.name + '_' + fieldName)
       let value = tFunctionCall(functionId, [])
       result.loadExpr = tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [key, value, id(currentSlice)])
-      if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeStmtInside) {
+      if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeFunctionExpr) {
         this.jsCodeFunctionsDeclarations.push(
           tFunctionDeclaration(
             functionId, 
@@ -785,7 +785,7 @@ export class TypescriptGenerator implements CodeGenerator {
               )
             , [], [tReturnStatement(tObjectExpression([
               tObjectProperty(id('serialize'), 
-                tArrowFunctionExpression([tTypedIdentifier(id('arg'), subExprInfo.typeParamExpr), tTypedIdentifier(id('builder'), id('Builder'))], [subExprInfo.storeStmtInside])
+                tArrowFunctionExpression([tTypedIdentifier(id('arg'), subExprInfo.typeParamExpr), tTypedIdentifier(id('builder'), id('Builder'))], [tExpressionStatement(tFunctionCall(tFunctionCall(subExprInfo.storeFunctionExpr, [id('arg')]), [id('builder')]))])
               ), 
               tObjectProperty(id('parse'), 
                 subExprInfo.loadFunctionExpr

@@ -2191,7 +2191,12 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
 export function dictValue_hashmapEUser_x(): DictionaryValue<number> {
     return {
         serialize: ((arg: number, builder: Builder) => {
-        builder.storeUint(arg, 16);
+        ((arg: number) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 16);
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         return slice.loadUint(16)

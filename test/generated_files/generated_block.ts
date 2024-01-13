@@ -4852,7 +4852,12 @@ export function storeCoins(coins: Coins): (builder: Builder) => void {
 export function dictValue_extraCurrencyCollection_dict(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
-        builder.storeVarUint(arg, bitLen((32 - 1)));
+        ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeVarUint(arg, bitLen((32 - 1)));
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         return slice.loadVarUintBig(bitLen((32 - 1)))
@@ -5212,7 +5217,7 @@ export function storeStateInit(stateInit: StateInit): (builder: Builder) => void
 export function dictValue_stateInitWithLibs_library(): DictionaryValue<SimpleLib> {
     return {
         serialize: ((arg: SimpleLib, builder: Builder) => {
-        storeSimpleLib;
+        storeSimpleLib(arg)(builder);
     }),
         parse: loadSimpleLib,
     }
@@ -6231,7 +6236,7 @@ export function storeProcessedUpto(processedUpto: ProcessedUpto): (builder: Buil
 export function dictValue_processedInfo_anon0(): DictionaryValue<ProcessedUpto> {
     return {
         serialize: ((arg: ProcessedUpto, builder: Builder) => {
-        storeProcessedUpto;
+        storeProcessedUpto(arg)(builder);
     }),
         parse: loadProcessedUpto,
     }
@@ -6277,7 +6282,7 @@ export function storeIhrPendingSince(ihrPendingSince: IhrPendingSince): (builder
 export function dictValue_ihrPendingInfo_anon0(): DictionaryValue<IhrPendingSince> {
     return {
         serialize: ((arg: IhrPendingSince, builder: Builder) => {
-        storeIhrPendingSince;
+        storeIhrPendingSince(arg)(builder);
     }),
         parse: loadIhrPendingSince,
     }
@@ -6692,15 +6697,20 @@ export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Buil
 export function dictValue_transaction_out_msgs(): DictionaryValue<Message<Slice>> {
     return {
         serialize: ((arg: Message<Slice>, builder: Builder) => {
-        let cell1 = beginCell();
-        storeMessage<Slice>(arg, ((arg: Slice) => {
+        ((arg: Message<Slice>) => {
             return ((builder: Builder) => {
-                builder.storeSlice(arg);
+                let cell1 = beginCell();
+                storeMessage<Slice>(arg, ((arg: Slice) => {
+                    return ((builder: Builder) => {
+                        builder.storeSlice(arg);
+                    })
+
+                }))(cell1);
+                builder.storeRef(cell1);
+
             })
 
-        }))(cell1);
-        builder.storeRef(cell1);
-
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse();
@@ -8187,7 +8197,7 @@ export function storeBlkMasterInfo(blkMasterInfo: BlkMasterInfo): (builder: Buil
 export function dictValue_shardStateUnsplit_libraries(): DictionaryValue<LibDescr> {
     return {
         serialize: ((arg: LibDescr, builder: Builder) => {
-        storeLibDescr;
+        storeLibDescr(arg)(builder);
     }),
         parse: loadLibDescr,
     }
@@ -9146,10 +9156,15 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
 export function dictValue_shardHashes_anon0(): DictionaryValue<BinTree<ShardDescr>> {
     return {
         serialize: ((arg: BinTree<ShardDescr>, builder: Builder) => {
-        let cell1 = beginCell();
-        storeBinTree<ShardDescr>(arg, storeShardDescr)(cell1);
-        builder.storeRef(cell1);
+        ((arg: BinTree<ShardDescr>) => {
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeBinTree<ShardDescr>(arg, storeShardDescr)(cell1);
+                builder.storeRef(cell1);
 
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse();
@@ -9490,7 +9505,7 @@ export function storeCreatorStats(creatorStats: CreatorStats): (builder: Builder
 export function dictValue_blockCreateStats_block_create_stats_counters(): DictionaryValue<CreatorStats> {
     return {
         serialize: ((arg: CreatorStats, builder: Builder) => {
-        storeCreatorStats;
+        storeCreatorStats(arg)(builder);
     }),
         parse: loadCreatorStats,
     }
@@ -9813,7 +9828,7 @@ export function storeSignedCertificate(signedCertificate: SignedCertificate): (b
 export function dictValue_mcBlockExtra_prev_blk_signatures(): DictionaryValue<CryptoSignaturePair> {
     return {
         serialize: ((arg: CryptoSignaturePair, builder: Builder) => {
-        storeCryptoSignaturePair;
+        storeCryptoSignaturePair(arg)(builder);
     }),
         parse: loadCryptoSignaturePair,
     }
@@ -9962,7 +9977,7 @@ validators#11 utime_since:uint32 utime_until:uint32
 export function dictValue_validatorSet_validators_ext_list(): DictionaryValue<ValidatorDescr> {
     return {
         serialize: ((arg: ValidatorDescr, builder: Builder) => {
-        storeValidatorDescr;
+        storeValidatorDescr(arg)(builder);
     }),
         parse: loadValidatorDescr,
     }
@@ -10093,7 +10108,7 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 export function dictValue_configParam__12_workchains(): DictionaryValue<WorkchainDescr> {
     return {
         serialize: ((arg: WorkchainDescr, builder: Builder) => {
-        storeWorkchainDescr;
+        storeWorkchainDescr(arg)(builder);
     }),
         parse: loadWorkchainDescr,
     }
@@ -10145,7 +10160,7 @@ _ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16)
 export function dictValue_configParam__28_fundamental_smc_addr(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
-        storeTrue;
+        storeTrue(arg)(builder);
     }),
         parse: loadTrue,
     }
@@ -10169,7 +10184,7 @@ export function dictValue_configParam__28_fundamental_smc_addr(): DictionaryValu
 export function dictValue_configParam__35_anon0(): DictionaryValue<ValidatorSignedTempKey> {
     return {
         serialize: ((arg: ValidatorSignedTempKey, builder: Builder) => {
-        storeValidatorSignedTempKey;
+        storeValidatorSignedTempKey(arg)(builder);
     }),
         parse: loadValidatorSignedTempKey,
     }
@@ -11089,7 +11104,7 @@ export function storeConfigProposal(configProposal: ConfigProposal): (builder: B
 export function dictValue_configProposalStatus_voters(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
-        storeTrue;
+        storeTrue(arg)(builder);
     }),
         parse: loadTrue,
     }
@@ -12310,7 +12325,7 @@ export function storeSizeLimitsConfig(sizeLimitsConfig: SizeLimitsConfig): (buil
 export function dictValue_suspendedAddressList_addresses(): DictionaryValue<Unit> {
     return {
         serialize: ((arg: Unit, builder: Builder) => {
-        storeUnit;
+        storeUnit(arg)(builder);
     }),
         parse: loadUnit,
     }
@@ -12346,7 +12361,12 @@ export function storeSuspendedAddressList(suspendedAddressList: SuspendedAddress
 export function dictValue_oracleBridgeParams_oracles(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
-        builder.storeUint(arg, 256);
+        ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 256);
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         return slice.loadUintBig(256)
@@ -12425,7 +12445,12 @@ export function storeJettonBridgePrices(jettonBridgePrices: JettonBridgePrices):
 export function dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
-        builder.storeUint(arg, 256);
+        ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 256);
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         return slice.loadUintBig(256)
@@ -12440,7 +12465,12 @@ export function dictValue_jettonBridgeParams_jetton_bridge_params_v0_oracles(): 
 export function dictValue_jettonBridgeParams_jetton_bridge_params_v1_oracles(): DictionaryValue<bigint> {
     return {
         serialize: ((arg: bigint, builder: Builder) => {
-        builder.storeUint(arg, 256);
+        ((arg: bigint) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 256);
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         return slice.loadUintBig(256)
@@ -12525,7 +12555,7 @@ export function storeJettonBridgeParams(jettonBridgeParams: JettonBridgeParams):
 export function dictValue_blockSignaturesPure_signatures(): DictionaryValue<CryptoSignaturePair> {
     return {
         serialize: ((arg: CryptoSignaturePair, builder: Builder) => {
-        storeCryptoSignaturePair;
+        storeCryptoSignaturePair(arg)(builder);
     }),
         parse: loadCryptoSignaturePair,
     }
@@ -12744,10 +12774,15 @@ export function storeTopBlockDescr(topBlockDescr: TopBlockDescr): (builder: Buil
 export function dictValue_topBlockDescrSet_collection(): DictionaryValue<TopBlockDescr> {
     return {
         serialize: ((arg: TopBlockDescr, builder: Builder) => {
-        let cell1 = beginCell();
-        storeTopBlockDescr(arg)(cell1);
-        builder.storeRef(cell1);
+        ((arg: TopBlockDescr) => {
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeTopBlockDescr(arg)(cell1);
+                builder.storeRef(cell1);
 
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse();
@@ -12931,7 +12966,7 @@ export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint):
 export function dictValue_validatorComplaintStatus_voters(): DictionaryValue<True> {
     return {
         serialize: ((arg: True, builder: Builder) => {
-        storeTrue;
+        storeTrue(arg)(builder);
     }),
         parse: loadTrue,
     }
@@ -13366,7 +13401,7 @@ export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) =
 export function dictValue_vmSaveList_cregs(): DictionaryValue<VmStackValue> {
     return {
         serialize: ((arg: VmStackValue, builder: Builder) => {
-        storeVmStackValue;
+        storeVmStackValue(arg)(builder);
     }),
         parse: loadVmStackValue,
     }
@@ -13427,10 +13462,15 @@ export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) =
 export function dictValue_vmLibraries_libraries(): DictionaryValue<Slice> {
     return {
         serialize: ((arg: Slice, builder: Builder) => {
-        let cell1 = beginCell();
-        cell1.storeSlice(arg);
-        builder.storeRef(cell1);
+        ((arg: Slice) => {
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                cell1.storeSlice(arg);
+                builder.storeRef(cell1);
 
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse();
@@ -13768,10 +13808,15 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
 export function dictValue_dNS_RecordSet_anon0(): DictionaryValue<DNSRecord> {
     return {
         serialize: ((arg: DNSRecord, builder: Builder) => {
-        let cell1 = beginCell();
-        storeDNSRecord(arg)(cell1);
-        builder.storeRef(cell1);
+        ((arg: DNSRecord) => {
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeDNSRecord(arg)(cell1);
+                builder.storeRef(cell1);
 
+            })
+
+        })(arg)(builder);
     }),
         parse: ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse();
