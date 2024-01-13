@@ -1,4 +1,4 @@
-import { Builder } from 'ton'
+import { Builder, Dictionary, DictionaryValue } from 'ton'
 import { Slice } from 'ton'
 import { beginCell } from 'ton'
 import { BitString } from 'ton'
@@ -481,7 +481,7 @@ export interface HashmapE_hme_root<X> {
 
 export interface HashmapEUser {
     readonly kind: 'HashmapEUser';
-    readonly x: HashmapE<number>;
+    readonly x: Dictionary<number, number>;
 }
 
 // _ a:(## 1) b:a?(## 32) = ConditionalField;
@@ -2188,11 +2188,20 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
 
 // a$_ x:(HashmapE 8 uint16) = HashmapEUser;
 
-export function loadHashmapEUser(slice: Slice): HashmapEUser {
-    let x: HashmapE<number> = loadHashmapE<number>(slice, 8, ((slice: Slice) => {
-        return slice.loadUint(16)
 
-    }));
+function createNumberValue(): DictionaryValue<number> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeUint(src, 16);
+        },
+        parse: (src) => {
+            return src.loadUint(16);
+        }
+    }
+}
+
+export function loadHashmapEUser(slice: Slice): HashmapEUser {
+    let x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), createNumberValue(), slice)
     return {
         kind: 'HashmapEUser',
         x: x,
@@ -2202,12 +2211,7 @@ export function loadHashmapEUser(slice: Slice): HashmapEUser {
 
 export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapE<number>(hashmapEUser.x, ((arg: number) => {
-            return ((builder: Builder) => {
-                builder.storeUint(arg, 16);
-            })
-
-        }))(builder);
+        builder.storeDict(hashmapEUser.x, Dictionary.Keys.Uint(8), createNumberValue())
     })
 
 }

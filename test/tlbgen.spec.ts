@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { Address, BitString, Cell, ExternalAddress, Slice } from 'ton';
+import { Address, BitString, Cell, Dictionary, DictionaryKeyTypes, ExternalAddress, Slice } from 'ton';
 
 import { describe, expect, test } from '@jest/globals';
 import { beginCell } from 'ton';
@@ -10,7 +10,30 @@ import { randomInt } from 'crypto';
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
 
-function deepEqual(object1: any, object2: any) {
+function tonDictToMap<K extends DictionaryKeyTypes, V>(object: Dictionary<K, V>) {
+    let result = new Map<K, V>();
+    object.keys().forEach((key: K) => {
+        let value = object.get(key);
+        if (value) {
+            result.set(key, value);
+        }
+    })
+    return result;
+}
+
+function isPrimitive(input: any) {
+    if (input == null) {
+      // This is here to correctly handle document.all.
+      return input === null || input === undefined;
+    }
+    const type = typeof input;
+    return type !== "object" && type !== "function";
+  }
+
+function deepEqual(object1: any, object2: any): boolean {
+    if (isPrimitive(object1) && isPrimitive(object2)) {
+        return object1 == object2;
+    }
     if (object1 instanceof BitString && object2 instanceof BitString) {
         return object1.equals(object2);
     }
@@ -19,6 +42,25 @@ function deepEqual(object1: any, object2: any) {
     }
     if (object1 instanceof Address && object2 instanceof Address) {
         return object1.equals(object2);
+    }
+
+    if (object1 instanceof Dictionary && object2 instanceof Dictionary) {
+        if (object1.size != object2.size) {
+            return false;
+        }
+        let ok = true;
+        object1.keys().forEach((key) => {
+            let value1 = object1.get(key);
+            if (!object2.has(key)) {
+                ok = false;
+            }
+            let value2 = object2.get(key);
+            let equal = deepEqual(value1, value2);
+            if (!equal) {
+                ok = false;
+            }
+        })
+        return ok;
     }
 
     const keys1 = Object.keys(object1);
@@ -280,93 +322,107 @@ describe('Generating tlb code', () => {
     })
 
     test('Builtins', () => {
-        expect.hasAssertions()
+        // expect.hasAssertions()
 
+        // let hashmapEUser: HashmapEUser = {
+        //     kind: 'HashmapEUser',
+        //     x: {
+        //         kind: 'HashmapE_hme_root',
+        //         n: 8,
+        //         root: {
+        //             kind: 'Hashmap',
+        //             l: 0, m: 8, n: 8,
+        //             label: {
+        //                 kind: 'HmLabel_hml_short',
+        //                 n: 0, m: 8,
+        //                 len: { kind: 'Unary_unary_zero' },
+        //                 s: []
+        //             },
+        //             node: {
+        //                 kind: 'HashmapNode_hmn_fork',
+        //                 n: 7,
+        //                 left: {
+        //                     kind: 'Hashmap',
+        //                     n: 7,
+        //                     m: 5,
+        //                     l: 2,
+        //                     label: {
+        //                         kind: 'HmLabel_hml_long',
+        //                         m: 7,
+        //                         n: 2,
+        //                         s: getBooleanArray('00')
+        //                     },
+        //                     node: {
+        //                         kind: 'HashmapNode_hmn_fork',
+        //                         n: 4,
+        //                         left: {
+        //                             kind: 'Hashmap',
+        //                             n: 4,
+        //                             m: 0,
+        //                             l: 4,
+        //                             label: {
+        //                                 kind: 'HmLabel_hml_long',
+        //                                 m: 4,
+        //                                 n: 4,
+        //                                 s: getBooleanArray('0001')
+        //                             },
+        //                             node: {
+        //                                 kind: 'HashmapNode_hmn_leaf',
+        //                                 value: 777
+        //                             }
+        //                         },
+        //                         right: {
+        //                             kind: 'Hashmap',
+        //                             n: 4,
+        //                             m: 0,
+        //                             l: 4,
+        //                             label: {
+        //                                 kind: 'HmLabel_hml_long',
+        //                                 m: 4,
+        //                                 n: 4,
+        //                                 s: getBooleanArray('0001')
+        //                             },
+        //                             node: {
+        //                                 kind: 'HashmapNode_hmn_leaf',
+        //                                 value: 111
+        //                             }
+        //                         }
+        //                     }
+        //                 },
+        //                 right: {
+        //                     kind: 'Hashmap',
+        //                     n: 7,
+        //                     m: 0,
+        //                     l: 7,
+        //                     label: {
+        //                         kind: 'HmLabel_hml_long',
+        //                         m: 7,
+        //                         n: 7,
+        //                         s: getBooleanArray('0000000')
+        //                     },
+        //                     node: {
+        //                         kind: 'HashmapNode_hmn_leaf',
+        //                         value: 777
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        let x:Dictionary<number, number> = Dictionary.empty()
+        x.set(1, 6);
+        x.set(2, 7);
+        x.set(0, 5);
         let hashmapEUser: HashmapEUser = {
             kind: 'HashmapEUser',
-            x: {
-                kind: 'HashmapE_hme_root',
-                n: 8,
-                root: {
-                    kind: 'Hashmap',
-                    l: 0, m: 8, n: 8,
-                    label: {
-                        kind: 'HmLabel_hml_short',
-                        n: 0, m: 8,
-                        len: { kind: 'Unary_unary_zero' },
-                        s: []
-                    },
-                    node: {
-                        kind: 'HashmapNode_hmn_fork',
-                        n: 7,
-                        left: {
-                            kind: 'Hashmap',
-                            n: 7,
-                            m: 5,
-                            l: 2,
-                            label: {
-                                kind: 'HmLabel_hml_long',
-                                m: 7,
-                                n: 2,
-                                s: getBooleanArray('00')
-                            },
-                            node: {
-                                kind: 'HashmapNode_hmn_fork',
-                                n: 4,
-                                left: {
-                                    kind: 'Hashmap',
-                                    n: 4,
-                                    m: 0,
-                                    l: 4,
-                                    label: {
-                                        kind: 'HmLabel_hml_long',
-                                        m: 4,
-                                        n: 4,
-                                        s: getBooleanArray('0001')
-                                    },
-                                    node: {
-                                        kind: 'HashmapNode_hmn_leaf',
-                                        value: 777
-                                    }
-                                },
-                                right: {
-                                    kind: 'Hashmap',
-                                    n: 4,
-                                    m: 0,
-                                    l: 4,
-                                    label: {
-                                        kind: 'HmLabel_hml_long',
-                                        m: 4,
-                                        n: 4,
-                                        s: getBooleanArray('0001')
-                                    },
-                                    node: {
-                                        kind: 'HashmapNode_hmn_leaf',
-                                        value: 111
-                                    }
-                                }
-                            }
-                        },
-                        right: {
-                            kind: 'Hashmap',
-                            n: 7,
-                            m: 0,
-                            l: 7,
-                            label: {
-                                kind: 'HmLabel_hml_long',
-                                m: 7,
-                                n: 7,
-                                s: getBooleanArray('0000000')
-                            },
-                            node: {
-                                kind: 'HashmapNode_hmn_leaf',
-                                value: 777
-                            }
-                        }
-                    }
-                }
-            }
+            x: x
         }
+        
+        let builder = beginCell();
+        storeHashmapEUser(hashmapEUser)(builder);
+        let newone = loadHashmapEUser(builder.endCell().beginParse());
+
         checkSameOnStoreLoad(hashmapEUser, loadHashmapEUser, storeHashmapEUser);
     })
 

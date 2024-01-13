@@ -9756,17 +9756,6 @@ function createSliceValue(): DictionaryValue<Slice> {
     }
 }
 
-// function createNumberValue(): DictionaryValue<bigint> {
-//     return {
-//         serialize: (src, buidler) => {
-//             buidler.storeUint(src.);
-//         },
-//         parse: (src) => {
-//             return src;
-//         }
-//     }
-// }
-
 
 function createMessageSliceValue(): DictionaryValue<Message<Slice>> {
     return {
