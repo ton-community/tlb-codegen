@@ -769,7 +769,7 @@ export class TypescriptGenerator implements CodeGenerator {
         slicePrefix,
         argIndex
       );
-      let functionId = id('createTheFunction' + (Math.random() + 1).toString(36).substring(7))
+      let functionId = id('dictValue_' + ctx.name + '_' + fieldName)
       let value = tFunctionCall(functionId, [])
       result.loadExpr = tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [key, value, id(currentSlice)])
       if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeStmtInside) {

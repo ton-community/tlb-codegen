@@ -2188,7 +2188,7 @@ export function storeHashmapE<X>(hashmapE: HashmapE<X>, storeX: (x: X) => (build
     throw new Error('Expected one of "HashmapE_hme_empty", "HashmapE_hme_root" in loading "HashmapE", but data does not satisfy any constructor');
 }
 
-export function createTheFunctionbci24f(): DictionaryValue<number> {
+export function dictValue_hashmapEUser_x(): DictionaryValue<number> {
     return {
         serialize: ((arg: number, builder: Builder) => {
         builder.storeUint(arg, 16);
@@ -2204,7 +2204,7 @@ export function createTheFunctionbci24f(): DictionaryValue<number> {
 // a$_ x:(HashmapE 8 uint16) = HashmapEUser;
 
 export function loadHashmapEUser(slice: Slice): HashmapEUser {
-    let x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), createTheFunctionbci24f(), slice);
+    let x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), dictValue_hashmapEUser_x(), slice);
     return {
         kind: 'HashmapEUser',
         x: x,
@@ -2214,7 +2214,7 @@ export function loadHashmapEUser(slice: Slice): HashmapEUser {
 
 export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeDict(hashmapEUser.x, Dictionary.Keys.Uint(8), createTheFunctionbci24f());
+        builder.storeDict(hashmapEUser.x, Dictionary.Keys.Uint(8), dictValue_hashmapEUser_x());
     })
 
 }
