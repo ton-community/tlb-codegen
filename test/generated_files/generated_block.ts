@@ -6662,6 +6662,35 @@ transaction$0111 account_addr:bits256 lt:uint64
   description:^TransactionDescr = Transaction;
 */
 
+function createMessageSliceValue(): DictionaryValue<Message<Slice>> {
+    return {
+        serialize: (src, buidler) => {
+            ((arg: Message<Slice>) => {
+                    return ((builder: Builder) => {
+                        let cell1 = beginCell();
+                        storeMessage<Slice>(arg, ((arg: Slice) => {
+                            return ((builder: Builder) => {
+                                builder.storeSlice(arg);
+                            })
+        
+                        }))(cell1);
+                        builder.storeRef(cell1);
+        
+                    })
+        
+                })(src)(buidler)
+        },
+        parse: ((slice: Slice) => {
+                let slice1 = slice.loadRef().beginParse();
+                return loadMessage<Slice>(slice1, ((slice: Slice) => {
+                    return slice
+    
+                }))
+    
+            })
+    }
+}
+
 export function loadTransaction(slice: Slice): Transaction {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0111))) {
         slice.loadUint(4);
@@ -6684,7 +6713,7 @@ export function loadTransaction(slice: Slice): Transaction {
         }));
         let out_msgs: Dictionary<number, Message<Slice>> = Dictionary.load(Dictionary.Keys.Uint(15), createMessageSliceValue(), slice1);
         
-        // loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
+        // let out_msgs: HashmapE<Message<Slice>> = loadHashmapE<Message<Slice>>(slice1, 15, ((slice: Slice) => {
         //     let slice1 = slice.loadRef().beginParse();
         //     return loadMessage<Slice>(slice1, ((slice: Slice) => {
         //         return slice
@@ -6744,7 +6773,21 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
             })
 
         }))(cell1);
-        cell1.storeDict(transaction.out_msgs)
+        cell1.storeDict(transaction.out_msgs, Dictionary.Keys.Uint(15), createMessageSliceValue())
+        // storeHashmapE<Message<Slice>>(transaction.out_msgs, ((arg: Message<Slice>) => {
+        //     return ((builder: Builder) => {
+        //         let cell1 = beginCell();
+        //         storeMessage<Slice>(arg, ((arg: Slice) => {
+        //             return ((builder: Builder) => {
+        //                 builder.storeSlice(arg);
+        //             })
+
+        //         }))(cell1);
+        //         builder.storeRef(cell1);
+
+        //     })
+
+        // }))(cell1);
         builder.storeRef(cell1);
         storeCurrencyCollection(transaction.total_fees)(builder);
         let cell2 = beginCell();
@@ -9752,28 +9795,6 @@ function createSliceValue(): DictionaryValue<Slice> {
         },
         parse: (src) => {
             return src;
-        }
-    }
-}
-
-
-function createMessageSliceValue(): DictionaryValue<Message<Slice>> {
-    return {
-        serialize: (src, buidler) => {
-            let cell1 = beginCell();
-            storeMessage<Slice>(src, ((arg: Slice) => {
-                return ((builder: Builder) => {
-                    builder.storeSlice(arg);
-                })
-
-            }))(cell1);
-            buidler.storeRef(cell1);
-        },
-        parse: (slice) => {
-            let slice1 = slice.loadRef().beginParse();
-            return loadMessage<Slice>(slice1, ((slice: Slice) => {
-                return slice
-            }))
         }
     }
 }
