@@ -7,6 +7,7 @@ import { Address } from 'ton'
 import { ExternalAddress } from 'ton'
 import { Dictionary } from 'ton'
 import { DictionaryValue } from 'ton'
+import util from 'util'
 export function bitLen(n: number) {
     return n.toString(2).length;;
 }
@@ -1105,7 +1106,7 @@ export interface AccountBlock {
 
 export interface ShardAccountBlocks {
     readonly kind: 'ShardAccountBlocks';
-    readonly anon0: HashmapAugE<AccountBlock, CurrencyCollection>;
+    readonly anon0: Dictionary<bigint, {accountBlock: AccountBlock, currencyCollection: CurrencyCollection}>;
 }
 
 /*
@@ -6963,18 +6964,37 @@ export function storeAccountBlock(accountBlock: AccountBlock): (builder: Builder
 
 // _ (HashmapAugE 256 AccountBlock CurrencyCollection) = ShardAccountBlocks;
 
+const dictValueShardAccountBlocks: DictionaryValue<{accountBlock: AccountBlock, currencyCollection: CurrencyCollection}> = {
+    serialize: (arg, builder) => {
+        console.log('serializing now')
+        builder.store(storeCurrencyCollection(arg.currencyCollection));
+        builder.store(storeAccountBlock(arg.accountBlock));
+    },
+    parse: (slice: Slice) => {
+        console.log('parsing now')
+        let currencyCollection = loadCurrencyCollection(slice);
+        let accountBlock = loadAccountBlock(slice);
+        return {
+            accountBlock,
+            currencyCollection
+        }
+    }
+}
+
 export function loadShardAccountBlocks(slice: Slice): ShardAccountBlocks {
-    let anon0: HashmapAugE<AccountBlock, CurrencyCollection> = loadHashmapAugE<AccountBlock, CurrencyCollection>(slice, 256, loadAccountBlock, loadCurrencyCollection);
+    let anon0: Dictionary<bigint, {accountBlock: AccountBlock, currencyCollection: CurrencyCollection}> = Dictionary.load(Dictionary.Keys.BigUint(256), dictValueShardAccountBlocks, slice)
+    // console.log(util.inspect(anon0, false, null, true))
+    // let anon0: HashmapAugE<AccountBlock, CurrencyCollection> = loadHashmapAugE<AccountBlock, CurrencyCollection>(slice, 256, loadAccountBlock, loadCurrencyCollection);
     return {
         kind: 'ShardAccountBlocks',
         anon0: anon0,
     }
-
 }
 
 export function storeShardAccountBlocks(shardAccountBlocks: ShardAccountBlocks): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapAugE<AccountBlock, CurrencyCollection>(shardAccountBlocks.anon0, storeAccountBlock, storeCurrencyCollection)(builder);
+        builder.storeDict(shardAccountBlocks.anon0, Dictionary.Keys.BigUint(256), dictValueShardAccountBlocks)
+        // storeHashmapAugE<AccountBlock, CurrencyCollection>(shardAccountBlocks.anon0, storeAccountBlock, storeCurrencyCollection)(builder);
     })
 
 }
