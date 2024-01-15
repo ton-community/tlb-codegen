@@ -762,6 +762,51 @@ export interface HashmapOneCombUser {
     readonly x: HashmapOneComb<number>;
 }
 
+/*
+ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} 
+  label:(HmLabel ~l n) {n = (~m) + l} 
+  node:(HashmapAugNode m X Y) = HashmapAug n X Y;
+*/
+
+export interface HashmapAug<X, Y> {
+    readonly kind: 'HashmapAug';
+    readonly n: number;
+    readonly l: number;
+    readonly m: number;
+    readonly label: HmLabel;
+    readonly node: HashmapAugNode<X, Y>;
+}
+
+// ahmn_leaf#_ {X:Type} {Y:Type} extra:Y value:X = HashmapAugNode 0 X Y;
+
+/*
+ahmn_fork#_ {n:#} {X:Type} {Y:Type} left:^(HashmapAug n X Y)
+  right:^(HashmapAug n X Y) extra:Y = HashmapAugNode (n + 1) X Y;
+*/
+
+export type HashmapAugNode<X, Y> = HashmapAugNode_ahmn_leaf<X, Y> | HashmapAugNode_ahmn_fork<X, Y>;
+
+export interface HashmapAugNode_ahmn_leaf<X, Y> {
+    readonly kind: 'HashmapAugNode_ahmn_leaf';
+    readonly extra: Y;
+    readonly value: X;
+}
+
+export interface HashmapAugNode_ahmn_fork<X, Y> {
+    readonly kind: 'HashmapAugNode_ahmn_fork';
+    readonly n: number;
+    readonly left: HashmapAug<X, Y>;
+    readonly right: HashmapAug<X, Y>;
+    readonly extra: Y;
+}
+
+// a$_ x:(HashmapAugE 16 Grams FixedIntParam) = HashmapAugEUser;
+
+export interface HashmapAugEUser {
+    readonly kind: 'HashmapAugEUser';
+    readonly x: Dictionary<number, {value: bigint, extra: FixedIntParam}>;
+}
+
 // tmpa$_ a:# b:# = Simple;
 
 export function loadSimple(slice: Slice): Simple {
@@ -3120,6 +3165,156 @@ export function storeHashmapOneCombUser(hashmapOneCombUser: HashmapOneCombUser):
             })
 
         }))(builder);
+    })
+
+}
+
+export function hashmapAug_get_l(label: HmLabel): number {
+    if ((label.kind == 'HmLabel_hml_short')) {
+        let n = label.n;
+        return n
+
+    }
+    if ((label.kind == 'HmLabel_hml_long')) {
+        let n = label.n;
+        return n
+
+    }
+    if ((label.kind == 'HmLabel_hml_same')) {
+        let n = label.n;
+        return n
+
+    }
+    throw new Error('Expected one of "HmLabel_hml_short", "HmLabel_hml_long", "HmLabel_hml_same" for type "HmLabel" while getting "label", but data does not satisfy any constructor');
+}
+
+/*
+ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} 
+  label:(HmLabel ~l n) {n = (~m) + l} 
+  node:(HashmapAugNode m X Y) = HashmapAug n X Y;
+*/
+
+export function loadHashmapAug<X, Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAug<X, Y> {
+    let label: HmLabel = loadHmLabel(slice, n);
+    let l = hashmapAug_get_l(label);
+    let node: HashmapAugNode<X, Y> = loadHashmapAugNode<X, Y>(slice, (n - l), loadX, loadY);
+    return {
+        kind: 'HashmapAug',
+        n: n,
+        m: (n - l),
+        label: label,
+        l: l,
+        node: node,
+    }
+
+}
+
+export function storeHashmapAug<X, Y>(hashmapAug: HashmapAug<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeHmLabel(hashmapAug.label)(builder);
+        storeHashmapAugNode<X, Y>(hashmapAug.node, storeX, storeY)(builder);
+    })
+
+}
+
+// ahmn_leaf#_ {X:Type} {Y:Type} extra:Y value:X = HashmapAugNode 0 X Y;
+
+/*
+ahmn_fork#_ {n:#} {X:Type} {Y:Type} left:^(HashmapAug n X Y)
+  right:^(HashmapAug n X Y) extra:Y = HashmapAugNode (n + 1) X Y;
+*/
+
+export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugNode<X, Y> {
+    if ((arg0 == 0)) {
+        let extra: Y = loadY(slice);
+        let value: X = loadX(slice);
+        return {
+            kind: 'HashmapAugNode_ahmn_leaf',
+            extra: extra,
+            value: value,
+        }
+
+    }
+    if (true) {
+        let slice1 = slice.loadRef().beginParse();
+        let left: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, (arg0 - 1), loadX, loadY);
+        let slice2 = slice.loadRef().beginParse();
+        let right: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice2, (arg0 - 1), loadX, loadY);
+        let extra: Y = loadY(slice);
+        return {
+            kind: 'HashmapAugNode_ahmn_fork',
+            n: (arg0 - 1),
+            left: left,
+            right: right,
+            extra: extra,
+        }
+
+    }
+    throw new Error('Expected one of "HashmapAugNode_ahmn_leaf", "HashmapAugNode_ahmn_fork" in loading "HashmapAugNode", but data does not satisfy any constructor');
+}
+
+export function storeHashmapAugNode<X, Y>(hashmapAugNode: HashmapAugNode<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
+    if ((hashmapAugNode.kind == 'HashmapAugNode_ahmn_leaf')) {
+        return ((builder: Builder) => {
+            storeY(hashmapAugNode.extra)(builder);
+            storeX(hashmapAugNode.value)(builder);
+        })
+
+    }
+    if ((hashmapAugNode.kind == 'HashmapAugNode_ahmn_fork')) {
+        return ((builder: Builder) => {
+            let cell1 = beginCell();
+            storeHashmapAug<X, Y>(hashmapAugNode.left, storeX, storeY)(cell1);
+            builder.storeRef(cell1);
+            let cell2 = beginCell();
+            storeHashmapAug<X, Y>(hashmapAugNode.right, storeX, storeY)(cell2);
+            builder.storeRef(cell2);
+            storeY(hashmapAugNode.extra)(builder);
+        })
+
+    }
+    throw new Error('Expected one of "HashmapAugNode_ahmn_leaf", "HashmapAugNode_ahmn_fork" in loading "HashmapAugNode", but data does not satisfy any constructor');
+}
+
+// a$_ x:(HashmapAugE 16 Grams FixedIntParam) = HashmapAugEUser;
+
+export function loadHashmapAugEUser(slice: Slice): HashmapAugEUser {
+    let x: Dictionary<number, {value: bigint, extra: FixedIntParam}> = Dictionary.load(Dictionary.Keys.Uint(16), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return {
+            extra: loadFixedIntParam(slice),
+            value: slice.loadCoins(),
+        }
+
+    }),
+    }, slice);
+    return {
+        kind: 'HashmapAugEUser',
+        x: x,
+    }
+
+}
+
+export function storeHashmapAugEUser(hashmapAugEUser: HashmapAugEUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeDict(hashmapAugEUser.x, Dictionary.Keys.Uint(16), {
+            serialize: ((arg: {value: bigint, extra: FixedIntParam}, builder: Builder) => {
+            ((arg: FixedIntParam) => {
+                return ((builder: Builder) => {
+                    storeFixedIntParam(arg)(builder);
+                })
+
+            })(arg.extra)(builder);
+            ((arg: bigint) => {
+                return ((builder: Builder) => {
+                    builder.storeCoins(arg);
+                })
+
+            })(arg.value)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }

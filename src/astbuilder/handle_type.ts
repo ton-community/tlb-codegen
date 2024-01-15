@@ -171,6 +171,17 @@ export function getType(
         throw new Error('Hashmap key should be number')
       }
       return { kind: "TLBHashmapType", key: key, value: value };
+    } else if (expr.name == "HashmapAugE") {
+      if (expr.args.length != 3) {
+        throw new Error('Not enough arguments for HashmapAugE')
+      }
+      let key = getType(expr.args[0], constructor, fieldTypeName)
+      let value = getType(expr.args[1], constructor, fieldTypeName)
+      let extra = getType(expr.args[2], constructor, fieldTypeName)
+      if (key.kind != 'TLBExprMathType') {
+        throw new Error('Hashmap key should be number')
+      }
+      return { kind: "TLBHashmapType", key: key, value: value, extra: extra };
     } else if (
       expr.name == "VarUInteger" &&
       (expr.args[0] instanceof MathExpr ||

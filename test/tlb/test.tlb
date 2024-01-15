@@ -168,3 +168,17 @@ a$_ {n:#} x:(HashmapE (n+2) uint5) = HashmapExprKey n;
 a$_ x:(HashmapExprKey 5) = HashmapExprKeyUser;
 a$_ {A: Type} x:(HashmapE 200 (OneComb A)) = HashmapOneComb A;
 a$_ x:(HashmapOneComb uint5) = HashmapOneCombUser;
+
+ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} 
+  label:(HmLabel ~l n) {n = (~m) + l} 
+  node:(HashmapAugNode m X Y) = HashmapAug n X Y;
+ahmn_leaf#_ {X:Type} {Y:Type} extra:Y value:X = HashmapAugNode 0 X Y;
+ahmn_fork#_ {n:#} {X:Type} {Y:Type} left:^(HashmapAug n X Y)
+  right:^(HashmapAug n X Y) extra:Y = HashmapAugNode (n + 1) X Y;
+
+ahme_empty$0 {n:#} {X:Type} {Y:Type} extra:Y 
+          = HashmapAugE n X Y;
+ahme_root$1 {n:#} {X:Type} {Y:Type} root:^(HashmapAug n X Y) 
+  extra:Y = HashmapAugE n X Y;
+
+a$_ x:(HashmapAugE 16 Grams FixedIntParam) = HashmapAugEUser;

@@ -1,4 +1,3 @@
-import { Identifier } from "typescript";
 import {
   TLBCode,
   TLBConstructor,
@@ -25,6 +24,12 @@ import {
   checkKindStmt,
   checkTagExpr,
   coverFuncCall,
+  dictAugParse,
+  dictAugTypeExpr,
+  dictKeyExpr, dictLoadExpr,
+  dictStoreStmt,
+  dictTypeParamExpr,
+  dictValueStore,
   inSeparateRef,
   loadExprForParam,
   loadFromNewSlice,
@@ -70,7 +75,6 @@ import {
   tIfStatement,
   tImportDeclaration,
   tMemberExpression,
-  tNumericLiteral,
   tObjectExpression,
   tObjectProperty,
   tReturnStatement,
@@ -82,7 +86,7 @@ import {
   tTypedIdentifier,
   tUnionTypeDeclaration,
   tUnionTypeExpression,
-  toCode,
+  toCode
 } from "./tsgen";
 import {
   ExprForParam,
@@ -94,7 +98,6 @@ import {
   getTypeParametersExpression,
   isBigInt,
 } from "./utils";
-import { dictKeyExpr, dictLoadExpr, dictValueStore, dictTypeParamExpr, dictStoreStmt } from "./complex_expr";
 
 /*
 
@@ -903,18 +906,25 @@ export class TypescriptGenerator implements CodeGenerator {
     } else if (fieldType.kind == "TLBHashmapType") {
       let keyForLoad: Expression = dictKeyExpr(fieldType.key, ctx);
       let keyForStore: Expression = dictKeyExpr(fieldType.key, ctx, ctx.typeName);
-      let subExprInfo = this.handleType(
-        field,
-        fieldType.value,
-        false,
-        ctx,
-        slicePrefix,
-        argIndex
-      );
+      let subExprInfo = this.handleType(field, fieldType.value, fieldType.extra != undefined, ctx, slicePrefix, argIndex);
+
       
       if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeFunctionExpr) {
-        result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice)
-        let valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr)
+        let valueStore: Expression;
+        if (fieldType.extra && subExprInfo.loadExpr) {
+          let extraInfo = this.handleType(field, fieldType.extra, true, ctx, slicePrefix, argIndex);
+          if (extraInfo.typeParamExpr) {
+            subExprInfo.typeParamExpr = dictAugTypeExpr(subExprInfo.typeParamExpr, extraInfo.typeParamExpr)
+          }
+          valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr, extraInfo.storeFunctionExpr)
+
+          if (extraInfo.loadExpr) {
+            result.loadExpr = dictLoadExpr(keyForLoad, dictAugParse(extraInfo.loadExpr, subExprInfo.loadExpr), currentSlice) 
+          }
+        } else {
+          valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr)
+          result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice)  
+        }
         result.typeParamExpr = dictTypeParamExpr(fieldType, subExprInfo.typeParamExpr) 
         result.storeStmtInside = dictStoreStmt(currentCell, storeParametersInside, keyForStore, valueStore)
         result.storeStmtOutside = dictStoreStmt(currentCell, storeParametersOutside, keyForStore, valueStore)
@@ -1038,4 +1048,3 @@ export class TypescriptGenerator implements CodeGenerator {
     return result;
   }
 }
-

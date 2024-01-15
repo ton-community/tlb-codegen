@@ -85,6 +85,11 @@ export interface ObjectExpression extends ASTNode {
   objectValues: Array<ObjectProperty>;
 }
 
+export interface StructExpression extends ASTNode {
+  type: "StructExpression";
+  fields: Array<TypedIdentifier>;
+}
+
 export interface FunctionCall extends ASTNode {
   type: "FunctionCall";
   functionId: Expression;
@@ -176,7 +181,8 @@ export type TypeExpression =
   | Identifier
   | TypeWithParameters
   | ArrowFunctionType
-  | UnionTypeExpression;
+  | UnionTypeExpression
+  | StructExpression;
 export type Statement =
   | ReturnStatement
   | ExpressionStatement
@@ -189,6 +195,7 @@ export type Expression =
   | TypeExpression
   | Literal
   | ObjectExpression
+  | StructExpression
   | FunctionCall
   | MemberExpression
   | ArrowFunctionExpression
@@ -297,6 +304,13 @@ export function tObjectExpression(
 ): ObjectExpression {
   return { type: "ObjectExpression", objectValues: objectValues };
 }
+
+export function tStructExpression(
+  fields: Array<TypedIdentifier>
+): StructExpression {
+  return { type: "StructExpression", fields: fields };
+}
+
 
 export function tReturnStatement(returnValue: Expression): ReturnStatement {
   return { type: "ReturnStatement", returnValue: returnValue };
@@ -571,6 +585,12 @@ export function toCode(
         code.add(toCode(objectValue).render() + ",");
       });
     });
+    code.add("}", false);
+  }
+
+  if (node.type == "StructExpression") {
+    code.add("{", false);
+    toCodeArray(node.fields, code, ", ");
     code.add("}", false);
   }
 

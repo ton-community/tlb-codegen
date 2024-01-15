@@ -202,31 +202,6 @@ export interface HashmapAugNode_ahmn_fork<X, Y> {
 }
 
 /*
-ahme_empty$0 {n:#} {X:Type} {Y:Type} extra:Y 
-          = HashmapAugE n X Y;
-*/
-
-/*
-ahme_root$1 {n:#} {X:Type} {Y:Type} root:^(HashmapAug n X Y) 
-  extra:Y = HashmapAugE n X Y;
-*/
-
-export type HashmapAugE<X, Y> = HashmapAugE_ahme_empty<X, Y> | HashmapAugE_ahme_root<X, Y>;
-
-export interface HashmapAugE_ahme_empty<X, Y> {
-    readonly kind: 'HashmapAugE_ahme_empty';
-    readonly n: number;
-    readonly extra: Y;
-}
-
-export interface HashmapAugE_ahme_root<X, Y> {
-    readonly kind: 'HashmapAugE_ahme_root';
-    readonly n: number;
-    readonly root: HashmapAug<X, Y>;
-    readonly extra: Y;
-}
-
-/*
 vhm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
            {n = (~m) + l} node:(VarHashmapNode m X) 
            = VarHashmap n X;
@@ -707,7 +682,7 @@ export interface ImportFees {
 
 export interface InMsgDescr {
     readonly kind: 'InMsgDescr';
-    readonly anon0: HashmapAugE<InMsg, ImportFees>;
+    readonly anon0: Dictionary<bigint, {value: InMsg, extra: ImportFees}>;
 }
 
 /*
@@ -816,14 +791,14 @@ export interface EnqueuedMsg {
 
 export interface OutMsgDescr {
     readonly kind: 'OutMsgDescr';
-    readonly anon0: HashmapAugE<OutMsg, CurrencyCollection>;
+    readonly anon0: Dictionary<bigint, {value: OutMsg, extra: CurrencyCollection}>;
 }
 
 // _ (HashmapAugE 352 EnqueuedMsg uint64) = OutMsgQueue;
 
 export interface OutMsgQueue {
     readonly kind: 'OutMsgQueue';
-    readonly anon0: HashmapAugE<EnqueuedMsg, number>;
+    readonly anon0: Dictionary<bigint, {value: EnqueuedMsg, extra: number}>;
 }
 
 // processed_upto$_ last_msg_lt:uint64 last_msg_hash:bits256 = ProcessedUpto;
@@ -1007,7 +982,7 @@ export interface DepthBalanceInfo {
 
 export interface ShardAccounts {
     readonly kind: 'ShardAccounts';
-    readonly anon0: HashmapAugE<ShardAccount, DepthBalanceInfo>;
+    readonly anon0: Dictionary<bigint, {value: ShardAccount, extra: DepthBalanceInfo}>;
 }
 
 /*
@@ -1088,7 +1063,7 @@ export interface AccountBlock {
 
 export interface ShardAccountBlocks {
     readonly kind: 'ShardAccountBlocks';
-    readonly anon0: HashmapAugE<AccountBlock, CurrencyCollection>;
+    readonly anon0: Dictionary<bigint, {value: AccountBlock, extra: CurrencyCollection}>;
 }
 
 /*
@@ -1933,7 +1908,7 @@ export interface ShardFeeCreated {
 
 export interface ShardFees {
     readonly kind: 'ShardFees';
-    readonly anon0: HashmapAugE<ShardFeeCreated, ShardFeeCreated>;
+    readonly anon0: Dictionary<bigint, {value: ShardFeeCreated, extra: ShardFeeCreated}>;
 }
 
 /*
@@ -1995,7 +1970,7 @@ export interface KeyExtBlkRef {
 
 export interface OldMcBlocksInfo {
     readonly kind: 'OldMcBlocksInfo';
-    readonly anon0: HashmapAugE<KeyExtBlkRef, KeyMaxLt>;
+    readonly anon0: Dictionary<number, {value: KeyExtBlkRef, extra: KeyMaxLt}>;
 }
 
 // counters#_ last_updated:uint32 total:uint64 cnt2048:uint64 cnt65536:uint64 = Counters;
@@ -2029,7 +2004,7 @@ export interface BlockCreateStats_block_create_stats {
 
 export interface BlockCreateStats_block_create_stats_ext {
     readonly kind: 'BlockCreateStats_block_create_stats_ext';
-    readonly counters: HashmapAugE<CreatorStats, number>;
+    readonly counters: Dictionary<bigint, {value: CreatorStats, extra: number}>;
 }
 
 /*
@@ -4335,64 +4310,6 @@ export function storeHashmapAugNode<X, Y>(hashmapAugNode: HashmapAugNode<X, Y>, 
     throw new Error('Expected one of "HashmapAugNode_ahmn_leaf", "HashmapAugNode_ahmn_fork" in loading "HashmapAugNode", but data does not satisfy any constructor');
 }
 
-/*
-ahme_empty$0 {n:#} {X:Type} {Y:Type} extra:Y 
-          = HashmapAugE n X Y;
-*/
-
-/*
-ahme_root$1 {n:#} {X:Type} {Y:Type} root:^(HashmapAug n X Y) 
-  extra:Y = HashmapAugE n X Y;
-*/
-
-export function loadHashmapAugE<X, Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugE<X, Y> {
-    if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-        slice.loadUint(1);
-        let extra: Y = loadY(slice);
-        return {
-            kind: 'HashmapAugE_ahme_empty',
-            n: n,
-            extra: extra,
-        }
-
-    }
-    if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-        slice.loadUint(1);
-        let slice1 = slice.loadRef().beginParse();
-        let root: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, n, loadX, loadY);
-        let extra: Y = loadY(slice);
-        return {
-            kind: 'HashmapAugE_ahme_root',
-            n: n,
-            root: root,
-            extra: extra,
-        }
-
-    }
-    throw new Error('Expected one of "HashmapAugE_ahme_empty", "HashmapAugE_ahme_root" in loading "HashmapAugE", but data does not satisfy any constructor');
-}
-
-export function storeHashmapAugE<X, Y>(hashmapAugE: HashmapAugE<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
-    if ((hashmapAugE.kind == 'HashmapAugE_ahme_empty')) {
-        return ((builder: Builder) => {
-            builder.storeUint(0b0, 1);
-            storeY(hashmapAugE.extra)(builder);
-        })
-
-    }
-    if ((hashmapAugE.kind == 'HashmapAugE_ahme_root')) {
-        return ((builder: Builder) => {
-            builder.storeUint(0b1, 1);
-            let cell1 = beginCell();
-            storeHashmapAug<X, Y>(hashmapAugE.root, storeX, storeY)(cell1);
-            builder.storeRef(cell1);
-            storeY(hashmapAugE.extra)(builder);
-        })
-
-    }
-    throw new Error('Expected one of "HashmapAugE_ahme_empty", "HashmapAugE_ahme_root" in loading "HashmapAugE", but data does not satisfy any constructor');
-}
-
 export function varHashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
         let n = label.n;
@@ -5802,7 +5719,16 @@ export function storeImportFees(importFees: ImportFees): (builder: Builder) => v
 // _ (HashmapAugE 256 InMsg ImportFees) = InMsgDescr;
 
 export function loadInMsgDescr(slice: Slice): InMsgDescr {
-    let anon0: HashmapAugE<InMsg, ImportFees> = loadHashmapAugE<InMsg, ImportFees>(slice, 256, loadInMsg, loadImportFees);
+    let anon0: Dictionary<bigint, {value: InMsg, extra: ImportFees}> = Dictionary.load(Dictionary.Keys.BigUint(256), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return {
+            extra: loadImportFees(slice),
+            value: loadInMsg(slice),
+        }
+
+    }),
+    }, slice);
     return {
         kind: 'InMsgDescr',
         anon0: anon0,
@@ -5812,7 +5738,23 @@ export function loadInMsgDescr(slice: Slice): InMsgDescr {
 
 export function storeInMsgDescr(inMsgDescr: InMsgDescr): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapAugE<InMsg, ImportFees>(inMsgDescr.anon0, storeInMsg, storeImportFees)(builder);
+        builder.storeDict(inMsgDescr.anon0, Dictionary.Keys.BigUint(256), {
+            serialize: ((arg: {value: InMsg, extra: ImportFees}, builder: Builder) => {
+            ((arg: ImportFees) => {
+                return ((builder: Builder) => {
+                    storeImportFees(arg)(builder);
+                })
+
+            })(arg.extra)(builder);
+            ((arg: InMsg) => {
+                return ((builder: Builder) => {
+                    storeInMsg(arg)(builder);
+                })
+
+            })(arg.value)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -6104,7 +6046,16 @@ export function storeEnqueuedMsg(enqueuedMsg: EnqueuedMsg): (builder: Builder) =
 // _ (HashmapAugE 256 OutMsg CurrencyCollection) = OutMsgDescr;
 
 export function loadOutMsgDescr(slice: Slice): OutMsgDescr {
-    let anon0: HashmapAugE<OutMsg, CurrencyCollection> = loadHashmapAugE<OutMsg, CurrencyCollection>(slice, 256, loadOutMsg, loadCurrencyCollection);
+    let anon0: Dictionary<bigint, {value: OutMsg, extra: CurrencyCollection}> = Dictionary.load(Dictionary.Keys.BigUint(256), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return {
+            extra: loadCurrencyCollection(slice),
+            value: loadOutMsg(slice),
+        }
+
+    }),
+    }, slice);
     return {
         kind: 'OutMsgDescr',
         anon0: anon0,
@@ -6114,7 +6065,23 @@ export function loadOutMsgDescr(slice: Slice): OutMsgDescr {
 
 export function storeOutMsgDescr(outMsgDescr: OutMsgDescr): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapAugE<OutMsg, CurrencyCollection>(outMsgDescr.anon0, storeOutMsg, storeCurrencyCollection)(builder);
+        builder.storeDict(outMsgDescr.anon0, Dictionary.Keys.BigUint(256), {
+            serialize: ((arg: {value: OutMsg, extra: CurrencyCollection}, builder: Builder) => {
+            ((arg: CurrencyCollection) => {
+                return ((builder: Builder) => {
+                    storeCurrencyCollection(arg)(builder);
+                })
+
+            })(arg.extra)(builder);
+            ((arg: OutMsg) => {
+                return ((builder: Builder) => {
+                    storeOutMsg(arg)(builder);
+                })
+
+            })(arg.value)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -6122,10 +6089,16 @@ export function storeOutMsgDescr(outMsgDescr: OutMsgDescr): (builder: Builder) =
 // _ (HashmapAugE 352 EnqueuedMsg uint64) = OutMsgQueue;
 
 export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
-    let anon0: HashmapAugE<EnqueuedMsg, number> = loadHashmapAugE<EnqueuedMsg, number>(slice, 352, loadEnqueuedMsg, ((slice: Slice) => {
-        return slice.loadUint(64)
+    let anon0: Dictionary<bigint, {value: EnqueuedMsg, extra: number}> = Dictionary.load(Dictionary.Keys.BigUint(352), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return {
+            extra: slice.loadUint(64),
+            value: loadEnqueuedMsg(slice),
+        }
 
-    }));
+    }),
+    }, slice);
     return {
         kind: 'OutMsgQueue',
         anon0: anon0,
@@ -6135,12 +6108,23 @@ export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
 
 export function storeOutMsgQueue(outMsgQueue: OutMsgQueue): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapAugE<EnqueuedMsg, number>(outMsgQueue.anon0, storeEnqueuedMsg, ((arg: number) => {
-            return ((builder: Builder) => {
-                builder.storeUint(arg, 64);
-            })
+        builder.storeDict(outMsgQueue.anon0, Dictionary.Keys.BigUint(352), {
+            serialize: ((arg: {value: EnqueuedMsg, extra: number}, builder: Builder) => {
+            ((arg: number) => {
+                return ((builder: Builder) => {
+                    builder.storeUint(arg, 64);
+                })
 
-        }))(builder);
+            })(arg.extra)(builder);
+            ((arg: EnqueuedMsg) => {
+                return ((builder: Builder) => {
+                    storeEnqueuedMsg(arg)(builder);
+                })
+
+            })(arg.value)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -6608,7 +6592,16 @@ export function storeDepthBalanceInfo(depthBalanceInfo: DepthBalanceInfo): (buil
 // _ (HashmapAugE 256 ShardAccount DepthBalanceInfo) = ShardAccounts;
 
 export function loadShardAccounts(slice: Slice): ShardAccounts {
-    let anon0: HashmapAugE<ShardAccount, DepthBalanceInfo> = loadHashmapAugE<ShardAccount, DepthBalanceInfo>(slice, 256, loadShardAccount, loadDepthBalanceInfo);
+    let anon0: Dictionary<bigint, {value: ShardAccount, extra: DepthBalanceInfo}> = Dictionary.load(Dictionary.Keys.BigUint(256), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return {
+            extra: loadDepthBalanceInfo(slice),
+            value: loadShardAccount(slice),
+        }
+
+    }),
+    }, slice);
     return {
         kind: 'ShardAccounts',
         anon0: anon0,
@@ -6618,7 +6611,23 @@ export function loadShardAccounts(slice: Slice): ShardAccounts {
 
 export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapAugE<ShardAccount, DepthBalanceInfo>(shardAccounts.anon0, storeShardAccount, storeDepthBalanceInfo)(builder);
+        builder.storeDict(shardAccounts.anon0, Dictionary.Keys.BigUint(256), {
+            serialize: ((arg: {value: ShardAccount, extra: DepthBalanceInfo}, builder: Builder) => {
+            ((arg: DepthBalanceInfo) => {
+                return ((builder: Builder) => {
+                    storeDepthBalanceInfo(arg)(builder);
+                })
+
+            })(arg.extra)(builder);
+            ((arg: ShardAccount) => {
+                return ((builder: Builder) => {
+                    storeShardAccount(arg)(builder);
+                })
+
+            })(arg.value)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -6901,7 +6910,16 @@ export function storeAccountBlock(accountBlock: AccountBlock): (builder: Builder
 // _ (HashmapAugE 256 AccountBlock CurrencyCollection) = ShardAccountBlocks;
 
 export function loadShardAccountBlocks(slice: Slice): ShardAccountBlocks {
-    let anon0: HashmapAugE<AccountBlock, CurrencyCollection> = loadHashmapAugE<AccountBlock, CurrencyCollection>(slice, 256, loadAccountBlock, loadCurrencyCollection);
+    let anon0: Dictionary<bigint, {value: AccountBlock, extra: CurrencyCollection}> = Dictionary.load(Dictionary.Keys.BigUint(256), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return {
+            extra: loadCurrencyCollection(slice),
+            value: loadAccountBlock(slice),
+        }
+
+    }),
+    }, slice);
     return {
         kind: 'ShardAccountBlocks',
         anon0: anon0,
@@ -6911,7 +6929,23 @@ export function loadShardAccountBlocks(slice: Slice): ShardAccountBlocks {
 
 export function storeShardAccountBlocks(shardAccountBlocks: ShardAccountBlocks): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapAugE<AccountBlock, CurrencyCollection>(shardAccountBlocks.anon0, storeAccountBlock, storeCurrencyCollection)(builder);
+        builder.storeDict(shardAccountBlocks.anon0, Dictionary.Keys.BigUint(256), {
+            serialize: ((arg: {value: AccountBlock, extra: CurrencyCollection}, builder: Builder) => {
+            ((arg: CurrencyCollection) => {
+                return ((builder: Builder) => {
+                    storeCurrencyCollection(arg)(builder);
+                })
+
+            })(arg.extra)(builder);
+            ((arg: AccountBlock) => {
+                return ((builder: Builder) => {
+                    storeAccountBlock(arg)(builder);
+                })
+
+            })(arg.value)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -9202,7 +9236,16 @@ export function storeShardFeeCreated(shardFeeCreated: ShardFeeCreated): (builder
 // _ (HashmapAugE 96 ShardFeeCreated ShardFeeCreated) = ShardFees;
 
 export function loadShardFees(slice: Slice): ShardFees {
-    let anon0: HashmapAugE<ShardFeeCreated, ShardFeeCreated> = loadHashmapAugE<ShardFeeCreated, ShardFeeCreated>(slice, 96, loadShardFeeCreated, loadShardFeeCreated);
+    let anon0: Dictionary<bigint, {value: ShardFeeCreated, extra: ShardFeeCreated}> = Dictionary.load(Dictionary.Keys.BigUint(96), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return {
+            extra: loadShardFeeCreated(slice),
+            value: loadShardFeeCreated(slice),
+        }
+
+    }),
+    }, slice);
     return {
         kind: 'ShardFees',
         anon0: anon0,
@@ -9212,7 +9255,23 @@ export function loadShardFees(slice: Slice): ShardFees {
 
 export function storeShardFees(shardFees: ShardFees): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapAugE<ShardFeeCreated, ShardFeeCreated>(shardFees.anon0, storeShardFeeCreated, storeShardFeeCreated)(builder);
+        builder.storeDict(shardFees.anon0, Dictionary.Keys.BigUint(96), {
+            serialize: ((arg: {value: ShardFeeCreated, extra: ShardFeeCreated}, builder: Builder) => {
+            ((arg: ShardFeeCreated) => {
+                return ((builder: Builder) => {
+                    storeShardFeeCreated(arg)(builder);
+                })
+
+            })(arg.extra)(builder);
+            ((arg: ShardFeeCreated) => {
+                return ((builder: Builder) => {
+                    storeShardFeeCreated(arg)(builder);
+                })
+
+            })(arg.value)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -9357,7 +9416,16 @@ export function storeKeyExtBlkRef(keyExtBlkRef: KeyExtBlkRef): (builder: Builder
 // _ (HashmapAugE 32 KeyExtBlkRef KeyMaxLt) = OldMcBlocksInfo;
 
 export function loadOldMcBlocksInfo(slice: Slice): OldMcBlocksInfo {
-    let anon0: HashmapAugE<KeyExtBlkRef, KeyMaxLt> = loadHashmapAugE<KeyExtBlkRef, KeyMaxLt>(slice, 32, loadKeyExtBlkRef, loadKeyMaxLt);
+    let anon0: Dictionary<number, {value: KeyExtBlkRef, extra: KeyMaxLt}> = Dictionary.load(Dictionary.Keys.Uint(32), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        return {
+            extra: loadKeyMaxLt(slice),
+            value: loadKeyExtBlkRef(slice),
+        }
+
+    }),
+    }, slice);
     return {
         kind: 'OldMcBlocksInfo',
         anon0: anon0,
@@ -9367,7 +9435,23 @@ export function loadOldMcBlocksInfo(slice: Slice): OldMcBlocksInfo {
 
 export function storeOldMcBlocksInfo(oldMcBlocksInfo: OldMcBlocksInfo): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmapAugE<KeyExtBlkRef, KeyMaxLt>(oldMcBlocksInfo.anon0, storeKeyExtBlkRef, storeKeyMaxLt)(builder);
+        builder.storeDict(oldMcBlocksInfo.anon0, Dictionary.Keys.Uint(32), {
+            serialize: ((arg: {value: KeyExtBlkRef, extra: KeyMaxLt}, builder: Builder) => {
+            ((arg: KeyMaxLt) => {
+                return ((builder: Builder) => {
+                    storeKeyMaxLt(arg)(builder);
+                })
+
+            })(arg.extra)(builder);
+            ((arg: KeyExtBlkRef) => {
+                return ((builder: Builder) => {
+                    storeKeyExtBlkRef(arg)(builder);
+                })
+
+            })(arg.value)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -9444,10 +9528,16 @@ export function loadBlockCreateStats(slice: Slice): BlockCreateStats {
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x34))) {
         slice.loadUint(8);
-        let counters: HashmapAugE<CreatorStats, number> = loadHashmapAugE<CreatorStats, number>(slice, 256, loadCreatorStats, ((slice: Slice) => {
-            return slice.loadUint(32)
+        let counters: Dictionary<bigint, {value: CreatorStats, extra: number}> = Dictionary.load(Dictionary.Keys.BigUint(256), {
+            serialize: () => { throw new Error('Not implemented') },
+            parse: ((slice: Slice) => {
+            return {
+                extra: slice.loadUint(32),
+                value: loadCreatorStats(slice),
+            }
 
-        }));
+        }),
+        }, slice);
         return {
             kind: 'BlockCreateStats_block_create_stats_ext',
             counters: counters,
@@ -9473,12 +9563,23 @@ export function storeBlockCreateStats(blockCreateStats: BlockCreateStats): (buil
     if ((blockCreateStats.kind == 'BlockCreateStats_block_create_stats_ext')) {
         return ((builder: Builder) => {
             builder.storeUint(0x34, 8);
-            storeHashmapAugE<CreatorStats, number>(blockCreateStats.counters, storeCreatorStats, ((arg: number) => {
-                return ((builder: Builder) => {
-                    builder.storeUint(arg, 32);
-                })
+            builder.storeDict(blockCreateStats.counters, Dictionary.Keys.BigUint(256), {
+                serialize: ((arg: {value: CreatorStats, extra: number}, builder: Builder) => {
+                ((arg: number) => {
+                    return ((builder: Builder) => {
+                        builder.storeUint(arg, 32);
+                    })
 
-            }))(builder);
+                })(arg.extra)(builder);
+                ((arg: CreatorStats) => {
+                    return ((builder: Builder) => {
+                        storeCreatorStats(arg)(builder);
+                    })
+
+                })(arg.value)(builder);
+            }),
+                parse: () => { throw new Error('Not implemented') },
+            });
         })
 
     }
