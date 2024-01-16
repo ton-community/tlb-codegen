@@ -4,15 +4,20 @@ import { generateCode } from './src/main';
 
 const cli = meow(`
 	Usage
-	  $ foo <tlbpath>
+	  $ tlbgen <tlbpath>
 
 	Options
-	  --output, -o Output file, defult = tlbpath + ".tst"
+	  --output, -o Output file, defult = tlbpath + ".ts"
+	  --language, -l Programming language result. Supported languages: ["typescript"]. Default: "typescript"
 `, {
 	flags: {
 		output: {
 			type: 'string',
-			shortFlag: 'o'
+			alias: 'o'
+		},
+		language: {
+			type: 'string',
+			alias: 'l'
 		}
 	}
 });
@@ -20,5 +25,13 @@ const cli = meow(`
 
 let input = cli.input.at(0)
 if (input) {
-	generateCode(input, input + ".ts");
+	let output = input + '.ts'
+	if (cli.flags.output) {
+		output = cli.flags.output;
+	}
+	let language = 'typescript'
+	if (cli.flags.language) {
+		language = cli.flags.language
+	}
+	generateCode(input, output, language);
 }
