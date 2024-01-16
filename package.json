@@ -1,8 +1,8 @@
 {
   "name": "@polyprogrammist_test/tlbgen",
-  "version": "1.0.2",
+  "version": "1.0.13",
   "description": "",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "jest",
     "build": "npm run compile",

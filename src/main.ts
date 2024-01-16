@@ -14,7 +14,7 @@ import { ast } from '@igorivaniuk/tlb-parser'
 import fs from 'fs'
 
 
-export function generate(tree: Program, input: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator) {
+export function generateCodeByAST(tree: Program, input: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator) {
   let oldTlbCode: TLBCodeBuild = { types: new Map<string, TLBTypeBuild>() };
 
   let splittedInput = input.split("\n");
@@ -63,7 +63,7 @@ export function generate(tree: Program, input: string, getGenerator: (tlbCode: T
   return generatedCode;
 }
 
-export function generateCode(inputPath: string, outputPath: string, resultLanguage: string) {
+export function generateCodeWithGenerator(inputPath: string, outputPath: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator) {
   const input = fs.readFileSync(
     inputPath,
     'utf-8',
@@ -71,11 +71,16 @@ export function generateCode(inputPath: string, outputPath: string, resultLangua
 
   const tree = ast(input)
 
-  fs.writeFile(outputPath, generate(tree, input, (tlbCode: TLBCode) => {
+  fs.writeFile(outputPath, generateCodeByAST(tree, input, getGenerator), () => { });
+}
+
+export function generateCode(inputPath: string, outputPath: string, resultLanguage: string) {
+  let getGenerator = (tlbCode: TLBCode) => {
     if (resultLanguage == 'typescript') {
       return new TypescriptGenerator(tlbCode)
     } else {
       throw new Error(`Result language ${resultLanguage} is not supported`)
     }
-  }), () => { });
+  }
+  generateCodeWithGenerator(inputPath, outputPath, getGenerator);
 }
