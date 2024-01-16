@@ -10,6 +10,10 @@ import { CodeBuilder } from "./generators/CodeBuilder";
 import { CodeGenerator, CommonGenDeclaration } from "./generators/generator";
 import { TypescriptGenerator } from "./generators/typescript/generator";
 
+import { ast } from '@igorivaniuk/tlb-parser'
+import fs from 'fs'
+
+
 export function generate(tree: Program, input: string) {
   let oldTlbCode: TLBCodeBuild = { types: new Map<string, TLBTypeBuild>() };
 
@@ -57,4 +61,15 @@ export function generate(tree: Program, input: string) {
   });
 
   return generatedCode;
+}
+
+export function generateCode(inputPath: string, outputPath: string) {
+  const input = fs.readFileSync(
+    inputPath,
+    'utf-8',
+  )
+
+  const tree = ast(input)
+
+  fs.writeFile(outputPath, generate(tree, input), () => { });
 }

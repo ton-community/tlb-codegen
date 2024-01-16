@@ -1,10 +1,15 @@
 {
-  "name": "amy",
-  "version": "1.0.0",
+  "name": "@polyprogrammist_test/tlbgen",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "npm run compile",
+    "compile": "tsc"
+  },
+  "bin": {
+    "tlbgen": "build/main.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +24,7 @@
     "@igorivaniuk/tlb-parser": "^0.1.0",
     "@types/jest": "^29.5.11",
     "crc-32": "^1.2.2",
+    "meow": "^9.0.0",
     "ton": "^13.9.0",
     "ts-jest": "^29.1.1"
   }
