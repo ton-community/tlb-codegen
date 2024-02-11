@@ -52,7 +52,7 @@ export function sliceLoad(slicePrefix: number[], currentSlice: string) {
           tFunctionCall(tMemberExpression(id(currentSlice), id("loadRef")), []),
           id("beginParse")
         ),
-        []
+        [id('true')]
       )
     )
   );

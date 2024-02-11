@@ -1136,7 +1136,7 @@ export function storeComplexTypedField(complexTypedField: ComplexTypedField): (b
 // a$_ a:^ExprArgUser = CellTypedField;
 
 export function loadCellTypedField(slice: Slice): CellTypedField {
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let a: ExprArgUser = loadExprArgUser(slice1);
     return {
         kind: 'CellTypedField',
@@ -1158,16 +1158,16 @@ export function storeCellTypedField(_cellTypedField: CellTypedField): (builder: 
 
 export function loadCellsSimple(slice: Slice): CellsSimple {
     let t: number = slice.loadUint(32);
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let q: number = slice1.loadUint(32);
-    let slice2 = slice.loadRef().beginParse();
+    let slice2 = slice.loadRef().beginParse(true);
     let a: number = slice2.loadUint(32);
-    let slice21 = slice2.loadRef().beginParse();
+    let slice21 = slice2.loadRef().beginParse(true);
     let e: number = slice21.loadUint(32);
-    let slice22 = slice2.loadRef().beginParse();
+    let slice22 = slice2.loadRef().beginParse(true);
     let b: number = slice22.loadUint(32);
     let d: number = slice22.loadUint(32);
-    let slice221 = slice22.loadRef().beginParse();
+    let slice221 = slice22.loadRef().beginParse(true);
     let c: number = slice221.loadUint(32);
     return {
         kind: 'CellsSimple',
@@ -1823,19 +1823,19 @@ export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X):
     let info: number = slice.loadInt(32);
     let init: Maybe<Either<X, number>> = loadMaybe<Either<X, number>>(slice, ((slice: Slice) => {
         return loadEither<X, number>(slice, loadX, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return slice1.loadInt(22)
 
         }))
 
     }));
     let other: Either<X, OneComb<X>> = loadEither<X, OneComb<X>>(slice, loadX, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadOneComb<X>(slice1, loadX)
 
     }));
     let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadX(slice1)
 
     }));
@@ -1917,7 +1917,7 @@ export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser):
 // a$_ {n:#} ref:^(BitLenArg (n + 2)) = MathExprAsCombArg (n + 2);
 
 export function loadMathExprAsCombArg(slice: Slice, arg0: number): MathExprAsCombArg {
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let ref: BitLenArg = loadBitLenArg(slice1, ((arg0 - 2) + 2));
     return {
         kind: 'MathExprAsCombArg',
@@ -2087,9 +2087,9 @@ export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Sl
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX);
         return {
             kind: 'HashmapNode_hmn_fork',
@@ -2446,7 +2446,7 @@ export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: Pa
 // a$_ msg:^(Maybe Any) = RefCombinatorAny;
 
 export function loadRefCombinatorAny(slice: Slice): RefCombinatorAny {
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let msg: Maybe<Slice> = loadMaybe<Slice>(slice1, ((slice: Slice) => {
         return slice
 
@@ -2501,7 +2501,7 @@ export function storeEqualityExpression(equalityExpression: EqualityExpression):
 export function loadConditionalRef(slice: Slice): ConditionalRef {
     let x: number = slice.loadUint(1);
     let y: Simple | undefined = (x ? ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadSimple(slice1)
 
     })(slice) : undefined);
@@ -2708,7 +2708,7 @@ export function storeCheckKeyword(checkKeyword: CheckKeyword): (builder: Builder
 export function loadRefCombinatorInRefHelper<X>(slice: Slice, loadX: (slice: Slice) => X): RefCombinatorInRefHelper<X> {
     let t: number = slice.loadUint(32);
     let y: Maybe<X> = loadMaybe<X>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadX(slice1)
 
     }));
@@ -2739,7 +2739,7 @@ export function storeRefCombinatorInRefHelper<X>(refCombinatorInRefHelper: RefCo
 // a$_ msg:^(RefCombinatorInRefHelper Any) = RefCombinatorInRef;
 
 export function loadRefCombinatorInRef(slice: Slice): RefCombinatorInRef {
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let msg: RefCombinatorInRefHelper<Slice> = loadRefCombinatorInRefHelper<Slice>(slice1, ((slice: Slice) => {
         return slice
 
@@ -2971,7 +2971,7 @@ export function loadHashmapTPCell(slice: Slice): HashmapTPCell {
     let x: Dictionary<bigint, TypedParam> = Dictionary.load(Dictionary.Keys.BigUint(100), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadTypedParam(slice1)
 
     }),
@@ -3236,9 +3236,9 @@ export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (sli
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, (arg0 - 1), loadX, loadY);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice2, (arg0 - 1), loadX, loadY);
         let extra: Y = loadY(slice);
         return {

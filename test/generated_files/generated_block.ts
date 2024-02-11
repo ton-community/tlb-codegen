@@ -3987,9 +3987,9 @@ export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Sl
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX);
         return {
             kind: 'HashmapNode_hmn_fork',
@@ -4270,9 +4270,9 @@ export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (sli
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, (arg0 - 1), loadX, loadY);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice2, (arg0 - 1), loadX, loadY);
         let extra: Y = loadY(slice);
         return {
@@ -4384,9 +4384,9 @@ export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice:
     }
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
         slice.loadUint(2);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: VarHashmap<X> = loadVarHashmap<X>(slice2, (arg0 - 1), loadX);
         let value: Maybe<X> = loadMaybe<X>(slice, loadX);
         return {
@@ -4401,7 +4401,7 @@ export function loadVarHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice:
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
         let branch: boolean = slice.loadBit();
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let child: VarHashmap<X> = loadVarHashmap<X>(slice1, (arg0 - 1), loadX);
         let value: X = loadX(slice);
         return {
@@ -4469,7 +4469,7 @@ export function loadVarHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let root: VarHashmap<X> = loadVarHashmap<X>(slice1, n, loadX);
         return {
             kind: 'VarHashmapE_vhme_root',
@@ -4568,9 +4568,9 @@ export function loadPfxHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice:
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: PfxHashmap<X> = loadPfxHashmap<X>(slice1, (arg0 - 1), loadX);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: PfxHashmap<X> = loadPfxHashmap<X>(slice2, (arg0 - 1), loadX);
         return {
             kind: 'PfxHashmapNode_phmn_fork',
@@ -4624,7 +4624,7 @@ export function loadPfxHashmapE<X>(slice: Slice, n: number, loadX: (slice: Slice
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let root: PfxHashmap<X> = loadPfxHashmap<X>(slice1, n, loadX);
         return {
             kind: 'PfxHashmapE_phme_root',
@@ -5001,17 +5001,17 @@ export function loadStateInit(slice: Slice): StateInit {
     }));
     let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock);
     let code: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1
 
     }));
     let data: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1
 
     }));
     let library: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1
 
     }));
@@ -5079,12 +5079,12 @@ export function loadStateInitWithLibs(slice: Slice): StateInitWithLibs {
     }));
     let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock);
     let code: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1
 
     }));
     let data: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1
 
     }));
@@ -5144,7 +5144,7 @@ export function storeStateInitWithLibs(stateInitWithLibs: StateInitWithLibs): (b
 
 export function loadSimpleLib(slice: Slice): SimpleLib {
     let public0: boolean = slice.loadBoolean();
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let root: Slice = slice1;
     return {
         kind: 'SimpleLib',
@@ -5174,14 +5174,14 @@ export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X): Messag
     let info: CommonMsgInfo = loadCommonMsgInfo(slice);
     let init: Maybe<Either<StateInit, StateInit>> = loadMaybe<Either<StateInit, StateInit>>(slice, ((slice: Slice) => {
         return loadEither<StateInit, StateInit>(slice, loadStateInit, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadStateInit(slice1)
 
         }))
 
     }));
     let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadX(slice1)
 
     }));
@@ -5234,14 +5234,14 @@ export function loadMessageRelaxed<X>(slice: Slice, loadX: (slice: Slice) => X):
     let info: CommonMsgInfoRelaxed = loadCommonMsgInfoRelaxed(slice);
     let init: Maybe<Either<StateInit, StateInit>> = loadMaybe<Either<StateInit, StateInit>>(slice, ((slice: Slice) => {
         return loadEither<StateInit, StateInit>(slice, loadStateInit, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadStateInit(slice1)
 
         }))
 
     }));
     let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadX(slice1)
 
     }));
@@ -5399,7 +5399,7 @@ export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
         let cur_addr: IntermediateAddress = loadIntermediateAddress(slice);
         let next_addr: IntermediateAddress = loadIntermediateAddress(slice);
         let fwd_fee_remaining: bigint = slice.loadCoins();
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
             return slice
 
@@ -5472,12 +5472,12 @@ msg_discard_tr$111 in_msg:^MsgEnvelope transaction_id:uint64
 export function loadInMsg(slice: Slice): InMsg {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b000))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
             return slice
 
         }));
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let transaction: Transaction = loadTransaction(slice2);
         return {
             kind: 'InMsg_msg_import_ext',
@@ -5488,15 +5488,15 @@ export function loadInMsg(slice: Slice): InMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b010))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
             return slice
 
         }));
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let transaction: Transaction = loadTransaction(slice2);
         let ihr_fee: bigint = slice.loadCoins();
-        let slice3 = slice.loadRef().beginParse();
+        let slice3 = slice.loadRef().beginParse(true);
         let proof_created: Slice = slice3;
         return {
             kind: 'InMsg_msg_import_ihr',
@@ -5509,9 +5509,9 @@ export function loadInMsg(slice: Slice): InMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b011))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let transaction: Transaction = loadTransaction(slice2);
         let fwd_fee: bigint = slice.loadCoins();
         return {
@@ -5524,9 +5524,9 @@ export function loadInMsg(slice: Slice): InMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b100))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let transaction: Transaction = loadTransaction(slice2);
         let fwd_fee: bigint = slice.loadCoins();
         return {
@@ -5539,9 +5539,9 @@ export function loadInMsg(slice: Slice): InMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b101))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice2);
         let transit_fee: bigint = slice.loadCoins();
         return {
@@ -5554,7 +5554,7 @@ export function loadInMsg(slice: Slice): InMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b110))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
         let transaction_id: number = slice.loadUint(64);
         let fwd_fee: bigint = slice.loadCoins();
@@ -5568,11 +5568,11 @@ export function loadInMsg(slice: Slice): InMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b111))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
         let transaction_id: number = slice.loadUint(64);
         let fwd_fee: bigint = slice.loadCoins();
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let proof_delivered: Slice = slice2;
         return {
             kind: 'InMsg_msg_discard_tr',
@@ -5803,12 +5803,12 @@ msg_export_deq_imm$100 out_msg:^MsgEnvelope
 export function loadOutMsg(slice: Slice): OutMsg {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b000))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
             return slice
 
         }));
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let transaction: Transaction = loadTransaction(slice2);
         return {
             kind: 'OutMsg_msg_export_ext',
@@ -5819,11 +5819,11 @@ export function loadOutMsg(slice: Slice): OutMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b010))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let transaction: Transaction = loadTransaction(slice2);
-        let slice3 = slice.loadRef().beginParse();
+        let slice3 = slice.loadRef().beginParse(true);
         let reimport: InMsg = loadInMsg(slice3);
         return {
             kind: 'OutMsg_msg_export_imm',
@@ -5835,9 +5835,9 @@ export function loadOutMsg(slice: Slice): OutMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b001))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let transaction: Transaction = loadTransaction(slice2);
         return {
             kind: 'OutMsg_msg_export_new',
@@ -5848,9 +5848,9 @@ export function loadOutMsg(slice: Slice): OutMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b011))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let imported: InMsg = loadInMsg(slice2);
         return {
             kind: 'OutMsg_msg_export_tr',
@@ -5861,7 +5861,7 @@ export function loadOutMsg(slice: Slice): OutMsg {
     }
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1100))) {
         slice.loadUint(4);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
         let import_block_lt: number = slice.loadUint(63);
         return {
@@ -5888,9 +5888,9 @@ export function loadOutMsg(slice: Slice): OutMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b111))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let imported: InMsg = loadInMsg(slice2);
         return {
             kind: 'OutMsg_msg_export_tr_req',
@@ -5901,9 +5901,9 @@ export function loadOutMsg(slice: Slice): OutMsg {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b100))) {
         slice.loadUint(3);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let reimport: InMsg = loadInMsg(slice2);
         return {
             kind: 'OutMsg_msg_export_deq_imm',
@@ -6023,7 +6023,7 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
 
 export function loadEnqueuedMsg(slice: Slice): EnqueuedMsg {
     let enqueued_lt: number = slice.loadUint(64);
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
     return {
         kind: 'EnqueuedMsg',
@@ -6544,7 +6544,7 @@ account_descr$_ account:^Account last_trans_hash:bits256
 */
 
 export function loadShardAccount(slice: Slice): ShardAccount {
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let account: Account = loadAccount(slice1);
     let last_trans_hash: BitString = slice.loadBits(256);
     let last_trans_lt: number = slice.loadUint(64);
@@ -6653,9 +6653,9 @@ export function loadTransaction(slice: Slice): Transaction {
         let outmsg_cnt: number = slice.loadUint(15);
         let orig_status: AccountStatus = loadAccountStatus(slice);
         let end_status: AccountStatus = loadAccountStatus(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadMessage<Slice>(slice1, ((slice: Slice) => {
                 return slice
 
@@ -6665,7 +6665,7 @@ export function loadTransaction(slice: Slice): Transaction {
         let out_msgs: Dictionary<number, Message<Slice>> = Dictionary.load(Dictionary.Keys.Uint(15), {
             serialize: () => { throw new Error('Not implemented') },
             parse: ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadMessage<Slice>(slice1, ((slice: Slice) => {
                 return slice
 
@@ -6674,9 +6674,9 @@ export function loadTransaction(slice: Slice): Transaction {
         }),
         }, slice1);
         let total_fees: CurrencyCollection = loadCurrencyCollection(slice);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice2, loadAccount);
-        let slice3 = slice.loadRef().beginParse();
+        let slice3 = slice.loadRef().beginParse(true);
         let description: TransactionDescr = loadTransactionDescr(slice3);
         return {
             kind: 'Transaction',
@@ -6766,9 +6766,9 @@ export function loadMERKLE_UPDATE<X>(slice: Slice, loadX: (slice: Slice) => X): 
         slice.loadUint(8);
         let old_hash: BitString = slice.loadBits(256);
         let new_hash: BitString = slice.loadBits(256);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let old: X = loadX(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let new0: X = loadX(slice2);
         return {
             kind: 'MERKLE_UPDATE',
@@ -6833,7 +6833,7 @@ export function loadMERKLE_PROOF<X>(slice: Slice, loadX: (slice: Slice) => X): M
         slice.loadUint(8);
         let virtual_hash: BitString = slice.loadBits(256);
         let depth: number = slice.loadUint(16);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let virtual_root: X = loadX(slice1);
         return {
             kind: 'MERKLE_PROOF',
@@ -6870,11 +6870,11 @@ export function loadAccountBlock(slice: Slice): AccountBlock {
         slice.loadUint(4);
         let account_addr: BitString = slice.loadBits(256);
         let transactions: HashmapAug<Transaction, CurrencyCollection> = loadHashmapAug<Transaction, CurrencyCollection>(slice, 64, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadTransaction(slice1)
 
         }), loadCurrencyCollection);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let state_update: HASH_UPDATE<Account> = loadHASH_UPDATE<Account>(slice1, loadAccount);
         return {
             kind: 'AccountBlock',
@@ -7104,7 +7104,7 @@ export function loadTrComputePhase(slice: Slice): TrComputePhase {
         let msg_state_used: boolean = slice.loadBoolean();
         let account_activated: boolean = slice.loadBoolean();
         let gas_fees: bigint = slice.loadCoins();
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let gas_used: bigint = slice1.loadVarUintBig(bitLen((7 - 1)));
         let gas_limit: bigint = slice1.loadVarUintBig(bitLen((7 - 1)));
         let gas_credit: Maybe<bigint> = loadMaybe<bigint>(slice1, ((slice: Slice) => {
@@ -7473,7 +7473,7 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadTrActionPhase(slice1)
 
         }));
@@ -7508,7 +7508,7 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         let storage_ph: TrStoragePhase = loadTrStoragePhase(slice);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadTrActionPhase(slice1)
 
         }));
@@ -7531,7 +7531,7 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadTrActionPhase(slice1)
 
         }));
@@ -7551,7 +7551,7 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0101))) {
         slice.loadUint(4);
         let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prepare_transaction: Transaction = loadTransaction(slice1);
         let installed: boolean = slice.loadBoolean();
         return {
@@ -7578,13 +7578,13 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0111))) {
         slice.loadUint(4);
         let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prepare_transaction: Transaction = loadTransaction(slice1);
         let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
         let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadTrActionPhase(slice1)
 
         }));
@@ -7829,7 +7829,7 @@ export function loadOutList(slice: Slice, arg0: number): OutList {
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prev: OutList = loadOutList(slice1, (arg0 - 1));
         let action: OutAction = loadOutAction(slice);
         return {
@@ -7882,7 +7882,7 @@ export function loadOutAction(slice: Slice): OutAction {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x0ec3c86d))) {
         slice.loadUint(32);
         let mode: number = slice.loadUint(8);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, ((slice: Slice) => {
             return slice
 
@@ -7896,7 +7896,7 @@ export function loadOutAction(slice: Slice): OutAction {
     }
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xad4de08e))) {
         slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let new_code: Slice = slice1;
         return {
             kind: 'OutAction_action_set_code',
@@ -7989,7 +7989,7 @@ export function loadLibRef(slice: Slice): LibRef {
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let library: Slice = slice1;
         return {
             kind: 'LibRef_libref_ref',
@@ -8023,7 +8023,7 @@ export function storeLibRef(libRef: LibRef): (builder: Builder) => void {
 // out_list_node$_ prev:^Cell action:OutAction = OutListNode;
 
 export function loadOutListNode(slice: Slice): OutListNode {
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let prev: Slice = slice1;
     let action: OutAction = loadOutAction(slice);
     return {
@@ -8183,12 +8183,12 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
         let gen_utime: number = slice.loadUint(32);
         let gen_lt: number = slice.loadUint(64);
         let min_ref_mc_seqno: number = slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let out_msg_queue_info: OutMsgQueueInfo = loadOutMsgQueueInfo(slice1);
         let before_split: number = slice.loadUint(1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let accounts: ShardAccounts = loadShardAccounts(slice2);
-        let slice3 = slice.loadRef().beginParse();
+        let slice3 = slice.loadRef().beginParse(true);
         let overload_history: number = slice3.loadUint(64);
         let underload_history: number = slice3.loadUint(64);
         let total_balance: CurrencyCollection = loadCurrencyCollection(slice3);
@@ -8199,7 +8199,7 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
         }, slice3);
         let master_ref: Maybe<BlkMasterInfo> = loadMaybe<BlkMasterInfo>(slice3, loadBlkMasterInfo);
         let custom: Maybe<McStateExtra> = loadMaybe<McStateExtra>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadMcStateExtra(slice1)
 
         }));
@@ -8278,9 +8278,9 @@ export function storeShardStateUnsplit(shardStateUnsplit: ShardStateUnsplit): (b
 export function loadShardState(slice: Slice): ShardState {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x5f327da5))) {
         slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: ShardStateUnsplit = loadShardStateUnsplit(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: ShardStateUnsplit = loadShardStateUnsplit(slice2);
         return {
             kind: 'ShardState_split_state',
@@ -8330,7 +8330,7 @@ shared_lib_descr$00 lib:^Cell publishers:(Hashmap 256 True)
 export function loadLibDescr(slice: Slice): LibDescr {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
         slice.loadUint(2);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let lib: Slice = slice1;
         let publishers: Hashmap<True> = loadHashmap<True>(slice, 256, loadTrue);
         return {
@@ -8402,14 +8402,14 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
         let prev_key_block_seqno: number = slice.loadUint(32);
         let gen_software: GlobalVersion | undefined = ((flags & (1 << 0)) ? loadGlobalVersion(slice) : undefined);
         let master_ref: BlkMasterInfo | undefined = (not_master ? ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadBlkMasterInfo(slice1)
 
         })(slice) : undefined);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prev_ref: BlkPrevInfo = loadBlkPrevInfo(slice1, after_merge);
         let prev_vert_ref: BlkPrevInfo | undefined = (vert_seqno_incr ? ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadBlkPrevInfo(slice1, 0)
 
         })(slice) : undefined);
@@ -8517,9 +8517,9 @@ export function loadBlkPrevInfo(slice: Slice, arg0: number): BlkPrevInfo {
 
     }
     if ((arg0 == 1)) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prev1: ExtBlkRef = loadExtBlkRef(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let prev2: ExtBlkRef = loadExtBlkRef(slice2);
         return {
             kind: 'BlkPrevInfo_prev_blks_info',
@@ -8563,13 +8563,13 @@ export function loadBlock(slice: Slice): Block {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x11ef55aa))) {
         slice.loadUint(32);
         let global_id: number = slice.loadInt(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let info: BlockInfo = loadBlockInfo(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let value_flow: ValueFlow = loadValueFlow(slice2);
         let cell3 = slice.loadRef();
         let state_update = cell3;
-        let slice4 = slice.loadRef().beginParse();
+        let slice4 = slice.loadRef().beginParse(true);
         let extra: BlockExtra = loadBlockExtra(slice4);
         return {
             kind: 'Block',
@@ -8614,16 +8614,16 @@ block_extra in_msg_descr:^InMsgDescr
 export function loadBlockExtra(slice: Slice): BlockExtra {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x4a33f6fd))) {
         slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let in_msg_descr: InMsgDescr = loadInMsgDescr(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let out_msg_descr: OutMsgDescr = loadOutMsgDescr(slice2);
-        let slice3 = slice.loadRef().beginParse();
+        let slice3 = slice.loadRef().beginParse(true);
         let account_blocks: ShardAccountBlocks = loadShardAccountBlocks(slice3);
         let rand_seed: BitString = slice.loadBits(256);
         let created_by: BitString = slice.loadBits(256);
         let custom: Maybe<McBlockExtra> = loadMaybe<McBlockExtra>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadMcBlockExtra(slice1)
 
         }));
@@ -8700,13 +8700,13 @@ value_flow_v2#3ebf98b7 ^[ from_prev_blk:CurrencyCollection
 export function loadValueFlow(slice: Slice): ValueFlow {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xb8e48dfb))) {
         slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let from_prev_blk: CurrencyCollection = loadCurrencyCollection(slice1);
         let to_next_blk: CurrencyCollection = loadCurrencyCollection(slice1);
         let imported: CurrencyCollection = loadCurrencyCollection(slice1);
         let exported: CurrencyCollection = loadCurrencyCollection(slice1);
         let fees_collected: CurrencyCollection = loadCurrencyCollection(slice);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let fees_imported: CurrencyCollection = loadCurrencyCollection(slice2);
         let recovered: CurrencyCollection = loadCurrencyCollection(slice2);
         let created: CurrencyCollection = loadCurrencyCollection(slice2);
@@ -8727,14 +8727,14 @@ export function loadValueFlow(slice: Slice): ValueFlow {
     }
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x3ebf98b7))) {
         slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let from_prev_blk: CurrencyCollection = loadCurrencyCollection(slice1);
         let to_next_blk: CurrencyCollection = loadCurrencyCollection(slice1);
         let imported: CurrencyCollection = loadCurrencyCollection(slice1);
         let exported: CurrencyCollection = loadCurrencyCollection(slice1);
         let fees_collected: CurrencyCollection = loadCurrencyCollection(slice);
         let burned: CurrencyCollection = loadCurrencyCollection(slice);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let fees_imported: CurrencyCollection = loadCurrencyCollection(slice2);
         let recovered: CurrencyCollection = loadCurrencyCollection(slice2);
         let created: CurrencyCollection = loadCurrencyCollection(slice2);
@@ -8819,9 +8819,9 @@ export function loadBinTree<X>(slice: Slice, loadX: (slice: Slice) => X): BinTre
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: BinTree<X> = loadBinTree<X>(slice1, loadX);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: BinTree<X> = loadBinTree<X>(slice2, loadX);
         return {
             kind: 'BinTree_bt_fork',
@@ -9017,7 +9017,7 @@ export function loadShardDescr(slice: Slice): ShardDescr {
         let min_ref_mc_seqno: number = slice.loadUint(32);
         let gen_utime: number = slice.loadUint(32);
         let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let fees_collected: CurrencyCollection = loadCurrencyCollection(slice1);
         let funds_created: CurrencyCollection = loadCurrencyCollection(slice1);
         if ((!(flags == 0))) {
@@ -9118,7 +9118,7 @@ export function loadShardHashes(slice: Slice): ShardHashes {
     let anon0: Dictionary<number, BinTree<ShardDescr>> = Dictionary.load(Dictionary.Keys.Uint(32), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadBinTree<ShardDescr>(slice1, loadShardDescr)
 
     }),
@@ -9171,9 +9171,9 @@ export function loadBinTreeAug<X, Y>(slice: Slice, loadX: (slice: Slice) => X, l
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let left: BinTreeAug<X, Y> = loadBinTreeAug<X, Y>(slice1, loadX, loadY);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let right: BinTreeAug<X, Y> = loadBinTreeAug<X, Y>(slice2, loadX, loadY);
         let extra: Y = loadY(slice);
         return {
@@ -9283,9 +9283,9 @@ _ config_addr:bits256 config:^(Hashmap 32 ^Cell)
 
 export function loadConfigParams(slice: Slice): ConfigParams {
     let config_addr: BitString = slice.loadBits(256);
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let config: Hashmap<Slice> = loadHashmap<Slice>(slice1, 32, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1
 
     }));
@@ -9605,7 +9605,7 @@ export function loadMcStateExtra(slice: Slice): McStateExtra {
         slice.loadUint(16);
         let shard_hashes: ShardHashes = loadShardHashes(slice);
         let config: ConfigParams = loadConfigParams(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let flags: number = slice1.loadUint(16);
         let validator_info: ValidatorInfo = loadValidatorInfo(slice1);
         let prev_blocks: OldMcBlocksInfo = loadOldMcBlocksInfo(slice1);
@@ -9709,7 +9709,7 @@ chained_signature#f signed_cert:^SignedCertificate temp_key_signature:CryptoSign
 export function loadCryptoSignature(slice: Slice): CryptoSignature {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0xf))) {
         slice.loadUint(4);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let signed_cert: SignedCertificate = loadSignedCertificate(slice1);
         let temp_key_signature: CryptoSignatureSimple = loadCryptoSignatureSimple(slice);
         return {
@@ -9865,18 +9865,18 @@ export function loadMcBlockExtra(slice: Slice): McBlockExtra {
         let key_block: number = slice.loadUint(1);
         let shard_hashes: ShardHashes = loadShardHashes(slice);
         let shard_fees: ShardFees = loadShardFees(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prev_blk_signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), {
             serialize: () => { throw new Error('Not implemented') },
             parse: loadCryptoSignaturePair,
         }, slice1);
         let recover_create_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadInMsg(slice1)
 
         }));
         let mint_msg: Maybe<InMsg> = loadMaybe<InMsg>(slice1, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadInMsg(slice1)
 
         }));
@@ -11034,9 +11034,9 @@ export function storeConfigProposalSetup(configProposalSetup: ConfigProposalSetu
 export function loadConfigVotingSetup(slice: Slice): ConfigVotingSetup {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x91))) {
         slice.loadUint(8);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let normal_params: ConfigProposalSetup = loadConfigProposalSetup(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let critical_params: ConfigProposalSetup = loadConfigProposalSetup(slice2);
         return {
             kind: 'ConfigVotingSetup',
@@ -11071,7 +11071,7 @@ export function loadConfigProposal(slice: Slice): ConfigProposal {
         slice.loadUint(8);
         let param_id: number = slice.loadInt(32);
         let param_value: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return slice1
 
         }));
@@ -11123,7 +11123,7 @@ export function loadConfigProposalStatus(slice: Slice): ConfigProposalStatus {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xce))) {
         slice.loadUint(8);
         let expires: number = slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let proposal: ConfigProposal = loadConfigProposal(slice1);
         let is_critical: boolean = slice.loadBoolean();
         let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), {
@@ -12157,7 +12157,7 @@ export function storeValidatorTempKey(validatorTempKey: ValidatorTempKey): (buil
 export function loadValidatorSignedTempKey(slice: Slice): ValidatorSignedTempKey {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0x4))) {
         slice.loadUint(4);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let key: ValidatorTempKey = loadValidatorTempKey(slice1);
         let signature: CryptoSignature = loadCryptoSignature(slice);
         return {
@@ -12488,7 +12488,7 @@ export function loadJettonBridgeParams(slice: Slice): JettonBridgeParams {
         }),
         }, slice);
         let state_flags: number = slice.loadUint(8);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prices: JettonBridgePrices = loadJettonBridgePrices(slice1);
         let external_chain_address: BitString = slice.loadBits(256);
         return {
@@ -12621,10 +12621,10 @@ export function loadBlockProof(slice: Slice): BlockProof {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xc3))) {
         slice.loadUint(8);
         let proof_for: BlockIdExt = loadBlockIdExt(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let root: Slice = slice1;
         let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadBlockSignatures(slice1)
 
         }));
@@ -12671,10 +12671,10 @@ export function loadProofChain(slice: Slice, arg0: number): ProofChain {
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let root: Slice = slice1;
         let prev: ProofChain | undefined = ((arg0 - 1) ? ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadProofChain(slice1, (arg0 - 1))
 
         })(slice) : undefined);
@@ -12722,7 +12722,7 @@ export function loadTopBlockDescr(slice: Slice): TopBlockDescr {
         slice.loadUint(8);
         let proof_for: BlockIdExt = loadBlockIdExt(slice);
         let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadBlockSignatures(slice1)
 
         }));
@@ -12779,7 +12779,7 @@ export function loadTopBlockDescrSet(slice: Slice): TopBlockDescrSet {
         let collection: Dictionary<bigint, TopBlockDescr> = Dictionary.load(Dictionary.Keys.BigUint(96), {
             serialize: () => { throw new Error('Not implemented') },
             parse: ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse();
+            let slice1 = slice.loadRef().beginParse(true);
             return loadTopBlockDescr(slice1)
 
         }),
@@ -12824,9 +12824,9 @@ export function loadProducerInfo(slice: Slice): ProducerInfo {
         slice.loadUint(8);
         let utime: number = slice.loadUint(32);
         let mc_blk_ref: ExtBlkRef = loadExtBlkRef(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let state_proof: MERKLE_PROOF<Block> = loadMERKLE_PROOF<Block>(slice1, loadBlock);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let prod_proof: MERKLE_PROOF<ShardState> = loadMERKLE_PROOF<ShardState>(slice2, loadShardState);
         return {
             kind: 'ProducerInfo',
@@ -12863,7 +12863,7 @@ export function loadComplaintDescr(slice: Slice): ComplaintDescr {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x450e8bd9))) {
         slice.loadUint(32);
         let from_utime: number = slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prod_info: ProducerInfo = loadProducerInfo(slice1);
         return {
             kind: 'ComplaintDescr_no_blk_gen',
@@ -12874,9 +12874,9 @@ export function loadComplaintDescr(slice: Slice): ComplaintDescr {
     }
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x4737b0ca))) {
         slice.loadUint(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let prod_info_old: ProducerInfo = loadProducerInfo(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let prod_info_new: ProducerInfo = loadProducerInfo(slice2);
         return {
             kind: 'ComplaintDescr_no_blk_gen_diff',
@@ -12920,7 +12920,7 @@ export function loadValidatorComplaint(slice: Slice): ValidatorComplaint {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xbc))) {
         slice.loadUint(8);
         let validator_pubkey: BitString = slice.loadBits(256);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let description: ComplaintDescr = loadComplaintDescr(slice1);
         let created_at: number = slice.loadUint(32);
         let severity: number = slice.loadUint(8);
@@ -12966,7 +12966,7 @@ export function storeValidatorComplaint(validatorComplaint: ValidatorComplaint):
 export function loadValidatorComplaintStatus(slice: Slice): ValidatorComplaintStatus {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x2d))) {
         slice.loadUint(8);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let complaint: ValidatorComplaint = loadValidatorComplaint(slice1);
         let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), {
             serialize: () => { throw new Error('Not implemented') },
@@ -13057,7 +13057,7 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
         slice.loadUint(8);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let _cell: Slice = slice1;
         return {
             kind: 'VmStackValue_vm_stk_cell',
@@ -13076,7 +13076,7 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x05))) {
         slice.loadUint(8);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let _cell: Slice = slice1;
         return {
             kind: 'VmStackValue_vm_stk_builder',
@@ -13183,7 +13183,7 @@ _ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits }
 */
 
 export function loadVmCellSlice(slice: Slice): VmCellSlice {
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let _cell: Slice = slice1;
     let st_bits: number = slice.loadUint(10);
     let end_bits: number = slice.loadUint(10);
@@ -13239,7 +13239,7 @@ export function loadVmTupleRef(slice: Slice, arg0: number): VmTupleRef {
 
     }
     if ((arg0 == 1)) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let entry: VmStackValue = loadVmStackValue(slice1);
         return {
             kind: 'VmTupleRef_vm_tupref_single',
@@ -13248,7 +13248,7 @@ export function loadVmTupleRef(slice: Slice, arg0: number): VmTupleRef {
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let ref: VmTuple = loadVmTuple(slice1, ((arg0 - 2) + 2));
         return {
             kind: 'VmTupleRef_vm_tupref_any',
@@ -13298,7 +13298,7 @@ export function loadVmTuple(slice: Slice, arg0: number): VmTuple {
     }
     if (true) {
         let head: VmTupleRef = loadVmTupleRef(slice, (arg0 - 1));
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let tail: VmStackValue = loadVmStackValue(slice1);
         return {
             kind: 'VmTuple_vm_tuple_tcons',
@@ -13362,7 +13362,7 @@ export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let rest: VmStackList = loadVmStackList(slice1, (arg0 - 1));
         let tos: VmStackValue = loadVmStackValue(slice);
         return {
@@ -13427,7 +13427,7 @@ gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ]
 
 export function loadVmGasLimits(slice: Slice): VmGasLimits {
     let remaining: number = slice.loadInt(64);
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let max_limit: number = slice1.loadInt(64);
     let cur_limit: number = slice1.loadInt(64);
     let credit: number = slice1.loadInt(64);
@@ -13459,7 +13459,7 @@ export function loadVmLibraries(slice: Slice): VmLibraries {
     let libraries: Dictionary<bigint, Slice> = Dictionary.load(Dictionary.Keys.BigUint(256), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1
 
     }),
@@ -13578,7 +13578,7 @@ export function loadVmCont(slice: Slice): VmCont {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
         slice.loadUint(2);
         let cdata: VmControlData = loadVmControlData(slice);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let next: VmCont = loadVmCont(slice1);
         return {
             kind: 'VmCont_vmc_envelope',
@@ -13606,9 +13606,9 @@ export function loadVmCont(slice: Slice): VmCont {
     if (((slice.remainingBits >= 5) && (slice.preloadUint(5) == 0b10100))) {
         slice.loadUint(5);
         let count: number = slice.loadUint(63);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let body: VmCont = loadVmCont(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let after: VmCont = loadVmCont(slice2);
         return {
             kind: 'VmCont_vmc_repeat',
@@ -13620,9 +13620,9 @@ export function loadVmCont(slice: Slice): VmCont {
     }
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110000))) {
         slice.loadUint(6);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let body: VmCont = loadVmCont(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let after: VmCont = loadVmCont(slice2);
         return {
             kind: 'VmCont_vmc_until',
@@ -13633,7 +13633,7 @@ export function loadVmCont(slice: Slice): VmCont {
     }
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110001))) {
         slice.loadUint(6);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let body: VmCont = loadVmCont(slice1);
         return {
             kind: 'VmCont_vmc_again',
@@ -13643,11 +13643,11 @@ export function loadVmCont(slice: Slice): VmCont {
     }
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110010))) {
         slice.loadUint(6);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let cond: VmCont = loadVmCont(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let body: VmCont = loadVmCont(slice2);
-        let slice3 = slice.loadRef().beginParse();
+        let slice3 = slice.loadRef().beginParse(true);
         let after: VmCont = loadVmCont(slice3);
         return {
             kind: 'VmCont_vmc_while_cond',
@@ -13659,11 +13659,11 @@ export function loadVmCont(slice: Slice): VmCont {
     }
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110011))) {
         slice.loadUint(6);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let cond: VmCont = loadVmCont(slice1);
-        let slice2 = slice.loadRef().beginParse();
+        let slice2 = slice.loadRef().beginParse(true);
         let body: VmCont = loadVmCont(slice2);
-        let slice3 = slice.loadRef().beginParse();
+        let slice3 = slice.loadRef().beginParse(true);
         let after: VmCont = loadVmCont(slice3);
         return {
             kind: 'VmCont_vmc_while_body',
@@ -13676,7 +13676,7 @@ export function loadVmCont(slice: Slice): VmCont {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1111))) {
         slice.loadUint(4);
         let value: number = slice.loadInt(32);
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let next: VmCont = loadVmCont(slice1);
         return {
             kind: 'VmCont_vmc_pushint',
@@ -13803,7 +13803,7 @@ export function loadDNS_RecordSet(slice: Slice): DNS_RecordSet {
     let anon0: Dictionary<bigint, DNSRecord> = Dictionary.load(Dictionary.Keys.BigUint(256), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return loadDNSRecord(slice1)
 
     }),
@@ -13847,7 +13847,7 @@ export function loadTextChunkRef(slice: Slice, arg0: number): TextChunkRef {
 
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         let ref: TextChunks = loadTextChunks(slice1, ((arg0 - 1) + 1));
         return {
             kind: 'TextChunkRef_chunk_ref',
@@ -14262,9 +14262,9 @@ export function loadChanConfig(slice: Slice): ChanConfig {
     let close_timeout: number = slice.loadUint(32);
     let a_key: BitString = slice.loadBits(256);
     let b_key: BitString = slice.loadBits(256);
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let a_addr: Address = slice1.loadAddress();
-    let slice2 = slice.loadRef().beginParse();
+    let slice2 = slice.loadRef().beginParse(true);
     let b_addr: Address = slice2.loadAddress();
     let channel_id: number = slice.loadUint(64);
     let min_A_extra: bigint = slice.loadCoins();
@@ -14429,7 +14429,7 @@ export function storeChanPromise(chanPromise: ChanPromise): (builder: Builder) =
 
 export function loadChanSignedPromise(slice: Slice): ChanSignedPromise {
     let sig: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1.loadBits(512)
 
     }));
@@ -14554,12 +14554,12 @@ export function storeChanMsg(chanMsg: ChanMsg): (builder: Builder) => void {
 
 export function loadChanSignedMsg(slice: Slice): ChanSignedMsg {
     let sig_A: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1.loadBits(512)
 
     }));
     let sig_B: Maybe<BitString> = loadMaybe<BitString>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse();
+        let slice1 = slice.loadRef().beginParse(true);
         return slice1.loadBits(512)
 
     }));
@@ -14624,9 +14624,9 @@ export function storeChanOp(chanOp: ChanOp): (builder: Builder) => void {
 // chan_data$_ config:^ChanConfig state:^ChanState = ChanData;
 
 export function loadChanData(slice: Slice): ChanData {
-    let slice1 = slice.loadRef().beginParse();
+    let slice1 = slice.loadRef().beginParse(true);
     let config: ChanConfig = loadChanConfig(slice1);
-    let slice2 = slice.loadRef().beginParse();
+    let slice2 = slice.loadRef().beginParse(true);
     let state: ChanState = loadChanState(slice2);
     return {
         kind: 'ChanData',
