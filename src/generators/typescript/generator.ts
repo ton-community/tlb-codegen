@@ -231,7 +231,7 @@ export class TypescriptGenerator implements CodeGenerator {
 
   addTonCoreClassUsage(name: string) {
     this.jsCodeDeclarations.push(
-      tImportDeclaration(id(name), tStringLiteral("ton"))
+      tImportDeclaration(id(name), tStringLiteral("ton-core"))
     );
   }
   addBitLenFunction() {
