@@ -12,13 +12,13 @@ const cli = meow(`
 	  
 	Examples
 	  $ tlb ./path/to/file.tlb
-	  > Output: ./path/to/file.ts
+	  > Generated code is saved to ./path/to/file.ts
 
 	  $ tlb -o ./path/to/output.ts ./path/to/file.tlb
-	  > Output: ./path/to/output.ts
+	  > Generated code is saved to ./path/to/output.ts
 
 	  $ tlb -l typescript ./path/to/file.tlb
-	  > Output: ./path/to/file.ts
+	  > Generated code is saved to ./path/to/file.ts
 `, {
 	flags: {
 		output: {

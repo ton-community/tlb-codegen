@@ -70,6 +70,7 @@ export function generateCodeWithGenerator(inputPath: string, outputPath: string,
   const tree = ast(input)
 
   fs.writeFile(outputPath, generateCodeByAST(tree, input, getGenerator), () => { });
+  console.log(`Generated code is saved to ${outputPath}`);
 }
 
 export function generateCode(inputPath: string, outputPath: string, resultLanguage: string) {
