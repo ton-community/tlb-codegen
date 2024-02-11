@@ -5,7 +5,7 @@ import {
   NegateExpr,
   NumberExpr,
   SimpleExpr,
-} from "@ton-community/tlb-parser/dist/ast/nodes";
+} from "@ton-community/tlb-parser";
 import {
   TLBBinaryOp,
   TLBConstructorTag,

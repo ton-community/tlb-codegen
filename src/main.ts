@@ -1,4 +1,4 @@
-import { Program } from "@ton-community/tlb-parser/dist/ast/nodes";
+import { ast, Program } from "@ton-community/tlb-parser";
 import { TLBCode, TLBType } from "./ast";
 import {
   TLBCodeBuild,
@@ -9,8 +9,6 @@ import { fillConstructors } from "./astbuilder/fill_constructors";
 import { CodeBuilder } from "./generators/CodeBuilder";
 import { CodeGenerator, CommonGenDeclaration } from "./generators/generator";
 import { TypescriptGenerator } from "./generators/typescript/generator";
-
-import { ast } from "@ton-community/tlb-parser";
 import fs from 'fs'
 
 

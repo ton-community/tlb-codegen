@@ -8,7 +8,7 @@ import {
   NameExpr,
   NegateExpr,
   NumberExpr,
-} from "@ton-community/tlb-parser/dist/ast/nodes";
+} from "@ton-community/tlb-parser";
 import * as crc32 from "crc-32";
 import {
   TLBBinaryOp,

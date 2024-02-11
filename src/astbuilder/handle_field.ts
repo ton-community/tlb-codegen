@@ -11,7 +11,7 @@ import {
   FieldNamedDef,
   MathExpr,
   NameExpr,
-} from "@ton-community/tlb-parser/dist/ast/nodes";
+} from "@ton-community/tlb-parser";
 import { TLBField } from "../ast";
 import { getType } from "./handle_type";
 import { TLBConstructorBuild, TLBTypeBuild } from "./utils";
