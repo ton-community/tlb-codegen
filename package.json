@@ -21,11 +21,11 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@ton/core": "^0.54.0",
     "@ton-community/tlb-parser": "^0.1.2",
     "@types/jest": "^29.5.11",
     "crc-32": "^1.2.2",
     "meow": "^9.0.0",
-    "ton": "^13.9.0",
     "ts-jest": "^29.1.1"
   }
 }

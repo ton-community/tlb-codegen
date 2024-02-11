@@ -1,14 +1,14 @@
-import { Builder } from 'ton-core'
-import { Slice } from 'ton-core'
-import { beginCell } from 'ton-core'
-import { BitString } from 'ton-core'
-import { Cell } from 'ton-core'
-import { Address } from 'ton-core'
-import { ExternalAddress } from 'ton-core'
-import { Dictionary } from 'ton-core'
-import { DictionaryValue } from 'ton-core'
+import { Builder } from '@ton/core'
+import { Slice } from '@ton/core'
+import { beginCell } from '@ton/core'
+import { BitString } from '@ton/core'
+import { Cell } from '@ton/core'
+import { Address } from '@ton/core'
+import { ExternalAddress } from '@ton/core'
+import { Dictionary } from '@ton/core'
+import { DictionaryValue } from '@ton/core'
 export function bitLen(n: number) {
-    return n.toString(2).length;;
+    return n.toString(2).length;
 }
 
 // unit$_ = Unit;

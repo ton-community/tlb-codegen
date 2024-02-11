@@ -64,9 +64,9 @@ generateCode('example.tlb', 'example.tlb.ts', "typescript")
 ```
 
 
-## Integration with ton-core
+## Integration with @ton/core
 
-It is integrated with [ton-core](https://github.com/ton-org/ton-core/) in a way it uses several built-in types from there.
+It is integrated with [@ton/core](https://github.com/ton-org/ton-core/) in a way it uses several built-in types from there.
 
 Built-in types supported are:
  - `Bool` -> `boolean` (loaded with `loadBoolean`, stored with `storeBit`)
