@@ -1,6 +1,6 @@
 {
   "name": "@ton-community/tlb-codegen",
-  "version": "1.0.13",
+  "version": "1.0.0",
   "description": "",
   "main": "build/index.js",
   "scripts": {
