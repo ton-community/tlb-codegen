@@ -64,5 +64,6 @@ typings/
 ## Custom
 ## ======
 
+.idea
 dist/
 build/

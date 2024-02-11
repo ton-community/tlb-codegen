@@ -1,5 +1,5 @@
 {
-  "name": "@polyprogrammist_test/tlbgen",
+  "name": "@ton-community/tlb-codegen",
   "version": "1.0.13",
   "description": "",
   "main": "build/index.js",
@@ -21,7 +21,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@igorivaniuk/tlb-parser": "^0.1.0",
+    "@ton-community/tlb-parser": "^0.1.1",
     "@types/jest": "^29.5.11",
     "crc-32": "^1.2.2",
     "meow": "^9.0.0",
