@@ -8,7 +8,7 @@ This package uses [TLB-Parser](https://github.com/ton-community/tlb-parser) to g
 ## Installation 
 
 ```bash
-npm install @polyprogrammist_test/tlbgen
+npm install @ton-community/tlb-codegen
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ t$_ x:# y:(uint 5) = A;
 
 Then do:
 ```bash
-npx tlbgen example.tlb
+npx tlb example.tlb
 ```
 
 It will create a file called `example.tlb.ts` with the following code:
@@ -51,15 +51,15 @@ export function storeA(a: A): (builder: Builder) => void {
 }
 ```
 
-You also can set an output file with `-o` option: `npx tlbgen -o other_file.ts example.tlb`.
+You also can set an output file with `-o` option: `npx tlb -o other_file.ts example.tlb`.
 
-One of the examples where you can see various abilities of the tool is [block.tlb](https://github.com/PolyProgrammist/tlbgenerator/blob/master/test/tlb/block.tlb). The generation result for it is [here](https://github.com/PolyProgrammist/tlbgenerator/blob/master/test/generated_files/generated_block.ts).  
+One of the examples where you can see various abilities of the tool is [block.tlb](https://github.com/ton-blockchain/ton/blob/master/crypto/block/block.tlb). The generation result for it is [here](https://github.com/PolyProgrammist/tlbgenerator/blob/master/test/generated_files/generated_block.ts).  
 
 ### Node JS
 Also you can use the tool from inside JS or TS code.
 
 ```typescript
-import { generateCode } from "@polyprogrammist_test/tlbgen"
+import { generateCode } from "@ton-community/tlb-codegen"
 generateCode('example.tlb', 'example.tlb.ts', "typescript")
 ```
 
@@ -80,7 +80,9 @@ Built-in types supported are:
  - `HashmapE n Value` -> `Dictionary<bigint, Value>` (or `Dictionary<number, Value>` if n <= 64) (loaded with `Dictionary.load`, stored with `storeDict`)
  - `HashmapAugE n Value Extra` -> `Dictionary<bigint, {value: Value, extra: Extra}>` (or `number` instead of `bigint` if `n <= 64`) (loaded with `Dictionary.load`, stored with `storeDict`)
 
-Please note that the tricky thing here with `HashmapAugE` is that in `TLB` scheme extra is [stored](https://github.com/ton-blockchain/ton/blob/062b7b4a92dd67e32d963cf3f04b8bc97d8b7ed5/crypto/block/block.tlb#L49) not only with values, but in intermediate nodes as well. However `Dictionary` in ton-core doesn't store the intermediate nodes. That is why `HashmapAugE` can be correctly loaded by the generated code, but storing is incorrect.  
+> Please note that the tricky thing here with `HashmapAugE` is that in `TLB` scheme extra is [stored](https://github.com/ton-blockchain/ton/blob/062b7b4a92dd67e32d963cf3f04b8bc97d8b7ed5/crypto/block/block.tlb#L49) not only with values, but in intermediate nodes as well. However `Dictionary` in [@ton/core](https://github.com/ton-org/ton-core) doesn't store the intermediate nodes. That is why `HashmapAugE` can be correctly loaded by the generated code, but storing is incorrect.  
+
+> Please note that `BinTree` is not supported yet. In the future it will be supported as built-in type `BinTree` from [@ton/core](https://github.com/ton-org/ton-core).
 
 ## License
 

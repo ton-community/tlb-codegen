@@ -9,7 +9,7 @@
     "compile": "tsc"
   },
   "bin": {
-    "tlbgen": "build/main.js"
+    "tlb": "build/main.js"
   },
   "keywords": [],
   "author": "",

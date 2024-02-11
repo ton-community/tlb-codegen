@@ -1013,7 +1013,7 @@ export interface Transaction {
 }
 
 /*
-merkle_update#02 {X:Type} old_hash:bits256 new_hash:bits256
+!merkle_update#02 {X:Type} old_hash:bits256 new_hash:bits256
   old:^X new:^X = MERKLE_UPDATE X;
 */
 
@@ -1036,7 +1036,7 @@ export interface HASH_UPDATE<X> {
     readonly new_hash: BitString;
 }
 
-// merkle_proof#03 {X:Type} virtual_hash:bits256 depth:uint16 virtual_root:^X = MERKLE_PROOF X;
+// !merkle_proof#03 {X:Type} virtual_hash:bits256 depth:uint16 virtual_root:^X = MERKLE_PROOF X;
 
 export interface MERKLE_PROOF<X> {
     readonly kind: 'MERKLE_PROOF';
@@ -6757,7 +6757,7 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
 }
 
 /*
-merkle_update#02 {X:Type} old_hash:bits256 new_hash:bits256
+!merkle_update#02 {X:Type} old_hash:bits256 new_hash:bits256
   old:^X new:^X = MERKLE_UPDATE X;
 */
 
@@ -6826,7 +6826,7 @@ export function storeHASH_UPDATE<X>(hASH_UPDATE: HASH_UPDATE<X>, storeX: (x: X) 
 
 }
 
-// merkle_proof#03 {X:Type} virtual_hash:bits256 depth:uint16 virtual_root:^X = MERKLE_PROOF X;
+// !merkle_proof#03 {X:Type} virtual_hash:bits256 depth:uint16 virtual_root:^X = MERKLE_PROOF X;
 
 export function loadMERKLE_PROOF<X>(slice: Slice, loadX: (slice: Slice) => X): MERKLE_PROOF<X> {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
