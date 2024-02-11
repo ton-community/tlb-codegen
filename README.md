@@ -25,7 +25,7 @@ Then do:
 npx tlb example.tlb
 ```
 
-It will create a file called `example.tlb.ts` with the following code:
+It will create a file called `example.ts` with the following code:
 ```typescript
 export interface A {
     readonly kind: 'A';
@@ -60,7 +60,7 @@ Also you can use the tool from inside JS or TS code.
 
 ```typescript
 import { generateCode } from "@ton-community/tlb-codegen"
-generateCode('example.tlb', 'example.tlb.ts', "typescript")
+generateCode('example.tlb', 'example.ts', "typescript")
 ```
 
 
