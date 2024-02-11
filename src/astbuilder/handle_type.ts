@@ -9,7 +9,7 @@ import {
   NegateExpr,
   NumberExpr,
   Expression as ParserExpression,
-} from "@igorivaniuk/tlb-parser/dist/ast/nodes";
+} from "@ton-community/tlb-parser/dist/ast/nodes";
 import {
   TLBBinaryOp,
   TLBFieldType,

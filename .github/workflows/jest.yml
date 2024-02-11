@@ -11,7 +11,6 @@ jobs:
           node-version: '20'
       - run: npm install
       - run: npm install -g ts-node
-      - run: sed -i 's/"+", "Type"/"#", "Type"/g' "node_modules/@igorivaniuk/tlb-parser/dist/ast/nodes.d.ts"
       - run: npm run build
       - run: ts-node generate_tests.ts
       - run: npm run test

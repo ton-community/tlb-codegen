@@ -519,5 +519,12 @@ describe('Generating tlb code', () => {
         // expect(deepEqual(cs.hash(), builder.endCell().hash())).toBeTruthy()
 
         checkSameOnStoreLoad(blk, loadBlock, storeBlock)
+
+        const state2 = 'te6cckECEQEAAt0AJBAR71Wq////EQECAwQCoJvHqYcAAAAAgAECfjyTAAAAAQAAAAAAAAAAAAAAAABlyLWCAAAogZ67zMAAACiBnrvM0GBwTmIACCBSAiVwRAIlWR/EAAAABQAAAAAAAAAuBQYCEbjkjftFjQskhAcIKooETrjlNgwuHXtEbLkDiuPrh7ZsS5HcxL7sNQNLOzzxOJ8XpFaKmfMqRiqpTnODMFdkpeK+t1j9zpUGcLCGnyCbQQIcAhwJCiOJSjP2/QsLOJrSCYuSECQN4EQ1pAkI/Vq884HrhAXxgd/DMXKL3mNyX4QAmdB48ZNajadP6O+MetbFj9DF2crDtBqc+RNACwwNAJgAACiBnqyKhAIlcESQSl3z7iZHMb+ZzHB8UIicVmATlmlWML4cDjyK41AJDYwykU65Oj8VFycT567wJMI2c1Fp8XEpQ0oBBl7EszbpAJgAACiBnqyKigJ+PJIwkmdyOJaxAUgUAn96h7ctdbYa5ZqyLAxMr2CCCwI53+D63OzKxdebePB4BjmKCG0WpYdB4mhfQTshVEFholJiAiWCyjMIQaAjO2wWUZhB/mYlt0AIDg4ADQAQ7msoAAhojAEDTrjlNgwuHXtEbLkDiuPrh7ZsS5HcxL7sNQNLOzzxOJ8eUBr0CDsnKj+rfShCIEjNWz4L02mNMNBkMZ/Gt7d08wIcAB9ojAEDF6RWipnzKkYqqU5zgzBXZKXivrdY/c6VBnCwhp8gm0F20Jc6TiScBHS6NjRcwVkdaQJ0Gui4rsOnO0bOcbXHBAIcAB8oSAEBDImrgKWVyalum/bej1OHSpOS2UkgmMuIkBF7MzHXi7MAGChIAQEVd40DOrZ4FN5JCQjeUCvgm+Lo7v7TK7JOTt/GFqoW0AAZKEgBARILJG1IfD7ez2RrP8gh/dsLILjLke5aI27M3MaDIy1bABgCASAPEAATvgAAA7yRYnrqkAATv////7yLlvycUBOzqtE=';
+        const cs2 = Cell.fromBase64(state2);
+
+        let blk2 = loadBlock(cs2.beginParse());
+
+        checkSameOnStoreLoad(blk2, loadBlock, storeBlock)
     })
 })
