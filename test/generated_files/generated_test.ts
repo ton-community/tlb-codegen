@@ -162,7 +162,7 @@ export interface IntBits<Arg> {
     readonly d: number;
     readonly g: BitString;
     readonly arg: Arg;
-    readonly x: Slice;
+    readonly x: Cell;
 }
 
 // a$_ {x:#} a:(IntBits (int (1 + x))) = IntBitsInside (x * 2);
@@ -190,7 +190,7 @@ export interface IntBitsParametrized {
     readonly i: BitString;
     readonly j: number;
     readonly k: bigint;
-    readonly tc: Slice;
+    readonly tc: Cell;
 }
 
 // a$_ {x:#} a:(IntBitsParametrized x) = IntBitsParametrizedInside x;
@@ -541,7 +541,7 @@ export interface ParamNamedArgInSecondConstr_b {
 
 export interface RefCombinatorAny {
     readonly kind: 'RefCombinatorAny';
-    readonly msg: Maybe<Slice>;
+    readonly msg: Maybe<Cell>;
 }
 
 // a$_ n:# { 5 + n = 7 } = EqualityExpression;
@@ -634,7 +634,7 @@ export interface RefCombinatorInRefHelper<X> {
 
 export interface RefCombinatorInRef {
     readonly kind: 'RefCombinatorInRef';
-    readonly msg: RefCombinatorInRefHelper<Slice>;
+    readonly msg: RefCombinatorInRefHelper<Cell>;
 }
 
 // _ a:Bool = BoolUser;
@@ -1211,7 +1211,7 @@ export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): 
     let d: number = slice.loadInt(11);
     let g: BitString = slice.loadBits(2);
     let arg: Arg = loadArg(slice);
-    let x: Slice = slice;
+    let x: Cell = slice.asCell();
     return {
         kind: 'IntBits',
         d: d,
@@ -1227,7 +1227,7 @@ export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) =>
         builder.storeInt(intBits.d, 11);
         builder.storeBits(intBits.g);
         storeArg(intBits.arg)(builder);
-        builder.storeSlice(intBits.x);
+        builder.storeSlice(intBits.x.beginParse(true));
     })
 
 }
@@ -1285,7 +1285,7 @@ export function loadIntBitsParametrized(slice: Slice, e: number): IntBitsParamet
     let i: BitString = slice.loadBits((5 + e));
     let j: number = slice.loadInt(5);
     let k: bigint = slice.loadUintBig(e);
-    let tc: Slice = slice;
+    let tc: Cell = slice.asCell();
     return {
         kind: 'IntBitsParametrized',
         e: e,
@@ -1306,7 +1306,7 @@ export function storeIntBitsParametrized(intBitsParametrized: IntBitsParametrize
         builder.storeBits(intBitsParametrized.i);
         builder.storeInt(intBitsParametrized.j, 5);
         builder.storeUint(intBitsParametrized.k, intBitsParametrized.e);
-        builder.storeSlice(intBitsParametrized.tc);
+        builder.storeSlice(intBitsParametrized.tc.beginParse(true));
     })
 
 }
@@ -2447,8 +2447,8 @@ export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: Pa
 
 export function loadRefCombinatorAny(slice: Slice): RefCombinatorAny {
     let slice1 = slice.loadRef().beginParse(true);
-    let msg: Maybe<Slice> = loadMaybe<Slice>(slice1, ((slice: Slice) => {
-        return slice
+    let msg: Maybe<Cell> = loadMaybe<Cell>(slice1, ((slice: Slice) => {
+        return slice.asCell()
 
     }));
     return {
@@ -2461,9 +2461,9 @@ export function loadRefCombinatorAny(slice: Slice): RefCombinatorAny {
 export function storeRefCombinatorAny(refCombinatorAny: RefCombinatorAny): (builder: Builder) => void {
     return ((builder: Builder) => {
         let cell1 = beginCell();
-        storeMaybe<Slice>(refCombinatorAny.msg, ((arg: Slice) => {
+        storeMaybe<Cell>(refCombinatorAny.msg, ((arg: Cell) => {
             return ((builder: Builder) => {
-                builder.storeSlice(arg);
+                builder.storeSlice(arg.beginParse(true));
             })
 
         }))(cell1);
@@ -2740,8 +2740,8 @@ export function storeRefCombinatorInRefHelper<X>(refCombinatorInRefHelper: RefCo
 
 export function loadRefCombinatorInRef(slice: Slice): RefCombinatorInRef {
     let slice1 = slice.loadRef().beginParse(true);
-    let msg: RefCombinatorInRefHelper<Slice> = loadRefCombinatorInRefHelper<Slice>(slice1, ((slice: Slice) => {
-        return slice
+    let msg: RefCombinatorInRefHelper<Cell> = loadRefCombinatorInRefHelper<Cell>(slice1, ((slice: Slice) => {
+        return slice.asCell()
 
     }));
     return {
@@ -2754,9 +2754,9 @@ export function loadRefCombinatorInRef(slice: Slice): RefCombinatorInRef {
 export function storeRefCombinatorInRef(refCombinatorInRef: RefCombinatorInRef): (builder: Builder) => void {
     return ((builder: Builder) => {
         let cell1 = beginCell();
-        storeRefCombinatorInRefHelper<Slice>(refCombinatorInRef.msg, ((arg: Slice) => {
+        storeRefCombinatorInRefHelper<Cell>(refCombinatorInRef.msg, ((arg: Cell) => {
             return ((builder: Builder) => {
-                builder.storeSlice(arg);
+                builder.storeSlice(arg.beginParse(true));
             })
 
         }))(cell1);

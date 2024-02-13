@@ -702,10 +702,18 @@ export class TypescriptGenerator implements CodeGenerator {
       exprForParam = {
         argLoadExpr: id(theSlice),
         argStoreExpr: id(theSlice),
-        paramType: "Slice",
-        fieldLoadSuffix: "Slice",
+        paramType: "Cell",
+        fieldLoadSuffix: "Ref",
         fieldStoreSuffix: "Slice",
       };
+      storeParametersOutside[0] = tFunctionCall(
+        tMemberExpression(storeParametersOutside[0], id("beginParse")), 
+        [id("true")]
+      )
+      storeParametersInside[0] = tFunctionCall(
+        tMemberExpression(storeParametersInside[0], id("beginParse")), 
+        [id("true")]
+      )
     } else if (fieldType.kind == "TLBBoolType") {
       exprForParam = {
         argLoadExpr: undefined,
@@ -994,7 +1002,7 @@ export class TypescriptGenerator implements CodeGenerator {
     if (exprForParam) {
       if (
         exprForParam.paramType != "BitString" &&
-        exprForParam.paramType != "Slice"
+        exprForParam.paramType != "Cell"
       ) {
         if (exprForParam.argStoreExpr) {
           storeParametersOutside.push(exprForParam.argStoreExpr);
@@ -1002,8 +1010,8 @@ export class TypescriptGenerator implements CodeGenerator {
         }
       }
       result.loadExpr = loadExprForParam(currentSlice, exprForParam);
-      if (exprForParam.paramType == "Slice") {
-        result.loadExpr = id(currentSlice);
+      if (exprForParam.paramType == "Cell") {
+        result.loadExpr = tFunctionCall(tMemberExpression(id(currentSlice), id('asCell')), []);
         result.loadFunctionExpr = returnSliceFunc();
       }
       result.typeParamExpr = id(exprForParam.paramType);

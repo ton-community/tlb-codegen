@@ -43,6 +43,7 @@ export function bitlenFunctionDecl(): GenDeclaration {
 export function typedSlice() {
     return [tTypedIdentifier(id("slice"), id("Slice"))];
 }
+
 export function sliceLoad(slicePrefix: number[], currentSlice: string) {
   return tExpressionStatement(
     tDeclareVariable(
@@ -141,7 +142,7 @@ export function storeExprForParam(theCell: string, exprForParam: ExprForParam, i
 }
 export function returnSliceFunc(): Expression {
   return tArrowFunctionExpression(typedSlice(), [
-    tReturnStatement(id("slice")),
+    tReturnStatement(tFunctionCall(tMemberExpression(id("slice"), id("asCell")), [])),
   ]);
 }
 export function loadExprForParam(currentSlice: string, exprForParam: ExprForParam): Expression {
