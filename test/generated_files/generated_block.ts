@@ -471,9 +471,9 @@ export interface StateInit {
     readonly kind: 'StateInit';
     readonly split_depth: Maybe<number>;
     readonly special: Maybe<TickTock>;
-    readonly code: Maybe<Slice>;
-    readonly data: Maybe<Slice>;
-    readonly library: Maybe<Slice>;
+    readonly code: Maybe<Cell>;
+    readonly data: Maybe<Cell>;
+    readonly library: Maybe<Cell>;
 }
 
 /*
@@ -486,8 +486,8 @@ export interface StateInitWithLibs {
     readonly kind: 'StateInitWithLibs';
     readonly split_depth: Maybe<number>;
     readonly special: Maybe<TickTock>;
-    readonly code: Maybe<Slice>;
-    readonly data: Maybe<Slice>;
+    readonly code: Maybe<Cell>;
+    readonly data: Maybe<Cell>;
     readonly library: Dictionary<bigint, SimpleLib>;
 }
 
@@ -496,7 +496,7 @@ export interface StateInitWithLibs {
 export interface SimpleLib {
     readonly kind: 'SimpleLib';
     readonly public0: boolean;
-    readonly root: Slice;
+    readonly root: Cell;
 }
 
 /*
@@ -529,7 +529,7 @@ export interface MessageRelaxed<X> {
 
 export interface MessageAny {
     readonly kind: 'MessageAny';
-    readonly anon0: Message<Slice>;
+    readonly anon0: Message<Cell>;
 }
 
 /*
@@ -577,7 +577,7 @@ export interface MsgEnvelope {
     readonly cur_addr: IntermediateAddress;
     readonly next_addr: IntermediateAddress;
     readonly fwd_fee_remaining: bigint;
-    readonly msg: Message<Slice>;
+    readonly msg: Message<Cell>;
 }
 
 /*
@@ -619,16 +619,16 @@ export type InMsg = InMsg_msg_import_ext | InMsg_msg_import_ihr | InMsg_msg_impo
 
 export interface InMsg_msg_import_ext {
     readonly kind: 'InMsg_msg_import_ext';
-    readonly msg: Message<Slice>;
+    readonly msg: Message<Cell>;
     readonly transaction: Transaction;
 }
 
 export interface InMsg_msg_import_ihr {
     readonly kind: 'InMsg_msg_import_ihr';
-    readonly msg: Message<Slice>;
+    readonly msg: Message<Cell>;
     readonly transaction: Transaction;
     readonly ihr_fee: bigint;
-    readonly proof_created: Slice;
+    readonly proof_created: Cell;
 }
 
 export interface InMsg_msg_import_imm {
@@ -664,7 +664,7 @@ export interface InMsg_msg_discard_tr {
     readonly in_msg: MsgEnvelope;
     readonly transaction_id: number;
     readonly fwd_fee: bigint;
-    readonly proof_delivered: Slice;
+    readonly proof_delivered: Cell;
 }
 
 /*
@@ -730,7 +730,7 @@ export type OutMsg = OutMsg_msg_export_ext | OutMsg_msg_export_imm | OutMsg_msg_
 
 export interface OutMsg_msg_export_ext {
     readonly kind: 'OutMsg_msg_export_ext';
-    readonly msg: Message<Slice>;
+    readonly msg: Message<Cell>;
     readonly transaction: Transaction;
 }
 
@@ -1005,8 +1005,8 @@ export interface Transaction {
     readonly outmsg_cnt: number;
     readonly orig_status: AccountStatus;
     readonly end_status: AccountStatus;
-    readonly in_msg: Maybe<Message<Slice>>;
-    readonly out_msgs: Dictionary<number, Message<Slice>>;
+    readonly in_msg: Maybe<Message<Cell>>;
+    readonly out_msgs: Dictionary<number, Message<Cell>>;
     readonly total_fees: CurrencyCollection;
     readonly state_update: HASH_UPDATE<Account>;
     readonly description: TransactionDescr;
@@ -1383,7 +1383,7 @@ export interface SmartContractInfo {
     readonly rand_seed: BitString;
     readonly balance_remaining: CurrencyCollection;
     readonly myself: Address;
-    readonly global_config: Maybe<Slice>;
+    readonly global_config: Maybe<Cell>;
 }
 
 // out_list_empty$_ = OutList 0;
@@ -1428,12 +1428,12 @@ export type OutAction = OutAction_action_send_msg | OutAction_action_set_code | 
 export interface OutAction_action_send_msg {
     readonly kind: 'OutAction_action_send_msg';
     readonly mode: number;
-    readonly out_msg: MessageRelaxed<Slice>;
+    readonly out_msg: MessageRelaxed<Cell>;
 }
 
 export interface OutAction_action_set_code {
     readonly kind: 'OutAction_action_set_code';
-    readonly new_code: Slice;
+    readonly new_code: Cell;
 }
 
 export interface OutAction_action_reserve_currency {
@@ -1461,14 +1461,14 @@ export interface LibRef_libref_hash {
 
 export interface LibRef_libref_ref {
     readonly kind: 'LibRef_libref_ref';
-    readonly library: Slice;
+    readonly library: Cell;
 }
 
 // out_list_node$_ prev:^Cell action:OutAction = OutListNode;
 
 export interface OutListNode {
     readonly kind: 'OutListNode';
-    readonly prev: Slice;
+    readonly prev: Cell;
     readonly action: OutAction;
 }
 
@@ -1581,7 +1581,7 @@ shared_lib_descr$00 lib:^Cell publishers:(Hashmap 256 True)
 
 export interface LibDescr {
     readonly kind: 'LibDescr';
-    readonly lib: Slice;
+    readonly lib: Cell;
     readonly publishers: Hashmap<True>;
 }
 
@@ -1919,7 +1919,7 @@ _ config_addr:bits256 config:^(Hashmap 32 ^Cell)
 export interface ConfigParams {
     readonly kind: 'ConfigParams';
     readonly config_addr: BitString;
-    readonly config: Hashmap<Slice>;
+    readonly config: Hashmap<Cell>;
 }
 
 /*
@@ -2566,7 +2566,7 @@ cfg_proposal#f3 param_id:int32 param_value:(Maybe ^Cell) if_hash_equal:(Maybe ui
 export interface ConfigProposal {
     readonly kind: 'ConfigProposal';
     readonly param_id: number;
-    readonly param_value: Maybe<Slice>;
+    readonly param_value: Maybe<Cell>;
     readonly if_hash_equal: Maybe<bigint>;
 }
 
@@ -3092,7 +3092,7 @@ export interface BlockSignatures {
 export interface BlockProof {
     readonly kind: 'BlockProof';
     readonly proof_for: BlockIdExt;
-    readonly root: Slice;
+    readonly root: Cell;
     readonly signatures: Maybe<BlockSignatures>;
 }
 
@@ -3109,7 +3109,7 @@ export interface ProofChain_chain_empty {
 export interface ProofChain_chain_link {
     readonly kind: 'ProofChain_chain_link';
     readonly n: number;
-    readonly root: Slice;
+    readonly root: Cell;
     readonly prev: ProofChain | undefined;
 }
 
@@ -3228,7 +3228,7 @@ export interface VmStackValue_vm_stk_nan {
 
 export interface VmStackValue_vm_stk_cell {
     readonly kind: 'VmStackValue_vm_stk_cell';
-    readonly _cell: Slice;
+    readonly _cell: Cell;
 }
 
 export interface VmStackValue_vm_stk_slice {
@@ -3238,7 +3238,7 @@ export interface VmStackValue_vm_stk_slice {
 
 export interface VmStackValue_vm_stk_builder {
     readonly kind: 'VmStackValue_vm_stk_builder';
-    readonly _cell: Slice;
+    readonly _cell: Cell;
 }
 
 export interface VmStackValue_vm_stk_cont {
@@ -3259,7 +3259,7 @@ _ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits }
 
 export interface VmCellSlice {
     readonly kind: 'VmCellSlice';
-    readonly _cell: Slice;
+    readonly _cell: Cell;
     readonly st_bits: number;
     readonly end_bits: number;
     readonly st_ref: number;
@@ -3355,7 +3355,7 @@ export interface VmGasLimits {
 
 export interface VmLibraries {
     readonly kind: 'VmLibraries';
-    readonly libraries: Dictionary<bigint, Slice>;
+    readonly libraries: Dictionary<bigint, Cell>;
 }
 
 /*
@@ -5000,19 +5000,19 @@ export function loadStateInit(slice: Slice): StateInit {
 
     }));
     let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock);
-    let code: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+    let code: Maybe<Cell> = loadMaybe<Cell>(slice, ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse(true);
-        return slice1
+        return slice1.asCell()
 
     }));
-    let data: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+    let data: Maybe<Cell> = loadMaybe<Cell>(slice, ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse(true);
-        return slice1
+        return slice1.asCell()
 
     }));
-    let library: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+    let library: Maybe<Cell> = loadMaybe<Cell>(slice, ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse(true);
-        return slice1
+        return slice1.asCell()
 
     }));
     return {
@@ -5035,28 +5035,28 @@ export function storeStateInit(stateInit: StateInit): (builder: Builder) => void
 
         }))(builder);
         storeMaybe<TickTock>(stateInit.special, storeTickTock)(builder);
-        storeMaybe<Slice>(stateInit.code, ((arg: Slice) => {
+        storeMaybe<Cell>(stateInit.code, ((arg: Cell) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-                cell1.storeSlice(arg);
+                cell1.storeSlice(arg.beginParse(true));
                 builder.storeRef(cell1);
 
             })
 
         }))(builder);
-        storeMaybe<Slice>(stateInit.data, ((arg: Slice) => {
+        storeMaybe<Cell>(stateInit.data, ((arg: Cell) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-                cell1.storeSlice(arg);
+                cell1.storeSlice(arg.beginParse(true));
                 builder.storeRef(cell1);
 
             })
 
         }))(builder);
-        storeMaybe<Slice>(stateInit.library, ((arg: Slice) => {
+        storeMaybe<Cell>(stateInit.library, ((arg: Cell) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-                cell1.storeSlice(arg);
+                cell1.storeSlice(arg.beginParse(true));
                 builder.storeRef(cell1);
 
             })
@@ -5078,14 +5078,14 @@ export function loadStateInitWithLibs(slice: Slice): StateInitWithLibs {
 
     }));
     let special: Maybe<TickTock> = loadMaybe<TickTock>(slice, loadTickTock);
-    let code: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+    let code: Maybe<Cell> = loadMaybe<Cell>(slice, ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse(true);
-        return slice1
+        return slice1.asCell()
 
     }));
-    let data: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+    let data: Maybe<Cell> = loadMaybe<Cell>(slice, ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse(true);
-        return slice1
+        return slice1.asCell()
 
     }));
     let library: Dictionary<bigint, SimpleLib> = Dictionary.load(Dictionary.Keys.BigUint(256), {
@@ -5112,19 +5112,19 @@ export function storeStateInitWithLibs(stateInitWithLibs: StateInitWithLibs): (b
 
         }))(builder);
         storeMaybe<TickTock>(stateInitWithLibs.special, storeTickTock)(builder);
-        storeMaybe<Slice>(stateInitWithLibs.code, ((arg: Slice) => {
+        storeMaybe<Cell>(stateInitWithLibs.code, ((arg: Cell) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-                cell1.storeSlice(arg);
+                cell1.storeSlice(arg.beginParse(true));
                 builder.storeRef(cell1);
 
             })
 
         }))(builder);
-        storeMaybe<Slice>(stateInitWithLibs.data, ((arg: Slice) => {
+        storeMaybe<Cell>(stateInitWithLibs.data, ((arg: Cell) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-                cell1.storeSlice(arg);
+                cell1.storeSlice(arg.beginParse(true));
                 builder.storeRef(cell1);
 
             })
@@ -5145,7 +5145,7 @@ export function storeStateInitWithLibs(stateInitWithLibs: StateInitWithLibs): (b
 export function loadSimpleLib(slice: Slice): SimpleLib {
     let public0: boolean = slice.loadBoolean();
     let slice1 = slice.loadRef().beginParse(true);
-    let root: Slice = slice1;
+    let root: Cell = slice1.asCell();
     return {
         kind: 'SimpleLib',
         public0: public0,
@@ -5158,7 +5158,7 @@ export function storeSimpleLib(simpleLib: SimpleLib): (builder: Builder) => void
     return ((builder: Builder) => {
         builder.storeBit(simpleLib.public0);
         let cell1 = beginCell();
-        cell1.storeSlice(simpleLib.root);
+        cell1.storeSlice(simpleLib.root.beginParse(true));
         builder.storeRef(cell1);
     })
 
@@ -5287,8 +5287,8 @@ export function storeMessageRelaxed<X>(messageRelaxed: MessageRelaxed<X>, storeX
 // _ (Message Any) = MessageAny;
 
 export function loadMessageAny(slice: Slice): MessageAny {
-    let anon0: Message<Slice> = loadMessage<Slice>(slice, ((slice: Slice) => {
-        return slice
+    let anon0: Message<Cell> = loadMessage<Cell>(slice, ((slice: Slice) => {
+        return slice.asCell()
 
     }));
     return {
@@ -5300,9 +5300,9 @@ export function loadMessageAny(slice: Slice): MessageAny {
 
 export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeMessage<Slice>(messageAny.anon0, ((arg: Slice) => {
+        storeMessage<Cell>(messageAny.anon0, ((arg: Cell) => {
             return ((builder: Builder) => {
-                builder.storeSlice(arg);
+                builder.storeSlice(arg.beginParse(true));
             })
 
         }))(builder);
@@ -5400,8 +5400,8 @@ export function loadMsgEnvelope(slice: Slice): MsgEnvelope {
         let next_addr: IntermediateAddress = loadIntermediateAddress(slice);
         let fwd_fee_remaining: bigint = slice.loadCoins();
         let slice1 = slice.loadRef().beginParse(true);
-        let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-            return slice
+        let msg: Message<Cell> = loadMessage<Cell>(slice1, ((slice: Slice) => {
+            return slice.asCell()
 
         }));
         return {
@@ -5423,9 +5423,9 @@ export function storeMsgEnvelope(msgEnvelope: MsgEnvelope): (builder: Builder) =
         storeIntermediateAddress(msgEnvelope.next_addr)(builder);
         builder.storeCoins(msgEnvelope.fwd_fee_remaining);
         let cell1 = beginCell();
-        storeMessage<Slice>(msgEnvelope.msg, ((arg: Slice) => {
+        storeMessage<Cell>(msgEnvelope.msg, ((arg: Cell) => {
             return ((builder: Builder) => {
-                builder.storeSlice(arg);
+                builder.storeSlice(arg.beginParse(true));
             })
 
         }))(cell1);
@@ -5473,8 +5473,8 @@ export function loadInMsg(slice: Slice): InMsg {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b000))) {
         slice.loadUint(3);
         let slice1 = slice.loadRef().beginParse(true);
-        let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-            return slice
+        let msg: Message<Cell> = loadMessage<Cell>(slice1, ((slice: Slice) => {
+            return slice.asCell()
 
         }));
         let slice2 = slice.loadRef().beginParse(true);
@@ -5489,15 +5489,15 @@ export function loadInMsg(slice: Slice): InMsg {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b010))) {
         slice.loadUint(3);
         let slice1 = slice.loadRef().beginParse(true);
-        let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-            return slice
+        let msg: Message<Cell> = loadMessage<Cell>(slice1, ((slice: Slice) => {
+            return slice.asCell()
 
         }));
         let slice2 = slice.loadRef().beginParse(true);
         let transaction: Transaction = loadTransaction(slice2);
         let ihr_fee: bigint = slice.loadCoins();
         let slice3 = slice.loadRef().beginParse(true);
-        let proof_created: Slice = slice3;
+        let proof_created: Cell = slice3.asCell();
         return {
             kind: 'InMsg_msg_import_ihr',
             msg: msg,
@@ -5573,7 +5573,7 @@ export function loadInMsg(slice: Slice): InMsg {
         let transaction_id: number = slice.loadUint(64);
         let fwd_fee: bigint = slice.loadCoins();
         let slice2 = slice.loadRef().beginParse(true);
-        let proof_delivered: Slice = slice2;
+        let proof_delivered: Cell = slice2.asCell();
         return {
             kind: 'InMsg_msg_discard_tr',
             in_msg: in_msg,
@@ -5591,9 +5591,9 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b000, 3);
             let cell1 = beginCell();
-            storeMessage<Slice>(inMsg.msg, ((arg: Slice) => {
+            storeMessage<Cell>(inMsg.msg, ((arg: Cell) => {
                 return ((builder: Builder) => {
-                    builder.storeSlice(arg);
+                    builder.storeSlice(arg.beginParse(true));
                 })
 
             }))(cell1);
@@ -5608,9 +5608,9 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b010, 3);
             let cell1 = beginCell();
-            storeMessage<Slice>(inMsg.msg, ((arg: Slice) => {
+            storeMessage<Cell>(inMsg.msg, ((arg: Cell) => {
                 return ((builder: Builder) => {
-                    builder.storeSlice(arg);
+                    builder.storeSlice(arg.beginParse(true));
                 })
 
             }))(cell1);
@@ -5620,7 +5620,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             builder.storeRef(cell2);
             builder.storeCoins(inMsg.ihr_fee);
             let cell3 = beginCell();
-            cell3.storeSlice(inMsg.proof_created);
+            cell3.storeSlice(inMsg.proof_created.beginParse(true));
             builder.storeRef(cell3);
         })
 
@@ -5684,7 +5684,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
             builder.storeUint(inMsg.transaction_id, 64);
             builder.storeCoins(inMsg.fwd_fee);
             let cell2 = beginCell();
-            cell2.storeSlice(inMsg.proof_delivered);
+            cell2.storeSlice(inMsg.proof_delivered.beginParse(true));
             builder.storeRef(cell2);
         })
 
@@ -5804,8 +5804,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b000))) {
         slice.loadUint(3);
         let slice1 = slice.loadRef().beginParse(true);
-        let msg: Message<Slice> = loadMessage<Slice>(slice1, ((slice: Slice) => {
-            return slice
+        let msg: Message<Cell> = loadMessage<Cell>(slice1, ((slice: Slice) => {
+            return slice.asCell()
 
         }));
         let slice2 = slice.loadRef().beginParse(true);
@@ -5920,9 +5920,9 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b000, 3);
             let cell1 = beginCell();
-            storeMessage<Slice>(outMsg.msg, ((arg: Slice) => {
+            storeMessage<Cell>(outMsg.msg, ((arg: Cell) => {
                 return ((builder: Builder) => {
-                    builder.storeSlice(arg);
+                    builder.storeSlice(arg.beginParse(true));
                 })
 
             }))(cell1);
@@ -6654,20 +6654,20 @@ export function loadTransaction(slice: Slice): Transaction {
         let orig_status: AccountStatus = loadAccountStatus(slice);
         let end_status: AccountStatus = loadAccountStatus(slice);
         let slice1 = slice.loadRef().beginParse(true);
-        let in_msg: Maybe<Message<Slice>> = loadMaybe<Message<Slice>>(slice1, ((slice: Slice) => {
+        let in_msg: Maybe<Message<Cell>> = loadMaybe<Message<Cell>>(slice1, ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse(true);
-            return loadMessage<Slice>(slice1, ((slice: Slice) => {
-                return slice
+            return loadMessage<Cell>(slice1, ((slice: Slice) => {
+                return slice.asCell()
 
             }))
 
         }));
-        let out_msgs: Dictionary<number, Message<Slice>> = Dictionary.load(Dictionary.Keys.Uint(15), {
+        let out_msgs: Dictionary<number, Message<Cell>> = Dictionary.load(Dictionary.Keys.Uint(15), {
             serialize: () => { throw new Error('Not implemented') },
             parse: ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse(true);
-            return loadMessage<Slice>(slice1, ((slice: Slice) => {
-                return slice
+            return loadMessage<Cell>(slice1, ((slice: Slice) => {
+                return slice.asCell()
 
             }))
 
@@ -6711,12 +6711,12 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
         storeAccountStatus(transaction.orig_status)(builder);
         storeAccountStatus(transaction.end_status)(builder);
         let cell1 = beginCell();
-        storeMaybe<Message<Slice>>(transaction.in_msg, ((arg: Message<Slice>) => {
+        storeMaybe<Message<Cell>>(transaction.in_msg, ((arg: Message<Cell>) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-                storeMessage<Slice>(arg, ((arg: Slice) => {
+                storeMessage<Cell>(arg, ((arg: Cell) => {
                     return ((builder: Builder) => {
-                        builder.storeSlice(arg);
+                        builder.storeSlice(arg.beginParse(true));
                     })
 
                 }))(cell1);
@@ -6726,13 +6726,13 @@ export function storeTransaction(transaction: Transaction): (builder: Builder) =
 
         }))(cell1);
         cell1.storeDict(transaction.out_msgs, Dictionary.Keys.Uint(15), {
-            serialize: ((arg: Message<Slice>, builder: Builder) => {
-            ((arg: Message<Slice>) => {
+            serialize: ((arg: Message<Cell>, builder: Builder) => {
+            ((arg: Message<Cell>) => {
                 return ((builder: Builder) => {
                     let cell1 = beginCell();
-                    storeMessage<Slice>(arg, ((arg: Slice) => {
+                    storeMessage<Cell>(arg, ((arg: Cell) => {
                         return ((builder: Builder) => {
-                            builder.storeSlice(arg);
+                            builder.storeSlice(arg.beginParse(true));
                         })
 
                     }))(cell1);
@@ -7772,8 +7772,8 @@ export function loadSmartContractInfo(slice: Slice): SmartContractInfo {
         let rand_seed: BitString = slice.loadBits(256);
         let balance_remaining: CurrencyCollection = loadCurrencyCollection(slice);
         let myself: Address = slice.loadAddress();
-        let global_config: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
-            return slice
+        let global_config: Maybe<Cell> = loadMaybe<Cell>(slice, ((slice: Slice) => {
+            return slice.asCell()
 
         }));
         return {
@@ -7804,9 +7804,9 @@ export function storeSmartContractInfo(smartContractInfo: SmartContractInfo): (b
         builder.storeBits(smartContractInfo.rand_seed);
         storeCurrencyCollection(smartContractInfo.balance_remaining)(builder);
         builder.storeAddress(smartContractInfo.myself);
-        storeMaybe<Slice>(smartContractInfo.global_config, ((arg: Slice) => {
+        storeMaybe<Cell>(smartContractInfo.global_config, ((arg: Cell) => {
             return ((builder: Builder) => {
-                builder.storeSlice(arg);
+                builder.storeSlice(arg.beginParse(true));
             })
 
         }))(builder);
@@ -7883,8 +7883,8 @@ export function loadOutAction(slice: Slice): OutAction {
         slice.loadUint(32);
         let mode: number = slice.loadUint(8);
         let slice1 = slice.loadRef().beginParse(true);
-        let out_msg: MessageRelaxed<Slice> = loadMessageRelaxed<Slice>(slice1, ((slice: Slice) => {
-            return slice
+        let out_msg: MessageRelaxed<Cell> = loadMessageRelaxed<Cell>(slice1, ((slice: Slice) => {
+            return slice.asCell()
 
         }));
         return {
@@ -7897,7 +7897,7 @@ export function loadOutAction(slice: Slice): OutAction {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xad4de08e))) {
         slice.loadUint(32);
         let slice1 = slice.loadRef().beginParse(true);
-        let new_code: Slice = slice1;
+        let new_code: Cell = slice1.asCell();
         return {
             kind: 'OutAction_action_set_code',
             new_code: new_code,
@@ -7935,9 +7935,9 @@ export function storeOutAction(outAction: OutAction): (builder: Builder) => void
             builder.storeUint(0x0ec3c86d, 32);
             builder.storeUint(outAction.mode, 8);
             let cell1 = beginCell();
-            storeMessageRelaxed<Slice>(outAction.out_msg, ((arg: Slice) => {
+            storeMessageRelaxed<Cell>(outAction.out_msg, ((arg: Cell) => {
                 return ((builder: Builder) => {
-                    builder.storeSlice(arg);
+                    builder.storeSlice(arg.beginParse(true));
                 })
 
             }))(cell1);
@@ -7949,7 +7949,7 @@ export function storeOutAction(outAction: OutAction): (builder: Builder) => void
         return ((builder: Builder) => {
             builder.storeUint(0xad4de08e, 32);
             let cell1 = beginCell();
-            cell1.storeSlice(outAction.new_code);
+            cell1.storeSlice(outAction.new_code.beginParse(true));
             builder.storeRef(cell1);
         })
 
@@ -7990,7 +7990,7 @@ export function loadLibRef(slice: Slice): LibRef {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
         let slice1 = slice.loadRef().beginParse(true);
-        let library: Slice = slice1;
+        let library: Cell = slice1.asCell();
         return {
             kind: 'LibRef_libref_ref',
             library: library,
@@ -8012,7 +8012,7 @@ export function storeLibRef(libRef: LibRef): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
             let cell1 = beginCell();
-            cell1.storeSlice(libRef.library);
+            cell1.storeSlice(libRef.library.beginParse(true));
             builder.storeRef(cell1);
         })
 
@@ -8024,7 +8024,7 @@ export function storeLibRef(libRef: LibRef): (builder: Builder) => void {
 
 export function loadOutListNode(slice: Slice): OutListNode {
     let slice1 = slice.loadRef().beginParse(true);
-    let prev: Slice = slice1;
+    let prev: Cell = slice1.asCell();
     let action: OutAction = loadOutAction(slice);
     return {
         kind: 'OutListNode',
@@ -8037,7 +8037,7 @@ export function loadOutListNode(slice: Slice): OutListNode {
 export function storeOutListNode(outListNode: OutListNode): (builder: Builder) => void {
     return ((builder: Builder) => {
         let cell1 = beginCell();
-        cell1.storeSlice(outListNode.prev);
+        cell1.storeSlice(outListNode.prev.beginParse(true));
         builder.storeRef(cell1);
         storeOutAction(outListNode.action)(builder);
     })
@@ -8331,7 +8331,7 @@ export function loadLibDescr(slice: Slice): LibDescr {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
         slice.loadUint(2);
         let slice1 = slice.loadRef().beginParse(true);
-        let lib: Slice = slice1;
+        let lib: Cell = slice1.asCell();
         let publishers: Hashmap<True> = loadHashmap<True>(slice, 256, loadTrue);
         return {
             kind: 'LibDescr',
@@ -8347,7 +8347,7 @@ export function storeLibDescr(libDescr: LibDescr): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(0b00, 2);
         let cell1 = beginCell();
-        cell1.storeSlice(libDescr.lib);
+        cell1.storeSlice(libDescr.lib.beginParse(true));
         builder.storeRef(cell1);
         storeHashmap<True>(libDescr.publishers, storeTrue)(builder);
     })
@@ -9284,9 +9284,9 @@ _ config_addr:bits256 config:^(Hashmap 32 ^Cell)
 export function loadConfigParams(slice: Slice): ConfigParams {
     let config_addr: BitString = slice.loadBits(256);
     let slice1 = slice.loadRef().beginParse(true);
-    let config: Hashmap<Slice> = loadHashmap<Slice>(slice1, 32, ((slice: Slice) => {
+    let config: Hashmap<Cell> = loadHashmap<Cell>(slice1, 32, ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse(true);
-        return slice1
+        return slice1.asCell()
 
     }));
     return {
@@ -9301,10 +9301,10 @@ export function storeConfigParams(configParams: ConfigParams): (builder: Builder
     return ((builder: Builder) => {
         builder.storeBits(configParams.config_addr);
         let cell1 = beginCell();
-        storeHashmap<Slice>(configParams.config, ((arg: Slice) => {
+        storeHashmap<Cell>(configParams.config, ((arg: Cell) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-                cell1.storeSlice(arg);
+                cell1.storeSlice(arg.beginParse(true));
                 builder.storeRef(cell1);
 
             })
@@ -11070,9 +11070,9 @@ export function loadConfigProposal(slice: Slice): ConfigProposal {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xf3))) {
         slice.loadUint(8);
         let param_id: number = slice.loadInt(32);
-        let param_value: Maybe<Slice> = loadMaybe<Slice>(slice, ((slice: Slice) => {
+        let param_value: Maybe<Cell> = loadMaybe<Cell>(slice, ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse(true);
-            return slice1
+            return slice1.asCell()
 
         }));
         let if_hash_equal: Maybe<bigint> = loadMaybe<bigint>(slice, ((slice: Slice) => {
@@ -11094,10 +11094,10 @@ export function storeConfigProposal(configProposal: ConfigProposal): (builder: B
     return ((builder: Builder) => {
         builder.storeUint(0xf3, 8);
         builder.storeInt(configProposal.param_id, 32);
-        storeMaybe<Slice>(configProposal.param_value, ((arg: Slice) => {
+        storeMaybe<Cell>(configProposal.param_value, ((arg: Cell) => {
             return ((builder: Builder) => {
                 let cell1 = beginCell();
-                cell1.storeSlice(arg);
+                cell1.storeSlice(arg.beginParse(true));
                 builder.storeRef(cell1);
 
             })
@@ -12622,7 +12622,7 @@ export function loadBlockProof(slice: Slice): BlockProof {
         slice.loadUint(8);
         let proof_for: BlockIdExt = loadBlockIdExt(slice);
         let slice1 = slice.loadRef().beginParse(true);
-        let root: Slice = slice1;
+        let root: Cell = slice1.asCell();
         let signatures: Maybe<BlockSignatures> = loadMaybe<BlockSignatures>(slice, ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse(true);
             return loadBlockSignatures(slice1)
@@ -12644,7 +12644,7 @@ export function storeBlockProof(blockProof: BlockProof): (builder: Builder) => v
         builder.storeUint(0xc3, 8);
         storeBlockIdExt(blockProof.proof_for)(builder);
         let cell1 = beginCell();
-        cell1.storeSlice(blockProof.root);
+        cell1.storeSlice(blockProof.root.beginParse(true));
         builder.storeRef(cell1);
         storeMaybe<BlockSignatures>(blockProof.signatures, ((arg: BlockSignatures) => {
             return ((builder: Builder) => {
@@ -12672,7 +12672,7 @@ export function loadProofChain(slice: Slice, arg0: number): ProofChain {
     }
     if (true) {
         let slice1 = slice.loadRef().beginParse(true);
-        let root: Slice = slice1;
+        let root: Cell = slice1.asCell();
         let prev: ProofChain | undefined = ((arg0 - 1) ? ((slice: Slice) => {
             let slice1 = slice.loadRef().beginParse(true);
             return loadProofChain(slice1, (arg0 - 1))
@@ -12698,7 +12698,7 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
     if ((proofChain.kind == 'ProofChain_chain_link')) {
         return ((builder: Builder) => {
             let cell1 = beginCell();
-            cell1.storeSlice(proofChain.root);
+            cell1.storeSlice(proofChain.root.beginParse(true));
             builder.storeRef(cell1);
             if ((proofChain.prev != undefined)) {
                 let cell1 = beginCell();
@@ -13058,7 +13058,7 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
         slice.loadUint(8);
         let slice1 = slice.loadRef().beginParse(true);
-        let _cell: Slice = slice1;
+        let _cell: Cell = slice1.asCell();
         return {
             kind: 'VmStackValue_vm_stk_cell',
             _cell: _cell,
@@ -13077,7 +13077,7 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x05))) {
         slice.loadUint(8);
         let slice1 = slice.loadRef().beginParse(true);
-        let _cell: Slice = slice1;
+        let _cell: Cell = slice1.asCell();
         return {
             kind: 'VmStackValue_vm_stk_builder',
             _cell: _cell,
@@ -13138,7 +13138,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
         return ((builder: Builder) => {
             builder.storeUint(0x03, 8);
             let cell1 = beginCell();
-            cell1.storeSlice(vmStackValue._cell);
+            cell1.storeSlice(vmStackValue._cell.beginParse(true));
             builder.storeRef(cell1);
         })
 
@@ -13154,7 +13154,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
         return ((builder: Builder) => {
             builder.storeUint(0x05, 8);
             let cell1 = beginCell();
-            cell1.storeSlice(vmStackValue._cell);
+            cell1.storeSlice(vmStackValue._cell.beginParse(true));
             builder.storeRef(cell1);
         })
 
@@ -13184,7 +13184,7 @@ _ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits }
 
 export function loadVmCellSlice(slice: Slice): VmCellSlice {
     let slice1 = slice.loadRef().beginParse(true);
-    let _cell: Slice = slice1;
+    let _cell: Cell = slice1.asCell();
     let st_bits: number = slice.loadUint(10);
     let end_bits: number = slice.loadUint(10);
     let st_ref: number = slice.loadUint(bitLen(4));
@@ -13209,7 +13209,7 @@ export function loadVmCellSlice(slice: Slice): VmCellSlice {
 export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) => void {
     return ((builder: Builder) => {
         let cell1 = beginCell();
-        cell1.storeSlice(vmCellSlice._cell);
+        cell1.storeSlice(vmCellSlice._cell.beginParse(true));
         builder.storeRef(cell1);
         builder.storeUint(vmCellSlice.st_bits, 10);
         builder.storeUint(vmCellSlice.end_bits, 10);
@@ -13456,11 +13456,11 @@ export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) =
 // _ libraries:(HashmapE 256 ^Cell) = VmLibraries;
 
 export function loadVmLibraries(slice: Slice): VmLibraries {
-    let libraries: Dictionary<bigint, Slice> = Dictionary.load(Dictionary.Keys.BigUint(256), {
+    let libraries: Dictionary<bigint, Cell> = Dictionary.load(Dictionary.Keys.BigUint(256), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse(true);
-        return slice1
+        return slice1.asCell()
 
     }),
     }, slice);
@@ -13474,11 +13474,11 @@ export function loadVmLibraries(slice: Slice): VmLibraries {
 export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeDict(vmLibraries.libraries, Dictionary.Keys.BigUint(256), {
-            serialize: ((arg: Slice, builder: Builder) => {
-            ((arg: Slice) => {
+            serialize: ((arg: Cell, builder: Builder) => {
+            ((arg: Cell) => {
                 return ((builder: Builder) => {
                     let cell1 = beginCell();
-                    cell1.storeSlice(arg);
+                    cell1.storeSlice(arg.beginParse(true));
                     builder.storeRef(cell1);
 
                 })

@@ -22,6 +22,9 @@ function deepEqual(object1: any, object2: any): boolean {
     if (object1 instanceof Slice && object2 instanceof Slice) {
         return object1.toString() == object2.toString();
     }
+    if (object1 instanceof Cell && object2 instanceof Cell) {
+        return deepEqual(object1.beginParse(true), object2.beginParse(true));
+    }
     if (object1 instanceof Address && object2 instanceof Address) {
         return object1.equals(object2);
     }
@@ -79,7 +82,8 @@ function checkSameOnStoreLoad(expected: any, load: any, store: any, expectCell?:
         expectCell(slice)
     }
     let actual = load(slice)
-    expect(deepEqual(expected, actual)).toBeTruthy()
+    let equal = deepEqual(expected, actual);
+    expect(equal).toBeTruthy()
 }
 
 function checkDifferOnStoreLoad(expected: any, load: any, store: any) {
@@ -270,11 +274,11 @@ describe('Generating tlb code', () => {
 
         let refCombinatorAny: RefCombinatorAny = {
             kind: 'RefCombinatorAny',
-            msg: { kind: 'Maybe_just', value: beginCell().storeUint(676, 10).endCell().beginParse() }
+            msg: { kind: 'Maybe_just', value: beginCell().storeUint(676, 10).endCell() }
         }
         checkSameOnStoreLoad(refCombinatorAny, loadRefCombinatorAny, storeRefCombinatorAny);
 
-        let msgEnvelope: RefCombinatorInRef = { kind: 'RefCombinatorInRef', msg: { kind: 'RefCombinatorInRefHelper', t: 3, y: { kind: 'Maybe_just', value: beginCell().storeUint(3, 32).endCell().beginParse() } } }
+        let msgEnvelope: RefCombinatorInRef = { kind: 'RefCombinatorInRef', msg: { kind: 'RefCombinatorInRefHelper', t: 3, y: { kind: 'Maybe_just', value: beginCell().storeUint(3, 32).endCell() } } }
         checkSameOnStoreLoad(msgEnvelope, loadRefCombinatorInRef, storeRefCombinatorInRef);
     });
 
@@ -467,7 +471,7 @@ describe('Generating tlb code', () => {
                 a: {
                     'kind': 'IntBits', arg: BigInt(3), d: 5,
                     g: beginCell().storeUint(3, 2).endCell().beginParse().loadBits(2),
-                    x: beginCell().storeUint(76, 10).endCell().beginParse()
+                    x: beginCell().storeUint(76, 10).endCell()
                 },
                 x: 3
             }
@@ -481,7 +485,7 @@ describe('Generating tlb code', () => {
                 a: {
                     kind: 'IntBitsParametrized', e: 5, f: BigInt(3), h: BigInt(7), j: 9, k: BigInt(10),
                     i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10),
-                    tc: beginCell().storeUint(76, 10).endCell().beginParse()
+                    tc: beginCell().storeUint(76, 10).endCell()
                 },
                 x: 5
             }
@@ -495,7 +499,7 @@ describe('Generating tlb code', () => {
                 a: {
                     kind: 'IntBitsParametrized', e: 6, f: BigInt(3), h: BigInt(7), j: 9, k: BigInt(10),
                     i: beginCell().storeUint(676, 10).endCell().beginParse().loadBits(10),
-                    tc: beginCell().storeUint(76, 10).endCell().beginParse()
+                    tc: beginCell().storeUint(76, 10).endCell()
                 },
                 x: 5
             }
