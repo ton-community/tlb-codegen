@@ -70,6 +70,7 @@ export type TLBNamedType = {
 export type TLBMathExprType = {
   kind: "TLBExprMathType";
   expr: TLBMathExpr;
+  initialExpr: TLBMathExpr;
 };
 
 export type TLBBoolType = {
