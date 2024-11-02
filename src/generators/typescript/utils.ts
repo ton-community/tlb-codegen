@@ -217,7 +217,7 @@ export function getCondition(conditions: Array<BinaryExpression>): Expression {
 }
 
 export function isBigIntExpr(fieldType: TLBMathExprType) {
-  if (fieldType.expr instanceof TLBNumberExpr && fieldType.expr.n <= 64) {
+  if (fieldType.expr instanceof TLBNumberExpr && fieldType.expr.n <= 32) {
     return false;
   }
   return true;
@@ -225,11 +225,11 @@ export function isBigIntExpr(fieldType: TLBMathExprType) {
 
 export function isBigInt(fieldType: TLBNumberType) {
   if (fieldType.bits instanceof TLBNumberExpr) {
-    if (fieldType.bits.n <= 64) {
+    if (fieldType.bits.n <= 32) {
       return false;
     }
   }
-  if (fieldType.maxBits && fieldType.maxBits <= 64) {
+  if (fieldType.maxBits && fieldType.maxBits <= 32) {
     return false;
   }
   return true;
