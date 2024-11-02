@@ -184,9 +184,9 @@ describe('Generating tlb code', () => {
     test('Primitives', () => {
         expect.hasAssertions()
 
-        let boolUserTrue: BoolUser = { kind: 'BoolUser', a: true }
+        let boolUserTrue: BoolUser = { kind: 'BoolUser', a: {'kind': 'Bool', 'value': true} }
         checkSameOnStoreLoad(boolUserTrue, loadBoolUser, storeBoolUser);
-        let boolUserFalse: BoolUser = { kind: 'BoolUser', a: false }
+        let boolUserFalse: BoolUser = { kind: 'BoolUser', a: {'kind': 'Bool', 'value': false} }
         checkSameOnStoreLoad(boolUserFalse, loadBoolUser, storeBoolUser);
 
         let expectedAddressUser: AddressUser = { kind: 'AddressUser', src: Address.parseFriendly('EQBmzW4wYlFW0tiBgj5sP1CgSlLdYs-VpjPWM7oPYPYWQEdT').address }

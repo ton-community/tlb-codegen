@@ -73,10 +73,6 @@ export type TLBMathExprType = {
   initialExpr: TLBMathExpr;
 };
 
-export type TLBBoolType = {
-  kind: "TLBBoolType";
-};
-
 export type TLBCoinsType = {
   kind: "TLBCoinsType";
 }
@@ -141,7 +137,6 @@ export type TLBFieldType =
   | TLBNumberType
   | TLBBitsType
   | TLBNamedType
-  | TLBBoolType
   | TLBCoinsType
   | TLBAddressType
   | TLBHashmapType

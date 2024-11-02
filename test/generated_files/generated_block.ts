@@ -11,6 +11,29 @@ export function bitLen(n: number) {
     return n.toString(2).length;
 }
 
+export interface Bool {
+    readonly kind: 'Bool';
+    readonly value: boolean;
+}
+
+export function loadBool(slice: Slice): Bool {
+    if (slice.remainingBits >= 1) {
+        let value = slice.loadUint(1);
+        return {
+            kind: 'Bool',
+            value: value == 1
+        }
+
+    }
+    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function storeBool(bool: Bool): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(bool.value ? 1: 0, 1);
+    })
+
+}
 // unit$_ = Unit;
 
 export interface Unit {
@@ -390,15 +413,15 @@ export type CommonMsgInfo = CommonMsgInfo_int_msg_info | CommonMsgInfo_ext_in_ms
 
 export interface CommonMsgInfo_int_msg_info {
     readonly kind: 'CommonMsgInfo_int_msg_info';
-    readonly ihr_disabled: boolean;
-    readonly bounce: boolean;
-    readonly bounced: boolean;
+    readonly ihr_disabled: Bool;
+    readonly bounce: Bool;
+    readonly bounced: Bool;
     readonly src: Address;
     readonly dest: Address;
     readonly value: CurrencyCollection;
     readonly ihr_fee: bigint;
     readonly fwd_fee: bigint;
-    readonly created_lt: number;
+    readonly created_lt: bigint;
     readonly created_at: number;
 }
 
@@ -413,7 +436,7 @@ export interface CommonMsgInfo_ext_out_msg_info {
     readonly kind: 'CommonMsgInfo_ext_out_msg_info';
     readonly src: Address;
     readonly dest: ExternalAddress | null;
-    readonly created_lt: number;
+    readonly created_lt: bigint;
     readonly created_at: number;
 }
 
@@ -433,15 +456,15 @@ export type CommonMsgInfoRelaxed = CommonMsgInfoRelaxed_int_msg_info | CommonMsg
 
 export interface CommonMsgInfoRelaxed_int_msg_info {
     readonly kind: 'CommonMsgInfoRelaxed_int_msg_info';
-    readonly ihr_disabled: boolean;
-    readonly bounce: boolean;
-    readonly bounced: boolean;
+    readonly ihr_disabled: Bool;
+    readonly bounce: Bool;
+    readonly bounced: Bool;
     readonly src: Address | ExternalAddress | null;
     readonly dest: Address;
     readonly value: CurrencyCollection;
     readonly ihr_fee: bigint;
     readonly fwd_fee: bigint;
-    readonly created_lt: number;
+    readonly created_lt: bigint;
     readonly created_at: number;
 }
 
@@ -449,7 +472,7 @@ export interface CommonMsgInfoRelaxed_ext_out_msg_info {
     readonly kind: 'CommonMsgInfoRelaxed_ext_out_msg_info';
     readonly src: Address | ExternalAddress | null;
     readonly dest: ExternalAddress | null;
-    readonly created_lt: number;
+    readonly created_lt: bigint;
     readonly created_at: number;
 }
 
@@ -457,8 +480,8 @@ export interface CommonMsgInfoRelaxed_ext_out_msg_info {
 
 export interface TickTock {
     readonly kind: 'TickTock';
-    readonly tick: boolean;
-    readonly tock: boolean;
+    readonly tick: Bool;
+    readonly tock: Bool;
 }
 
 /*
@@ -495,7 +518,7 @@ export interface StateInitWithLibs {
 
 export interface SimpleLib {
     readonly kind: 'SimpleLib';
-    readonly public0: boolean;
+    readonly public0: Bool;
     readonly root: Cell;
 }
 
@@ -557,13 +580,13 @@ export interface IntermediateAddress_interm_addr_regular {
 export interface IntermediateAddress_interm_addr_simple {
     readonly kind: 'IntermediateAddress_interm_addr_simple';
     readonly workchain_id: number;
-    readonly addr_pfx: number;
+    readonly addr_pfx: bigint;
 }
 
 export interface IntermediateAddress_interm_addr_ext {
     readonly kind: 'IntermediateAddress_interm_addr_ext';
     readonly workchain_id: number;
-    readonly addr_pfx: number;
+    readonly addr_pfx: bigint;
 }
 
 /*
@@ -655,14 +678,14 @@ export interface InMsg_msg_import_tr {
 export interface InMsg_msg_discard_fin {
     readonly kind: 'InMsg_msg_discard_fin';
     readonly in_msg: MsgEnvelope;
-    readonly transaction_id: number;
+    readonly transaction_id: bigint;
     readonly fwd_fee: bigint;
 }
 
 export interface InMsg_msg_discard_tr {
     readonly kind: 'InMsg_msg_discard_tr';
     readonly in_msg: MsgEnvelope;
-    readonly transaction_id: number;
+    readonly transaction_id: bigint;
     readonly fwd_fee: bigint;
     readonly proof_delivered: Cell;
 }
@@ -756,15 +779,15 @@ export interface OutMsg_msg_export_tr {
 export interface OutMsg_msg_export_deq {
     readonly kind: 'OutMsg_msg_export_deq';
     readonly out_msg: MsgEnvelope;
-    readonly import_block_lt: number;
+    readonly import_block_lt: bigint;
 }
 
 export interface OutMsg_msg_export_deq_short {
     readonly kind: 'OutMsg_msg_export_deq_short';
     readonly msg_env_hash: BitString;
     readonly next_workchain: number;
-    readonly next_addr_pfx: number;
-    readonly import_block_lt: number;
+    readonly next_addr_pfx: bigint;
+    readonly import_block_lt: bigint;
 }
 
 export interface OutMsg_msg_export_tr_req {
@@ -783,7 +806,7 @@ export interface OutMsg_msg_export_deq_imm {
 
 export interface EnqueuedMsg {
     readonly kind: 'EnqueuedMsg';
-    readonly enqueued_lt: number;
+    readonly enqueued_lt: bigint;
     readonly out_msg: MsgEnvelope;
 }
 
@@ -798,14 +821,14 @@ export interface OutMsgDescr {
 
 export interface OutMsgQueue {
     readonly kind: 'OutMsgQueue';
-    readonly anon0: Dictionary<bigint, {value: EnqueuedMsg, extra: number}>;
+    readonly anon0: Dictionary<bigint, {value: EnqueuedMsg, extra: bigint}>;
 }
 
 // processed_upto$_ last_msg_lt:uint64 last_msg_hash:bits256 = ProcessedUpto;
 
 export interface ProcessedUpto {
     readonly kind: 'ProcessedUpto';
-    readonly last_msg_lt: number;
+    readonly last_msg_lt: bigint;
     readonly last_msg_hash: BitString;
 }
 
@@ -820,7 +843,7 @@ export interface ProcessedInfo {
 
 export interface IhrPendingSince {
     readonly kind: 'IhrPendingSince';
-    readonly import_lt: number;
+    readonly import_lt: bigint;
 }
 
 // _ (HashmapE 320 IhrPendingSince) = IhrPendingInfo;
@@ -905,7 +928,7 @@ account_storage$_ last_trans_lt:uint64
 
 export interface AccountStorage {
     readonly kind: 'AccountStorage';
-    readonly last_trans_lt: number;
+    readonly last_trans_lt: bigint;
     readonly balance: CurrencyCollection;
     readonly state: AccountState;
 }
@@ -967,7 +990,7 @@ export interface ShardAccount {
     readonly kind: 'ShardAccount';
     readonly account: Account;
     readonly last_trans_hash: BitString;
-    readonly last_trans_lt: number;
+    readonly last_trans_lt: bigint;
 }
 
 // depth_balance$_ split_depth:(#<= 30) balance:CurrencyCollection = DepthBalanceInfo;
@@ -998,9 +1021,9 @@ transaction$0111 account_addr:bits256 lt:uint64
 export interface Transaction {
     readonly kind: 'Transaction';
     readonly account_addr: BitString;
-    readonly lt: number;
+    readonly lt: bigint;
     readonly prev_trans_hash: BitString;
-    readonly prev_trans_lt: number;
+    readonly prev_trans_lt: bigint;
     readonly now: number;
     readonly outmsg_cnt: number;
     readonly orig_status: AccountStatus;
@@ -1136,9 +1159,9 @@ export interface TrComputePhase_tr_phase_compute_skipped {
 
 export interface TrComputePhase_tr_phase_compute_vm {
     readonly kind: 'TrComputePhase_tr_phase_compute_vm';
-    readonly success: boolean;
-    readonly msg_state_used: boolean;
-    readonly account_activated: boolean;
+    readonly success: Bool;
+    readonly msg_state_used: Bool;
+    readonly account_activated: Bool;
     readonly gas_fees: bigint;
     readonly gas_used: bigint;
     readonly gas_limit: bigint;
@@ -1189,9 +1212,9 @@ tr_phase_action$_ success:Bool valid:Bool no_funds:Bool
 
 export interface TrActionPhase {
     readonly kind: 'TrActionPhase';
-    readonly success: boolean;
-    readonly valid: boolean;
-    readonly no_funds: boolean;
+    readonly success: Bool;
+    readonly valid: Bool;
+    readonly no_funds: Bool;
     readonly status_change: AccStatusChange;
     readonly total_fwd_fees: Maybe<bigint>;
     readonly total_action_fees: Maybe<bigint>;
@@ -1291,14 +1314,14 @@ export type TransactionDescr = TransactionDescr_trans_ord | TransactionDescr_tra
 
 export interface TransactionDescr_trans_ord {
     readonly kind: 'TransactionDescr_trans_ord';
-    readonly credit_first: boolean;
+    readonly credit_first: Bool;
     readonly storage_ph: Maybe<TrStoragePhase>;
     readonly credit_ph: Maybe<TrCreditPhase>;
     readonly compute_ph: TrComputePhase;
     readonly action: Maybe<TrActionPhase>;
-    readonly aborted: boolean;
+    readonly aborted: Bool;
     readonly bounce: Maybe<TrBouncePhase>;
-    readonly destroyed: boolean;
+    readonly destroyed: Bool;
 }
 
 export interface TransactionDescr_trans_storage {
@@ -1308,12 +1331,12 @@ export interface TransactionDescr_trans_storage {
 
 export interface TransactionDescr_trans_tick_tock {
     readonly kind: 'TransactionDescr_trans_tick_tock';
-    readonly is_tock: boolean;
+    readonly is_tock: Bool;
     readonly storage_ph: TrStoragePhase;
     readonly compute_ph: TrComputePhase;
     readonly action: Maybe<TrActionPhase>;
-    readonly aborted: boolean;
-    readonly destroyed: boolean;
+    readonly aborted: Bool;
+    readonly destroyed: Bool;
 }
 
 export interface TransactionDescr_trans_split_prepare {
@@ -1322,22 +1345,22 @@ export interface TransactionDescr_trans_split_prepare {
     readonly storage_ph: Maybe<TrStoragePhase>;
     readonly compute_ph: TrComputePhase;
     readonly action: Maybe<TrActionPhase>;
-    readonly aborted: boolean;
-    readonly destroyed: boolean;
+    readonly aborted: Bool;
+    readonly destroyed: Bool;
 }
 
 export interface TransactionDescr_trans_split_install {
     readonly kind: 'TransactionDescr_trans_split_install';
     readonly split_info: SplitMergeInfo;
     readonly prepare_transaction: Transaction;
-    readonly installed: boolean;
+    readonly installed: Bool;
 }
 
 export interface TransactionDescr_trans_merge_prepare {
     readonly kind: 'TransactionDescr_trans_merge_prepare';
     readonly split_info: SplitMergeInfo;
     readonly storage_ph: TrStoragePhase;
-    readonly aborted: boolean;
+    readonly aborted: Bool;
 }
 
 export interface TransactionDescr_trans_merge_install {
@@ -1348,8 +1371,8 @@ export interface TransactionDescr_trans_merge_install {
     readonly credit_ph: Maybe<TrCreditPhase>;
     readonly compute_ph: TrComputePhase;
     readonly action: Maybe<TrActionPhase>;
-    readonly aborted: boolean;
-    readonly destroyed: boolean;
+    readonly aborted: Bool;
+    readonly destroyed: Bool;
 }
 
 /*
@@ -1378,8 +1401,8 @@ export interface SmartContractInfo {
     readonly actions: number;
     readonly msgs_sent: number;
     readonly unixtime: number;
-    readonly block_lt: number;
-    readonly trans_lt: number;
+    readonly block_lt: bigint;
+    readonly trans_lt: bigint;
     readonly rand_seed: BitString;
     readonly balance_remaining: CurrencyCollection;
     readonly myself: Address;
@@ -1481,7 +1504,7 @@ export interface ShardIdent {
     readonly kind: 'ShardIdent';
     readonly shard_pfx_bits: number;
     readonly workchain_id: number;
-    readonly shard_prefix: number;
+    readonly shard_prefix: bigint;
 }
 
 /*
@@ -1492,7 +1515,7 @@ ext_blk_ref$_ end_lt:uint64
 
 export interface ExtBlkRef {
     readonly kind: 'ExtBlkRef';
-    readonly end_lt: number;
+    readonly end_lt: bigint;
     readonly seq_no: number;
     readonly root_hash: BitString;
     readonly file_hash: BitString;
@@ -1543,13 +1566,13 @@ export interface ShardStateUnsplit {
     readonly seq_no: number;
     readonly vert_seq_no: number;
     readonly gen_utime: number;
-    readonly gen_lt: number;
+    readonly gen_lt: bigint;
     readonly min_ref_mc_seqno: number;
     readonly out_msg_queue_info: OutMsgQueueInfo;
     readonly before_split: number;
     readonly accounts: ShardAccounts;
-    readonly overload_history: number;
-    readonly underload_history: number;
+    readonly overload_history: bigint;
+    readonly underload_history: bigint;
     readonly total_balance: CurrencyCollection;
     readonly total_validator_fees: CurrencyCollection;
     readonly libraries: Dictionary<bigint, LibDescr>;
@@ -1616,17 +1639,17 @@ export interface BlockInfo {
     readonly after_merge: number;
     readonly before_split: number;
     readonly after_split: number;
-    readonly want_split: boolean;
-    readonly want_merge: boolean;
-    readonly key_block: boolean;
+    readonly want_split: Bool;
+    readonly want_merge: Bool;
+    readonly key_block: Bool;
     readonly vert_seqno_incr: number;
     readonly flags: number;
     readonly seq_no: number;
     readonly vert_seq_no: number;
     readonly shard: ShardIdent;
     readonly gen_utime: number;
-    readonly start_lt: number;
-    readonly end_lt: number;
+    readonly start_lt: bigint;
+    readonly end_lt: bigint;
     readonly gen_validator_list_hash_short: number;
     readonly gen_catchain_seqno: number;
     readonly min_ref_mc_seqno: number;
@@ -1825,18 +1848,18 @@ export interface ShardDescr_shard_descr {
     readonly kind: 'ShardDescr_shard_descr';
     readonly seq_no: number;
     readonly reg_mc_seqno: number;
-    readonly start_lt: number;
-    readonly end_lt: number;
+    readonly start_lt: bigint;
+    readonly end_lt: bigint;
     readonly root_hash: BitString;
     readonly file_hash: BitString;
-    readonly before_split: boolean;
-    readonly before_merge: boolean;
-    readonly want_split: boolean;
-    readonly want_merge: boolean;
-    readonly nx_cc_updated: boolean;
+    readonly before_split: Bool;
+    readonly before_merge: Bool;
+    readonly want_split: Bool;
+    readonly want_merge: Bool;
+    readonly nx_cc_updated: Bool;
     readonly flags: number;
     readonly next_catchain_seqno: number;
-    readonly next_validator_shard: number;
+    readonly next_validator_shard: bigint;
     readonly min_ref_mc_seqno: number;
     readonly gen_utime: number;
     readonly split_merge_at: FutureSplitMerge;
@@ -1848,18 +1871,18 @@ export interface ShardDescr_shard_descr_new {
     readonly kind: 'ShardDescr_shard_descr_new';
     readonly seq_no: number;
     readonly reg_mc_seqno: number;
-    readonly start_lt: number;
-    readonly end_lt: number;
+    readonly start_lt: bigint;
+    readonly end_lt: bigint;
     readonly root_hash: BitString;
     readonly file_hash: BitString;
-    readonly before_split: boolean;
-    readonly before_merge: boolean;
-    readonly want_split: boolean;
-    readonly want_merge: boolean;
-    readonly nx_cc_updated: boolean;
+    readonly before_split: Bool;
+    readonly before_merge: Bool;
+    readonly want_split: Bool;
+    readonly want_merge: Bool;
+    readonly nx_cc_updated: Bool;
     readonly flags: number;
     readonly next_catchain_seqno: number;
-    readonly next_validator_shard: number;
+    readonly next_validator_shard: bigint;
     readonly min_ref_mc_seqno: number;
     readonly gen_utime: number;
     readonly split_merge_at: FutureSplitMerge;
@@ -1934,7 +1957,7 @@ export interface ValidatorInfo {
     readonly kind: 'ValidatorInfo';
     readonly validator_list_hash_short: number;
     readonly catchain_seqno: number;
-    readonly nx_cc_updated: boolean;
+    readonly nx_cc_updated: Bool;
 }
 
 /*
@@ -1954,15 +1977,15 @@ export interface ValidatorBaseInfo {
 
 export interface KeyMaxLt {
     readonly kind: 'KeyMaxLt';
-    readonly key: boolean;
-    readonly max_end_lt: number;
+    readonly key: Bool;
+    readonly max_end_lt: bigint;
 }
 
 // _ key:Bool blk_ref:ExtBlkRef = KeyExtBlkRef;
 
 export interface KeyExtBlkRef {
     readonly kind: 'KeyExtBlkRef';
-    readonly key: boolean;
+    readonly key: Bool;
     readonly blk_ref: ExtBlkRef;
 }
 
@@ -1978,9 +2001,9 @@ export interface OldMcBlocksInfo {
 export interface Counters {
     readonly kind: 'Counters';
     readonly last_updated: number;
-    readonly total: number;
-    readonly cnt2048: number;
-    readonly cnt65536: number;
+    readonly total: bigint;
+    readonly cnt2048: bigint;
+    readonly cnt65536: bigint;
 }
 
 // creator_info#4 mc_blocks:Counters shard_blocks:Counters = CreatorStats;
@@ -2028,7 +2051,7 @@ export interface McStateExtra {
     readonly flags: number;
     readonly validator_info: ValidatorInfo;
     readonly prev_blocks: OldMcBlocksInfo;
-    readonly after_key_block: boolean;
+    readonly after_key_block: Bool;
     readonly last_key_block: Maybe<ExtBlkRef>;
     readonly block_create_stats: BlockCreateStats | undefined;
     readonly global_balance: CurrencyCollection;
@@ -2136,13 +2159,13 @@ export type ValidatorDescr = ValidatorDescr_validator | ValidatorDescr_validator
 export interface ValidatorDescr_validator {
     readonly kind: 'ValidatorDescr_validator';
     readonly public_key: SigPubKey;
-    readonly weight: number;
+    readonly weight: bigint;
 }
 
 export interface ValidatorDescr_validator_addr {
     readonly kind: 'ValidatorDescr_validator_addr';
     readonly public_key: SigPubKey;
-    readonly weight: number;
+    readonly weight: bigint;
     readonly adnl_addr: BitString;
 }
 
@@ -2175,7 +2198,7 @@ export interface ValidatorSet_validators_ext {
     readonly utime_until: number;
     readonly total: number;
     readonly main: number;
-    readonly total_weight: number;
+    readonly total_weight: bigint;
     readonly list: Dictionary<number, ValidatorDescr>;
 }
 
@@ -2533,7 +2556,7 @@ export interface BurningConfig {
 export interface GlobalVersion {
     readonly kind: 'GlobalVersion';
     readonly version: number;
-    readonly capabilities: number;
+    readonly capabilities: bigint;
 }
 
 // cfg_vote_cfg#36 min_tot_rounds:uint8 max_tot_rounds:uint8 min_wins:uint8 max_losses:uint8 min_store_sec:uint32 max_store_sec:uint32 bit_price:uint32 cell_price:uint32 = ConfigProposalSetup;
@@ -2580,9 +2603,9 @@ export interface ConfigProposalStatus {
     readonly kind: 'ConfigProposalStatus';
     readonly expires: number;
     readonly proposal: ConfigProposal;
-    readonly is_critical: boolean;
+    readonly is_critical: Bool;
     readonly voters: Dictionary<number, True>;
-    readonly remaining_weight: number;
+    readonly remaining_weight: bigint;
     readonly validator_set_id: bigint;
     readonly rounds_remaining: number;
     readonly wins: number;
@@ -2604,7 +2627,7 @@ export type WorkchainFormat = WorkchainFormat_wfmt_basic | WorkchainFormat_wfmt_
 export interface WorkchainFormat_wfmt_basic {
     readonly kind: 'WorkchainFormat_wfmt_basic';
     readonly vm_version: number;
-    readonly vm_mode: number;
+    readonly vm_mode: bigint;
 }
 
 export interface WorkchainFormat_wfmt_ext {
@@ -2658,8 +2681,8 @@ export interface WorkchainDescr_workchain {
     readonly min_split: number;
     readonly max_split: number;
     readonly basic: number;
-    readonly active: boolean;
-    readonly accept_msgs: boolean;
+    readonly active: Bool;
+    readonly accept_msgs: Bool;
     readonly flags: number;
     readonly zerostate_root_hash: BitString;
     readonly zerostate_file_hash: BitString;
@@ -2674,8 +2697,8 @@ export interface WorkchainDescr_workchain_v2 {
     readonly min_split: number;
     readonly max_split: number;
     readonly basic: number;
-    readonly active: boolean;
-    readonly accept_msgs: boolean;
+    readonly active: Bool;
+    readonly accept_msgs: Bool;
     readonly flags: number;
     readonly zerostate_root_hash: BitString;
     readonly zerostate_file_hash: BitString;
@@ -2712,10 +2735,10 @@ _#cc utime_since:uint32 bit_price_ps:uint64 cell_price_ps:uint64
 export interface StoragePrices {
     readonly kind: 'StoragePrices';
     readonly utime_since: number;
-    readonly bit_price_ps: number;
-    readonly _cell_price_ps: number;
-    readonly mc_bit_price_ps: number;
-    readonly mc_cell_price_ps: number;
+    readonly bit_price_ps: bigint;
+    readonly _cell_price_ps: bigint;
+    readonly mc_bit_price_ps: bigint;
+    readonly mc_cell_price_ps: bigint;
 }
 
 /*
@@ -2739,29 +2762,29 @@ export type GasLimitsPrices = GasLimitsPrices_gas_prices | GasLimitsPrices_gas_p
 
 export interface GasLimitsPrices_gas_prices {
     readonly kind: 'GasLimitsPrices_gas_prices';
-    readonly gas_price: number;
-    readonly gas_limit: number;
-    readonly gas_credit: number;
-    readonly block_gas_limit: number;
-    readonly freeze_due_limit: number;
-    readonly delete_due_limit: number;
+    readonly gas_price: bigint;
+    readonly gas_limit: bigint;
+    readonly gas_credit: bigint;
+    readonly block_gas_limit: bigint;
+    readonly freeze_due_limit: bigint;
+    readonly delete_due_limit: bigint;
 }
 
 export interface GasLimitsPrices_gas_prices_ext {
     readonly kind: 'GasLimitsPrices_gas_prices_ext';
-    readonly gas_price: number;
-    readonly gas_limit: number;
-    readonly special_gas_limit: number;
-    readonly gas_credit: number;
-    readonly block_gas_limit: number;
-    readonly freeze_due_limit: number;
-    readonly delete_due_limit: number;
+    readonly gas_price: bigint;
+    readonly gas_limit: bigint;
+    readonly special_gas_limit: bigint;
+    readonly gas_credit: bigint;
+    readonly block_gas_limit: bigint;
+    readonly freeze_due_limit: bigint;
+    readonly delete_due_limit: bigint;
 }
 
 export interface GasLimitsPrices_gas_flat_pfx {
     readonly kind: 'GasLimitsPrices_gas_flat_pfx';
-    readonly flat_gas_limit: number;
-    readonly flat_gas_price: number;
+    readonly flat_gas_limit: bigint;
+    readonly flat_gas_price: bigint;
     readonly other: GasLimitsPrices;
 }
 
@@ -2796,9 +2819,9 @@ msg_forward_prices#ea lump_price:uint64 bit_price:uint64 cell_price:uint64
 
 export interface MsgForwardPrices {
     readonly kind: 'MsgForwardPrices';
-    readonly lump_price: number;
-    readonly bit_price: number;
-    readonly _cell_price: number;
+    readonly lump_price: bigint;
+    readonly bit_price: bigint;
+    readonly _cell_price: bigint;
     readonly ihr_price_factor: number;
     readonly first_frac: number;
     readonly next_frac: number;
@@ -2828,7 +2851,7 @@ export interface CatchainConfig_catchain_config {
 export interface CatchainConfig_catchain_config_new {
     readonly kind: 'CatchainConfig_catchain_config_new';
     readonly flags: number;
-    readonly shuffle_mc_validators: boolean;
+    readonly shuffle_mc_validators: Bool;
     readonly mc_catchain_lifetime: number;
     readonly shard_catchain_lifetime: number;
     readonly shard_validators_lifetime: number;
@@ -2885,7 +2908,7 @@ export interface ConsensusConfig_consensus_config {
 export interface ConsensusConfig_consensus_config_new {
     readonly kind: 'ConsensusConfig_consensus_config_new';
     readonly flags: number;
-    readonly new_catchain_ids: boolean;
+    readonly new_catchain_ids: Bool;
     readonly round_candidates: number;
     readonly next_candidate_delay_ms: number;
     readonly consensus_timeout_ms: number;
@@ -2899,7 +2922,7 @@ export interface ConsensusConfig_consensus_config_new {
 export interface ConsensusConfig_consensus_config_v3 {
     readonly kind: 'ConsensusConfig_consensus_config_v3';
     readonly flags: number;
-    readonly new_catchain_ids: boolean;
+    readonly new_catchain_ids: Bool;
     readonly round_candidates: number;
     readonly next_candidate_delay_ms: number;
     readonly consensus_timeout_ms: number;
@@ -2914,7 +2937,7 @@ export interface ConsensusConfig_consensus_config_v3 {
 export interface ConsensusConfig_consensus_config_v4 {
     readonly kind: 'ConsensusConfig_consensus_config_v4';
     readonly flags: number;
-    readonly new_catchain_ids: boolean;
+    readonly new_catchain_ids: Bool;
     readonly round_candidates: number;
     readonly next_candidate_delay_ms: number;
     readonly consensus_timeout_ms: number;
@@ -3075,7 +3098,7 @@ block_signatures_pure#_ sig_count:uint32 sig_weight:uint64
 export interface BlockSignaturesPure {
     readonly kind: 'BlockSignaturesPure';
     readonly sig_count: number;
-    readonly sig_weight: number;
+    readonly sig_weight: bigint;
     readonly signatures: Dictionary<number, CryptoSignaturePair>;
 }
 
@@ -3185,7 +3208,7 @@ export interface ValidatorComplaintStatus {
     readonly complaint: ValidatorComplaint;
     readonly voters: Dictionary<number, True>;
     readonly vset_id: bigint;
-    readonly weight_remaining: number;
+    readonly weight_remaining: bigint;
 }
 
 // vm_stk_null#00 = VmStackValue;
@@ -3214,7 +3237,7 @@ export interface VmStackValue_vm_stk_null {
 
 export interface VmStackValue_vm_stk_tinyint {
     readonly kind: 'VmStackValue_vm_stk_tinyint';
-    readonly value: number;
+    readonly value: bigint;
 }
 
 export interface VmStackValue_vm_stk_int {
@@ -3345,10 +3368,10 @@ gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ]
 
 export interface VmGasLimits {
     readonly kind: 'VmGasLimits';
-    readonly remaining: number;
-    readonly max_limit: number;
-    readonly cur_limit: number;
-    readonly credit: number;
+    readonly remaining: bigint;
+    readonly max_limit: bigint;
+    readonly cur_limit: bigint;
+    readonly credit: bigint;
 }
 
 // _ libraries:(HashmapE 256 ^Cell) = VmLibraries;
@@ -3422,7 +3445,7 @@ export interface VmCont_vmc_quit_exc {
 
 export interface VmCont_vmc_repeat {
     readonly kind: 'VmCont_vmc_repeat';
-    readonly count: number;
+    readonly count: bigint;
     readonly body: VmCont;
     readonly after: VmCont;
 }
@@ -3632,7 +3655,7 @@ export interface ChanConfig {
     readonly b_key: BitString;
     readonly a_addr: Address;
     readonly b_addr: Address;
-    readonly channel_id: number;
+    readonly channel_id: bigint;
     readonly min_A_extra: bigint;
 }
 
@@ -3646,8 +3669,8 @@ export type ChanState = ChanState_chan_state_init | ChanState_chan_state_close |
 
 export interface ChanState_chan_state_init {
     readonly kind: 'ChanState_chan_state_init';
-    readonly signed_A: boolean;
-    readonly signed_B: boolean;
+    readonly signed_A: Bool;
+    readonly signed_B: Bool;
     readonly min_A: bigint;
     readonly min_B: bigint;
     readonly expire_at: number;
@@ -3657,8 +3680,8 @@ export interface ChanState_chan_state_init {
 
 export interface ChanState_chan_state_close {
     readonly kind: 'ChanState_chan_state_close';
-    readonly signed_A: boolean;
-    readonly signed_B: boolean;
+    readonly signed_A: Bool;
+    readonly signed_B: Bool;
     readonly promise_A: bigint;
     readonly promise_B: bigint;
     readonly expire_at: number;
@@ -3676,7 +3699,7 @@ export interface ChanState_chan_state_payout {
 
 export interface ChanPromise {
     readonly kind: 'ChanPromise';
-    readonly channel_id: number;
+    readonly channel_id: bigint;
     readonly promise_A: bigint;
     readonly promise_B: bigint;
 }
@@ -3705,7 +3728,7 @@ export interface ChanMsg_chan_msg_init {
     readonly inc_B: bigint;
     readonly min_A: bigint;
     readonly min_B: bigint;
-    readonly channel_id: number;
+    readonly channel_id: bigint;
 }
 
 export interface ChanMsg_chan_msg_close {
@@ -4784,15 +4807,15 @@ ext_out_msg_info$11 src:MsgAddressInt dest:MsgAddressExt
 export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
-        let ihr_disabled: boolean = slice.loadBoolean();
-        let bounce: boolean = slice.loadBoolean();
-        let bounced: boolean = slice.loadBoolean();
+        let ihr_disabled: Bool = loadBool(slice);
+        let bounce: Bool = loadBool(slice);
+        let bounced: Bool = loadBool(slice);
         let src: Address = slice.loadAddress();
         let dest: Address = slice.loadAddress();
         let value: CurrencyCollection = loadCurrencyCollection(slice);
         let ihr_fee: bigint = slice.loadCoins();
         let fwd_fee: bigint = slice.loadCoins();
-        let created_lt: number = slice.loadUint(64);
+        let created_lt: bigint = slice.loadUintBig(64);
         let created_at: number = slice.loadUint(32);
         return {
             kind: 'CommonMsgInfo_int_msg_info',
@@ -4826,7 +4849,7 @@ export function loadCommonMsgInfo(slice: Slice): CommonMsgInfo {
         slice.loadUint(2);
         let src: Address = slice.loadAddress();
         let dest: ExternalAddress | null = slice.loadMaybeExternalAddress();
-        let created_lt: number = slice.loadUint(64);
+        let created_lt: bigint = slice.loadUintBig(64);
         let created_at: number = slice.loadUint(32);
         return {
             kind: 'CommonMsgInfo_ext_out_msg_info',
@@ -4844,9 +4867,9 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
     if ((commonMsgInfo.kind == 'CommonMsgInfo_int_msg_info')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
-            builder.storeBit(commonMsgInfo.ihr_disabled);
-            builder.storeBit(commonMsgInfo.bounce);
-            builder.storeBit(commonMsgInfo.bounced);
+            storeBool(commonMsgInfo.ihr_disabled)(builder);
+            storeBool(commonMsgInfo.bounce)(builder);
+            storeBool(commonMsgInfo.bounced)(builder);
             builder.storeAddress(commonMsgInfo.src);
             builder.storeAddress(commonMsgInfo.dest);
             storeCurrencyCollection(commonMsgInfo.value)(builder);
@@ -4894,15 +4917,15 @@ ext_out_msg_info$11 src:MsgAddress dest:MsgAddressExt
 export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
-        let ihr_disabled: boolean = slice.loadBoolean();
-        let bounce: boolean = slice.loadBoolean();
-        let bounced: boolean = slice.loadBoolean();
+        let ihr_disabled: Bool = loadBool(slice);
+        let bounce: Bool = loadBool(slice);
+        let bounced: Bool = loadBool(slice);
         let src: Address | ExternalAddress | null = slice.loadAddressAny();
         let dest: Address = slice.loadAddress();
         let value: CurrencyCollection = loadCurrencyCollection(slice);
         let ihr_fee: bigint = slice.loadCoins();
         let fwd_fee: bigint = slice.loadCoins();
-        let created_lt: number = slice.loadUint(64);
+        let created_lt: bigint = slice.loadUintBig(64);
         let created_at: number = slice.loadUint(32);
         return {
             kind: 'CommonMsgInfoRelaxed_int_msg_info',
@@ -4923,7 +4946,7 @@ export function loadCommonMsgInfoRelaxed(slice: Slice): CommonMsgInfoRelaxed {
         slice.loadUint(2);
         let src: Address | ExternalAddress | null = slice.loadAddressAny();
         let dest: ExternalAddress | null = slice.loadMaybeExternalAddress();
-        let created_lt: number = slice.loadUint(64);
+        let created_lt: bigint = slice.loadUintBig(64);
         let created_at: number = slice.loadUint(32);
         return {
             kind: 'CommonMsgInfoRelaxed_ext_out_msg_info',
@@ -4941,9 +4964,9 @@ export function storeCommonMsgInfoRelaxed(commonMsgInfoRelaxed: CommonMsgInfoRel
     if ((commonMsgInfoRelaxed.kind == 'CommonMsgInfoRelaxed_int_msg_info')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
-            builder.storeBit(commonMsgInfoRelaxed.ihr_disabled);
-            builder.storeBit(commonMsgInfoRelaxed.bounce);
-            builder.storeBit(commonMsgInfoRelaxed.bounced);
+            storeBool(commonMsgInfoRelaxed.ihr_disabled)(builder);
+            storeBool(commonMsgInfoRelaxed.bounce)(builder);
+            storeBool(commonMsgInfoRelaxed.bounced)(builder);
             builder.storeAddress(commonMsgInfoRelaxed.src);
             builder.storeAddress(commonMsgInfoRelaxed.dest);
             storeCurrencyCollection(commonMsgInfoRelaxed.value)(builder);
@@ -4970,8 +4993,8 @@ export function storeCommonMsgInfoRelaxed(commonMsgInfoRelaxed: CommonMsgInfoRel
 // tick_tock$_ tick:Bool tock:Bool = TickTock;
 
 export function loadTickTock(slice: Slice): TickTock {
-    let tick: boolean = slice.loadBoolean();
-    let tock: boolean = slice.loadBoolean();
+    let tick: Bool = loadBool(slice);
+    let tock: Bool = loadBool(slice);
     return {
         kind: 'TickTock',
         tick: tick,
@@ -4982,8 +5005,8 @@ export function loadTickTock(slice: Slice): TickTock {
 
 export function storeTickTock(tickTock: TickTock): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeBit(tickTock.tick);
-        builder.storeBit(tickTock.tock);
+        storeBool(tickTock.tick)(builder);
+        storeBool(tickTock.tock)(builder);
     })
 
 }
@@ -5143,7 +5166,7 @@ export function storeStateInitWithLibs(stateInitWithLibs: StateInitWithLibs): (b
 // simple_lib$_ public:Bool root:^Cell = SimpleLib;
 
 export function loadSimpleLib(slice: Slice): SimpleLib {
-    let public0: boolean = slice.loadBoolean();
+    let public0: Bool = loadBool(slice);
     let slice1 = slice.loadRef().beginParse(true);
     let root: Cell = slice1.asCell();
     return {
@@ -5156,7 +5179,7 @@ export function loadSimpleLib(slice: Slice): SimpleLib {
 
 export function storeSimpleLib(simpleLib: SimpleLib): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeBit(simpleLib.public0);
+        storeBool(simpleLib.public0)(builder);
         let cell1 = beginCell();
         cell1.storeSlice(simpleLib.root.beginParse(true));
         builder.storeRef(cell1);
@@ -5338,7 +5361,7 @@ export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
         slice.loadUint(2);
         let workchain_id: number = slice.loadInt(8);
-        let addr_pfx: number = slice.loadUint(64);
+        let addr_pfx: bigint = slice.loadUintBig(64);
         return {
             kind: 'IntermediateAddress_interm_addr_simple',
             workchain_id: workchain_id,
@@ -5349,7 +5372,7 @@ export function loadIntermediateAddress(slice: Slice): IntermediateAddress {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
         slice.loadUint(2);
         let workchain_id: number = slice.loadInt(32);
-        let addr_pfx: number = slice.loadUint(64);
+        let addr_pfx: bigint = slice.loadUintBig(64);
         return {
             kind: 'IntermediateAddress_interm_addr_ext',
             workchain_id: workchain_id,
@@ -5556,7 +5579,7 @@ export function loadInMsg(slice: Slice): InMsg {
         slice.loadUint(3);
         let slice1 = slice.loadRef().beginParse(true);
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let transaction_id: number = slice.loadUint(64);
+        let transaction_id: bigint = slice.loadUintBig(64);
         let fwd_fee: bigint = slice.loadCoins();
         return {
             kind: 'InMsg_msg_discard_fin',
@@ -5570,7 +5593,7 @@ export function loadInMsg(slice: Slice): InMsg {
         slice.loadUint(3);
         let slice1 = slice.loadRef().beginParse(true);
         let in_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let transaction_id: number = slice.loadUint(64);
+        let transaction_id: bigint = slice.loadUintBig(64);
         let fwd_fee: bigint = slice.loadCoins();
         let slice2 = slice.loadRef().beginParse(true);
         let proof_delivered: Cell = slice2.asCell();
@@ -5863,7 +5886,7 @@ export function loadOutMsg(slice: Slice): OutMsg {
         slice.loadUint(4);
         let slice1 = slice.loadRef().beginParse(true);
         let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
-        let import_block_lt: number = slice.loadUint(63);
+        let import_block_lt: bigint = slice.loadUintBig(63);
         return {
             kind: 'OutMsg_msg_export_deq',
             out_msg: out_msg,
@@ -5875,8 +5898,8 @@ export function loadOutMsg(slice: Slice): OutMsg {
         slice.loadUint(4);
         let msg_env_hash: BitString = slice.loadBits(256);
         let next_workchain: number = slice.loadInt(32);
-        let next_addr_pfx: number = slice.loadUint(64);
-        let import_block_lt: number = slice.loadUint(64);
+        let next_addr_pfx: bigint = slice.loadUintBig(64);
+        let import_block_lt: bigint = slice.loadUintBig(64);
         return {
             kind: 'OutMsg_msg_export_deq_short',
             msg_env_hash: msg_env_hash,
@@ -6022,7 +6045,7 @@ export function storeOutMsg(outMsg: OutMsg): (builder: Builder) => void {
 // _ enqueued_lt:uint64 out_msg:^MsgEnvelope = EnqueuedMsg;
 
 export function loadEnqueuedMsg(slice: Slice): EnqueuedMsg {
-    let enqueued_lt: number = slice.loadUint(64);
+    let enqueued_lt: bigint = slice.loadUintBig(64);
     let slice1 = slice.loadRef().beginParse(true);
     let out_msg: MsgEnvelope = loadMsgEnvelope(slice1);
     return {
@@ -6089,11 +6112,11 @@ export function storeOutMsgDescr(outMsgDescr: OutMsgDescr): (builder: Builder) =
 // _ (HashmapAugE 352 EnqueuedMsg uint64) = OutMsgQueue;
 
 export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
-    let anon0: Dictionary<bigint, {value: EnqueuedMsg, extra: number}> = Dictionary.load(Dictionary.Keys.BigUint(352), {
+    let anon0: Dictionary<bigint, {value: EnqueuedMsg, extra: bigint}> = Dictionary.load(Dictionary.Keys.BigUint(352), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return {
-            extra: slice.loadUint(64),
+            extra: slice.loadUintBig(64),
             value: loadEnqueuedMsg(slice),
         }
 
@@ -6109,8 +6132,8 @@ export function loadOutMsgQueue(slice: Slice): OutMsgQueue {
 export function storeOutMsgQueue(outMsgQueue: OutMsgQueue): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeDict(outMsgQueue.anon0, Dictionary.Keys.BigUint(352), {
-            serialize: ((arg: {value: EnqueuedMsg, extra: number}, builder: Builder) => {
-            ((arg: number) => {
+            serialize: ((arg: {value: EnqueuedMsg, extra: bigint}, builder: Builder) => {
+            ((arg: bigint) => {
                 return ((builder: Builder) => {
                     builder.storeUint(arg, 64);
                 })
@@ -6132,7 +6155,7 @@ export function storeOutMsgQueue(outMsgQueue: OutMsgQueue): (builder: Builder) =
 // processed_upto$_ last_msg_lt:uint64 last_msg_hash:bits256 = ProcessedUpto;
 
 export function loadProcessedUpto(slice: Slice): ProcessedUpto {
-    let last_msg_lt: number = slice.loadUint(64);
+    let last_msg_lt: bigint = slice.loadUintBig(64);
     let last_msg_hash: BitString = slice.loadBits(256);
     return {
         kind: 'ProcessedUpto',
@@ -6179,7 +6202,7 @@ export function storeProcessedInfo(processedInfo: ProcessedInfo): (builder: Buil
 // ihr_pending$_ import_lt:uint64 = IhrPendingSince;
 
 export function loadIhrPendingSince(slice: Slice): IhrPendingSince {
-    let import_lt: number = slice.loadUint(64);
+    let import_lt: bigint = slice.loadUintBig(64);
     return {
         kind: 'IhrPendingSince',
         import_lt: import_lt,
@@ -6390,7 +6413,7 @@ account_storage$_ last_trans_lt:uint64
 */
 
 export function loadAccountStorage(slice: Slice): AccountStorage {
-    let last_trans_lt: number = slice.loadUint(64);
+    let last_trans_lt: bigint = slice.loadUintBig(64);
     let balance: CurrencyCollection = loadCurrencyCollection(slice);
     let state: AccountState = loadAccountState(slice);
     return {
@@ -6547,7 +6570,7 @@ export function loadShardAccount(slice: Slice): ShardAccount {
     let slice1 = slice.loadRef().beginParse(true);
     let account: Account = loadAccount(slice1);
     let last_trans_hash: BitString = slice.loadBits(256);
-    let last_trans_lt: number = slice.loadUint(64);
+    let last_trans_lt: bigint = slice.loadUintBig(64);
     return {
         kind: 'ShardAccount',
         account: account,
@@ -6646,9 +6669,9 @@ export function loadTransaction(slice: Slice): Transaction {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0111))) {
         slice.loadUint(4);
         let account_addr: BitString = slice.loadBits(256);
-        let lt: number = slice.loadUint(64);
+        let lt: bigint = slice.loadUintBig(64);
         let prev_trans_hash: BitString = slice.loadBits(256);
-        let prev_trans_lt: number = slice.loadUint(64);
+        let prev_trans_lt: bigint = slice.loadUintBig(64);
         let now: number = slice.loadUint(32);
         let outmsg_cnt: number = slice.loadUint(15);
         let orig_status: AccountStatus = loadAccountStatus(slice);
@@ -7100,9 +7123,9 @@ export function loadTrComputePhase(slice: Slice): TrComputePhase {
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let success: boolean = slice.loadBoolean();
-        let msg_state_used: boolean = slice.loadBoolean();
-        let account_activated: boolean = slice.loadBoolean();
+        let success: Bool = loadBool(slice);
+        let msg_state_used: Bool = loadBool(slice);
+        let account_activated: Bool = loadBool(slice);
         let gas_fees: bigint = slice.loadCoins();
         let slice1 = slice.loadRef().beginParse(true);
         let gas_used: bigint = slice1.loadVarUintBig(bitLen((7 - 1)));
@@ -7152,9 +7175,9 @@ export function storeTrComputePhase(trComputePhase: TrComputePhase): (builder: B
     if ((trComputePhase.kind == 'TrComputePhase_tr_phase_compute_vm')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
-            builder.storeBit(trComputePhase.success);
-            builder.storeBit(trComputePhase.msg_state_used);
-            builder.storeBit(trComputePhase.account_activated);
+            storeBool(trComputePhase.success)(builder);
+            storeBool(trComputePhase.msg_state_used)(builder);
+            storeBool(trComputePhase.account_activated)(builder);
             builder.storeCoins(trComputePhase.gas_fees);
             let cell1 = beginCell();
             cell1.storeVarUint(trComputePhase.gas_used, bitLen((7 - 1)));
@@ -7262,9 +7285,9 @@ tr_phase_action$_ success:Bool valid:Bool no_funds:Bool
 */
 
 export function loadTrActionPhase(slice: Slice): TrActionPhase {
-    let success: boolean = slice.loadBoolean();
-    let valid: boolean = slice.loadBoolean();
-    let no_funds: boolean = slice.loadBoolean();
+    let success: Bool = loadBool(slice);
+    let valid: Bool = loadBool(slice);
+    let no_funds: Bool = loadBool(slice);
     let status_change: AccStatusChange = loadAccStatusChange(slice);
     let total_fwd_fees: Maybe<bigint> = loadMaybe<bigint>(slice, ((slice: Slice) => {
         return slice.loadCoins()
@@ -7307,9 +7330,9 @@ export function loadTrActionPhase(slice: Slice): TrActionPhase {
 
 export function storeTrActionPhase(trActionPhase: TrActionPhase): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeBit(trActionPhase.success);
-        builder.storeBit(trActionPhase.valid);
-        builder.storeBit(trActionPhase.no_funds);
+        storeBool(trActionPhase.success)(builder);
+        storeBool(trActionPhase.valid)(builder);
+        storeBool(trActionPhase.no_funds)(builder);
         storeAccStatusChange(trActionPhase.status_change)(builder);
         storeMaybe<bigint>(trActionPhase.total_fwd_fees, ((arg: bigint) => {
             return ((builder: Builder) => {
@@ -7468,7 +7491,7 @@ trans_merge_install$0111 split_info:SplitMergeInfo
 export function loadTransactionDescr(slice: Slice): TransactionDescr {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b0000))) {
         slice.loadUint(4);
-        let credit_first: boolean = slice.loadBoolean();
+        let credit_first: Bool = loadBool(slice);
         let storage_ph: Maybe<TrStoragePhase> = loadMaybe<TrStoragePhase>(slice, loadTrStoragePhase);
         let credit_ph: Maybe<TrCreditPhase> = loadMaybe<TrCreditPhase>(slice, loadTrCreditPhase);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
@@ -7477,9 +7500,9 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
             return loadTrActionPhase(slice1)
 
         }));
-        let aborted: boolean = slice.loadBoolean();
+        let aborted: Bool = loadBool(slice);
         let bounce: Maybe<TrBouncePhase> = loadMaybe<TrBouncePhase>(slice, loadTrBouncePhase);
-        let destroyed: boolean = slice.loadBoolean();
+        let destroyed: Bool = loadBool(slice);
         return {
             kind: 'TransactionDescr_trans_ord',
             credit_first: credit_first,
@@ -7504,7 +7527,7 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b001))) {
         slice.loadUint(3);
-        let is_tock: boolean = slice.loadBoolean();
+        let is_tock: Bool = loadBool(slice);
         let storage_ph: TrStoragePhase = loadTrStoragePhase(slice);
         let compute_ph: TrComputePhase = loadTrComputePhase(slice);
         let action: Maybe<TrActionPhase> = loadMaybe<TrActionPhase>(slice, ((slice: Slice) => {
@@ -7512,8 +7535,8 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
             return loadTrActionPhase(slice1)
 
         }));
-        let aborted: boolean = slice.loadBoolean();
-        let destroyed: boolean = slice.loadBoolean();
+        let aborted: Bool = loadBool(slice);
+        let destroyed: Bool = loadBool(slice);
         return {
             kind: 'TransactionDescr_trans_tick_tock',
             is_tock: is_tock,
@@ -7535,8 +7558,8 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
             return loadTrActionPhase(slice1)
 
         }));
-        let aborted: boolean = slice.loadBoolean();
-        let destroyed: boolean = slice.loadBoolean();
+        let aborted: Bool = loadBool(slice);
+        let destroyed: Bool = loadBool(slice);
         return {
             kind: 'TransactionDescr_trans_split_prepare',
             split_info: split_info,
@@ -7553,7 +7576,7 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
         let slice1 = slice.loadRef().beginParse(true);
         let prepare_transaction: Transaction = loadTransaction(slice1);
-        let installed: boolean = slice.loadBoolean();
+        let installed: Bool = loadBool(slice);
         return {
             kind: 'TransactionDescr_trans_split_install',
             split_info: split_info,
@@ -7566,7 +7589,7 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
         slice.loadUint(4);
         let split_info: SplitMergeInfo = loadSplitMergeInfo(slice);
         let storage_ph: TrStoragePhase = loadTrStoragePhase(slice);
-        let aborted: boolean = slice.loadBoolean();
+        let aborted: Bool = loadBool(slice);
         return {
             kind: 'TransactionDescr_trans_merge_prepare',
             split_info: split_info,
@@ -7588,8 +7611,8 @@ export function loadTransactionDescr(slice: Slice): TransactionDescr {
             return loadTrActionPhase(slice1)
 
         }));
-        let aborted: boolean = slice.loadBoolean();
-        let destroyed: boolean = slice.loadBoolean();
+        let aborted: Bool = loadBool(slice);
+        let destroyed: Bool = loadBool(slice);
         return {
             kind: 'TransactionDescr_trans_merge_install',
             split_info: split_info,
@@ -7610,7 +7633,7 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
     if ((transactionDescr.kind == 'TransactionDescr_trans_ord')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0000, 4);
-            builder.storeBit(transactionDescr.credit_first);
+            storeBool(transactionDescr.credit_first)(builder);
             storeMaybe<TrStoragePhase>(transactionDescr.storage_ph, storeTrStoragePhase)(builder);
             storeMaybe<TrCreditPhase>(transactionDescr.credit_ph, storeTrCreditPhase)(builder);
             storeTrComputePhase(transactionDescr.compute_ph)(builder);
@@ -7623,9 +7646,9 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
                 })
 
             }))(builder);
-            builder.storeBit(transactionDescr.aborted);
+            storeBool(transactionDescr.aborted)(builder);
             storeMaybe<TrBouncePhase>(transactionDescr.bounce, storeTrBouncePhase)(builder);
-            builder.storeBit(transactionDescr.destroyed);
+            storeBool(transactionDescr.destroyed)(builder);
         })
 
     }
@@ -7639,7 +7662,7 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
     if ((transactionDescr.kind == 'TransactionDescr_trans_tick_tock')) {
         return ((builder: Builder) => {
             builder.storeUint(0b001, 3);
-            builder.storeBit(transactionDescr.is_tock);
+            storeBool(transactionDescr.is_tock)(builder);
             storeTrStoragePhase(transactionDescr.storage_ph)(builder);
             storeTrComputePhase(transactionDescr.compute_ph)(builder);
             storeMaybe<TrActionPhase>(transactionDescr.action, ((arg: TrActionPhase) => {
@@ -7651,8 +7674,8 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
                 })
 
             }))(builder);
-            builder.storeBit(transactionDescr.aborted);
-            builder.storeBit(transactionDescr.destroyed);
+            storeBool(transactionDescr.aborted)(builder);
+            storeBool(transactionDescr.destroyed)(builder);
         })
 
     }
@@ -7671,8 +7694,8 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
                 })
 
             }))(builder);
-            builder.storeBit(transactionDescr.aborted);
-            builder.storeBit(transactionDescr.destroyed);
+            storeBool(transactionDescr.aborted)(builder);
+            storeBool(transactionDescr.destroyed)(builder);
         })
 
     }
@@ -7683,7 +7706,7 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
             let cell1 = beginCell();
             storeTransaction(transactionDescr.prepare_transaction)(cell1);
             builder.storeRef(cell1);
-            builder.storeBit(transactionDescr.installed);
+            storeBool(transactionDescr.installed)(builder);
         })
 
     }
@@ -7692,7 +7715,7 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
             builder.storeUint(0b0110, 4);
             storeSplitMergeInfo(transactionDescr.split_info)(builder);
             storeTrStoragePhase(transactionDescr.storage_ph)(builder);
-            builder.storeBit(transactionDescr.aborted);
+            storeBool(transactionDescr.aborted)(builder);
         })
 
     }
@@ -7715,8 +7738,8 @@ export function storeTransactionDescr(transactionDescr: TransactionDescr): (buil
                 })
 
             }))(builder);
-            builder.storeBit(transactionDescr.aborted);
-            builder.storeBit(transactionDescr.destroyed);
+            storeBool(transactionDescr.aborted)(builder);
+            storeBool(transactionDescr.destroyed)(builder);
         })
 
     }
@@ -7767,8 +7790,8 @@ export function loadSmartContractInfo(slice: Slice): SmartContractInfo {
         let actions: number = slice.loadUint(16);
         let msgs_sent: number = slice.loadUint(16);
         let unixtime: number = slice.loadUint(32);
-        let block_lt: number = slice.loadUint(64);
-        let trans_lt: number = slice.loadUint(64);
+        let block_lt: bigint = slice.loadUintBig(64);
+        let trans_lt: bigint = slice.loadUintBig(64);
         let rand_seed: BitString = slice.loadBits(256);
         let balance_remaining: CurrencyCollection = loadCurrencyCollection(slice);
         let myself: Address = slice.loadAddress();
@@ -8054,7 +8077,7 @@ export function loadShardIdent(slice: Slice): ShardIdent {
         slice.loadUint(2);
         let shard_pfx_bits: number = slice.loadUint(bitLen(60));
         let workchain_id: number = slice.loadInt(32);
-        let shard_prefix: number = slice.loadUint(64);
+        let shard_prefix: bigint = slice.loadUintBig(64);
         return {
             kind: 'ShardIdent',
             shard_pfx_bits: shard_pfx_bits,
@@ -8083,7 +8106,7 @@ ext_blk_ref$_ end_lt:uint64
 */
 
 export function loadExtBlkRef(slice: Slice): ExtBlkRef {
-    let end_lt: number = slice.loadUint(64);
+    let end_lt: bigint = slice.loadUintBig(64);
     let seq_no: number = slice.loadUint(32);
     let root_hash: BitString = slice.loadBits(256);
     let file_hash: BitString = slice.loadBits(256);
@@ -8181,7 +8204,7 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
         let seq_no: number = slice.loadUint(32);
         let vert_seq_no: number = slice.loadUint(32);
         let gen_utime: number = slice.loadUint(32);
-        let gen_lt: number = slice.loadUint(64);
+        let gen_lt: bigint = slice.loadUintBig(64);
         let min_ref_mc_seqno: number = slice.loadUint(32);
         let slice1 = slice.loadRef().beginParse(true);
         let out_msg_queue_info: OutMsgQueueInfo = loadOutMsgQueueInfo(slice1);
@@ -8189,8 +8212,8 @@ export function loadShardStateUnsplit(slice: Slice): ShardStateUnsplit {
         let slice2 = slice.loadRef().beginParse(true);
         let accounts: ShardAccounts = loadShardAccounts(slice2);
         let slice3 = slice.loadRef().beginParse(true);
-        let overload_history: number = slice3.loadUint(64);
-        let underload_history: number = slice3.loadUint(64);
+        let overload_history: bigint = slice3.loadUintBig(64);
+        let underload_history: bigint = slice3.loadUintBig(64);
         let total_balance: CurrencyCollection = loadCurrencyCollection(slice3);
         let total_validator_fees: CurrencyCollection = loadCurrencyCollection(slice3);
         let libraries: Dictionary<bigint, LibDescr> = Dictionary.load(Dictionary.Keys.BigUint(256), {
@@ -8385,17 +8408,17 @@ export function loadBlockInfo(slice: Slice): BlockInfo {
         let after_merge: number = slice.loadUint(1);
         let before_split: number = slice.loadUint(1);
         let after_split: number = slice.loadUint(1);
-        let want_split: boolean = slice.loadBoolean();
-        let want_merge: boolean = slice.loadBoolean();
-        let key_block: boolean = slice.loadBoolean();
+        let want_split: Bool = loadBool(slice);
+        let want_merge: Bool = loadBool(slice);
+        let key_block: Bool = loadBool(slice);
         let vert_seqno_incr: number = slice.loadUint(1);
         let flags: number = slice.loadUint(8);
         let seq_no: number = slice.loadUint(32);
         let vert_seq_no: number = slice.loadUint(32);
         let shard: ShardIdent = loadShardIdent(slice);
         let gen_utime: number = slice.loadUint(32);
-        let start_lt: number = slice.loadUint(64);
-        let end_lt: number = slice.loadUint(64);
+        let start_lt: bigint = slice.loadUintBig(64);
+        let end_lt: bigint = slice.loadUintBig(64);
         let gen_validator_list_hash_short: number = slice.loadUint(32);
         let gen_catchain_seqno: number = slice.loadUint(32);
         let min_ref_mc_seqno: number = slice.loadUint(32);
@@ -8460,9 +8483,9 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
         builder.storeUint(blockInfo.after_merge, 1);
         builder.storeUint(blockInfo.before_split, 1);
         builder.storeUint(blockInfo.after_split, 1);
-        builder.storeBit(blockInfo.want_split);
-        builder.storeBit(blockInfo.want_merge);
-        builder.storeBit(blockInfo.key_block);
+        storeBool(blockInfo.want_split)(builder);
+        storeBool(blockInfo.want_merge)(builder);
+        storeBool(blockInfo.key_block)(builder);
         builder.storeUint(blockInfo.vert_seqno_incr, 1);
         builder.storeUint(blockInfo.flags, 8);
         builder.storeUint(blockInfo.seq_no, 32);
@@ -8954,18 +8977,18 @@ export function loadShardDescr(slice: Slice): ShardDescr {
         slice.loadUint(4);
         let seq_no: number = slice.loadUint(32);
         let reg_mc_seqno: number = slice.loadUint(32);
-        let start_lt: number = slice.loadUint(64);
-        let end_lt: number = slice.loadUint(64);
+        let start_lt: bigint = slice.loadUintBig(64);
+        let end_lt: bigint = slice.loadUintBig(64);
         let root_hash: BitString = slice.loadBits(256);
         let file_hash: BitString = slice.loadBits(256);
-        let before_split: boolean = slice.loadBoolean();
-        let before_merge: boolean = slice.loadBoolean();
-        let want_split: boolean = slice.loadBoolean();
-        let want_merge: boolean = slice.loadBoolean();
-        let nx_cc_updated: boolean = slice.loadBoolean();
+        let before_split: Bool = loadBool(slice);
+        let before_merge: Bool = loadBool(slice);
+        let want_split: Bool = loadBool(slice);
+        let want_merge: Bool = loadBool(slice);
+        let nx_cc_updated: Bool = loadBool(slice);
         let flags: number = slice.loadUint(3);
         let next_catchain_seqno: number = slice.loadUint(32);
-        let next_validator_shard: number = slice.loadUint(64);
+        let next_validator_shard: bigint = slice.loadUintBig(64);
         let min_ref_mc_seqno: number = slice.loadUint(32);
         let gen_utime: number = slice.loadUint(32);
         let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice);
@@ -9002,18 +9025,18 @@ export function loadShardDescr(slice: Slice): ShardDescr {
         slice.loadUint(4);
         let seq_no: number = slice.loadUint(32);
         let reg_mc_seqno: number = slice.loadUint(32);
-        let start_lt: number = slice.loadUint(64);
-        let end_lt: number = slice.loadUint(64);
+        let start_lt: bigint = slice.loadUintBig(64);
+        let end_lt: bigint = slice.loadUintBig(64);
         let root_hash: BitString = slice.loadBits(256);
         let file_hash: BitString = slice.loadBits(256);
-        let before_split: boolean = slice.loadBoolean();
-        let before_merge: boolean = slice.loadBoolean();
-        let want_split: boolean = slice.loadBoolean();
-        let want_merge: boolean = slice.loadBoolean();
-        let nx_cc_updated: boolean = slice.loadBoolean();
+        let before_split: Bool = loadBool(slice);
+        let before_merge: Bool = loadBool(slice);
+        let want_split: Bool = loadBool(slice);
+        let want_merge: Bool = loadBool(slice);
+        let nx_cc_updated: Bool = loadBool(slice);
         let flags: number = slice.loadUint(3);
         let next_catchain_seqno: number = slice.loadUint(32);
-        let next_validator_shard: number = slice.loadUint(64);
+        let next_validator_shard: bigint = slice.loadUintBig(64);
         let min_ref_mc_seqno: number = slice.loadUint(32);
         let gen_utime: number = slice.loadUint(32);
         let split_merge_at: FutureSplitMerge = loadFutureSplitMerge(slice);
@@ -9060,11 +9083,11 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
             builder.storeUint(shardDescr.end_lt, 64);
             builder.storeBits(shardDescr.root_hash);
             builder.storeBits(shardDescr.file_hash);
-            builder.storeBit(shardDescr.before_split);
-            builder.storeBit(shardDescr.before_merge);
-            builder.storeBit(shardDescr.want_split);
-            builder.storeBit(shardDescr.want_merge);
-            builder.storeBit(shardDescr.nx_cc_updated);
+            storeBool(shardDescr.before_split)(builder);
+            storeBool(shardDescr.before_merge)(builder);
+            storeBool(shardDescr.want_split)(builder);
+            storeBool(shardDescr.want_merge)(builder);
+            storeBool(shardDescr.nx_cc_updated)(builder);
             builder.storeUint(shardDescr.flags, 3);
             builder.storeUint(shardDescr.next_catchain_seqno, 32);
             builder.storeUint(shardDescr.next_validator_shard, 64);
@@ -9088,11 +9111,11 @@ export function storeShardDescr(shardDescr: ShardDescr): (builder: Builder) => v
             builder.storeUint(shardDescr.end_lt, 64);
             builder.storeBits(shardDescr.root_hash);
             builder.storeBits(shardDescr.file_hash);
-            builder.storeBit(shardDescr.before_split);
-            builder.storeBit(shardDescr.before_merge);
-            builder.storeBit(shardDescr.want_split);
-            builder.storeBit(shardDescr.want_merge);
-            builder.storeBit(shardDescr.nx_cc_updated);
+            storeBool(shardDescr.before_split)(builder);
+            storeBool(shardDescr.before_merge)(builder);
+            storeBool(shardDescr.want_split)(builder);
+            storeBool(shardDescr.want_merge)(builder);
+            storeBool(shardDescr.nx_cc_updated)(builder);
             builder.storeUint(shardDescr.flags, 3);
             builder.storeUint(shardDescr.next_catchain_seqno, 32);
             builder.storeUint(shardDescr.next_validator_shard, 64);
@@ -9326,7 +9349,7 @@ validator_info$_
 export function loadValidatorInfo(slice: Slice): ValidatorInfo {
     let validator_list_hash_short: number = slice.loadUint(32);
     let catchain_seqno: number = slice.loadUint(32);
-    let nx_cc_updated: boolean = slice.loadBoolean();
+    let nx_cc_updated: Bool = loadBool(slice);
     return {
         kind: 'ValidatorInfo',
         validator_list_hash_short: validator_list_hash_short,
@@ -9340,7 +9363,7 @@ export function storeValidatorInfo(validatorInfo: ValidatorInfo): (builder: Buil
     return ((builder: Builder) => {
         builder.storeUint(validatorInfo.validator_list_hash_short, 32);
         builder.storeUint(validatorInfo.catchain_seqno, 32);
-        builder.storeBit(validatorInfo.nx_cc_updated);
+        storeBool(validatorInfo.nx_cc_updated)(builder);
     })
 
 }
@@ -9374,8 +9397,8 @@ export function storeValidatorBaseInfo(validatorBaseInfo: ValidatorBaseInfo): (b
 // _ key:Bool max_end_lt:uint64 = KeyMaxLt;
 
 export function loadKeyMaxLt(slice: Slice): KeyMaxLt {
-    let key: boolean = slice.loadBoolean();
-    let max_end_lt: number = slice.loadUint(64);
+    let key: Bool = loadBool(slice);
+    let max_end_lt: bigint = slice.loadUintBig(64);
     return {
         kind: 'KeyMaxLt',
         key: key,
@@ -9386,7 +9409,7 @@ export function loadKeyMaxLt(slice: Slice): KeyMaxLt {
 
 export function storeKeyMaxLt(keyMaxLt: KeyMaxLt): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeBit(keyMaxLt.key);
+        storeBool(keyMaxLt.key)(builder);
         builder.storeUint(keyMaxLt.max_end_lt, 64);
     })
 
@@ -9395,7 +9418,7 @@ export function storeKeyMaxLt(keyMaxLt: KeyMaxLt): (builder: Builder) => void {
 // _ key:Bool blk_ref:ExtBlkRef = KeyExtBlkRef;
 
 export function loadKeyExtBlkRef(slice: Slice): KeyExtBlkRef {
-    let key: boolean = slice.loadBoolean();
+    let key: Bool = loadBool(slice);
     let blk_ref: ExtBlkRef = loadExtBlkRef(slice);
     return {
         kind: 'KeyExtBlkRef',
@@ -9407,7 +9430,7 @@ export function loadKeyExtBlkRef(slice: Slice): KeyExtBlkRef {
 
 export function storeKeyExtBlkRef(keyExtBlkRef: KeyExtBlkRef): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeBit(keyExtBlkRef.key);
+        storeBool(keyExtBlkRef.key)(builder);
         storeExtBlkRef(keyExtBlkRef.blk_ref)(builder);
     })
 
@@ -9460,9 +9483,9 @@ export function storeOldMcBlocksInfo(oldMcBlocksInfo: OldMcBlocksInfo): (builder
 
 export function loadCounters(slice: Slice): Counters {
     let last_updated: number = slice.loadUint(32);
-    let total: number = slice.loadUint(64);
-    let cnt2048: number = slice.loadUint(64);
-    let cnt65536: number = slice.loadUint(64);
+    let total: bigint = slice.loadUintBig(64);
+    let cnt2048: bigint = slice.loadUintBig(64);
+    let cnt65536: bigint = slice.loadUintBig(64);
     return {
         kind: 'Counters',
         last_updated: last_updated,
@@ -9609,7 +9632,7 @@ export function loadMcStateExtra(slice: Slice): McStateExtra {
         let flags: number = slice1.loadUint(16);
         let validator_info: ValidatorInfo = loadValidatorInfo(slice1);
         let prev_blocks: OldMcBlocksInfo = loadOldMcBlocksInfo(slice1);
-        let after_key_block: boolean = slice1.loadBoolean();
+        let after_key_block: Bool = loadBool(slice1);
         let last_key_block: Maybe<ExtBlkRef> = loadMaybe<ExtBlkRef>(slice1, loadExtBlkRef);
         let block_create_stats: BlockCreateStats | undefined = ((flags & (1 << 0)) ? loadBlockCreateStats(slice1) : undefined);
         let global_balance: CurrencyCollection = loadCurrencyCollection(slice);
@@ -9639,7 +9662,7 @@ export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder
         cell1.storeUint(mcStateExtra.flags, 16);
         storeValidatorInfo(mcStateExtra.validator_info)(cell1);
         storeOldMcBlocksInfo(mcStateExtra.prev_blocks)(cell1);
-        cell1.storeBit(mcStateExtra.after_key_block);
+        storeBool(mcStateExtra.after_key_block)(cell1);
         storeMaybe<ExtBlkRef>(mcStateExtra.last_key_block, storeExtBlkRef)(cell1);
         if ((mcStateExtra.block_create_stats != undefined)) {
             storeBlockCreateStats(mcStateExtra.block_create_stats)(cell1);
@@ -9943,7 +9966,7 @@ export function loadValidatorDescr(slice: Slice): ValidatorDescr {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x53))) {
         slice.loadUint(8);
         let public_key: SigPubKey = loadSigPubKey(slice);
-        let weight: number = slice.loadUint(64);
+        let weight: bigint = slice.loadUintBig(64);
         return {
             kind: 'ValidatorDescr_validator',
             public_key: public_key,
@@ -9954,7 +9977,7 @@ export function loadValidatorDescr(slice: Slice): ValidatorDescr {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x73))) {
         slice.loadUint(8);
         let public_key: SigPubKey = loadSigPubKey(slice);
-        let weight: number = slice.loadUint(64);
+        let weight: bigint = slice.loadUintBig(64);
         let adnl_addr: BitString = slice.loadBits(256);
         return {
             kind: 'ValidatorDescr_validator_addr',
@@ -10030,7 +10053,7 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
         let utime_until: number = slice.loadUint(32);
         let total: number = slice.loadUint(16);
         let main: number = slice.loadUint(16);
-        let total_weight: number = slice.loadUint(64);
+        let total_weight: bigint = slice.loadUintBig(64);
         let list: Dictionary<number, ValidatorDescr> = Dictionary.load(Dictionary.Keys.Uint(16), {
             serialize: () => { throw new Error('Not implemented') },
             parse: loadValidatorDescr,
@@ -10965,7 +10988,7 @@ export function loadGlobalVersion(slice: Slice): GlobalVersion {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xc4))) {
         slice.loadUint(8);
         let version: number = slice.loadUint(32);
-        let capabilities: number = slice.loadUint(64);
+        let capabilities: bigint = slice.loadUintBig(64);
         return {
             kind: 'GlobalVersion',
             version: version,
@@ -11125,12 +11148,12 @@ export function loadConfigProposalStatus(slice: Slice): ConfigProposalStatus {
         let expires: number = slice.loadUint(32);
         let slice1 = slice.loadRef().beginParse(true);
         let proposal: ConfigProposal = loadConfigProposal(slice1);
-        let is_critical: boolean = slice.loadBoolean();
+        let is_critical: Bool = loadBool(slice);
         let voters: Dictionary<number, True> = Dictionary.load(Dictionary.Keys.Uint(16), {
             serialize: () => { throw new Error('Not implemented') },
             parse: loadTrue,
         }, slice);
-        let remaining_weight: number = slice.loadInt(64);
+        let remaining_weight: bigint = slice.loadIntBig(64);
         let validator_set_id: bigint = slice.loadUintBig(256);
         let rounds_remaining: number = slice.loadUint(8);
         let wins: number = slice.loadUint(8);
@@ -11159,7 +11182,7 @@ export function storeConfigProposalStatus(configProposalStatus: ConfigProposalSt
         let cell1 = beginCell();
         storeConfigProposal(configProposalStatus.proposal)(cell1);
         builder.storeRef(cell1);
-        builder.storeBit(configProposalStatus.is_critical);
+        storeBool(configProposalStatus.is_critical)(builder);
         builder.storeDict(configProposalStatus.voters, Dictionary.Keys.Uint(16), {
             serialize: ((arg: True, builder: Builder) => {
             storeTrue(arg)(builder);
@@ -11189,7 +11212,7 @@ export function loadWorkchainFormat(slice: Slice, arg0: number): WorkchainFormat
     if (((slice.remainingBits >= 4) && ((slice.preloadUint(4) == 0x1) && (arg0 == 1)))) {
         slice.loadUint(4);
         let vm_version: number = slice.loadInt(32);
-        let vm_mode: number = slice.loadUint(64);
+        let vm_mode: bigint = slice.loadUintBig(64);
         return {
             kind: 'WorkchainFormat_wfmt_basic',
             vm_version: vm_version,
@@ -11331,8 +11354,8 @@ export function loadWorkchainDescr(slice: Slice): WorkchainDescr {
         let min_split: number = slice.loadUint(8);
         let max_split: number = slice.loadUint(8);
         let basic: number = slice.loadUint(1);
-        let active: boolean = slice.loadBoolean();
-        let accept_msgs: boolean = slice.loadBoolean();
+        let active: Bool = loadBool(slice);
+        let accept_msgs: Bool = loadBool(slice);
         let flags: number = slice.loadUint(13);
         let zerostate_root_hash: BitString = slice.loadBits(256);
         let zerostate_file_hash: BitString = slice.loadBits(256);
@@ -11368,8 +11391,8 @@ export function loadWorkchainDescr(slice: Slice): WorkchainDescr {
         let min_split: number = slice.loadUint(8);
         let max_split: number = slice.loadUint(8);
         let basic: number = slice.loadUint(1);
-        let active: boolean = slice.loadBoolean();
-        let accept_msgs: boolean = slice.loadBoolean();
+        let active: Bool = loadBool(slice);
+        let accept_msgs: Bool = loadBool(slice);
         let flags: number = slice.loadUint(13);
         let zerostate_root_hash: BitString = slice.loadBits(256);
         let zerostate_file_hash: BitString = slice.loadBits(256);
@@ -11412,8 +11435,8 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
             builder.storeUint(workchainDescr.min_split, 8);
             builder.storeUint(workchainDescr.max_split, 8);
             builder.storeUint(workchainDescr.basic, 1);
-            builder.storeBit(workchainDescr.active);
-            builder.storeBit(workchainDescr.accept_msgs);
+            storeBool(workchainDescr.active)(builder);
+            storeBool(workchainDescr.accept_msgs)(builder);
             builder.storeUint(workchainDescr.flags, 13);
             builder.storeBits(workchainDescr.zerostate_root_hash);
             builder.storeBits(workchainDescr.zerostate_file_hash);
@@ -11436,8 +11459,8 @@ export function storeWorkchainDescr(workchainDescr: WorkchainDescr): (builder: B
             builder.storeUint(workchainDescr.min_split, 8);
             builder.storeUint(workchainDescr.max_split, 8);
             builder.storeUint(workchainDescr.basic, 1);
-            builder.storeBit(workchainDescr.active);
-            builder.storeBit(workchainDescr.accept_msgs);
+            storeBool(workchainDescr.active)(builder);
+            storeBool(workchainDescr.accept_msgs)(builder);
             builder.storeUint(workchainDescr.flags, 13);
             builder.storeBits(workchainDescr.zerostate_root_hash);
             builder.storeBits(workchainDescr.zerostate_file_hash);
@@ -11523,10 +11546,10 @@ export function loadStoragePrices(slice: Slice): StoragePrices {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xcc))) {
         slice.loadUint(8);
         let utime_since: number = slice.loadUint(32);
-        let bit_price_ps: number = slice.loadUint(64);
-        let _cell_price_ps: number = slice.loadUint(64);
-        let mc_bit_price_ps: number = slice.loadUint(64);
-        let mc_cell_price_ps: number = slice.loadUint(64);
+        let bit_price_ps: bigint = slice.loadUintBig(64);
+        let _cell_price_ps: bigint = slice.loadUintBig(64);
+        let mc_bit_price_ps: bigint = slice.loadUintBig(64);
+        let mc_cell_price_ps: bigint = slice.loadUintBig(64);
         return {
             kind: 'StoragePrices',
             utime_since: utime_since,
@@ -11572,12 +11595,12 @@ gas_flat_pfx#d1 flat_gas_limit:uint64 flat_gas_price:uint64 other:GasLimitsPrice
 export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xdd))) {
         slice.loadUint(8);
-        let gas_price: number = slice.loadUint(64);
-        let gas_limit: number = slice.loadUint(64);
-        let gas_credit: number = slice.loadUint(64);
-        let block_gas_limit: number = slice.loadUint(64);
-        let freeze_due_limit: number = slice.loadUint(64);
-        let delete_due_limit: number = slice.loadUint(64);
+        let gas_price: bigint = slice.loadUintBig(64);
+        let gas_limit: bigint = slice.loadUintBig(64);
+        let gas_credit: bigint = slice.loadUintBig(64);
+        let block_gas_limit: bigint = slice.loadUintBig(64);
+        let freeze_due_limit: bigint = slice.loadUintBig(64);
+        let delete_due_limit: bigint = slice.loadUintBig(64);
         return {
             kind: 'GasLimitsPrices_gas_prices',
             gas_price: gas_price,
@@ -11591,13 +11614,13 @@ export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xde))) {
         slice.loadUint(8);
-        let gas_price: number = slice.loadUint(64);
-        let gas_limit: number = slice.loadUint(64);
-        let special_gas_limit: number = slice.loadUint(64);
-        let gas_credit: number = slice.loadUint(64);
-        let block_gas_limit: number = slice.loadUint(64);
-        let freeze_due_limit: number = slice.loadUint(64);
-        let delete_due_limit: number = slice.loadUint(64);
+        let gas_price: bigint = slice.loadUintBig(64);
+        let gas_limit: bigint = slice.loadUintBig(64);
+        let special_gas_limit: bigint = slice.loadUintBig(64);
+        let gas_credit: bigint = slice.loadUintBig(64);
+        let block_gas_limit: bigint = slice.loadUintBig(64);
+        let freeze_due_limit: bigint = slice.loadUintBig(64);
+        let delete_due_limit: bigint = slice.loadUintBig(64);
         return {
             kind: 'GasLimitsPrices_gas_prices_ext',
             gas_price: gas_price,
@@ -11612,8 +11635,8 @@ export function loadGasLimitsPrices(slice: Slice): GasLimitsPrices {
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd1))) {
         slice.loadUint(8);
-        let flat_gas_limit: number = slice.loadUint(64);
-        let flat_gas_price: number = slice.loadUint(64);
+        let flat_gas_limit: bigint = slice.loadUintBig(64);
+        let flat_gas_price: bigint = slice.loadUintBig(64);
         let other: GasLimitsPrices = loadGasLimitsPrices(slice);
         return {
             kind: 'GasLimitsPrices_gas_flat_pfx',
@@ -11748,9 +11771,9 @@ msg_forward_prices#ea lump_price:uint64 bit_price:uint64 cell_price:uint64
 export function loadMsgForwardPrices(slice: Slice): MsgForwardPrices {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xea))) {
         slice.loadUint(8);
-        let lump_price: number = slice.loadUint(64);
-        let bit_price: number = slice.loadUint(64);
-        let _cell_price: number = slice.loadUint(64);
+        let lump_price: bigint = slice.loadUintBig(64);
+        let bit_price: bigint = slice.loadUintBig(64);
+        let _cell_price: bigint = slice.loadUintBig(64);
         let ihr_price_factor: number = slice.loadUint(32);
         let first_frac: number = slice.loadUint(16);
         let next_frac: number = slice.loadUint(16);
@@ -11811,7 +11834,7 @@ export function loadCatchainConfig(slice: Slice): CatchainConfig {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xc2))) {
         slice.loadUint(8);
         let flags: number = slice.loadUint(7);
-        let shuffle_mc_validators: boolean = slice.loadBoolean();
+        let shuffle_mc_validators: Bool = loadBool(slice);
         let mc_catchain_lifetime: number = slice.loadUint(32);
         let shard_catchain_lifetime: number = slice.loadUint(32);
         let shard_validators_lifetime: number = slice.loadUint(32);
@@ -11848,7 +11871,7 @@ export function storeCatchainConfig(catchainConfig: CatchainConfig): (builder: B
         return ((builder: Builder) => {
             builder.storeUint(0xc2, 8);
             builder.storeUint(catchainConfig.flags, 7);
-            builder.storeBit(catchainConfig.shuffle_mc_validators);
+            storeBool(catchainConfig.shuffle_mc_validators)(builder);
             builder.storeUint(catchainConfig.mc_catchain_lifetime, 32);
             builder.storeUint(catchainConfig.shard_catchain_lifetime, 32);
             builder.storeUint(catchainConfig.shard_validators_lifetime, 32);
@@ -11925,7 +11948,7 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd7))) {
         slice.loadUint(8);
         let flags: number = slice.loadUint(7);
-        let new_catchain_ids: boolean = slice.loadBoolean();
+        let new_catchain_ids: Bool = loadBool(slice);
         let round_candidates: number = slice.loadUint(8);
         let next_candidate_delay_ms: number = slice.loadUint(32);
         let consensus_timeout_ms: number = slice.loadUint(32);
@@ -11958,7 +11981,7 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd8))) {
         slice.loadUint(8);
         let flags: number = slice.loadUint(7);
-        let new_catchain_ids: boolean = slice.loadBoolean();
+        let new_catchain_ids: Bool = loadBool(slice);
         let round_candidates: number = slice.loadUint(8);
         let next_candidate_delay_ms: number = slice.loadUint(32);
         let consensus_timeout_ms: number = slice.loadUint(32);
@@ -11993,7 +12016,7 @@ export function loadConsensusConfig(slice: Slice): ConsensusConfig {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xd9))) {
         slice.loadUint(8);
         let flags: number = slice.loadUint(7);
-        let new_catchain_ids: boolean = slice.loadBoolean();
+        let new_catchain_ids: Bool = loadBool(slice);
         let round_candidates: number = slice.loadUint(8);
         let next_candidate_delay_ms: number = slice.loadUint(32);
         let consensus_timeout_ms: number = slice.loadUint(32);
@@ -12052,7 +12075,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
         return ((builder: Builder) => {
             builder.storeUint(0xd7, 8);
             builder.storeUint(consensusConfig.flags, 7);
-            builder.storeBit(consensusConfig.new_catchain_ids);
+            storeBool(consensusConfig.new_catchain_ids)(builder);
             builder.storeUint(consensusConfig.round_candidates, 8);
             builder.storeUint(consensusConfig.next_candidate_delay_ms, 32);
             builder.storeUint(consensusConfig.consensus_timeout_ms, 32);
@@ -12074,7 +12097,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
         return ((builder: Builder) => {
             builder.storeUint(0xd8, 8);
             builder.storeUint(consensusConfig.flags, 7);
-            builder.storeBit(consensusConfig.new_catchain_ids);
+            storeBool(consensusConfig.new_catchain_ids)(builder);
             builder.storeUint(consensusConfig.round_candidates, 8);
             builder.storeUint(consensusConfig.next_candidate_delay_ms, 32);
             builder.storeUint(consensusConfig.consensus_timeout_ms, 32);
@@ -12097,7 +12120,7 @@ export function storeConsensusConfig(consensusConfig: ConsensusConfig): (builder
         return ((builder: Builder) => {
             builder.storeUint(0xd9, 8);
             builder.storeUint(consensusConfig.flags, 7);
-            builder.storeBit(consensusConfig.new_catchain_ids);
+            storeBool(consensusConfig.new_catchain_ids)(builder);
             builder.storeUint(consensusConfig.round_candidates, 8);
             builder.storeUint(consensusConfig.next_candidate_delay_ms, 32);
             builder.storeUint(consensusConfig.consensus_timeout_ms, 32);
@@ -12561,7 +12584,7 @@ block_signatures_pure#_ sig_count:uint32 sig_weight:uint64
 
 export function loadBlockSignaturesPure(slice: Slice): BlockSignaturesPure {
     let sig_count: number = slice.loadUint(32);
-    let sig_weight: number = slice.loadUint(64);
+    let sig_weight: bigint = slice.loadUintBig(64);
     let signatures: Dictionary<number, CryptoSignaturePair> = Dictionary.load(Dictionary.Keys.Uint(16), {
         serialize: () => { throw new Error('Not implemented') },
         parse: loadCryptoSignaturePair,
@@ -12973,7 +12996,7 @@ export function loadValidatorComplaintStatus(slice: Slice): ValidatorComplaintSt
             parse: loadTrue,
         }, slice);
         let vset_id: bigint = slice.loadUintBig(256);
-        let weight_remaining: number = slice.loadInt(64);
+        let weight_remaining: bigint = slice.loadIntBig(64);
         return {
             kind: 'ValidatorComplaintStatus',
             complaint: complaint,
@@ -13032,7 +13055,7 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x01))) {
         slice.loadUint(8);
-        let value: number = slice.loadInt(64);
+        let value: bigint = slice.loadIntBig(64);
         return {
             kind: 'VmStackValue_vm_stk_tinyint',
             value: value,
@@ -13426,11 +13449,11 @@ gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ]
 */
 
 export function loadVmGasLimits(slice: Slice): VmGasLimits {
-    let remaining: number = slice.loadInt(64);
+    let remaining: bigint = slice.loadIntBig(64);
     let slice1 = slice.loadRef().beginParse(true);
-    let max_limit: number = slice1.loadInt(64);
-    let cur_limit: number = slice1.loadInt(64);
-    let credit: number = slice1.loadInt(64);
+    let max_limit: bigint = slice1.loadIntBig(64);
+    let cur_limit: bigint = slice1.loadIntBig(64);
+    let credit: bigint = slice1.loadIntBig(64);
     return {
         kind: 'VmGasLimits',
         remaining: remaining,
@@ -13605,7 +13628,7 @@ export function loadVmCont(slice: Slice): VmCont {
     }
     if (((slice.remainingBits >= 5) && (slice.preloadUint(5) == 0b10100))) {
         slice.loadUint(5);
-        let count: number = slice.loadUint(63);
+        let count: bigint = slice.loadUintBig(63);
         let slice1 = slice.loadRef().beginParse(true);
         let body: VmCont = loadVmCont(slice1);
         let slice2 = slice.loadRef().beginParse(true);
@@ -14266,7 +14289,7 @@ export function loadChanConfig(slice: Slice): ChanConfig {
     let a_addr: Address = slice1.loadAddress();
     let slice2 = slice.loadRef().beginParse(true);
     let b_addr: Address = slice2.loadAddress();
-    let channel_id: number = slice.loadUint(64);
+    let channel_id: bigint = slice.loadUintBig(64);
     let min_A_extra: bigint = slice.loadCoins();
     return {
         kind: 'ChanConfig',
@@ -14309,8 +14332,8 @@ export function storeChanConfig(chanConfig: ChanConfig): (builder: Builder) => v
 export function loadChanState(slice: Slice): ChanState {
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b000))) {
         slice.loadUint(3);
-        let signed_A: boolean = slice.loadBoolean();
-        let signed_B: boolean = slice.loadBoolean();
+        let signed_A: Bool = loadBool(slice);
+        let signed_B: Bool = loadBool(slice);
         let min_A: bigint = slice.loadCoins();
         let min_B: bigint = slice.loadCoins();
         let expire_at: number = slice.loadUint(32);
@@ -14330,8 +14353,8 @@ export function loadChanState(slice: Slice): ChanState {
     }
     if (((slice.remainingBits >= 3) && (slice.preloadUint(3) == 0b001))) {
         slice.loadUint(3);
-        let signed_A: boolean = slice.loadBoolean();
-        let signed_B: boolean = slice.loadBoolean();
+        let signed_A: Bool = loadBool(slice);
+        let signed_B: Bool = loadBool(slice);
         let promise_A: bigint = slice.loadCoins();
         let promise_B: bigint = slice.loadCoins();
         let expire_at: number = slice.loadUint(32);
@@ -14367,8 +14390,8 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
     if ((chanState.kind == 'ChanState_chan_state_init')) {
         return ((builder: Builder) => {
             builder.storeUint(0b000, 3);
-            builder.storeBit(chanState.signed_A);
-            builder.storeBit(chanState.signed_B);
+            storeBool(chanState.signed_A)(builder);
+            storeBool(chanState.signed_B)(builder);
             builder.storeCoins(chanState.min_A);
             builder.storeCoins(chanState.min_B);
             builder.storeUint(chanState.expire_at, 32);
@@ -14380,8 +14403,8 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
     if ((chanState.kind == 'ChanState_chan_state_close')) {
         return ((builder: Builder) => {
             builder.storeUint(0b001, 3);
-            builder.storeBit(chanState.signed_A);
-            builder.storeBit(chanState.signed_B);
+            storeBool(chanState.signed_A)(builder);
+            storeBool(chanState.signed_B)(builder);
             builder.storeCoins(chanState.promise_A);
             builder.storeCoins(chanState.promise_B);
             builder.storeUint(chanState.expire_at, 32);
@@ -14404,7 +14427,7 @@ export function storeChanState(chanState: ChanState): (builder: Builder) => void
 // chan_promise$_ channel_id:uint64 promise_A:Grams promise_B:Grams = ChanPromise;
 
 export function loadChanPromise(slice: Slice): ChanPromise {
-    let channel_id: number = slice.loadUint(64);
+    let channel_id: bigint = slice.loadUintBig(64);
     let promise_A: bigint = slice.loadCoins();
     let promise_B: bigint = slice.loadCoins();
     return {
@@ -14473,7 +14496,7 @@ export function loadChanMsg(slice: Slice): ChanMsg {
         let inc_B: bigint = slice.loadCoins();
         let min_A: bigint = slice.loadCoins();
         let min_B: bigint = slice.loadCoins();
-        let channel_id: number = slice.loadUint(64);
+        let channel_id: bigint = slice.loadUintBig(64);
         return {
             kind: 'ChanMsg_chan_msg_init',
             inc_A: inc_A,

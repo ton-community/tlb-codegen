@@ -11,6 +11,29 @@ export function bitLen(n: number) {
     return n.toString(2).length;
 }
 
+export interface Bool {
+    readonly kind: 'Bool';
+    readonly value: boolean;
+}
+
+export function loadBool(slice: Slice): Bool {
+    if (slice.remainingBits >= 1) {
+        let value = slice.loadUint(1);
+        return {
+            kind: 'Bool',
+            value: value == 1
+        }
+
+    }
+    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function storeBool(bool: Bool): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(bool.value ? 1: 0, 1);
+    })
+
+}
 // tmpa$_ a:# b:# = Simple;
 
 export interface Simple {
@@ -687,7 +710,7 @@ export interface RefCombinatorInRef {
 
 export interface BoolUser {
     readonly kind: 'BoolUser';
-    readonly a: boolean;
+    readonly a: Bool;
 }
 
 /*
@@ -2974,7 +2997,7 @@ export function storeRefCombinatorInRef(refCombinatorInRef: RefCombinatorInRef):
 // _ a:Bool = BoolUser;
 
 export function loadBoolUser(slice: Slice): BoolUser {
-    let a: boolean = slice.loadBoolean();
+    let a: Bool = loadBool(slice);
     return {
         kind: 'BoolUser',
         a: a,
@@ -2984,7 +3007,7 @@ export function loadBoolUser(slice: Slice): BoolUser {
 
 export function storeBoolUser(boolUser: BoolUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeBit(boolUser.a);
+        storeBool(boolUser.a)(builder);
     })
 
 }

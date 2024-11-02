@@ -1,7 +1,7 @@
 import { TLBCode, TLBConstructorTag, TLBField, TLBHashmapType, TLBMathExprType } from "../../ast";
 import { findNotReservedName, firstLower, getCurrentSlice } from "../../utils";
 import { ConstructorContext } from "./generator";
-import { BinaryExpression, Expression, GenDeclaration, Identifier, ObjectExpression, Statement, TypeExpression, TypeParametersExpression, TypedIdentifier, id, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIfStatement, tMemberExpression, tMultiStatement, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructExpression, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnaryOpExpression, toCode } from "./tsgen";
+import { BinaryExpression, Expression, GenDeclaration, Identifier, ObjectExpression, Statement, TypeExpression, TypeParametersExpression, TypedIdentifier, id, tArrowFunctionExpression, tArrowFunctionType, tBinaryExpression, tDeclareVariable, tExpressionStatement, tForCycle, tFunctionCall, tFunctionDeclaration, tIdentifier, tIfStatement, tMemberExpression, tMultiStatement, tNumericLiteral, tObjectExpression, tObjectProperty, tReturnStatement, tStringLiteral, tStructDeclaration, tStructExpression, tTypeParametersExpression, tTypeWithParameters, tTypedIdentifier, tUnaryOpExpression, toCode } from "./tsgen";
 import { ExprForParam, convertToAST, getNegationDerivationFunctionBody, isBigIntExpr } from "./utils";
 
 export function tEqualExpression(left: Expression, right: Expression) {
@@ -40,6 +40,7 @@ export function bitlenFunctionDecl(): GenDeclaration {
         [tExpressionStatement(id("return n.toString(2).length"))]
     );
 }
+
 export function typedSlice() {
     return [tTypedIdentifier(id("slice"), id("Slice"))];
 }

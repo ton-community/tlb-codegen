@@ -68,6 +68,7 @@ import {
   TypeParametersExpression,
   TypedIdentifier,
   id,
+  tCodeAsIs,
   tComment,
   tExpressionStatement,
   tFunctionCall,
@@ -237,6 +238,33 @@ export class TypescriptGenerator implements CodeGenerator {
   addBitLenFunction() {
     this.jsCodeDeclarations.push(bitlenFunctionDecl());
   }
+
+  addEmbeddedTypes() {
+    this.jsCodeDeclarations.push(tCodeAsIs(`export interface Bool {
+    readonly kind: 'Bool';
+    readonly value: boolean;
+}
+
+export function loadBool(slice: Slice): Bool {
+    if (slice.remainingBits >= 1) {
+        let value = slice.loadUint(1);
+        return {
+            kind: 'Bool',
+            value: value == 1
+        }
+
+    }
+    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function storeBool(bool: Bool): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(bool.value ? 1: 0, 1);
+    })
+
+}`))
+  }
+
   addTlbType(tlbType: TLBType): void {
     let typeName = findNotReservedName(
       firstLower(tlbType.name),
@@ -714,14 +742,6 @@ export class TypescriptGenerator implements CodeGenerator {
         tMemberExpression(storeParametersInside[0], id("beginParse")), 
         [id("true")]
       )
-    } else if (fieldType.kind == "TLBBoolType") {
-      exprForParam = {
-        argLoadExpr: undefined,
-        argStoreExpr: undefined,
-        paramType: "boolean",
-        fieldLoadSuffix: "Boolean",
-        fieldStoreSuffix: "Bit",
-      };
     } else if (fieldType.kind == "TLBCoinsType") {
       exprForParam = {
         argLoadExpr: undefined,

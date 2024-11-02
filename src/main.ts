@@ -47,6 +47,7 @@ export function generateCodeByAST(tree: Program, input: string, getGenerator: (t
   codeGenerator.addTonCoreClassUsage("DictionaryValue")
 
   codeGenerator.addBitLenFunction();
+  codeGenerator.addEmbeddedTypes();
 
   let jsCodeDeclarations: CommonGenDeclaration[] = [];
   codeGenerator.jsCodeDeclarations.forEach((declaration) => {

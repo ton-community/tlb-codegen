@@ -261,8 +261,6 @@ export function getType(
       };
     } else if ((theNum = splitForTypeValue(expr.name, "bits")) != undefined) {
       return { kind: "TLBBitsType", bits: new TLBNumberExpr(theNum) };
-    } else if (expr.name == "Bool") {
-      return { kind: "TLBBoolType" };
     } else if (expr.name == "MsgAddressInt") {
       return { kind: "TLBAddressType", addrType: "Internal" };
     } else if (expr.name == "MsgAddressExt") {
