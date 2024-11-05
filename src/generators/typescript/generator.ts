@@ -235,8 +235,25 @@ export class TypescriptGenerator implements CodeGenerator {
       tImportDeclaration(id(name), tStringLiteral("@ton/core"))
     );
   }
+
+  addBuiltinCode(): void {
+    this.addBitLenFunction();
+    this.addEmbeddedTypes();
+    this.addCopyCellToBuilder();
+  }
+
   addBitLenFunction() {
     this.jsCodeDeclarations.push(bitlenFunctionDecl());
+  }
+
+  addCopyCellToBuilder() {
+    this.jsCodeDeclarations.push(tCodeAsIs(`export function copyCellToBuilder(from: Cell, to: Builder): void {
+    let slice = from.beginParse();
+    to.storeBits(slice.loadBits(slice.remainingBits));
+    while (slice.remainingRefs) {
+        to.storeRef(slice.loadRef());
+    }
+}`))  
   }
 
   addEmbeddedTypes() {
@@ -762,6 +779,11 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
         fieldLoadSuffix: fieldType.signed ? "VarIntBig" : "VarUintBig",
         fieldStoreSuffix: fieldType.signed ? "VarInt" : "VarUint"
       }
+    } else if (fieldType.kind == "TLBTupleType") {
+      result.loadExpr = tFunctionCall(id("parseTuple"), [tFunctionCall(tMemberExpression(id("slice"), id('asCell')), [])]);
+      result.typeParamExpr = id('TupleItem[]');
+      result.storeStmtInside = tExpressionStatement(tFunctionCall(id('copyCellToBuilder'), [tFunctionCall(id('serializeTuple'), storeParametersInside), id('builder')]));
+      result.storeStmtOutside = tExpressionStatement(tFunctionCall(id('copyCellToBuilder'), [tFunctionCall(id('serializeTuple'), storeParametersOutside), id('builder')]));
     } else if (fieldType.kind == "TLBAddressType") {
       if (fieldType.addrType == "Internal") {
         exprForParam = {

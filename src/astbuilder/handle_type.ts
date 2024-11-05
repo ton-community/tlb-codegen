@@ -229,6 +229,10 @@ export function getType(
         signed: true,
         maxBits: 257,
       };
+    } else if (expr.name == "VmStack") {
+      return {
+        kind: "TLBTupleType",
+      }
     } else if (expr.name == "Bits") {
       return { kind: "TLBBitsType", bits: new TLBNumberExpr(1023) };
     } else if (expr.name == "Bit") {

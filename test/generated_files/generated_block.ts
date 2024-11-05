@@ -7,6 +7,9 @@ import { Address } from '@ton/core'
 import { ExternalAddress } from '@ton/core'
 import { Dictionary } from '@ton/core'
 import { DictionaryValue } from '@ton/core'
+import { TupleItem } from '@ton/core'
+import { parseTuple } from '@ton/core'
+import { serializeTuple } from '@ton/core'
 export function bitLen(n: number) {
     return n.toString(2).length;
 }
@@ -33,6 +36,13 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
         builder.storeUint(bool.value ? 1: 0, 1);
     })
 
+}
+export function copyCellToBuilder(from: Cell, to: Builder): void {
+    let slice = from.beginParse();
+    to.storeBits(slice.loadBits(slice.remainingBits));
+    while (slice.remainingRefs) {
+        to.storeRef(slice.loadRef());
+    }
 }
 // unit$_ = Unit;
 
@@ -3389,7 +3399,7 @@ cp:(Maybe int16) = VmControlData;
 export interface VmControlData {
     readonly kind: 'VmControlData';
     readonly nargs: Maybe<number>;
-    readonly stack: Maybe<VmStack>;
+    readonly stack: Maybe<TupleItem[]>;
     readonly save: VmSaveList;
     readonly cp: Maybe<number>;
 }
@@ -13524,7 +13534,10 @@ export function loadVmControlData(slice: Slice): VmControlData {
         return slice.loadUint(13)
 
     }));
-    let stack: Maybe<VmStack> = loadMaybe<VmStack>(slice, loadVmStack);
+    let stack: Maybe<TupleItem[]> = loadMaybe<TupleItem[]>(slice, ((slice: Slice) => {
+        return parseTuple(slice.asCell())
+
+    }));
     let save: VmSaveList = loadVmSaveList(slice);
     let cp: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
         return slice.loadInt(16)
@@ -13548,7 +13561,12 @@ export function storeVmControlData(vmControlData: VmControlData): (builder: Buil
             })
 
         }))(builder);
-        storeMaybe<VmStack>(vmControlData.stack, storeVmStack)(builder);
+        storeMaybe<TupleItem[]>(vmControlData.stack, ((arg: TupleItem[]) => {
+            return ((builder: Builder) => {
+                copyCellToBuilder(serializeTuple(arg), builder);
+            })
+
+        }))(builder);
         storeVmSaveList(vmControlData.save)(builder);
         storeMaybe<number>(vmControlData.cp, ((arg: number) => {
             return ((builder: Builder) => {

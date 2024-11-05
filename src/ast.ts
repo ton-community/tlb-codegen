@@ -123,6 +123,10 @@ export type TLBMultipleType = {
   times: TLBMathExpr;
 };
 
+export type TLBTupleType = {
+  kind: "TLBTupleType";
+}
+
 export type TLBCondType = {
   kind: "TLBCondType";
   value: TLBFieldType;
@@ -146,6 +150,7 @@ export type TLBFieldType =
   | TLBNegatedType
   | TLBCellInsideType
   | TLBMultipleType
+  | TLBTupleType
   | TLBCondType
   | TLBExoticType;
 
