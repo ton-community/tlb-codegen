@@ -98,6 +98,7 @@ import {
   getParamVarExpr,
   getTypeParametersExpression,
   isBigInt,
+  useBuffer,
 } from "./utils";
 
 /*
@@ -731,6 +732,8 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
           fieldStoreSuffix: "Bit"
         }
       } else {
+        let isBuffer = useBuffer(fieldType);
+        let suffix = isBuffer ? "Buffer" : "Bits";
         exprForParam = {
           argLoadExpr: convertToAST(fieldType.bits, ctx.constructor),
           argStoreExpr: convertToAST(
@@ -738,9 +741,9 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
             ctx.constructor,
             id(ctx.name)
           ),
-          paramType: "BitString",
-          fieldLoadSuffix: "Bits",
-          fieldStoreSuffix: "Bits",
+          paramType: isBuffer ? "Buffer" : "BitString",
+          fieldLoadSuffix: suffix,
+          fieldStoreSuffix: suffix,
         };
       }
     } else if (fieldType.kind == "TLBCellType") {

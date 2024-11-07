@@ -1,5 +1,6 @@
 import {
   TLBBinaryOp,
+  TLBBitsType,
   TLBCode,
   TLBConstructor,
   TLBMathExpr,
@@ -233,4 +234,11 @@ export function isBigInt(fieldType: TLBNumberType) {
     return false;
   }
   return true;
+}
+
+export function useBuffer(bitsType: TLBBitsType) {
+  if (bitsType.bits instanceof TLBNumberExpr && (bitsType.bits.n % 8) == 0) {
+    return true;
+  }
+  return false;
 }
