@@ -507,8 +507,8 @@ export interface HashmapNode_hmn_leaf<X> {
 export interface HashmapNode_hmn_fork<X> {
     readonly kind: 'HashmapNode_hmn_fork';
     readonly n: number;
-    readonly left: Dictionary<bigint, X>;
-    readonly right: Dictionary<bigint, X>;
+    readonly left: Hashmap<X>;
+    readonly right: Hashmap<X>;
 }
 
 // hml_short$0 {m:#} {n:#} len:(Unary ~n) {n <= m} s:(n * Bit) = HmLabel ~n m;
@@ -2604,15 +2604,9 @@ export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Sl
     }
     if (true) {
         let slice1 = slice.loadRef().beginParse(true);
-        let left: Dictionary<bigint, X> = Dictionary.loadDirect(Dictionary.Keys.BigUint((arg0 - 1)), {
-            serialize: () => { throw new Error('Not implemented') },
-            parse: loadX,
-        }, slice1);
+        let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX);
         let slice2 = slice.loadRef().beginParse(true);
-        let right: Dictionary<bigint, X> = Dictionary.loadDirect(Dictionary.Keys.BigUint((arg0 - 1)), {
-            serialize: () => { throw new Error('Not implemented') },
-            parse: loadX,
-        }, slice2);
+        let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX);
         return {
             kind: 'HashmapNode_hmn_fork',
             n: (arg0 - 1),
@@ -2634,20 +2628,10 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
     if ((hashmapNode.kind == 'HashmapNode_hmn_fork')) {
         return ((builder: Builder) => {
             let cell1 = beginCell();
-            cell1.storeDictDirect(hashmapNode.left, Dictionary.Keys.BigUint((hashmapNode.arg0 - 1)), {
-                serialize: ((arg: X, builder: Builder) => {
-                storeX(arg)(builder);
-            }),
-                parse: () => { throw new Error('Not implemented') },
-            });
+            storeHashmap<X>(hashmapNode.left, storeX)(cell1);
             builder.storeRef(cell1);
             let cell2 = beginCell();
-            cell2.storeDictDirect(hashmapNode.right, Dictionary.Keys.BigUint((hashmapNode.arg0 - 1)), {
-                serialize: ((arg: X, builder: Builder) => {
-                storeX(arg)(builder);
-            }),
-                parse: () => { throw new Error('Not implemented') },
-            });
+            storeHashmap<X>(hashmapNode.right, storeX)(cell2);
             builder.storeRef(cell2);
         })
 

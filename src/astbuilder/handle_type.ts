@@ -182,7 +182,7 @@ export function getType(
         throw new Error('Hashmap key should be number')
       }
       return { kind: "TLBHashmapType", key: key, value: value, extra: extra, directStore: false };
-    } else if (expr.name == "Hashmap") {
+    } else if (expr.name == "Hashmap" && constructor.tlbType != "HashmapNode") {
       let key = getType(expr.args[0], constructor, fieldTypeName)
       let value = getType(expr.args[1], constructor, fieldTypeName)
       if (key.kind != 'TLBExprMathType') {
