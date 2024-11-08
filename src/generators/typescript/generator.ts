@@ -68,6 +68,7 @@ import {
   TypeParametersExpression,
   TypedIdentifier,
   id,
+  tBinaryExpression,
   tCodeAsIs,
   tComment,
   tExpressionStatement,
@@ -76,6 +77,7 @@ import {
   tIfStatement,
   tImportDeclaration,
   tMemberExpression,
+  tNumericLiteral,
   tObjectExpression,
   tObjectProperty,
   tReturnStatement,
@@ -734,13 +736,19 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
       } else {
         let isBuffer = useBuffer(fieldType);
         let suffix = isBuffer ? "Buffer" : "Bits";
+        let argLoadExpr = convertToAST(fieldType.bits, ctx.constructor);
+        let argStoreExpr = convertToAST(
+          fieldType.bits,
+          ctx.constructor,
+          id(ctx.name)
+        )
+        if (isBuffer) {
+          argLoadExpr = tBinaryExpression(argLoadExpr, '/' , tNumericLiteral(8))
+          argStoreExpr = tBinaryExpression(argStoreExpr, '/', tNumericLiteral(8))
+        }
         exprForParam = {
-          argLoadExpr: convertToAST(fieldType.bits, ctx.constructor),
-          argStoreExpr: convertToAST(
-            fieldType.bits,
-            ctx.constructor,
-            id(ctx.name)
-          ),
+          argLoadExpr: argLoadExpr,
+          argStoreExpr: argStoreExpr,
           paramType: isBuffer ? "Buffer" : "BitString",
           fieldLoadSuffix: suffix,
           fieldStoreSuffix: suffix,
