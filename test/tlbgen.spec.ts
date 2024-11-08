@@ -1,6 +1,6 @@
-import { Address, BitString, Cell, Dictionary, ExternalAddress, Slice, Tuple, TupleItemInt, beginCell, parseTuple, serializeTuple } from '@ton/core';
+import { Address, BitString, Builder, Cell, Dictionary, ExternalAddress, Slice, Tuple, TupleItemInt, beginCell, parseTuple, serializeTuple } from '@ton/core';
 import { describe, expect, test } from '@jest/globals';
-import { loadBlock, storeBlock } from './generated_files/generated_block';
+import { loadBlock, loadHashmap, storeBlock, storeHashmap } from './generated_files/generated_block';
 import { AddressUser, AnonymousData, AnyAddressUser, BitLenArg, BitLenArgUser, BitSelection, BitUser, BoolUser, CellTypedField, CellsSimple, CheckCrc32, CheckKeyword, CombArgCellRefUser, ComplexTypedField, ConditionalField, ConditionalRef, ConstructorOrder, DollarTag, EmptyTag, EqualityExpression, ExprArgUser, ExtAddressUser, FalseAnonField, FixedIntParam, GramsUser, HashmapAugEUser, HashmapEUser, HashmapExprKeyUser, HashmapOneCombUser, HashmapTPCell, HashmapVUIUser, HashmapVarKeyUser, ImplicitCondition, IntBitsOutside, IntBitsParametrizedOutside, LessThan, LoadFromNegationOutsideExpr, ManyComb, MathExprAsCombArg, MultipleEmptyConstructor, NegationFromImplicit, OneComb, ParamConst, ParamDifNames, ParamDifNamesUser, ParamNamedArgInSecondConstr, RefCombinatorAny, RefCombinatorInRef, SharpConstructor, SharpTag, Simple, True, TupleCheck, TwoConstructors, TypedField, TypedParam, Unary, UnaryUserCheckOrder, VMStackUser, VarIntegerUser, VarUIntegerUser, loadAddressUser, loadAnonymousData, loadAnyAddressUser, loadBitLenArg, loadBitLenArgUser, loadBitSelection, loadBitUser, loadBoolUser, loadCellTypedField, loadCellsSimple, loadCheckCrc32, loadCheckKeyword, loadCombArgCellRefUser, loadComplexTypedField, loadConditionalField, loadConditionalRef, loadConstructorOrder, loadDollarTag, loadEmptyTag, loadEqualityExpression, loadExprArgUser, loadExtAddressUser, loadFalseAnonField, loadGramsUser, loadHashmapAugEUser, loadHashmapEUser, loadHashmapExprKeyUser, loadHashmapOneCombUser, loadHashmapTPCell, loadHashmapVUIUser, loadHashmapVarKeyUser, loadImplicitCondition, loadIntBitsOutside, loadIntBitsParametrizedOutside, loadLessThan, loadLoadFromNegationOutsideExpr, loadManyComb, loadMathExprAsCombArg, loadMultipleEmptyConstructor, loadNegationFromImplicit, loadParamConst, loadParamDifNames, loadParamDifNamesUser, loadParamNamedArgInSecondConstr, loadRefCombinatorAny, loadRefCombinatorInRef, loadSharpConstructor, loadSharpTag, loadSimple, loadTrue, loadTupleCheck, loadTwoConstructors, loadTypedField, loadTypedParam, loadUnary, loadUnaryUserCheckOrder, loadVMStackUser, loadVarIntegerUser, loadVarUIntegerUser, loadVmStack, loadVmStackList, storeAddressUser, storeAnonymousData, storeAnyAddressUser, storeBitLenArg, storeBitLenArgUser, storeBitSelection, storeBitUser, storeBoolUser, storeCellTypedField, storeCellsSimple, storeCheckCrc32, storeCheckKeyword, storeCombArgCellRefUser, storeComplexTypedField, storeConditionalField, storeConditionalRef, storeConstructorOrder, storeDollarTag, storeEmptyTag, storeEqualityExpression, storeExprArgUser, storeExtAddressUser, storeFalseAnonField, storeGramsUser, storeHashmapAugEUser, storeHashmapEUser, storeHashmapExprKeyUser, storeHashmapOneCombUser, storeHashmapTPCell, storeHashmapVUIUser, storeHashmapVarKeyUser, storeImplicitCondition, storeIntBitsOutside, storeIntBitsParametrizedOutside, storeLessThan, storeLoadFromNegationOutsideExpr, storeManyComb, storeMathExprAsCombArg, storeMultipleEmptyConstructor, storeNegationFromImplicit, storeParamConst, storeParamDifNames, storeParamDifNamesUser, storeParamNamedArgInSecondConstr, storeRefCombinatorAny, storeRefCombinatorInRef, storeSharpConstructor, storeSharpTag, storeSimple, storeTrue, storeTupleCheck, storeTwoConstructors, storeTypedField, storeTypedParam, storeUnary, storeUnaryUserCheckOrder, storeVMStackUser, storeVarIntegerUser, storeVarUIntegerUser, storeVmStack, storeVmStackList } from './generated_files/generated_test';
 
 function isPrimitive(input: object) {
@@ -507,6 +507,34 @@ describe('Generating tlb code', () => {
             }
         }
         checkDifferOnStoreLoad(intBitsParametrizedOutsideIncorrect, loadIntBitsParametrizedOutside, storeIntBitsParametrizedOutside);
+    })
+
+    test('storedirect', () => {
+        let simpleDict: Dictionary<number, number> = Dictionary.empty()
+        simpleDict.set(1, 6);
+        simpleDict.set(2, 7);
+        simpleDict.set(0, 5);
+
+        let builder = beginCell();
+        builder.storeDictDirect(simpleDict, Dictionary.Keys.Int(32), Dictionary.Values.Int(32));
+        let slice = builder.endCell().beginParse();
+
+        let hashmap = loadHashmap<number>(slice, 32, (arg: Slice) => {
+            return arg.loadInt(32) + 1;
+        })
+
+        let new_builder = beginCell();
+        storeHashmap<number>(hashmap, (x: number) => {
+            return ((builder: Builder) => {
+                builder.storeInt(x, 32);
+            })
+        })(new_builder)
+
+        let newSlice = new_builder.endCell().beginParse();
+
+
+        let newDict = newSlice.loadDictDirect(Dictionary.Keys.Int(32), Dictionary.Values.Int(32));
+        console.log(newDict);
     })
 
     test('block tlb tests', () => {

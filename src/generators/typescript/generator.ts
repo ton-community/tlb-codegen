@@ -969,7 +969,6 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
       let keyForStore: Expression = dictKeyExpr(fieldType.key, ctx, ctx.typeName);
       let subExprInfo = this.handleType(field, fieldType.value, fieldType.extra != undefined, ctx, slicePrefix, argIndex);
 
-      
       if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeFunctionExpr) {
         let valueStore: Expression;
         if (fieldType.extra && subExprInfo.loadExpr) {
@@ -980,15 +979,15 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
           valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr, extraInfo.storeFunctionExpr)
 
           if (extraInfo.loadExpr) {
-            result.loadExpr = dictLoadExpr(keyForLoad, dictAugParse(extraInfo.loadExpr, subExprInfo.loadExpr), currentSlice) 
+            result.loadExpr = dictLoadExpr(keyForLoad, dictAugParse(extraInfo.loadExpr, subExprInfo.loadExpr), currentSlice, fieldType.directStore) 
           }
         } else {
           valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr)
-          result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice)  
+          result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice, fieldType.directStore)  
         }
         result.typeParamExpr = dictTypeParamExpr(fieldType, subExprInfo.typeParamExpr) 
-        result.storeStmtInside = dictStoreStmt(currentCell, storeParametersInside, keyForStore, valueStore)
-        result.storeStmtOutside = dictStoreStmt(currentCell, storeParametersOutside, keyForStore, valueStore)
+        result.storeStmtInside = dictStoreStmt(currentCell, storeParametersInside, keyForStore, valueStore, fieldType.directStore)
+        result.storeStmtOutside = dictStoreStmt(currentCell, storeParametersOutside, keyForStore, valueStore, fieldType.directStore)
       }
     } else if (fieldType.kind == "TLBNamedType" && fieldType.arguments.length) {
       let typeName = fieldType.name;

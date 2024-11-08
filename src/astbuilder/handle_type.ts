@@ -170,7 +170,7 @@ export function getType(
       if (key.kind != 'TLBExprMathType') {
         throw new Error('Hashmap key should be number')
       }
-      return { kind: "TLBHashmapType", key: key, value: value };
+      return { kind: "TLBHashmapType", key: key, value: value, directStore: false };
     } else if (expr.name == "HashmapAugE") {
       if (expr.args.length != 3) {
         throw new Error('Not enough arguments for HashmapAugE')
@@ -181,7 +181,14 @@ export function getType(
       if (key.kind != 'TLBExprMathType') {
         throw new Error('Hashmap key should be number')
       }
-      return { kind: "TLBHashmapType", key: key, value: value, extra: extra };
+      return { kind: "TLBHashmapType", key: key, value: value, extra: extra, directStore: false };
+    } else if (expr.name == "Hashmap") {
+      let key = getType(expr.args[0], constructor, fieldTypeName)
+      let value = getType(expr.args[1], constructor, fieldTypeName)
+      if (key.kind != 'TLBExprMathType') {
+        throw new Error('Hashmap key should be number')
+      }
+      return { kind: "TLBHashmapType", key: key, value: value, directStore: true };
     } else if (
       expr.name == "VarUInteger" &&
       (expr.args[0] instanceof MathExpr ||

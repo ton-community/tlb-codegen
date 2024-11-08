@@ -332,8 +332,8 @@ export function negationDerivationFuncDecl(
     )
   );
 }
-export function dictStoreStmt(currentCell: string, storeParametersInside: Expression[], keyForStore: Expression, valueStore: ObjectExpression): Statement | undefined {
-  return tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict')), storeParametersInside.concat([keyForStore, valueStore])));
+export function dictStoreStmt(currentCell: string, storeParametersInside: Expression[], keyForStore: Expression, valueStore: ObjectExpression, direct: boolean): Statement | undefined {
+  return tExpressionStatement(tFunctionCall(tMemberExpression(id(currentCell), id('storeDict' + (direct ? 'Direct' : ''))), storeParametersInside.concat([keyForStore, valueStore])));
 }
 export function dictTypeParamExpr(fieldType: TLBHashmapType, typeParamExpr: TypeExpression): TypeExpression | undefined {
   return tTypeWithParameters(id('Dictionary'), tTypeParametersExpression([(isBigIntExpr(fieldType.key) ? id('bigint') : id('number')), typeParamExpr]));
@@ -352,8 +352,8 @@ export function dictValueStore(typeParamExpr: TypeExpression, storeFunctionExpr:
     )
   ]);
 }
-export function dictLoadExpr(keyForLoad: Expression, loadFunctionExpr: Expression, currentSlice: string): Expression | undefined {
-  return tFunctionCall(tMemberExpression(id('Dictionary'), id('load')), [keyForLoad, dictValueLoad(loadFunctionExpr), id(currentSlice)]);
+export function dictLoadExpr(keyForLoad: Expression, loadFunctionExpr: Expression, currentSlice: string, direct: boolean): Expression | undefined {
+  return tFunctionCall(tMemberExpression(id('Dictionary'), id('load' + (direct ? 'Direct' : ''))), [keyForLoad, dictValueLoad(loadFunctionExpr), id(currentSlice)]);
 }
 function dictValueLoad(loadFunctionExpr: Expression) {
   return tObjectExpression([

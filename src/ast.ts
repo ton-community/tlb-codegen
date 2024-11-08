@@ -93,6 +93,7 @@ export type TLBHashmapType = {
   key: TLBMathExprType;
   value: TLBFieldType;
   extra?: TLBFieldType;
+  directStore: boolean;
 }
 
 export type TLBCellType = {

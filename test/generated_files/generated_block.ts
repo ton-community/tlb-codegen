@@ -138,8 +138,8 @@ export interface HashmapNode_hmn_leaf<X> {
 export interface HashmapNode_hmn_fork<X> {
     readonly kind: 'HashmapNode_hmn_fork';
     readonly n: number;
-    readonly left: Hashmap<X>;
-    readonly right: Hashmap<X>;
+    readonly left: Dictionary<bigint, X>;
+    readonly right: Dictionary<bigint, X>;
 }
 
 // hml_short$0 {m:#} {n:#} len:(Unary ~n) {n <= m} s:(n * Bit) = HmLabel ~n m;
@@ -193,7 +193,7 @@ export interface Unary_unary_succ {
 export interface BitstringSet {
     readonly kind: 'BitstringSet';
     readonly n: number;
-    readonly _: Hashmap<True>;
+    readonly _: Dictionary<bigint, True>;
 }
 
 /*
@@ -1615,7 +1615,7 @@ shared_lib_descr$00 lib:^Cell publishers:(Hashmap 256 True)
 export interface LibDescr {
     readonly kind: 'LibDescr';
     readonly lib: Cell;
-    readonly publishers: Hashmap<True>;
+    readonly publishers: Dictionary<bigint, True>;
 }
 
 /*
@@ -1952,7 +1952,7 @@ _ config_addr:bits256 config:^(Hashmap 32 ^Cell)
 export interface ConfigParams {
     readonly kind: 'ConfigParams';
     readonly config_addr: Buffer;
-    readonly config: Hashmap<Cell>;
+    readonly config: Dictionary<number, Cell>;
 }
 
 /*
@@ -2199,7 +2199,7 @@ export interface ValidatorSet_validators {
     readonly utime_until: number;
     readonly total: number;
     readonly main: number;
-    readonly list: Hashmap<ValidatorDescr>;
+    readonly list: Dictionary<number, ValidatorDescr>;
 }
 
 export interface ValidatorSet_validators_ext {
@@ -2362,12 +2362,12 @@ export interface ConfigParam__8 {
 
 export interface ConfigParam__9 {
     readonly kind: 'ConfigParam__9';
-    readonly mandatory_params: Hashmap<True>;
+    readonly mandatory_params: Dictionary<number, True>;
 }
 
 export interface ConfigParam__10 {
     readonly kind: 'ConfigParam__10';
-    readonly critical_params: Hashmap<True>;
+    readonly critical_params: Dictionary<number, True>;
 }
 
 export interface ConfigParam__11 {
@@ -2415,7 +2415,7 @@ export interface ConfigParam__17 {
 
 export interface ConfigParam__18 {
     readonly kind: 'ConfigParam__18';
-    readonly anon0: Hashmap<StoragePrices>;
+    readonly anon0: Dictionary<number, StoragePrices>;
 }
 
 export interface ConfigParam__19 {
@@ -4021,9 +4021,15 @@ export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Sl
     }
     if (true) {
         let slice1 = slice.loadRef().beginParse(true);
-        let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX);
+        let left: Dictionary<bigint, X> = Dictionary.loadDirect(Dictionary.Keys.BigUint((arg0 - 1)), {
+            serialize: () => { throw new Error('Not implemented') },
+            parse: loadX,
+        }, slice1);
         let slice2 = slice.loadRef().beginParse(true);
-        let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX);
+        let right: Dictionary<bigint, X> = Dictionary.loadDirect(Dictionary.Keys.BigUint((arg0 - 1)), {
+            serialize: () => { throw new Error('Not implemented') },
+            parse: loadX,
+        }, slice2);
         return {
             kind: 'HashmapNode_hmn_fork',
             n: (arg0 - 1),
@@ -4045,10 +4051,20 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
     if ((hashmapNode.kind == 'HashmapNode_hmn_fork')) {
         return ((builder: Builder) => {
             let cell1 = beginCell();
-            storeHashmap<X>(hashmapNode.left, storeX)(cell1);
+            cell1.storeDictDirect(hashmapNode.left, Dictionary.Keys.BigUint((hashmapNode.arg0 - 1)), {
+                serialize: ((arg: X, builder: Builder) => {
+                storeX(arg)(builder);
+            }),
+                parse: () => { throw new Error('Not implemented') },
+            });
             builder.storeRef(cell1);
             let cell2 = beginCell();
-            storeHashmap<X>(hashmapNode.right, storeX)(cell2);
+            cell2.storeDictDirect(hashmapNode.right, Dictionary.Keys.BigUint((hashmapNode.arg0 - 1)), {
+                serialize: ((arg: X, builder: Builder) => {
+                storeX(arg)(builder);
+            }),
+                parse: () => { throw new Error('Not implemented') },
+            });
             builder.storeRef(cell2);
         })
 
@@ -4220,7 +4236,10 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
 // _ {n:#} _:(Hashmap n True) = BitstringSet n;
 
 export function loadBitstringSet(slice: Slice, n: number): BitstringSet {
-    let _: Hashmap<True> = loadHashmap<True>(slice, n, loadTrue);
+    let _: Dictionary<bigint, True> = Dictionary.loadDirect(Dictionary.Keys.BigUint(n), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadTrue,
+    }, slice);
     return {
         kind: 'BitstringSet',
         n: n,
@@ -4231,7 +4250,12 @@ export function loadBitstringSet(slice: Slice, n: number): BitstringSet {
 
 export function storeBitstringSet(bitstringSet: BitstringSet): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeHashmap<True>(bitstringSet._, storeTrue)(builder);
+        builder.storeDictDirect(bitstringSet._, Dictionary.Keys.BigUint(bitstringSet.n), {
+            serialize: ((arg: True, builder: Builder) => {
+            storeTrue(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -8365,7 +8389,10 @@ export function loadLibDescr(slice: Slice): LibDescr {
         slice.loadUint(2);
         let slice1 = slice.loadRef().beginParse(true);
         let lib: Cell = slice1.asCell();
-        let publishers: Hashmap<True> = loadHashmap<True>(slice, 256, loadTrue);
+        let publishers: Dictionary<bigint, True> = Dictionary.loadDirect(Dictionary.Keys.BigUint(256), {
+            serialize: () => { throw new Error('Not implemented') },
+            parse: loadTrue,
+        }, slice);
         return {
             kind: 'LibDescr',
             lib: lib,
@@ -8382,7 +8409,12 @@ export function storeLibDescr(libDescr: LibDescr): (builder: Builder) => void {
         let cell1 = beginCell();
         cell1.storeSlice(libDescr.lib.beginParse(true));
         builder.storeRef(cell1);
-        storeHashmap<True>(libDescr.publishers, storeTrue)(builder);
+        builder.storeDictDirect(libDescr.publishers, Dictionary.Keys.BigUint(256), {
+            serialize: ((arg: True, builder: Builder) => {
+            storeTrue(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
     })
 
 }
@@ -9317,11 +9349,14 @@ _ config_addr:bits256 config:^(Hashmap 32 ^Cell)
 export function loadConfigParams(slice: Slice): ConfigParams {
     let config_addr: Buffer = slice.loadBuffer((256 / 8));
     let slice1 = slice.loadRef().beginParse(true);
-    let config: Hashmap<Cell> = loadHashmap<Cell>(slice1, 32, ((slice: Slice) => {
+    let config: Dictionary<number, Cell> = Dictionary.loadDirect(Dictionary.Keys.Uint(32), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
         let slice1 = slice.loadRef().beginParse(true);
         return slice1.asCell()
 
-    }));
+    }),
+    }, slice1);
     return {
         kind: 'ConfigParams',
         config_addr: config_addr,
@@ -9334,15 +9369,20 @@ export function storeConfigParams(configParams: ConfigParams): (builder: Builder
     return ((builder: Builder) => {
         builder.storeBuffer(configParams.config_addr, (256 / 8));
         let cell1 = beginCell();
-        storeHashmap<Cell>(configParams.config, ((arg: Cell) => {
-            return ((builder: Builder) => {
-                let cell1 = beginCell();
-                cell1.storeSlice(arg.beginParse(true));
-                builder.storeRef(cell1);
+        cell1.storeDictDirect(configParams.config, Dictionary.Keys.Uint(32), {
+            serialize: ((arg: Cell, builder: Builder) => {
+            ((arg: Cell) => {
+                return ((builder: Builder) => {
+                    let cell1 = beginCell();
+                    cell1.storeSlice(arg.beginParse(true));
+                    builder.storeRef(cell1);
 
-            })
+                })
 
-        }))(cell1);
+            })(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
         builder.storeRef(cell1);
     })
 
@@ -10040,7 +10080,10 @@ export function loadValidatorSet(slice: Slice): ValidatorSet {
         let utime_until: number = slice.loadUint(32);
         let total: number = slice.loadUint(16);
         let main: number = slice.loadUint(16);
-        let list: Hashmap<ValidatorDescr> = loadHashmap<ValidatorDescr>(slice, 16, loadValidatorDescr);
+        let list: Dictionary<number, ValidatorDescr> = Dictionary.loadDirect(Dictionary.Keys.Uint(16), {
+            serialize: () => { throw new Error('Not implemented') },
+            parse: loadValidatorDescr,
+        }, slice);
         if ((!(main <= total))) {
             throw new Error('Condition (main <= total) is not satisfied while loading "ValidatorSet_validators" for type "ValidatorSet"');
         }
@@ -10096,7 +10139,12 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
             builder.storeUint(validatorSet.utime_until, 32);
             builder.storeUint(validatorSet.total, 16);
             builder.storeUint(validatorSet.main, 16);
-            storeHashmap<ValidatorDescr>(validatorSet.list, storeValidatorDescr)(builder);
+            builder.storeDictDirect(validatorSet.list, Dictionary.Keys.Uint(16), {
+                serialize: ((arg: ValidatorDescr, builder: Builder) => {
+                storeValidatorDescr(arg)(builder);
+            }),
+                parse: () => { throw new Error('Not implemented') },
+            });
             if ((!(validatorSet.main <= validatorSet.total))) {
                 throw new Error('Condition (validatorSet.main <= validatorSet.total) is not satisfied while loading "ValidatorSet_validators" for type "ValidatorSet"');
             }
@@ -10308,7 +10356,10 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 9)) {
-        let mandatory_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue);
+        let mandatory_params: Dictionary<number, True> = Dictionary.loadDirect(Dictionary.Keys.Uint(32), {
+            serialize: () => { throw new Error('Not implemented') },
+            parse: loadTrue,
+        }, slice);
         return {
             kind: 'ConfigParam__9',
             mandatory_params: mandatory_params,
@@ -10316,7 +10367,10 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 10)) {
-        let critical_params: Hashmap<True> = loadHashmap<True>(slice, 32, loadTrue);
+        let critical_params: Dictionary<number, True> = Dictionary.loadDirect(Dictionary.Keys.Uint(32), {
+            serialize: () => { throw new Error('Not implemented') },
+            parse: loadTrue,
+        }, slice);
         return {
             kind: 'ConfigParam__10',
             critical_params: critical_params,
@@ -10408,7 +10462,10 @@ export function loadConfigParam(slice: Slice, arg0: number): ConfigParam {
 
     }
     if ((arg0 == 18)) {
-        let anon0: Hashmap<StoragePrices> = loadHashmap<StoragePrices>(slice, 32, loadStoragePrices);
+        let anon0: Dictionary<number, StoragePrices> = Dictionary.loadDirect(Dictionary.Keys.Uint(32), {
+            serialize: () => { throw new Error('Not implemented') },
+            parse: loadStoragePrices,
+        }, slice);
         return {
             kind: 'ConfigParam__18',
             anon0: anon0,
@@ -10690,13 +10747,23 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__9')) {
         return ((builder: Builder) => {
-            storeHashmap<True>(configParam.mandatory_params, storeTrue)(builder);
+            builder.storeDictDirect(configParam.mandatory_params, Dictionary.Keys.Uint(32), {
+                serialize: ((arg: True, builder: Builder) => {
+                storeTrue(arg)(builder);
+            }),
+                parse: () => { throw new Error('Not implemented') },
+            });
         })
 
     }
     if ((configParam.kind == 'ConfigParam__10')) {
         return ((builder: Builder) => {
-            storeHashmap<True>(configParam.critical_params, storeTrue)(builder);
+            builder.storeDictDirect(configParam.critical_params, Dictionary.Keys.Uint(32), {
+                serialize: ((arg: True, builder: Builder) => {
+                storeTrue(arg)(builder);
+            }),
+                parse: () => { throw new Error('Not implemented') },
+            });
         })
 
     }
@@ -10766,7 +10833,12 @@ export function storeConfigParam(configParam: ConfigParam): (builder: Builder) =
     }
     if ((configParam.kind == 'ConfigParam__18')) {
         return ((builder: Builder) => {
-            storeHashmap<StoragePrices>(configParam.anon0, storeStoragePrices)(builder);
+            builder.storeDictDirect(configParam.anon0, Dictionary.Keys.Uint(32), {
+                serialize: ((arg: StoragePrices, builder: Builder) => {
+                storeStoragePrices(arg)(builder);
+            }),
+                parse: () => { throw new Error('Not implemented') },
+            });
         })
 
     }
