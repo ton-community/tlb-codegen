@@ -38,25 +38,30 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
 
 }
 
-export interface Coins {
-    readonly kind: 'Coins';
-    readonly grams: bigint;
+
+
+export function loadBoolFalse(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: false
+      }
+
+  }
+  throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
 }
 
-export function loadCoins(slice: Slice): Coins {
-    let grams: bigint = slice.loadCoins();
-    return {
-        kind: 'Coins',
-        grams: grams,
-    }
+export function loadBoolTrue(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: true
+      }
 
-}
-
-export function storeCoins(coins: Coins): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeCoins(coins.grams);
-    })
-
+  }
+  throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
 }
 
 export function copyCellToBuilder(from: Cell, to: Builder): void {
@@ -1225,6 +1230,20 @@ export interface VmCont_vmc_pushint {
 export interface VMStackUser {
     readonly kind: 'VMStackUser';
     readonly t: TupleItem[];
+}
+
+// bool_false_user$_ x:BoolFalse = BoolFalseUser;
+
+export interface BoolFalseUser {
+    readonly kind: 'BoolFalseUser';
+    readonly x: Bool;
+}
+
+// bool_true_user$_ x:BoolTrue = BoolTrueUser;
+
+export interface BoolTrueUser {
+    readonly kind: 'BoolTrueUser';
+    readonly x: Bool;
 }
 
 // tmpa$_ a:# b:# = Simple;
@@ -4809,6 +4828,42 @@ export function loadVMStackUser(slice: Slice): VMStackUser {
 export function storeVMStackUser(vMStackUser: VMStackUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         copyCellToBuilder(serializeTuple(vMStackUser.t), builder);
+    })
+
+}
+
+// bool_false_user$_ x:BoolFalse = BoolFalseUser;
+
+export function loadBoolFalseUser(slice: Slice): BoolFalseUser {
+    let x: Bool = loadBoolFalse(slice);
+    return {
+        kind: 'BoolFalseUser',
+        x: x,
+    }
+
+}
+
+export function storeBoolFalseUser(boolFalseUser: BoolFalseUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeBool(boolFalseUser.x)(builder);
+    })
+
+}
+
+// bool_true_user$_ x:BoolTrue = BoolTrueUser;
+
+export function loadBoolTrueUser(slice: Slice): BoolTrueUser {
+    let x: Bool = loadBoolTrue(slice);
+    return {
+        kind: 'BoolTrueUser',
+        x: x,
+    }
+
+}
+
+export function storeBoolTrueUser(boolTrueUser: BoolTrueUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeBool(boolTrueUser.x)(builder);
     })
 
 }

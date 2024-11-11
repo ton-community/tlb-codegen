@@ -138,8 +138,14 @@ export type TLBExoticType = {
   kind: "TLBExoticType";
 };
 
+export type TLBBoolType = {
+  kind: "TLBBoolType";
+  value: boolean | undefined;
+}
+
 export type TLBFieldType =
   | TLBNumberType
+  | TLBBoolType
   | TLBBitsType
   | TLBNamedType
   | TLBCoinsType

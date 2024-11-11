@@ -38,25 +38,30 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
 
 }
 
-export interface Coins {
-    readonly kind: 'Coins';
-    readonly grams: bigint;
+
+
+export function loadBoolFalse(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: false
+      }
+
+  }
+  throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
 }
 
-export function loadCoins(slice: Slice): Coins {
-    let grams: bigint = slice.loadCoins();
-    return {
-        kind: 'Coins',
-        grams: grams,
-    }
+export function loadBoolTrue(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: true
+      }
 
-}
-
-export function storeCoins(coins: Coins): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeCoins(coins.grams);
-    })
-
+  }
+  throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
 }
 
 export function copyCellToBuilder(from: Cell, to: Builder): void {
@@ -76,18 +81,6 @@ export interface Unit {
 
 export interface True {
     readonly kind: 'True';
-}
-
-// bool_false$0 = BoolFalse;
-
-export interface BoolFalse {
-    readonly kind: 'BoolFalse';
-}
-
-// bool_true$1 = BoolTrue;
-
-export interface BoolTrue {
-    readonly kind: 'BoolTrue';
 }
 
 // nothing$0 {X:Type} = Maybe X;
@@ -394,6 +387,13 @@ export interface Anycast {
     readonly kind: 'Anycast';
     readonly depth: number;
     readonly rewrite_pfx: BitString;
+}
+
+// _ grams:Grams = Coins;
+
+export interface Coins {
+    readonly kind: 'Coins';
+    readonly grams: bigint;
 }
 
 /*
@@ -3082,12 +3082,12 @@ jetton_bridge_prices#_ bridge_burn_fee:Coins bridge_mint_fee:Coins
 
 export interface JettonBridgePrices {
     readonly kind: 'JettonBridgePrices';
-    readonly bridge_burn_fee: Coins;
-    readonly bridge_mint_fee: Coins;
-    readonly wallet_min_tons_for_storage: Coins;
-    readonly wallet_gas_consumption: Coins;
-    readonly minter_min_tons_for_storage: Coins;
-    readonly discover_gas_consumption: Coins;
+    readonly bridge_burn_fee: bigint;
+    readonly bridge_mint_fee: bigint;
+    readonly wallet_min_tons_for_storage: bigint;
+    readonly wallet_gas_consumption: bigint;
+    readonly minter_min_tons_for_storage: bigint;
+    readonly discover_gas_consumption: bigint;
 }
 
 // jetton_bridge_params_v0#00 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 burn_bridge_fee:Coins = JettonBridgeParams;
@@ -3102,7 +3102,7 @@ export interface JettonBridgeParams_jetton_bridge_params_v0 {
     readonly oracles_address: Buffer;
     readonly oracles: Dictionary<bigint, bigint>;
     readonly state_flags: number;
-    readonly burn_bridge_fee: Coins;
+    readonly burn_bridge_fee: bigint;
 }
 
 export interface JettonBridgeParams_jetton_bridge_params_v1 {
@@ -3821,46 +3821,6 @@ export function loadTrue(slice: Slice): True {
 
 export function storeTrue(true0: True): (builder: Builder) => void {
     return ((builder: Builder) => {
-    })
-
-}
-
-// bool_false$0 = BoolFalse;
-
-export function loadBoolFalse(slice: Slice): BoolFalse {
-    if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
-        slice.loadUint(1);
-        return {
-            kind: 'BoolFalse',
-        }
-
-    }
-    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
-}
-
-export function storeBoolFalse(boolFalse: BoolFalse): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeUint(0b0, 1);
-    })
-
-}
-
-// bool_true$1 = BoolTrue;
-
-export function loadBoolTrue(slice: Slice): BoolTrue {
-    if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
-        slice.loadUint(1);
-        return {
-            kind: 'BoolTrue',
-        }
-
-    }
-    throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
-}
-
-export function storeBoolTrue(boolTrue: BoolTrue): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeUint(0b1, 1);
     })
 
 }
@@ -4737,6 +4697,24 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
         if ((!(anycast.depth >= 1))) {
             throw new Error('Condition (anycast.depth >= 1) is not satisfied while loading "Anycast" for type "Anycast"');
         }
+    })
+
+}
+
+// _ grams:Grams = Coins;
+
+export function loadCoins(slice: Slice): Coins {
+    let grams: bigint = slice.loadCoins();
+    return {
+        kind: 'Coins',
+        grams: grams,
+    }
+
+}
+
+export function storeCoins(coins: Coins): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeCoins(coins.grams);
     })
 
 }
@@ -9663,7 +9641,7 @@ export function loadMcStateExtra(slice: Slice): McStateExtra {
         let flags: number = slice1.loadUint(16);
         let validator_info: ValidatorInfo = loadValidatorInfo(slice1);
         let prev_blocks: OldMcBlocksInfo = loadOldMcBlocksInfo(slice1);
-        let after_key_block: Bool = loadBool(slice1);
+        let after_key_block: Bool = loadBool(slice);
         let last_key_block: Maybe<ExtBlkRef> = loadMaybe<ExtBlkRef>(slice1, loadExtBlkRef);
         let block_create_stats: BlockCreateStats | undefined = ((flags & (1 << 0)) ? loadBlockCreateStats(slice1) : undefined);
         let global_balance: CurrencyCollection = loadCurrencyCollection(slice);
@@ -9693,7 +9671,7 @@ export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder
         cell1.storeUint(mcStateExtra.flags, 16);
         storeValidatorInfo(mcStateExtra.validator_info)(cell1);
         storeOldMcBlocksInfo(mcStateExtra.prev_blocks)(cell1);
-        storeBool(mcStateExtra.after_key_block)(cell1);
+        storeBool(mcStateExtra.after_key_block)(builder);
         storeMaybe<ExtBlkRef>(mcStateExtra.last_key_block, storeExtBlkRef)(cell1);
         if ((mcStateExtra.block_create_stats != undefined)) {
             storeBlockCreateStats(mcStateExtra.block_create_stats)(cell1);
@@ -12504,12 +12482,12 @@ jetton_bridge_prices#_ bridge_burn_fee:Coins bridge_mint_fee:Coins
 */
 
 export function loadJettonBridgePrices(slice: Slice): JettonBridgePrices {
-    let bridge_burn_fee: Coins = loadCoins(slice);
-    let bridge_mint_fee: Coins = loadCoins(slice);
-    let wallet_min_tons_for_storage: Coins = loadCoins(slice);
-    let wallet_gas_consumption: Coins = loadCoins(slice);
-    let minter_min_tons_for_storage: Coins = loadCoins(slice);
-    let discover_gas_consumption: Coins = loadCoins(slice);
+    let bridge_burn_fee: bigint = slice.loadCoins();
+    let bridge_mint_fee: bigint = slice.loadCoins();
+    let wallet_min_tons_for_storage: bigint = slice.loadCoins();
+    let wallet_gas_consumption: bigint = slice.loadCoins();
+    let minter_min_tons_for_storage: bigint = slice.loadCoins();
+    let discover_gas_consumption: bigint = slice.loadCoins();
     return {
         kind: 'JettonBridgePrices',
         bridge_burn_fee: bridge_burn_fee,
@@ -12524,12 +12502,12 @@ export function loadJettonBridgePrices(slice: Slice): JettonBridgePrices {
 
 export function storeJettonBridgePrices(jettonBridgePrices: JettonBridgePrices): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeCoins(jettonBridgePrices.bridge_burn_fee)(builder);
-        storeCoins(jettonBridgePrices.bridge_mint_fee)(builder);
-        storeCoins(jettonBridgePrices.wallet_min_tons_for_storage)(builder);
-        storeCoins(jettonBridgePrices.wallet_gas_consumption)(builder);
-        storeCoins(jettonBridgePrices.minter_min_tons_for_storage)(builder);
-        storeCoins(jettonBridgePrices.discover_gas_consumption)(builder);
+        builder.storeCoins(jettonBridgePrices.bridge_burn_fee);
+        builder.storeCoins(jettonBridgePrices.bridge_mint_fee);
+        builder.storeCoins(jettonBridgePrices.wallet_min_tons_for_storage);
+        builder.storeCoins(jettonBridgePrices.wallet_gas_consumption);
+        builder.storeCoins(jettonBridgePrices.minter_min_tons_for_storage);
+        builder.storeCoins(jettonBridgePrices.discover_gas_consumption);
     })
 
 }
@@ -12551,7 +12529,7 @@ export function loadJettonBridgeParams(slice: Slice): JettonBridgeParams {
         }),
         }, slice);
         let state_flags: number = slice.loadUint(8);
-        let burn_bridge_fee: Coins = loadCoins(slice);
+        let burn_bridge_fee: bigint = slice.loadCoins();
         return {
             kind: 'JettonBridgeParams_jetton_bridge_params_v0',
             bridge_address: bridge_address,
@@ -12609,7 +12587,7 @@ export function storeJettonBridgeParams(jettonBridgeParams: JettonBridgeParams):
                 parse: () => { throw new Error('Not implemented') },
             });
             builder.storeUint(jettonBridgeParams.state_flags, 8);
-            storeCoins(jettonBridgeParams.burn_bridge_fee)(builder);
+            builder.storeCoins(jettonBridgeParams.burn_bridge_fee);
         })
 
     }

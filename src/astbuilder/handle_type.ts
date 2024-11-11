@@ -280,8 +280,14 @@ export function getType(
       return { kind: "TLBAddressType", addrType: "Any" };
     } else if (expr.name == "Bit") {
       return { kind: "TLBBitsType", bits: new TLBNumberExpr(1) };
-    } else if (expr.name == "Grams") {
+    } else if (expr.name == "Grams" || expr.name == "Coins") {
       return { kind: "TLBCoinsType" };
+    } else if (expr.name == "Bool") {
+      return { kind: "TLBBoolType", value: undefined };
+    } else if (expr.name == "BoolFalse") {
+      return { kind: "TLBBoolType", value: false };
+    } else if (expr.name == "BoolTrue") {
+      return { kind: "TLBBoolType", value: true };
     } else {
       if (constructor.variablesMap.get(expr.name)?.type == "#") {
         return {

@@ -284,25 +284,30 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
 
 }
 
-export interface Coins {
-    readonly kind: 'Coins';
-    readonly grams: bigint;
+
+
+export function loadBoolFalse(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: false
+      }
+
+  }
+  throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
 }
 
-export function loadCoins(slice: Slice): Coins {
-    let grams: bigint = slice.loadCoins();
-    return {
-        kind: 'Coins',
-        grams: grams,
-    }
+export function loadBoolTrue(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: true
+      }
 
-}
-
-export function storeCoins(coins: Coins): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeCoins(coins.grams);
-    })
-
+  }
+  throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
 }
 `))
   }
@@ -986,6 +991,12 @@ export function storeCoins(coins: Coins): (builder: Builder) => void {
       if (subExprInfo.storeStmtInside) {
         result.storeStmtInside = storeInNewCell(currentCell, subExprInfo.storeStmtInside);
       }
+    } else if (fieldType.kind == "TLBBoolType") {
+      let loadFunction = 'load' + (fieldType.value === undefined ? 'Bool': (fieldType.value ? 'BoolTrue': 'BoolFalse'));
+      result.loadExpr = tFunctionCall(id(loadFunction), [id("slice")]);
+      result.typeParamExpr = id('Bool');
+      result.storeStmtInside = tExpressionStatement(tFunctionCall(tFunctionCall(id('storeBool'), storeParametersInside), [id('builder')]));
+      result.storeStmtOutside = tExpressionStatement(tFunctionCall(tFunctionCall(id('storeBool'), storeParametersOutside), [id('builder')]));
     } else if (fieldType.kind == "TLBHashmapType") {
       let keyForLoad: Expression = dictKeyExpr(fieldType.key, ctx);
       let keyForStore: Expression = dictKeyExpr(fieldType.key, ctx, ctx.typeName);

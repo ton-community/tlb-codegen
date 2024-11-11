@@ -434,7 +434,8 @@ function checkAndRemovePrimitives(
   typesToDelete.set("VarInteger", ["d466ed5"])
   typesToDelete.set("HashmapE", ["32bae5cb", "28fa3979"])
   typesToDelete.set("HashmapAugE", ["36820dce", "5f71ac75"])
-  typesToDelete.set("Coins", ["258097e8"])
+  typesToDelete.set("BoolTrue", ["943ebb5"])
+  typesToDelete.set("BoolFalse", ["1f5e497d"])
 
   typesToDelete.forEach((opCodesExpected: string[], typeName: string) => {
     let typeItems = typeDeclarations.get(typeName);
