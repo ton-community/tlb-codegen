@@ -37,6 +37,28 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
     })
 
 }
+
+export interface Coins {
+    readonly kind: 'Coins';
+    readonly grams: bigint;
+}
+
+export function loadCoins(slice: Slice): Coins {
+    let grams: bigint = slice.loadCoins();
+    return {
+        kind: 'Coins',
+        grams: grams,
+    }
+
+}
+
+export function storeCoins(coins: Coins): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeCoins(coins.grams);
+    })
+
+}
+
 export function copyCellToBuilder(from: Cell, to: Builder): void {
     let slice = from.beginParse();
     to.storeBits(slice.loadBits(slice.remainingBits));

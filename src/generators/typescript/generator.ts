@@ -282,7 +282,29 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
         builder.storeUint(bool.value ? 1: 0, 1);
     })
 
-}`))
+}
+
+export interface Coins {
+    readonly kind: 'Coins';
+    readonly grams: bigint;
+}
+
+export function loadCoins(slice: Slice): Coins {
+    let grams: bigint = slice.loadCoins();
+    return {
+        kind: 'Coins',
+        grams: grams,
+    }
+
+}
+
+export function storeCoins(coins: Coins): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeCoins(coins.grams);
+    })
+
+}
+`))
   }
 
   addTlbType(tlbType: TLBType): void {

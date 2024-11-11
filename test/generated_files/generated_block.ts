@@ -37,6 +37,28 @@ export function storeBool(bool: Bool): (builder: Builder) => void {
     })
 
 }
+
+export interface Coins {
+    readonly kind: 'Coins';
+    readonly grams: bigint;
+}
+
+export function loadCoins(slice: Slice): Coins {
+    let grams: bigint = slice.loadCoins();
+    return {
+        kind: 'Coins',
+        grams: grams,
+    }
+
+}
+
+export function storeCoins(coins: Coins): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeCoins(coins.grams);
+    })
+
+}
+
 export function copyCellToBuilder(from: Cell, to: Builder): void {
     let slice = from.beginParse();
     to.storeBits(slice.loadBits(slice.remainingBits));
@@ -372,13 +394,6 @@ export interface Anycast {
     readonly kind: 'Anycast';
     readonly depth: number;
     readonly rewrite_pfx: BitString;
-}
-
-// _ grams:Grams = Coins;
-
-export interface Coins {
-    readonly kind: 'Coins';
-    readonly grams: bigint;
 }
 
 /*
@@ -4722,24 +4737,6 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
         if ((!(anycast.depth >= 1))) {
             throw new Error('Condition (anycast.depth >= 1) is not satisfied while loading "Anycast" for type "Anycast"');
         }
-    })
-
-}
-
-// _ grams:Grams = Coins;
-
-export function loadCoins(slice: Slice): Coins {
-    let grams: bigint = slice.loadCoins();
-    return {
-        kind: 'Coins',
-        grams: grams,
-    }
-
-}
-
-export function storeCoins(coins: Coins): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeCoins(coins.grams);
     })
 
 }
