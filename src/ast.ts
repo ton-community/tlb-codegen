@@ -73,10 +73,6 @@ export type TLBMathExprType = {
   initialExpr: TLBMathExpr;
 };
 
-export type TLBBoolType = {
-  kind: "TLBBoolType";
-};
-
 export type TLBCoinsType = {
   kind: "TLBCoinsType";
 }
@@ -97,6 +93,7 @@ export type TLBHashmapType = {
   key: TLBMathExprType;
   value: TLBFieldType;
   extra?: TLBFieldType;
+  directStore: boolean;
 }
 
 export type TLBCellType = {
@@ -127,6 +124,10 @@ export type TLBMultipleType = {
   times: TLBMathExpr;
 };
 
+export type TLBTupleType = {
+  kind: "TLBTupleType";
+}
+
 export type TLBCondType = {
   kind: "TLBCondType";
   value: TLBFieldType;
@@ -137,11 +138,16 @@ export type TLBExoticType = {
   kind: "TLBExoticType";
 };
 
+export type TLBBoolType = {
+  kind: "TLBBoolType";
+  value: boolean | undefined;
+}
+
 export type TLBFieldType =
   | TLBNumberType
+  | TLBBoolType
   | TLBBitsType
   | TLBNamedType
-  | TLBBoolType
   | TLBCoinsType
   | TLBAddressType
   | TLBHashmapType
@@ -151,6 +157,7 @@ export type TLBFieldType =
   | TLBNegatedType
   | TLBCellInsideType
   | TLBMultipleType
+  | TLBTupleType
   | TLBCondType
   | TLBExoticType;
 

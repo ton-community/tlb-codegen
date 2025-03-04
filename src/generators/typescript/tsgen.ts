@@ -177,6 +177,11 @@ export interface MultiStatement extends ASTNode {
   statements: Array<Statement>;
 }
 
+export interface CodeAsIs extends ASTNode {
+  type: "CodeAsIs";
+  code: string;
+}
+
 export type TypeExpression =
   | Identifier
   | TypeWithParameters
@@ -210,7 +215,8 @@ export type GenDeclaration =
   | StructDeclaration
   | UnionTypeDeclaration
   | FunctionDeclaration
-  | Comment;
+  | Comment
+  | CodeAsIs;
 
 export type TheNode =
   | Identifier
@@ -464,6 +470,10 @@ export function tTernaryExpression(
     body: body,
     elseBody: elseBody,
   };
+}
+
+export function tCodeAsIs(code: string): CodeAsIs {
+  return { type: "CodeAsIs", code: code };
 }
 
 function toCodeArray(
@@ -722,6 +732,10 @@ export function toCode(
       });
       code.add(`*/`);
     }
+  }
+
+  if (node.type == "CodeAsIs") {
+    code.add(node.code, false);
   }
 
   return code;

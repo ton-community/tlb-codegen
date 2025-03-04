@@ -7,10 +7,70 @@ import { Address } from '@ton/core'
 import { ExternalAddress } from '@ton/core'
 import { Dictionary } from '@ton/core'
 import { DictionaryValue } from '@ton/core'
+import { TupleItem } from '@ton/core'
+import { parseTuple } from '@ton/core'
+import { serializeTuple } from '@ton/core'
 export function bitLen(n: number) {
     return n.toString(2).length;
 }
 
+export interface Bool {
+    readonly kind: 'Bool';
+    readonly value: boolean;
+}
+
+export function loadBool(slice: Slice): Bool {
+    if (slice.remainingBits >= 1) {
+        let value = slice.loadUint(1);
+        return {
+            kind: 'Bool',
+            value: value == 1
+        }
+
+    }
+    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function storeBool(bool: Bool): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(bool.value ? 1: 0, 1);
+    })
+
+}
+
+
+
+export function loadBoolFalse(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: false
+      }
+
+  }
+  throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function loadBoolTrue(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: true
+      }
+
+  }
+  throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
+}
+
+export function copyCellToBuilder(from: Cell, to: Builder): void {
+    let slice = from.beginParse();
+    to.storeBits(slice.loadBits(slice.remainingBits));
+    while (slice.remainingRefs) {
+        to.storeRef(slice.loadRef());
+    }
+}
 // tmpa$_ a:# b:# = Simple;
 
 export interface Simple {
@@ -687,7 +747,7 @@ export interface RefCombinatorInRef {
 
 export interface BoolUser {
     readonly kind: 'BoolUser';
-    readonly a: boolean;
+    readonly a: Bool;
 }
 
 /*
@@ -893,6 +953,297 @@ export interface InsideCell<X> {
 export interface InsideCellUser {
     readonly kind: 'InsideCellUser';
     readonly inside_cell: InsideCell<ShardState>;
+}
+
+// vm_stk_null#00 = VmStackValue;
+
+// vm_stk_tinyint#01 value:int64 = VmStackValue;
+
+// vm_stk_int#0201_ value:int257 = VmStackValue;
+
+// vm_stk_nan#02ff = VmStackValue;
+
+// vm_stk_cell#03 cell:^Cell = VmStackValue;
+
+// vm_stk_slice#04 _:VmCellSlice = VmStackValue;
+
+// vm_stk_builder#05 cell:^Cell = VmStackValue;
+
+// vm_stk_cont#06 cont:VmCont = VmStackValue;
+
+// vm_stk_tuple#07 len:(## 16) data:(VmTuple len) = VmStackValue;
+
+export type VmStackValue = VmStackValue_vm_stk_null | VmStackValue_vm_stk_tinyint | VmStackValue_vm_stk_int | VmStackValue_vm_stk_nan | VmStackValue_vm_stk_cell | VmStackValue_vm_stk_slice | VmStackValue_vm_stk_builder | VmStackValue_vm_stk_cont | VmStackValue_vm_stk_tuple;
+
+export interface VmStackValue_vm_stk_null {
+    readonly kind: 'VmStackValue_vm_stk_null';
+}
+
+export interface VmStackValue_vm_stk_tinyint {
+    readonly kind: 'VmStackValue_vm_stk_tinyint';
+    readonly value: bigint;
+}
+
+export interface VmStackValue_vm_stk_int {
+    readonly kind: 'VmStackValue_vm_stk_int';
+    readonly value: bigint;
+}
+
+export interface VmStackValue_vm_stk_nan {
+    readonly kind: 'VmStackValue_vm_stk_nan';
+}
+
+export interface VmStackValue_vm_stk_cell {
+    readonly kind: 'VmStackValue_vm_stk_cell';
+    readonly _cell: Cell;
+}
+
+export interface VmStackValue_vm_stk_slice {
+    readonly kind: 'VmStackValue_vm_stk_slice';
+    readonly _: VmCellSlice;
+}
+
+export interface VmStackValue_vm_stk_builder {
+    readonly kind: 'VmStackValue_vm_stk_builder';
+    readonly _cell: Cell;
+}
+
+export interface VmStackValue_vm_stk_cont {
+    readonly kind: 'VmStackValue_vm_stk_cont';
+    readonly cont: VmCont;
+}
+
+export interface VmStackValue_vm_stk_tuple {
+    readonly kind: 'VmStackValue_vm_stk_tuple';
+    readonly len: number;
+    readonly data: VmTuple;
+}
+
+/*
+_ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits }
+  st_ref:(#<= 4) end_ref:(#<= 4) { st_ref <= end_ref } = VmCellSlice;
+*/
+
+export interface VmCellSlice {
+    readonly kind: 'VmCellSlice';
+    readonly _cell: Cell;
+    readonly st_bits: number;
+    readonly end_bits: number;
+    readonly st_ref: number;
+    readonly end_ref: number;
+}
+
+// vm_tupref_nil$_ = VmTupleRef 0;
+
+// vm_tupref_single$_ entry:^VmStackValue = VmTupleRef 1;
+
+// vm_tupref_any$_ {n:#} ref:^(VmTuple (n + 2)) = VmTupleRef (n + 2);
+
+export type VmTupleRef = VmTupleRef_vm_tupref_nil | VmTupleRef_vm_tupref_single | VmTupleRef_vm_tupref_any;
+
+export interface VmTupleRef_vm_tupref_nil {
+    readonly kind: 'VmTupleRef_vm_tupref_nil';
+}
+
+export interface VmTupleRef_vm_tupref_single {
+    readonly kind: 'VmTupleRef_vm_tupref_single';
+    readonly entry: VmStackValue;
+}
+
+export interface VmTupleRef_vm_tupref_any {
+    readonly kind: 'VmTupleRef_vm_tupref_any';
+    readonly n: number;
+    readonly ref: VmTuple;
+}
+
+// vm_tuple_nil$_ = VmTuple 0;
+
+// vm_tuple_tcons$_ {n:#} head:(VmTupleRef n) tail:^VmStackValue = VmTuple (n + 1);
+
+export type VmTuple = VmTuple_vm_tuple_nil | VmTuple_vm_tuple_tcons;
+
+export interface VmTuple_vm_tuple_nil {
+    readonly kind: 'VmTuple_vm_tuple_nil';
+}
+
+export interface VmTuple_vm_tuple_tcons {
+    readonly kind: 'VmTuple_vm_tuple_tcons';
+    readonly n: number;
+    readonly head: VmTupleRef;
+    readonly tail: VmStackValue;
+}
+
+// vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
+
+export interface VmStack {
+    readonly kind: 'VmStack';
+    readonly depth: number;
+    readonly stack: VmStackList;
+}
+
+// vm_stk_nil#_ = VmStackList 0;
+
+// vm_stk_cons#_ {n:#} rest:^(VmStackList n) tos:VmStackValue = VmStackList (n + 1);
+
+export type VmStackList = VmStackList_vm_stk_nil | VmStackList_vm_stk_cons;
+
+export interface VmStackList_vm_stk_nil {
+    readonly kind: 'VmStackList_vm_stk_nil';
+}
+
+export interface VmStackList_vm_stk_cons {
+    readonly kind: 'VmStackList_vm_stk_cons';
+    readonly n: number;
+    readonly rest: VmStackList;
+    readonly tos: VmStackValue;
+}
+
+// _ cregs:(HashmapE 4 VmStackValue) = VmSaveList;
+
+export interface VmSaveList {
+    readonly kind: 'VmSaveList';
+    readonly cregs: Dictionary<number, VmStackValue>;
+}
+
+/*
+gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ]
+  = VmGasLimits;
+*/
+
+export interface VmGasLimits {
+    readonly kind: 'VmGasLimits';
+    readonly remaining: bigint;
+    readonly max_limit: bigint;
+    readonly cur_limit: bigint;
+    readonly credit: bigint;
+}
+
+// _ libraries:(HashmapE 256 ^Cell) = VmLibraries;
+
+export interface VmLibraries {
+    readonly kind: 'VmLibraries';
+    readonly libraries: Dictionary<bigint, Cell>;
+}
+
+/*
+vm_ctl_data$_ nargs:(Maybe uint13) stack:(Maybe VmStack) save:VmSaveList
+cp:(Maybe int16) = VmControlData;
+*/
+
+export interface VmControlData {
+    readonly kind: 'VmControlData';
+    readonly nargs: Maybe<number>;
+    readonly stack: Maybe<TupleItem[]>;
+    readonly save: VmSaveList;
+    readonly cp: Maybe<number>;
+}
+
+// vmc_std$00 cdata:VmControlData code:VmCellSlice = VmCont;
+
+// vmc_envelope$01 cdata:VmControlData next:^VmCont = VmCont;
+
+// vmc_quit$1000 exit_code:int32 = VmCont;
+
+// vmc_quit_exc$1001 = VmCont;
+
+// vmc_repeat$10100 count:uint63 body:^VmCont after:^VmCont = VmCont;
+
+// vmc_until$110000 body:^VmCont after:^VmCont = VmCont;
+
+// vmc_again$110001 body:^VmCont = VmCont;
+
+/*
+vmc_while_cond$110010 cond:^VmCont body:^VmCont
+after:^VmCont = VmCont;
+*/
+
+/*
+vmc_while_body$110011 cond:^VmCont body:^VmCont
+after:^VmCont = VmCont;
+*/
+
+// vmc_pushint$1111 value:int32 next:^VmCont = VmCont;
+
+export type VmCont = VmCont_vmc_std | VmCont_vmc_envelope | VmCont_vmc_quit | VmCont_vmc_quit_exc | VmCont_vmc_repeat | VmCont_vmc_until | VmCont_vmc_again | VmCont_vmc_while_cond | VmCont_vmc_while_body | VmCont_vmc_pushint;
+
+export interface VmCont_vmc_std {
+    readonly kind: 'VmCont_vmc_std';
+    readonly cdata: VmControlData;
+    readonly code: VmCellSlice;
+}
+
+export interface VmCont_vmc_envelope {
+    readonly kind: 'VmCont_vmc_envelope';
+    readonly cdata: VmControlData;
+    readonly next: VmCont;
+}
+
+export interface VmCont_vmc_quit {
+    readonly kind: 'VmCont_vmc_quit';
+    readonly exit_code: number;
+}
+
+export interface VmCont_vmc_quit_exc {
+    readonly kind: 'VmCont_vmc_quit_exc';
+}
+
+export interface VmCont_vmc_repeat {
+    readonly kind: 'VmCont_vmc_repeat';
+    readonly count: bigint;
+    readonly body: VmCont;
+    readonly after: VmCont;
+}
+
+export interface VmCont_vmc_until {
+    readonly kind: 'VmCont_vmc_until';
+    readonly body: VmCont;
+    readonly after: VmCont;
+}
+
+export interface VmCont_vmc_again {
+    readonly kind: 'VmCont_vmc_again';
+    readonly body: VmCont;
+}
+
+export interface VmCont_vmc_while_cond {
+    readonly kind: 'VmCont_vmc_while_cond';
+    readonly cond: VmCont;
+    readonly body: VmCont;
+    readonly after: VmCont;
+}
+
+export interface VmCont_vmc_while_body {
+    readonly kind: 'VmCont_vmc_while_body';
+    readonly cond: VmCont;
+    readonly body: VmCont;
+    readonly after: VmCont;
+}
+
+export interface VmCont_vmc_pushint {
+    readonly kind: 'VmCont_vmc_pushint';
+    readonly value: number;
+    readonly next: VmCont;
+}
+
+// _ t:VmStack = VMStackUser;
+
+export interface VMStackUser {
+    readonly kind: 'VMStackUser';
+    readonly t: TupleItem[];
+}
+
+// bool_false_user$_ x:BoolFalse = BoolFalseUser;
+
+export interface BoolFalseUser {
+    readonly kind: 'BoolFalseUser';
+    readonly x: Bool;
+}
+
+// bool_true_user$_ x:BoolTrue = BoolTrueUser;
+
+export interface BoolTrueUser {
+    readonly kind: 'BoolTrueUser';
+    readonly x: Bool;
 }
 
 // tmpa$_ a:# b:# = Simple;
@@ -2974,7 +3325,7 @@ export function storeRefCombinatorInRef(refCombinatorInRef: RefCombinatorInRef):
 // _ a:Bool = BoolUser;
 
 export function loadBoolUser(slice: Slice): BoolUser {
-    let a: boolean = slice.loadBoolean();
+    let a: Bool = loadBool(slice);
     return {
         kind: 'BoolUser',
         a: a,
@@ -2984,7 +3335,7 @@ export function loadBoolUser(slice: Slice): BoolUser {
 
 export function storeBoolUser(boolUser: BoolUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeBit(boolUser.a);
+        storeBool(boolUser.a)(builder);
     })
 
 }
@@ -3658,6 +4009,861 @@ export function storeInsideCellUser(insideCellUser: InsideCellUser): (builder: B
         let cell1 = beginCell();
         storeInsideCell<ShardState>(insideCellUser.inside_cell, storeShardState)(cell1);
         builder.storeRef(cell1);
+    })
+
+}
+
+// vm_stk_null#00 = VmStackValue;
+
+// vm_stk_tinyint#01 value:int64 = VmStackValue;
+
+// vm_stk_int#0201_ value:int257 = VmStackValue;
+
+// vm_stk_nan#02ff = VmStackValue;
+
+// vm_stk_cell#03 cell:^Cell = VmStackValue;
+
+// vm_stk_slice#04 _:VmCellSlice = VmStackValue;
+
+// vm_stk_builder#05 cell:^Cell = VmStackValue;
+
+// vm_stk_cont#06 cont:VmCont = VmStackValue;
+
+// vm_stk_tuple#07 len:(## 16) data:(VmTuple len) = VmStackValue;
+
+export function loadVmStackValue(slice: Slice): VmStackValue {
+    if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x00))) {
+        slice.loadUint(8);
+        return {
+            kind: 'VmStackValue_vm_stk_null',
+        }
+
+    }
+    if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x01))) {
+        slice.loadUint(8);
+        let value: bigint = slice.loadIntBig(64);
+        return {
+            kind: 'VmStackValue_vm_stk_tinyint',
+            value: value,
+        }
+
+    }
+    if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x0201))) {
+        slice.loadUint(16);
+        let value: bigint = slice.loadIntBig(257);
+        return {
+            kind: 'VmStackValue_vm_stk_int',
+            value: value,
+        }
+
+    }
+    if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x02ff))) {
+        slice.loadUint(16);
+        return {
+            kind: 'VmStackValue_vm_stk_nan',
+        }
+
+    }
+    if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
+        slice.loadUint(8);
+        let slice1 = slice.loadRef().beginParse(true);
+        let _cell: Cell = slice1.asCell();
+        return {
+            kind: 'VmStackValue_vm_stk_cell',
+            _cell: _cell,
+        }
+
+    }
+    if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x04))) {
+        slice.loadUint(8);
+        let _: VmCellSlice = loadVmCellSlice(slice);
+        return {
+            kind: 'VmStackValue_vm_stk_slice',
+            _: _,
+        }
+
+    }
+    if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x05))) {
+        slice.loadUint(8);
+        let slice1 = slice.loadRef().beginParse(true);
+        let _cell: Cell = slice1.asCell();
+        return {
+            kind: 'VmStackValue_vm_stk_builder',
+            _cell: _cell,
+        }
+
+    }
+    if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x06))) {
+        slice.loadUint(8);
+        let cont: VmCont = loadVmCont(slice);
+        return {
+            kind: 'VmStackValue_vm_stk_cont',
+            cont: cont,
+        }
+
+    }
+    if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x07))) {
+        slice.loadUint(8);
+        let len: number = slice.loadUint(16);
+        let data: VmTuple = loadVmTuple(slice, len);
+        return {
+            kind: 'VmStackValue_vm_stk_tuple',
+            len: len,
+            data: data,
+        }
+
+    }
+    throw new Error('Expected one of "VmStackValue_vm_stk_null", "VmStackValue_vm_stk_tinyint", "VmStackValue_vm_stk_int", "VmStackValue_vm_stk_nan", "VmStackValue_vm_stk_cell", "VmStackValue_vm_stk_slice", "VmStackValue_vm_stk_builder", "VmStackValue_vm_stk_cont", "VmStackValue_vm_stk_tuple" in loading "VmStackValue", but data does not satisfy any constructor');
+}
+
+export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder) => void {
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_null')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x00, 8);
+        })
+
+    }
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_tinyint')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x01, 8);
+            builder.storeInt(vmStackValue.value, 64);
+        })
+
+    }
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_int')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x0201, 16);
+            builder.storeInt(vmStackValue.value, 257);
+        })
+
+    }
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_nan')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x02ff, 16);
+        })
+
+    }
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_cell')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x03, 8);
+            let cell1 = beginCell();
+            cell1.storeSlice(vmStackValue._cell.beginParse(true));
+            builder.storeRef(cell1);
+        })
+
+    }
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_slice')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x04, 8);
+            storeVmCellSlice(vmStackValue._)(builder);
+        })
+
+    }
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_builder')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x05, 8);
+            let cell1 = beginCell();
+            cell1.storeSlice(vmStackValue._cell.beginParse(true));
+            builder.storeRef(cell1);
+        })
+
+    }
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_cont')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x06, 8);
+            storeVmCont(vmStackValue.cont)(builder);
+        })
+
+    }
+    if ((vmStackValue.kind == 'VmStackValue_vm_stk_tuple')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0x07, 8);
+            builder.storeUint(vmStackValue.len, 16);
+            storeVmTuple(vmStackValue.data)(builder);
+        })
+
+    }
+    throw new Error('Expected one of "VmStackValue_vm_stk_null", "VmStackValue_vm_stk_tinyint", "VmStackValue_vm_stk_int", "VmStackValue_vm_stk_nan", "VmStackValue_vm_stk_cell", "VmStackValue_vm_stk_slice", "VmStackValue_vm_stk_builder", "VmStackValue_vm_stk_cont", "VmStackValue_vm_stk_tuple" in loading "VmStackValue", but data does not satisfy any constructor');
+}
+
+/*
+_ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits }
+  st_ref:(#<= 4) end_ref:(#<= 4) { st_ref <= end_ref } = VmCellSlice;
+*/
+
+export function loadVmCellSlice(slice: Slice): VmCellSlice {
+    let slice1 = slice.loadRef().beginParse(true);
+    let _cell: Cell = slice1.asCell();
+    let st_bits: number = slice.loadUint(10);
+    let end_bits: number = slice.loadUint(10);
+    let st_ref: number = slice.loadUint(bitLen(4));
+    let end_ref: number = slice.loadUint(bitLen(4));
+    if ((!(st_bits <= end_bits))) {
+        throw new Error('Condition (st_bits <= end_bits) is not satisfied while loading "VmCellSlice" for type "VmCellSlice"');
+    }
+    if ((!(st_ref <= end_ref))) {
+        throw new Error('Condition (st_ref <= end_ref) is not satisfied while loading "VmCellSlice" for type "VmCellSlice"');
+    }
+    return {
+        kind: 'VmCellSlice',
+        _cell: _cell,
+        st_bits: st_bits,
+        end_bits: end_bits,
+        st_ref: st_ref,
+        end_ref: end_ref,
+    }
+
+}
+
+export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        let cell1 = beginCell();
+        cell1.storeSlice(vmCellSlice._cell.beginParse(true));
+        builder.storeRef(cell1);
+        builder.storeUint(vmCellSlice.st_bits, 10);
+        builder.storeUint(vmCellSlice.end_bits, 10);
+        builder.storeUint(vmCellSlice.st_ref, bitLen(4));
+        builder.storeUint(vmCellSlice.end_ref, bitLen(4));
+        if ((!(vmCellSlice.st_bits <= vmCellSlice.end_bits))) {
+            throw new Error('Condition (vmCellSlice.st_bits <= vmCellSlice.end_bits) is not satisfied while loading "VmCellSlice" for type "VmCellSlice"');
+        }
+        if ((!(vmCellSlice.st_ref <= vmCellSlice.end_ref))) {
+            throw new Error('Condition (vmCellSlice.st_ref <= vmCellSlice.end_ref) is not satisfied while loading "VmCellSlice" for type "VmCellSlice"');
+        }
+    })
+
+}
+
+// vm_tupref_nil$_ = VmTupleRef 0;
+
+// vm_tupref_single$_ entry:^VmStackValue = VmTupleRef 1;
+
+// vm_tupref_any$_ {n:#} ref:^(VmTuple (n + 2)) = VmTupleRef (n + 2);
+
+export function loadVmTupleRef(slice: Slice, arg0: number): VmTupleRef {
+    if ((arg0 == 0)) {
+        return {
+            kind: 'VmTupleRef_vm_tupref_nil',
+        }
+
+    }
+    if ((arg0 == 1)) {
+        let slice1 = slice.loadRef().beginParse(true);
+        let entry: VmStackValue = loadVmStackValue(slice1);
+        return {
+            kind: 'VmTupleRef_vm_tupref_single',
+            entry: entry,
+        }
+
+    }
+    if (true) {
+        let slice1 = slice.loadRef().beginParse(true);
+        let ref: VmTuple = loadVmTuple(slice1, ((arg0 - 2) + 2));
+        return {
+            kind: 'VmTupleRef_vm_tupref_any',
+            n: (arg0 - 2),
+            ref: ref,
+        }
+
+    }
+    throw new Error('Expected one of "VmTupleRef_vm_tupref_nil", "VmTupleRef_vm_tupref_single", "VmTupleRef_vm_tupref_any" in loading "VmTupleRef", but data does not satisfy any constructor');
+}
+
+export function storeVmTupleRef(vmTupleRef: VmTupleRef): (builder: Builder) => void {
+    if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_nil')) {
+        return ((builder: Builder) => {
+        })
+
+    }
+    if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_single')) {
+        return ((builder: Builder) => {
+            let cell1 = beginCell();
+            storeVmStackValue(vmTupleRef.entry)(cell1);
+            builder.storeRef(cell1);
+        })
+
+    }
+    if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_any')) {
+        return ((builder: Builder) => {
+            let cell1 = beginCell();
+            storeVmTuple(vmTupleRef.ref)(cell1);
+            builder.storeRef(cell1);
+        })
+
+    }
+    throw new Error('Expected one of "VmTupleRef_vm_tupref_nil", "VmTupleRef_vm_tupref_single", "VmTupleRef_vm_tupref_any" in loading "VmTupleRef", but data does not satisfy any constructor');
+}
+
+// vm_tuple_nil$_ = VmTuple 0;
+
+// vm_tuple_tcons$_ {n:#} head:(VmTupleRef n) tail:^VmStackValue = VmTuple (n + 1);
+
+export function loadVmTuple(slice: Slice, arg0: number): VmTuple {
+    if ((arg0 == 0)) {
+        return {
+            kind: 'VmTuple_vm_tuple_nil',
+        }
+
+    }
+    if (true) {
+        let head: VmTupleRef = loadVmTupleRef(slice, (arg0 - 1));
+        let slice1 = slice.loadRef().beginParse(true);
+        let tail: VmStackValue = loadVmStackValue(slice1);
+        return {
+            kind: 'VmTuple_vm_tuple_tcons',
+            n: (arg0 - 1),
+            head: head,
+            tail: tail,
+        }
+
+    }
+    throw new Error('Expected one of "VmTuple_vm_tuple_nil", "VmTuple_vm_tuple_tcons" in loading "VmTuple", but data does not satisfy any constructor');
+}
+
+export function storeVmTuple(vmTuple: VmTuple): (builder: Builder) => void {
+    if ((vmTuple.kind == 'VmTuple_vm_tuple_nil')) {
+        return ((builder: Builder) => {
+        })
+
+    }
+    if ((vmTuple.kind == 'VmTuple_vm_tuple_tcons')) {
+        return ((builder: Builder) => {
+            storeVmTupleRef(vmTuple.head)(builder);
+            let cell1 = beginCell();
+            storeVmStackValue(vmTuple.tail)(cell1);
+            builder.storeRef(cell1);
+        })
+
+    }
+    throw new Error('Expected one of "VmTuple_vm_tuple_nil", "VmTuple_vm_tuple_tcons" in loading "VmTuple", but data does not satisfy any constructor');
+}
+
+// vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
+
+export function loadVmStack(slice: Slice): VmStack {
+    let depth: number = slice.loadUint(24);
+    let stack: VmStackList = loadVmStackList(slice, depth);
+    return {
+        kind: 'VmStack',
+        depth: depth,
+        stack: stack,
+    }
+
+}
+
+export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(vmStack.depth, 24);
+        storeVmStackList(vmStack.stack)(builder);
+    })
+
+}
+
+// vm_stk_nil#_ = VmStackList 0;
+
+// vm_stk_cons#_ {n:#} rest:^(VmStackList n) tos:VmStackValue = VmStackList (n + 1);
+
+export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
+    if ((arg0 == 0)) {
+        return {
+            kind: 'VmStackList_vm_stk_nil',
+        }
+
+    }
+    if (true) {
+        let slice1 = slice.loadRef().beginParse(true);
+        let rest: VmStackList = loadVmStackList(slice1, (arg0 - 1));
+        let tos: VmStackValue = loadVmStackValue(slice);
+        return {
+            kind: 'VmStackList_vm_stk_cons',
+            n: (arg0 - 1),
+            rest: rest,
+            tos: tos,
+        }
+
+    }
+    throw new Error('Expected one of "VmStackList_vm_stk_nil", "VmStackList_vm_stk_cons" in loading "VmStackList", but data does not satisfy any constructor');
+}
+
+export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) => void {
+    if ((vmStackList.kind == 'VmStackList_vm_stk_nil')) {
+        return ((builder: Builder) => {
+        })
+
+    }
+    if ((vmStackList.kind == 'VmStackList_vm_stk_cons')) {
+        return ((builder: Builder) => {
+            let cell1 = beginCell();
+            storeVmStackList(vmStackList.rest)(cell1);
+            builder.storeRef(cell1);
+            storeVmStackValue(vmStackList.tos)(builder);
+        })
+
+    }
+    throw new Error('Expected one of "VmStackList_vm_stk_nil", "VmStackList_vm_stk_cons" in loading "VmStackList", but data does not satisfy any constructor');
+}
+
+// _ cregs:(HashmapE 4 VmStackValue) = VmSaveList;
+
+export function loadVmSaveList(slice: Slice): VmSaveList {
+    let cregs: Dictionary<number, VmStackValue> = Dictionary.load(Dictionary.Keys.Uint(4), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: loadVmStackValue,
+    }, slice);
+    return {
+        kind: 'VmSaveList',
+        cregs: cregs,
+    }
+
+}
+
+export function storeVmSaveList(vmSaveList: VmSaveList): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeDict(vmSaveList.cregs, Dictionary.Keys.Uint(4), {
+            serialize: ((arg: VmStackValue, builder: Builder) => {
+            storeVmStackValue(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
+    })
+
+}
+
+/*
+gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ]
+  = VmGasLimits;
+*/
+
+export function loadVmGasLimits(slice: Slice): VmGasLimits {
+    let remaining: bigint = slice.loadIntBig(64);
+    let slice1 = slice.loadRef().beginParse(true);
+    let max_limit: bigint = slice1.loadIntBig(64);
+    let cur_limit: bigint = slice1.loadIntBig(64);
+    let credit: bigint = slice1.loadIntBig(64);
+    return {
+        kind: 'VmGasLimits',
+        remaining: remaining,
+        max_limit: max_limit,
+        cur_limit: cur_limit,
+        credit: credit,
+    }
+
+}
+
+export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeInt(vmGasLimits.remaining, 64);
+        let cell1 = beginCell();
+        cell1.storeInt(vmGasLimits.max_limit, 64);
+        cell1.storeInt(vmGasLimits.cur_limit, 64);
+        cell1.storeInt(vmGasLimits.credit, 64);
+        builder.storeRef(cell1);
+    })
+
+}
+
+// _ libraries:(HashmapE 256 ^Cell) = VmLibraries;
+
+export function loadVmLibraries(slice: Slice): VmLibraries {
+    let libraries: Dictionary<bigint, Cell> = Dictionary.load(Dictionary.Keys.BigUint(256), {
+        serialize: () => { throw new Error('Not implemented') },
+        parse: ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse(true);
+        return slice1.asCell()
+
+    }),
+    }, slice);
+    return {
+        kind: 'VmLibraries',
+        libraries: libraries,
+    }
+
+}
+
+export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeDict(vmLibraries.libraries, Dictionary.Keys.BigUint(256), {
+            serialize: ((arg: Cell, builder: Builder) => {
+            ((arg: Cell) => {
+                return ((builder: Builder) => {
+                    let cell1 = beginCell();
+                    cell1.storeSlice(arg.beginParse(true));
+                    builder.storeRef(cell1);
+
+                })
+
+            })(arg)(builder);
+        }),
+            parse: () => { throw new Error('Not implemented') },
+        });
+    })
+
+}
+
+/*
+vm_ctl_data$_ nargs:(Maybe uint13) stack:(Maybe VmStack) save:VmSaveList
+cp:(Maybe int16) = VmControlData;
+*/
+
+export function loadVmControlData(slice: Slice): VmControlData {
+    let nargs: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
+        return slice.loadUint(13)
+
+    }));
+    let stack: Maybe<TupleItem[]> = loadMaybe<TupleItem[]>(slice, ((slice: Slice) => {
+        return parseTuple(slice.asCell())
+
+    }));
+    let save: VmSaveList = loadVmSaveList(slice);
+    let cp: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
+        return slice.loadInt(16)
+
+    }));
+    return {
+        kind: 'VmControlData',
+        nargs: nargs,
+        stack: stack,
+        save: save,
+        cp: cp,
+    }
+
+}
+
+export function storeVmControlData(vmControlData: VmControlData): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeMaybe<number>(vmControlData.nargs, ((arg: number) => {
+            return ((builder: Builder) => {
+                builder.storeUint(arg, 13);
+            })
+
+        }))(builder);
+        storeMaybe<TupleItem[]>(vmControlData.stack, ((arg: TupleItem[]) => {
+            return ((builder: Builder) => {
+                copyCellToBuilder(serializeTuple(arg), builder);
+            })
+
+        }))(builder);
+        storeVmSaveList(vmControlData.save)(builder);
+        storeMaybe<number>(vmControlData.cp, ((arg: number) => {
+            return ((builder: Builder) => {
+                builder.storeInt(arg, 16);
+            })
+
+        }))(builder);
+    })
+
+}
+
+// vmc_std$00 cdata:VmControlData code:VmCellSlice = VmCont;
+
+// vmc_envelope$01 cdata:VmControlData next:^VmCont = VmCont;
+
+// vmc_quit$1000 exit_code:int32 = VmCont;
+
+// vmc_quit_exc$1001 = VmCont;
+
+// vmc_repeat$10100 count:uint63 body:^VmCont after:^VmCont = VmCont;
+
+// vmc_until$110000 body:^VmCont after:^VmCont = VmCont;
+
+// vmc_again$110001 body:^VmCont = VmCont;
+
+/*
+vmc_while_cond$110010 cond:^VmCont body:^VmCont
+after:^VmCont = VmCont;
+*/
+
+/*
+vmc_while_body$110011 cond:^VmCont body:^VmCont
+after:^VmCont = VmCont;
+*/
+
+// vmc_pushint$1111 value:int32 next:^VmCont = VmCont;
+
+export function loadVmCont(slice: Slice): VmCont {
+    if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
+        slice.loadUint(2);
+        let cdata: VmControlData = loadVmControlData(slice);
+        let code: VmCellSlice = loadVmCellSlice(slice);
+        return {
+            kind: 'VmCont_vmc_std',
+            cdata: cdata,
+            code: code,
+        }
+
+    }
+    if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
+        slice.loadUint(2);
+        let cdata: VmControlData = loadVmControlData(slice);
+        let slice1 = slice.loadRef().beginParse(true);
+        let next: VmCont = loadVmCont(slice1);
+        return {
+            kind: 'VmCont_vmc_envelope',
+            cdata: cdata,
+            next: next,
+        }
+
+    }
+    if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1000))) {
+        slice.loadUint(4);
+        let exit_code: number = slice.loadInt(32);
+        return {
+            kind: 'VmCont_vmc_quit',
+            exit_code: exit_code,
+        }
+
+    }
+    if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1001))) {
+        slice.loadUint(4);
+        return {
+            kind: 'VmCont_vmc_quit_exc',
+        }
+
+    }
+    if (((slice.remainingBits >= 5) && (slice.preloadUint(5) == 0b10100))) {
+        slice.loadUint(5);
+        let count: bigint = slice.loadUintBig(63);
+        let slice1 = slice.loadRef().beginParse(true);
+        let body: VmCont = loadVmCont(slice1);
+        let slice2 = slice.loadRef().beginParse(true);
+        let after: VmCont = loadVmCont(slice2);
+        return {
+            kind: 'VmCont_vmc_repeat',
+            count: count,
+            body: body,
+            after: after,
+        }
+
+    }
+    if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110000))) {
+        slice.loadUint(6);
+        let slice1 = slice.loadRef().beginParse(true);
+        let body: VmCont = loadVmCont(slice1);
+        let slice2 = slice.loadRef().beginParse(true);
+        let after: VmCont = loadVmCont(slice2);
+        return {
+            kind: 'VmCont_vmc_until',
+            body: body,
+            after: after,
+        }
+
+    }
+    if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110001))) {
+        slice.loadUint(6);
+        let slice1 = slice.loadRef().beginParse(true);
+        let body: VmCont = loadVmCont(slice1);
+        return {
+            kind: 'VmCont_vmc_again',
+            body: body,
+        }
+
+    }
+    if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110010))) {
+        slice.loadUint(6);
+        let slice1 = slice.loadRef().beginParse(true);
+        let cond: VmCont = loadVmCont(slice1);
+        let slice2 = slice.loadRef().beginParse(true);
+        let body: VmCont = loadVmCont(slice2);
+        let slice3 = slice.loadRef().beginParse(true);
+        let after: VmCont = loadVmCont(slice3);
+        return {
+            kind: 'VmCont_vmc_while_cond',
+            cond: cond,
+            body: body,
+            after: after,
+        }
+
+    }
+    if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110011))) {
+        slice.loadUint(6);
+        let slice1 = slice.loadRef().beginParse(true);
+        let cond: VmCont = loadVmCont(slice1);
+        let slice2 = slice.loadRef().beginParse(true);
+        let body: VmCont = loadVmCont(slice2);
+        let slice3 = slice.loadRef().beginParse(true);
+        let after: VmCont = loadVmCont(slice3);
+        return {
+            kind: 'VmCont_vmc_while_body',
+            cond: cond,
+            body: body,
+            after: after,
+        }
+
+    }
+    if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1111))) {
+        slice.loadUint(4);
+        let value: number = slice.loadInt(32);
+        let slice1 = slice.loadRef().beginParse(true);
+        let next: VmCont = loadVmCont(slice1);
+        return {
+            kind: 'VmCont_vmc_pushint',
+            value: value,
+            next: next,
+        }
+
+    }
+    throw new Error('Expected one of "VmCont_vmc_std", "VmCont_vmc_envelope", "VmCont_vmc_quit", "VmCont_vmc_quit_exc", "VmCont_vmc_repeat", "VmCont_vmc_until", "VmCont_vmc_again", "VmCont_vmc_while_cond", "VmCont_vmc_while_body", "VmCont_vmc_pushint" in loading "VmCont", but data does not satisfy any constructor');
+}
+
+export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
+    if ((vmCont.kind == 'VmCont_vmc_std')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b00, 2);
+            storeVmControlData(vmCont.cdata)(builder);
+            storeVmCellSlice(vmCont.code)(builder);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_envelope')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b01, 2);
+            storeVmControlData(vmCont.cdata)(builder);
+            let cell1 = beginCell();
+            storeVmCont(vmCont.next)(cell1);
+            builder.storeRef(cell1);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_quit')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b1000, 4);
+            builder.storeInt(vmCont.exit_code, 32);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_quit_exc')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b1001, 4);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_repeat')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b10100, 5);
+            builder.storeUint(vmCont.count, 63);
+            let cell1 = beginCell();
+            storeVmCont(vmCont.body)(cell1);
+            builder.storeRef(cell1);
+            let cell2 = beginCell();
+            storeVmCont(vmCont.after)(cell2);
+            builder.storeRef(cell2);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_until')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b110000, 6);
+            let cell1 = beginCell();
+            storeVmCont(vmCont.body)(cell1);
+            builder.storeRef(cell1);
+            let cell2 = beginCell();
+            storeVmCont(vmCont.after)(cell2);
+            builder.storeRef(cell2);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_again')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b110001, 6);
+            let cell1 = beginCell();
+            storeVmCont(vmCont.body)(cell1);
+            builder.storeRef(cell1);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_while_cond')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b110010, 6);
+            let cell1 = beginCell();
+            storeVmCont(vmCont.cond)(cell1);
+            builder.storeRef(cell1);
+            let cell2 = beginCell();
+            storeVmCont(vmCont.body)(cell2);
+            builder.storeRef(cell2);
+            let cell3 = beginCell();
+            storeVmCont(vmCont.after)(cell3);
+            builder.storeRef(cell3);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_while_body')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b110011, 6);
+            let cell1 = beginCell();
+            storeVmCont(vmCont.cond)(cell1);
+            builder.storeRef(cell1);
+            let cell2 = beginCell();
+            storeVmCont(vmCont.body)(cell2);
+            builder.storeRef(cell2);
+            let cell3 = beginCell();
+            storeVmCont(vmCont.after)(cell3);
+            builder.storeRef(cell3);
+        })
+
+    }
+    if ((vmCont.kind == 'VmCont_vmc_pushint')) {
+        return ((builder: Builder) => {
+            builder.storeUint(0b1111, 4);
+            builder.storeInt(vmCont.value, 32);
+            let cell1 = beginCell();
+            storeVmCont(vmCont.next)(cell1);
+            builder.storeRef(cell1);
+        })
+
+    }
+    throw new Error('Expected one of "VmCont_vmc_std", "VmCont_vmc_envelope", "VmCont_vmc_quit", "VmCont_vmc_quit_exc", "VmCont_vmc_repeat", "VmCont_vmc_until", "VmCont_vmc_again", "VmCont_vmc_while_cond", "VmCont_vmc_while_body", "VmCont_vmc_pushint" in loading "VmCont", but data does not satisfy any constructor');
+}
+
+// _ t:VmStack = VMStackUser;
+
+export function loadVMStackUser(slice: Slice): VMStackUser {
+    let t: TupleItem[] = parseTuple(slice.asCell());
+    return {
+        kind: 'VMStackUser',
+        t: t,
+    }
+
+}
+
+export function storeVMStackUser(vMStackUser: VMStackUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        copyCellToBuilder(serializeTuple(vMStackUser.t), builder);
+    })
+
+}
+
+// bool_false_user$_ x:BoolFalse = BoolFalseUser;
+
+export function loadBoolFalseUser(slice: Slice): BoolFalseUser {
+    let x: Bool = loadBoolFalse(slice);
+    return {
+        kind: 'BoolFalseUser',
+        x: x,
+    }
+
+}
+
+export function storeBoolFalseUser(boolFalseUser: BoolFalseUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeBool(boolFalseUser.x)(builder);
+    })
+
+}
+
+// bool_true_user$_ x:BoolTrue = BoolTrueUser;
+
+export function loadBoolTrueUser(slice: Slice): BoolTrueUser {
+    let x: Bool = loadBoolTrue(slice);
+    return {
+        kind: 'BoolTrueUser',
+        x: x,
+    }
+
+}
+
+export function storeBoolTrueUser(boolTrueUser: BoolTrueUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeBool(boolTrueUser.x)(builder);
     })
 
 }

@@ -45,8 +45,11 @@ export function generateCodeByAST(tree: Program, input: string, getGenerator: (t
   codeGenerator.addTonCoreClassUsage("ExternalAddress");
   codeGenerator.addTonCoreClassUsage("Dictionary")
   codeGenerator.addTonCoreClassUsage("DictionaryValue")
+  codeGenerator.addTonCoreClassUsage("TupleItem");
+  codeGenerator.addTonCoreClassUsage("parseTuple");
+  codeGenerator.addTonCoreClassUsage("serializeTuple");
 
-  codeGenerator.addBitLenFunction();
+  codeGenerator.addBuiltinCode();
 
   let jsCodeDeclarations: CommonGenDeclaration[] = [];
   codeGenerator.jsCodeDeclarations.forEach((declaration) => {
