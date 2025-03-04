@@ -68,6 +68,8 @@ import {
   TypeParametersExpression,
   TypedIdentifier,
   id,
+  tBinaryExpression,
+  tCodeAsIs,
   tComment,
   tExpressionStatement,
   tFunctionCall,
@@ -75,6 +77,7 @@ import {
   tIfStatement,
   tImportDeclaration,
   tMemberExpression,
+  tNumericLiteral,
   tObjectExpression,
   tObjectProperty,
   tReturnStatement,
@@ -97,6 +100,7 @@ import {
   getParamVarExpr,
   getTypeParametersExpression,
   isBigInt,
+  useBuffer,
 } from "./utils";
 
 /*
@@ -234,9 +238,80 @@ export class TypescriptGenerator implements CodeGenerator {
       tImportDeclaration(id(name), tStringLiteral("@ton/core"))
     );
   }
+
+  addBuiltinCode(): void {
+    this.addBitLenFunction();
+    this.addEmbeddedTypes();
+    this.addCopyCellToBuilder();
+  }
+
   addBitLenFunction() {
     this.jsCodeDeclarations.push(bitlenFunctionDecl());
   }
+
+  addCopyCellToBuilder() {
+    this.jsCodeDeclarations.push(tCodeAsIs(`export function copyCellToBuilder(from: Cell, to: Builder): void {
+    let slice = from.beginParse();
+    to.storeBits(slice.loadBits(slice.remainingBits));
+    while (slice.remainingRefs) {
+        to.storeRef(slice.loadRef());
+    }
+}`))  
+  }
+
+  addEmbeddedTypes() {
+    this.jsCodeDeclarations.push(tCodeAsIs(`export interface Bool {
+    readonly kind: 'Bool';
+    readonly value: boolean;
+}
+
+export function loadBool(slice: Slice): Bool {
+    if (slice.remainingBits >= 1) {
+        let value = slice.loadUint(1);
+        return {
+            kind: 'Bool',
+            value: value == 1
+        }
+
+    }
+    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function storeBool(bool: Bool): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(bool.value ? 1: 0, 1);
+    })
+
+}
+
+
+
+export function loadBoolFalse(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: false
+      }
+
+  }
+  throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function loadBoolTrue(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: true
+      }
+
+  }
+  throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
+}
+`))
+  }
+
   addTlbType(tlbType: TLBType): void {
     let typeName = findNotReservedName(
       firstLower(tlbType.name),
@@ -686,16 +761,24 @@ export class TypescriptGenerator implements CodeGenerator {
           fieldStoreSuffix: "Bit"
         }
       } else {
+        let isBuffer = useBuffer(fieldType);
+        let suffix = isBuffer ? "Buffer" : "Bits";
+        let argLoadExpr = convertToAST(fieldType.bits, ctx.constructor);
+        let argStoreExpr = convertToAST(
+          fieldType.bits,
+          ctx.constructor,
+          id(ctx.name)
+        )
+        if (isBuffer) {
+          argLoadExpr = tBinaryExpression(argLoadExpr, '/' , tNumericLiteral(8))
+          argStoreExpr = tBinaryExpression(argStoreExpr, '/', tNumericLiteral(8))
+        }
         exprForParam = {
-          argLoadExpr: convertToAST(fieldType.bits, ctx.constructor),
-          argStoreExpr: convertToAST(
-            fieldType.bits,
-            ctx.constructor,
-            id(ctx.name)
-          ),
-          paramType: "BitString",
-          fieldLoadSuffix: "Bits",
-          fieldStoreSuffix: "Bits",
+          argLoadExpr: argLoadExpr,
+          argStoreExpr: argStoreExpr,
+          paramType: isBuffer ? "Buffer" : "BitString",
+          fieldLoadSuffix: suffix,
+          fieldStoreSuffix: suffix,
         };
       }
     } else if (fieldType.kind == "TLBCellType") {
@@ -714,14 +797,6 @@ export class TypescriptGenerator implements CodeGenerator {
         tMemberExpression(storeParametersInside[0], id("beginParse")), 
         [id("true")]
       )
-    } else if (fieldType.kind == "TLBBoolType") {
-      exprForParam = {
-        argLoadExpr: undefined,
-        argStoreExpr: undefined,
-        paramType: "boolean",
-        fieldLoadSuffix: "Boolean",
-        fieldStoreSuffix: "Bit",
-      };
     } else if (fieldType.kind == "TLBCoinsType") {
       exprForParam = {
         argLoadExpr: undefined,
@@ -742,6 +817,11 @@ export class TypescriptGenerator implements CodeGenerator {
         fieldLoadSuffix: fieldType.signed ? "VarIntBig" : "VarUintBig",
         fieldStoreSuffix: fieldType.signed ? "VarInt" : "VarUint"
       }
+    } else if (fieldType.kind == "TLBTupleType") {
+      result.loadExpr = tFunctionCall(id("parseTuple"), [tFunctionCall(tMemberExpression(id("slice"), id('asCell')), [])]);
+      result.typeParamExpr = id('TupleItem[]');
+      result.storeStmtInside = tExpressionStatement(tFunctionCall(id('copyCellToBuilder'), [tFunctionCall(id('serializeTuple'), storeParametersInside), id('builder')]));
+      result.storeStmtOutside = tExpressionStatement(tFunctionCall(id('copyCellToBuilder'), [tFunctionCall(id('serializeTuple'), storeParametersOutside), id('builder')]));
     } else if (fieldType.kind == "TLBAddressType") {
       if (fieldType.addrType == "Internal") {
         exprForParam = {
@@ -911,12 +991,17 @@ export class TypescriptGenerator implements CodeGenerator {
       if (subExprInfo.storeStmtInside) {
         result.storeStmtInside = storeInNewCell(currentCell, subExprInfo.storeStmtInside);
       }
+    } else if (fieldType.kind == "TLBBoolType") {
+      let loadFunction = 'load' + (fieldType.value === undefined ? 'Bool': (fieldType.value ? 'BoolTrue': 'BoolFalse'));
+      result.loadExpr = tFunctionCall(id(loadFunction), [id("slice")]);
+      result.typeParamExpr = id('Bool');
+      result.storeStmtInside = tExpressionStatement(tFunctionCall(tFunctionCall(id('storeBool'), storeParametersInside), [id('builder')]));
+      result.storeStmtOutside = tExpressionStatement(tFunctionCall(tFunctionCall(id('storeBool'), storeParametersOutside), [id('builder')]));
     } else if (fieldType.kind == "TLBHashmapType") {
       let keyForLoad: Expression = dictKeyExpr(fieldType.key, ctx);
       let keyForStore: Expression = dictKeyExpr(fieldType.key, ctx, ctx.typeName);
       let subExprInfo = this.handleType(field, fieldType.value, fieldType.extra != undefined, ctx, slicePrefix, argIndex);
 
-      
       if (subExprInfo.typeParamExpr && subExprInfo.loadFunctionExpr && subExprInfo.storeFunctionExpr) {
         let valueStore: Expression;
         if (fieldType.extra && subExprInfo.loadExpr) {
@@ -927,15 +1012,15 @@ export class TypescriptGenerator implements CodeGenerator {
           valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr, extraInfo.storeFunctionExpr)
 
           if (extraInfo.loadExpr) {
-            result.loadExpr = dictLoadExpr(keyForLoad, dictAugParse(extraInfo.loadExpr, subExprInfo.loadExpr), currentSlice) 
+            result.loadExpr = dictLoadExpr(keyForLoad, dictAugParse(extraInfo.loadExpr, subExprInfo.loadExpr), currentSlice, fieldType.directStore) 
           }
         } else {
           valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr)
-          result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice)  
+          result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice, fieldType.directStore)  
         }
         result.typeParamExpr = dictTypeParamExpr(fieldType, subExprInfo.typeParamExpr) 
-        result.storeStmtInside = dictStoreStmt(currentCell, storeParametersInside, keyForStore, valueStore)
-        result.storeStmtOutside = dictStoreStmt(currentCell, storeParametersOutside, keyForStore, valueStore)
+        result.storeStmtInside = dictStoreStmt(currentCell, storeParametersInside, keyForStore, valueStore, fieldType.directStore)
+        result.storeStmtOutside = dictStoreStmt(currentCell, storeParametersOutside, keyForStore, valueStore, fieldType.directStore)
       }
     } else if (fieldType.kind == "TLBNamedType" && fieldType.arguments.length) {
       let typeName = fieldType.name;
