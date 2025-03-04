@@ -9,7 +9,7 @@ export interface CodeGenerator {
     tlbCode: TLBCode
 
     addTonCoreClassUsage(name: string): void
-    addBitLenFunction(): void
+    addBuiltinCode(): void
     addTlbType(tlbType: TLBType): void
     toCode(node: TheNode, code: CodeBuilder): CodeBuilder
 }

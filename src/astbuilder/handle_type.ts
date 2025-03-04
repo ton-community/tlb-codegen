@@ -170,7 +170,7 @@ export function getType(
       if (key.kind != 'TLBExprMathType') {
         throw new Error('Hashmap key should be number')
       }
-      return { kind: "TLBHashmapType", key: key, value: value };
+      return { kind: "TLBHashmapType", key: key, value: value, directStore: false };
     } else if (expr.name == "HashmapAugE") {
       if (expr.args.length != 3) {
         throw new Error('Not enough arguments for HashmapAugE')
@@ -181,7 +181,14 @@ export function getType(
       if (key.kind != 'TLBExprMathType') {
         throw new Error('Hashmap key should be number')
       }
-      return { kind: "TLBHashmapType", key: key, value: value, extra: extra };
+      return { kind: "TLBHashmapType", key: key, value: value, extra: extra, directStore: false };
+    } else if (expr.name == "Hashmap" && constructor.tlbType != "HashmapNode") {
+      let key = getType(expr.args[0], constructor, fieldTypeName)
+      let value = getType(expr.args[1], constructor, fieldTypeName)
+      if (key.kind != 'TLBExprMathType') {
+        throw new Error('Hashmap key should be number')
+      }
+      return { kind: "TLBHashmapType", key: key, value: value, directStore: true };
     } else if (
       expr.name == "VarUInteger" &&
       (expr.args[0] instanceof MathExpr ||
@@ -229,6 +236,10 @@ export function getType(
         signed: true,
         maxBits: 257,
       };
+    } else if (expr.name == "VmStack") {
+      return {
+        kind: "TLBTupleType",
+      }
     } else if (expr.name == "Bits") {
       return { kind: "TLBBitsType", bits: new TLBNumberExpr(1023) };
     } else if (expr.name == "Bit") {
@@ -261,8 +272,6 @@ export function getType(
       };
     } else if ((theNum = splitForTypeValue(expr.name, "bits")) != undefined) {
       return { kind: "TLBBitsType", bits: new TLBNumberExpr(theNum) };
-    } else if (expr.name == "Bool") {
-      return { kind: "TLBBoolType" };
     } else if (expr.name == "MsgAddressInt") {
       return { kind: "TLBAddressType", addrType: "Internal" };
     } else if (expr.name == "MsgAddressExt") {
@@ -271,8 +280,14 @@ export function getType(
       return { kind: "TLBAddressType", addrType: "Any" };
     } else if (expr.name == "Bit") {
       return { kind: "TLBBitsType", bits: new TLBNumberExpr(1) };
-    } else if (expr.name == "Grams") {
+    } else if (expr.name == "Grams" || expr.name == "Coins") {
       return { kind: "TLBCoinsType" };
+    } else if (expr.name == "Bool") {
+      return { kind: "TLBBoolType", value: undefined };
+    } else if (expr.name == "BoolFalse") {
+      return { kind: "TLBBoolType", value: false };
+    } else if (expr.name == "BoolTrue") {
+      return { kind: "TLBBoolType", value: true };
     } else {
       if (constructor.variablesMap.get(expr.name)?.type == "#") {
         return {
