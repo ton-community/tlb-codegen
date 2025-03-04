@@ -1,5 +1,15 @@
 tmpa$_ a:# b:# = Simple;
 
+a$_ {Arg:Type} arg:Arg = TypedArg Arg;
+a$_ x:(TypedArg Simple) = TypedArgUser;
+
+a$_ {Arg:Type} {n:#} arg:Arg c:(## n) = ParamAndTypedArg n Arg;
+a$_ x:(ParamAndTypedArg 5 Simple) = ParamAndTypedArgUser; 
+
+_ x:Simple y:Simple = TwoSimples;
+
+_ one_maybe:(Maybe Simple) second_maybe:(Maybe Simple) = TwoMaybes;
+
 bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
 bool_true$1 b:# = TwoConstructors; 
 
@@ -146,6 +156,8 @@ _ src:MsgAddressInt = AddressUser;
 _ src:MsgAddressExt = ExtAddressUser;
 _ src:MsgAddress = AnyAddressUser;
 
+_ inside:AddressUser = InsideAddressUser;
+
 bit$_ (## 1) = Bit;
 a$_ b:Bit = BitUser;
 
@@ -182,3 +194,11 @@ ahme_root$1 {n:#} {X:Type} {Y:Type} root:^(HashmapAug n X Y)
   extra:Y = HashmapAugE n X Y;
 
 a$_ x:(HashmapAugE 16 Grams FixedIntParam) = HashmapAugEUser;
+
+message$_ {X:Type} body:(Either X ^X) = Message X;
+  
+_ (Message Any) = MessageAny;
+
+_ x:^FixedIntParam = ShardState;
+a$_ {X:Type} a:^X = InsideCell X;
+a$_ inside_cell:^(InsideCell ShardState) = InsideCellUser;

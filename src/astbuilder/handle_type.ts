@@ -278,13 +278,14 @@ export function getType(
         return {
           kind: "TLBExprMathType",
           expr: getCalculatedExpression(new TLBVarExpr(expr.name), constructor),
+          initialExpr: new TLBVarExpr(expr.name),
         };
       } else {
         return { kind: "TLBNamedType", name: expr.name, arguments: [] };
       }
     }
   } else if (expr instanceof NumberExpr) {
-    return { kind: "TLBExprMathType", expr: new TLBNumberExpr(expr.num) };
+    return { kind: "TLBExprMathType", expr: new TLBNumberExpr(expr.num), initialExpr: new TLBNumberExpr(expr.num) };
   } else if (expr instanceof NegateExpr && expr.expr instanceof NameExpr) {
     return { kind: "TLBNegatedType", variableName: expr.expr.name };
   } else if (expr instanceof CellRefExpr) {
@@ -309,6 +310,7 @@ export function getType(
       return {
         kind: "TLBExprMathType",
         expr: getCalculatedExpression(convertToMathExpr(expr), constructor),
+        initialExpr: convertToMathExpr(expr),
       };
     }
   } else if (expr instanceof CondExpr) {

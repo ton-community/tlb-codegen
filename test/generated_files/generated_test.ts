@@ -19,6 +19,52 @@ export interface Simple {
     readonly b: number;
 }
 
+// a$_ {Arg:Type} arg:Arg = TypedArg Arg;
+
+export interface TypedArg<Arg> {
+    readonly kind: 'TypedArg';
+    readonly arg: Arg;
+}
+
+// a$_ x:(TypedArg Simple) = TypedArgUser;
+
+export interface TypedArgUser {
+    readonly kind: 'TypedArgUser';
+    readonly x: TypedArg<Simple>;
+}
+
+// a$_ {Arg:Type} {n:#} arg:Arg c:(## n) = ParamAndTypedArg n Arg;
+
+export interface ParamAndTypedArg<Arg> {
+    readonly kind: 'ParamAndTypedArg';
+    readonly n: number;
+    readonly arg: Arg;
+    readonly c: bigint;
+}
+
+// a$_ x:(ParamAndTypedArg 5 Simple) = ParamAndTypedArgUser;
+
+export interface ParamAndTypedArgUser {
+    readonly kind: 'ParamAndTypedArgUser';
+    readonly x: ParamAndTypedArg<Simple>;
+}
+
+// _ x:Simple y:Simple = TwoSimples;
+
+export interface TwoSimples {
+    readonly kind: 'TwoSimples';
+    readonly x: Simple;
+    readonly y: Simple;
+}
+
+// _ one_maybe:(Maybe Simple) second_maybe:(Maybe Simple) = TwoMaybes;
+
+export interface TwoMaybes {
+    readonly kind: 'TwoMaybes';
+    readonly one_maybe: Maybe<Simple>;
+    readonly second_maybe: Maybe<Simple>;
+}
+
 // bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
 
 // bool_true$1 b:# = TwoConstructors;
@@ -676,6 +722,13 @@ export interface AnyAddressUser {
     readonly src: Address | ExternalAddress | null;
 }
 
+// _ inside:AddressUser = InsideAddressUser;
+
+export interface InsideAddressUser {
+    readonly kind: 'InsideAddressUser';
+    readonly inside: AddressUser;
+}
+
 // a$_ b:Bit = BitUser;
 
 export interface BitUser {
@@ -807,6 +860,41 @@ export interface HashmapAugEUser {
     readonly x: Dictionary<number, {value: bigint, extra: FixedIntParam}>;
 }
 
+// message$_ {X:Type} body:(Either X ^X) = Message X;
+
+export interface Message<X> {
+    readonly kind: 'Message';
+    readonly body: Either<X, X>;
+}
+
+// _ (Message Any) = MessageAny;
+
+export interface MessageAny {
+    readonly kind: 'MessageAny';
+    readonly anon0: Message<Cell>;
+}
+
+// _ x:^FixedIntParam = ShardState;
+
+export interface ShardState {
+    readonly kind: 'ShardState';
+    readonly x: FixedIntParam;
+}
+
+// a$_ {X:Type} a:^X = InsideCell X;
+
+export interface InsideCell<X> {
+    readonly kind: 'InsideCell';
+    readonly a: X;
+}
+
+// a$_ inside_cell:^(InsideCell ShardState) = InsideCellUser;
+
+export interface InsideCellUser {
+    readonly kind: 'InsideCellUser';
+    readonly inside_cell: InsideCell<ShardState>;
+}
+
 // tmpa$_ a:# b:# = Simple;
 
 export function loadSimple(slice: Slice): Simple {
@@ -824,6 +912,124 @@ export function storeSimple(simple: Simple): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(simple.a, 32);
         builder.storeUint(simple.b, 32);
+    })
+
+}
+
+// a$_ {Arg:Type} arg:Arg = TypedArg Arg;
+
+export function loadTypedArg<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): TypedArg<Arg> {
+    let arg: Arg = loadArg(slice);
+    return {
+        kind: 'TypedArg',
+        arg: arg,
+    }
+
+}
+
+export function storeTypedArg<Arg>(typedArg: TypedArg<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeArg(typedArg.arg)(builder);
+    })
+
+}
+
+// a$_ x:(TypedArg Simple) = TypedArgUser;
+
+export function loadTypedArgUser(slice: Slice): TypedArgUser {
+    let x: TypedArg<Simple> = loadTypedArg<Simple>(slice, loadSimple);
+    return {
+        kind: 'TypedArgUser',
+        x: x,
+    }
+
+}
+
+export function storeTypedArgUser(typedArgUser: TypedArgUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeTypedArg<Simple>(typedArgUser.x, storeSimple)(builder);
+    })
+
+}
+
+// a$_ {Arg:Type} {n:#} arg:Arg c:(## n) = ParamAndTypedArg n Arg;
+
+export function loadParamAndTypedArg<Arg>(slice: Slice, n: number, loadArg: (slice: Slice) => Arg): ParamAndTypedArg<Arg> {
+    let arg: Arg = loadArg(slice);
+    let c: bigint = slice.loadUintBig(n);
+    return {
+        kind: 'ParamAndTypedArg',
+        n: n,
+        arg: arg,
+        c: c,
+    }
+
+}
+
+export function storeParamAndTypedArg<Arg>(paramAndTypedArg: ParamAndTypedArg<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeArg(paramAndTypedArg.arg)(builder);
+        builder.storeUint(paramAndTypedArg.c, paramAndTypedArg.n);
+    })
+
+}
+
+// a$_ x:(ParamAndTypedArg 5 Simple) = ParamAndTypedArgUser;
+
+export function loadParamAndTypedArgUser(slice: Slice): ParamAndTypedArgUser {
+    let x: ParamAndTypedArg<Simple> = loadParamAndTypedArg<Simple>(slice, 5, loadSimple);
+    return {
+        kind: 'ParamAndTypedArgUser',
+        x: x,
+    }
+
+}
+
+export function storeParamAndTypedArgUser(paramAndTypedArgUser: ParamAndTypedArgUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeParamAndTypedArg<Simple>(paramAndTypedArgUser.x, storeSimple)(builder);
+    })
+
+}
+
+// _ x:Simple y:Simple = TwoSimples;
+
+export function loadTwoSimples(slice: Slice): TwoSimples {
+    let x: Simple = loadSimple(slice);
+    let y: Simple = loadSimple(slice);
+    return {
+        kind: 'TwoSimples',
+        x: x,
+        y: y,
+    }
+
+}
+
+export function storeTwoSimples(twoSimples: TwoSimples): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeSimple(twoSimples.x)(builder);
+        storeSimple(twoSimples.y)(builder);
+    })
+
+}
+
+// _ one_maybe:(Maybe Simple) second_maybe:(Maybe Simple) = TwoMaybes;
+
+export function loadTwoMaybes(slice: Slice): TwoMaybes {
+    let one_maybe: Maybe<Simple> = loadMaybe<Simple>(slice, loadSimple);
+    let second_maybe: Maybe<Simple> = loadMaybe<Simple>(slice, loadSimple);
+    return {
+        kind: 'TwoMaybes',
+        one_maybe: one_maybe,
+        second_maybe: second_maybe,
+    }
+
+}
+
+export function storeTwoMaybes(twoMaybes: TwoMaybes): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeMaybe<Simple>(twoMaybes.one_maybe, storeSimple)(builder);
+        storeMaybe<Simple>(twoMaybes.second_maybe, storeSimple)(builder);
     })
 
 }
@@ -2867,6 +3073,24 @@ export function storeAnyAddressUser(anyAddressUser: AnyAddressUser): (builder: B
 
 }
 
+// _ inside:AddressUser = InsideAddressUser;
+
+export function loadInsideAddressUser(slice: Slice): InsideAddressUser {
+    let inside: AddressUser = loadAddressUser(slice);
+    return {
+        kind: 'InsideAddressUser',
+        inside: inside,
+    }
+
+}
+
+export function storeInsideAddressUser(insideAddressUser: InsideAddressUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeAddressUser(insideAddressUser.inside)(builder);
+    })
+
+}
+
 // a$_ b:Bit = BitUser;
 
 export function loadBitUser(slice: Slice): BitUser {
@@ -3315,6 +3539,125 @@ export function storeHashmapAugEUser(hashmapAugEUser: HashmapAugEUser): (builder
         }),
             parse: () => { throw new Error('Not implemented') },
         });
+    })
+
+}
+
+// message$_ {X:Type} body:(Either X ^X) = Message X;
+
+export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X): Message<X> {
+    let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
+        let slice1 = slice.loadRef().beginParse(true);
+        return loadX(slice1)
+
+    }));
+    return {
+        kind: 'Message',
+        body: body,
+    }
+
+}
+
+export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeEither<X, X>(message.body, storeX, ((arg: X) => {
+            return ((builder: Builder) => {
+                let cell1 = beginCell();
+                storeX(arg)(cell1);
+                builder.storeRef(cell1);
+
+            })
+
+        }))(builder);
+    })
+
+}
+
+// _ (Message Any) = MessageAny;
+
+export function loadMessageAny(slice: Slice): MessageAny {
+    let anon0: Message<Cell> = loadMessage<Cell>(slice, ((slice: Slice) => {
+        return slice.asCell()
+
+    }));
+    return {
+        kind: 'MessageAny',
+        anon0: anon0,
+    }
+
+}
+
+export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        storeMessage<Cell>(messageAny.anon0, ((arg: Cell) => {
+            return ((builder: Builder) => {
+                builder.storeSlice(arg.beginParse(true));
+            })
+
+        }))(builder);
+    })
+
+}
+
+// _ x:^FixedIntParam = ShardState;
+
+export function loadShardState(slice: Slice): ShardState {
+    let slice1 = slice.loadRef().beginParse(true);
+    let x: FixedIntParam = loadFixedIntParam(slice1);
+    return {
+        kind: 'ShardState',
+        x: x,
+    }
+
+}
+
+export function storeShardState(shardState: ShardState): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        let cell1 = beginCell();
+        storeFixedIntParam(shardState.x)(cell1);
+        builder.storeRef(cell1);
+    })
+
+}
+
+// a$_ {X:Type} a:^X = InsideCell X;
+
+export function loadInsideCell<X>(slice: Slice, loadX: (slice: Slice) => X): InsideCell<X> {
+    let slice1 = slice.loadRef().beginParse(true);
+    let a: X = loadX(slice1);
+    return {
+        kind: 'InsideCell',
+        a: a,
+    }
+
+}
+
+export function storeInsideCell<X>(insideCell: InsideCell<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        let cell1 = beginCell();
+        storeX(insideCell.a)(cell1);
+        builder.storeRef(cell1);
+    })
+
+}
+
+// a$_ inside_cell:^(InsideCell ShardState) = InsideCellUser;
+
+export function loadInsideCellUser(slice: Slice): InsideCellUser {
+    let slice1 = slice.loadRef().beginParse(true);
+    let inside_cell: InsideCell<ShardState> = loadInsideCell<ShardState>(slice1, loadShardState);
+    return {
+        kind: 'InsideCellUser',
+        inside_cell: inside_cell,
+    }
+
+}
+
+export function storeInsideCellUser(insideCellUser: InsideCellUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        let cell1 = beginCell();
+        storeInsideCell<ShardState>(insideCellUser.inside_cell, storeShardState)(cell1);
+        builder.storeRef(cell1);
     })
 
 }
