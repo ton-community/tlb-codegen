@@ -20,8 +20,8 @@ export function getTLBCodeByAST(tree: Program, input: string) {
   return tlbCode;
 }
 
-export function getTLBCode(inputPath: string) {
-  const input = fs.readFileSync(
+export async function getTLBCode(inputPath: string) {
+  const input = await fs.readFile(
     inputPath,
     'utf-8',
   )
