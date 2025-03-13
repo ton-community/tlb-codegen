@@ -25,7 +25,7 @@ function getField(
     let result: TLBField = {
       name: "",
       anonymous: true,
-      fieldType: { kind: "TLBBoolType" },
+      fieldType: { kind: "TLBNamedType", name: "Bool", arguments: [] },
       subFields: [],
     };
     let currentFieldIndex = 0;
@@ -80,7 +80,7 @@ function getField(
           let result: TLBField = {
             name: fieldName,
             anonymous: true,
-            fieldType: { kind: "TLBBoolType" },
+            fieldType: { kind: "TLBNamedType", name: "Bool", arguments: [] },
             subFields: [subField],
           };
           return result;

@@ -9,7 +9,7 @@ import { fillConstructors } from "./astbuilder/fill_constructors";
 import { CodeBuilder } from "./generators/CodeBuilder";
 import { CodeGenerator, CommonGenDeclaration } from "./generators/generator";
 import { TypescriptGenerator } from "./generators/typescript/generator";
-import fs from 'fs'
+import fs from 'fs/promises'
 
 export function getTLBCodeByAST(tree: Program, input: string) {
   let oldTlbCode: TLBCodeBuild = { types: new Map<string, TLBTypeBuild>() };
@@ -20,8 +20,8 @@ export function getTLBCodeByAST(tree: Program, input: string) {
   return tlbCode;
 }
 
-export function getTLBCode(inputPath: string) {
-  const input = fs.readFileSync(
+export async function getTLBCode(inputPath: string) {
+  const input = await fs.readFile(
     inputPath,
     'utf-8',
   )
@@ -45,8 +45,11 @@ export function generateCodeByAST(tree: Program, input: string, getGenerator: (t
   codeGenerator.addTonCoreClassUsage("ExternalAddress");
   codeGenerator.addTonCoreClassUsage("Dictionary")
   codeGenerator.addTonCoreClassUsage("DictionaryValue")
+  codeGenerator.addTonCoreClassUsage("TupleItem");
+  codeGenerator.addTonCoreClassUsage("parseTuple");
+  codeGenerator.addTonCoreClassUsage("serializeTuple");
 
-  codeGenerator.addBitLenFunction();
+  codeGenerator.addBuiltinCode();
 
   let jsCodeDeclarations: CommonGenDeclaration[] = [];
   codeGenerator.jsCodeDeclarations.forEach((declaration) => {
@@ -75,25 +78,33 @@ export function generateCodeByAST(tree: Program, input: string, getGenerator: (t
   return generatedCode;
 }
 
-export function generateCodeWithGenerator(inputPath: string, outputPath: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator) {
-  const input = fs.readFileSync(
-    inputPath,
-    'utf-8',
-  )
-
-  const tree = ast(input)
-
-  fs.writeFile(outputPath, generateCodeByAST(tree, input, getGenerator), () => { });
-  console.log(`Generated code is saved to ${outputPath}`);
-}
-
-export function generateCode(inputPath: string, outputPath: string, resultLanguage: string) {
-  let getGenerator = (tlbCode: TLBCode) => {
+function getGenerator(resultLanguage: string) {
+  return (tlbCode: TLBCode) => {
     if (resultLanguage == 'typescript') {
       return new TypescriptGenerator(tlbCode)
     } else {
       throw new Error(`Result language ${resultLanguage} is not supported`)
     }
   }
-  generateCodeWithGenerator(inputPath, outputPath, getGenerator);
+}
+
+export async function generateCodeFromData(input: string, resultLanguage: string): Promise<string> {
+  const tree = ast(input)
+  return generateCodeByAST(tree, input, getGenerator(resultLanguage));
+}
+
+export async function generateCodeWithGenerator(inputPath: string, outputPath: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator) {
+  const input = await fs.readFile(
+    inputPath,
+    'utf-8',
+  )
+
+  const tree = ast(input)
+
+  await fs.writeFile(outputPath, generateCodeByAST(tree, input, getGenerator), {});
+  console.log(`Generated code is saved to ${outputPath}`);
+}
+
+export async function generateCode(inputPath: string, outputPath: string, resultLanguage: string) {
+  return generateCodeWithGenerator(inputPath, outputPath, getGenerator(resultLanguage));
 }
