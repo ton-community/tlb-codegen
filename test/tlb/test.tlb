@@ -251,3 +251,6 @@ bool_true$1 = BoolTrue;
 
 bool_false_user$_ x:BoolFalse = BoolFalseUser;
 bool_true_user$_ x:BoolTrue = BoolTrueUser;
+
+_ grams:Grams = Coins;
+_ coins:Coins = CoinsUser;

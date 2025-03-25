@@ -14,52 +14,18 @@ export function bitLen(n: number) {
     return n.toString(2).length;
 }
 
-export interface Bool {
-    readonly kind: 'Bool';
-    readonly value: boolean;
-}
-
-export function loadBool(slice: Slice): Bool {
-    if (slice.remainingBits >= 1) {
-        let value = slice.loadUint(1);
-        return {
-            kind: 'Bool',
-            value: value == 1
-        }
-
-    }
-    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
-}
-
-export function storeBool(bool: Bool): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeUint(bool.value ? 1: 0, 1);
-    })
-
-}
-
-
-
-export function loadBoolFalse(slice: Slice): Bool {
+export function loadBoolFalse(slice: Slice): boolean {
   if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
       slice.loadUint(1);
-      return {
-          kind: 'Bool',
-          value: false
-      }
-
+      return false;
   }
   throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
 }
 
-export function loadBoolTrue(slice: Slice): Bool {
+export function loadBoolTrue(slice: Slice): boolean {
   if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
       slice.loadUint(1);
-      return {
-          kind: 'Bool',
-          value: true
-      }
-
+      return true;
   }
   throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
 }
@@ -747,7 +713,7 @@ export interface RefCombinatorInRef {
 
 export interface BoolUser {
     readonly kind: 'BoolUser';
-    readonly a: Bool;
+    readonly a: boolean;
 }
 
 /*
@@ -1236,14 +1202,28 @@ export interface VMStackUser {
 
 export interface BoolFalseUser {
     readonly kind: 'BoolFalseUser';
-    readonly x: Bool;
+    readonly x: boolean;
 }
 
 // bool_true_user$_ x:BoolTrue = BoolTrueUser;
 
 export interface BoolTrueUser {
     readonly kind: 'BoolTrueUser';
-    readonly x: Bool;
+    readonly x: boolean;
+}
+
+// _ grams:Grams = Coins;
+
+export interface Coins {
+    readonly kind: 'Coins';
+    readonly grams: bigint;
+}
+
+// _ coins:Coins = CoinsUser;
+
+export interface CoinsUser {
+    readonly kind: 'CoinsUser';
+    readonly coins: bigint;
 }
 
 // tmpa$_ a:# b:# = Simple;
@@ -3325,7 +3305,7 @@ export function storeRefCombinatorInRef(refCombinatorInRef: RefCombinatorInRef):
 // _ a:Bool = BoolUser;
 
 export function loadBoolUser(slice: Slice): BoolUser {
-    let a: Bool = loadBool(slice);
+    let a: boolean = slice.loadBoolean();
     return {
         kind: 'BoolUser',
         a: a,
@@ -3335,7 +3315,7 @@ export function loadBoolUser(slice: Slice): BoolUser {
 
 export function storeBoolUser(boolUser: BoolUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeBool(boolUser.a)(builder);
+        builder.storeBit(boolUser.a);
     })
 
 }
@@ -4835,7 +4815,7 @@ export function storeVMStackUser(vMStackUser: VMStackUser): (builder: Builder) =
 // bool_false_user$_ x:BoolFalse = BoolFalseUser;
 
 export function loadBoolFalseUser(slice: Slice): BoolFalseUser {
-    let x: Bool = loadBoolFalse(slice);
+    let x: boolean = loadBoolFalse(slice);
     return {
         kind: 'BoolFalseUser',
         x: x,
@@ -4845,7 +4825,7 @@ export function loadBoolFalseUser(slice: Slice): BoolFalseUser {
 
 export function storeBoolFalseUser(boolFalseUser: BoolFalseUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeBool(boolFalseUser.x)(builder);
+        builder.storeBit(boolFalseUser.x);
     })
 
 }
@@ -4853,7 +4833,7 @@ export function storeBoolFalseUser(boolFalseUser: BoolFalseUser): (builder: Buil
 // bool_true_user$_ x:BoolTrue = BoolTrueUser;
 
 export function loadBoolTrueUser(slice: Slice): BoolTrueUser {
-    let x: Bool = loadBoolTrue(slice);
+    let x: boolean = loadBoolTrue(slice);
     return {
         kind: 'BoolTrueUser',
         x: x,
@@ -4863,7 +4843,43 @@ export function loadBoolTrueUser(slice: Slice): BoolTrueUser {
 
 export function storeBoolTrueUser(boolTrueUser: BoolTrueUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        storeBool(boolTrueUser.x)(builder);
+        builder.storeBit(boolTrueUser.x);
+    })
+
+}
+
+// _ grams:Grams = Coins;
+
+export function loadCoins(slice: Slice): Coins {
+    let grams: bigint = slice.loadCoins();
+    return {
+        kind: 'Coins',
+        grams: grams,
+    }
+
+}
+
+export function storeCoins(coins: Coins): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeCoins(coins.grams);
+    })
+
+}
+
+// _ coins:Coins = CoinsUser;
+
+export function loadCoinsUser(slice: Slice): CoinsUser {
+    let coins: bigint = slice.loadCoins();
+    return {
+        kind: 'CoinsUser',
+        coins: coins,
+    }
+
+}
+
+export function storeCoinsUser(coinsUser: CoinsUser): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeCoins(coinsUser.coins);
     })
 
 }
