@@ -128,30 +128,20 @@ export function getSubStructName(
 const POLYNOMIAL = -306674912;
 
 export function Crc32(bytes: Uint8Array, crc = 0xFFFFFFFF): number {
-  const table = getCrc32Table();
-
   let result = crc;
-  for (let i = 0; i < bytes.length; ++i) {
-    result = table[(result ^ bytes[i]) & 0xff] ^ (result >>> 8);
+  
+  for (let n = 0; n < bytes.length; n++) {
+    result ^= bytes[n];
+    
+    result = result & 1 ? (result >>> 1) ^ POLYNOMIAL : result >>> 1;
+    result = result & 1 ? (result >>> 1) ^ POLYNOMIAL : result >>> 1;
+    result = result & 1 ? (result >>> 1) ^ POLYNOMIAL : result >>> 1;
+    result = result & 1 ? (result >>> 1) ^ POLYNOMIAL : result >>> 1;
+    result = result & 1 ? (result >>> 1) ^ POLYNOMIAL : result >>> 1;
+    result = result & 1 ? (result >>> 1) ^ POLYNOMIAL : result >>> 1;
+    result = result & 1 ? (result >>> 1) ^ POLYNOMIAL : result >>> 1;
+    result = result & 1 ? (result >>> 1) ^ POLYNOMIAL : result >>> 1;
   }
-
+  
   return (result ^ -1) >>> 0;
-}
-
-let _crc32Table: Int32Array | undefined;
-
-function getCrc32Table(): Int32Array {
-  if (_crc32Table === undefined) {
-    _crc32Table = new Int32Array(256);
-
-    for (let i = 0; i < 256; i++) {
-      let r = i;
-      for (let bit = 8; bit > 0; --bit) {
-        r = ((r & 1) ? ((r >>> 1) ^ POLYNOMIAL) : (r >>> 1));
-      }
-      _crc32Table[i] = r;
-    }
-  }
-
-  return _crc32Table;
 }
