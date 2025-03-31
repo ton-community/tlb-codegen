@@ -445,25 +445,25 @@ function checkAndRemovePrimitives(
   let toDelete: string[] = [];
 
   let typesToDelete = new Map<string, string[]>();
-  typesToDelete.set("Bool", ["4702fd23", "f0e8d7f"]);
-  typesToDelete.set("MsgAddressInt", ["d7b672a", "6d593e8a"]);
-  typesToDelete.set("Bit", ["2873c6f5"])
-  typesToDelete.set("Grams", ["2f73160b"])
-  typesToDelete.set("MsgAddressExt", ["44163e94", "2e933043"])
-  typesToDelete.set("MsgAddress", ["606aa05e", "21d0382b"])
-  typesToDelete.set("VarUInteger", ["11d56c2e"])
-  typesToDelete.set("VarInteger", ["d466ed5"])
-  typesToDelete.set("HashmapE", ["32bae5cb", "28fa3979"])
-  typesToDelete.set("HashmapAugE", ["36820dce", "5f71ac75"])
-  typesToDelete.set("BoolTrue", ["943ebb5"])
-  typesToDelete.set("BoolFalse", ["1f5e497d"])
+  typesToDelete.set("Bool", ["b814e002", "e95dd78d"]);
+  typesToDelete.set("MsgAddressInt", ["9bb90082", "ca70d9f6"]);
+  typesToDelete.set("Bit", ["12acf7f6"])
+  typesToDelete.set("Grams", ["31468450"])
+  typesToDelete.set("MsgAddressExt", ["9ccb7139", "ee7b72a3"])
+  typesToDelete.set("MsgAddress", ["21d0382b", "e06aa05e"])
+  typesToDelete.set("VarUInteger", ["988e36b3"])
+  typesToDelete.set("VarInteger", ["225aaee0"])
+  typesToDelete.set("HashmapE", ["1cc05be9", "40b92161"])
+  typesToDelete.set("HashmapAugE", ["af55dae6", "e135d248"])
+  typesToDelete.set("BoolTrue", ["b5311773"])
+  typesToDelete.set("BoolFalse", ["f3214771"])
 
   typesToDelete.forEach((opCodesExpected: string[], typeName: string) => {
     let typeItems = typeDeclarations.get(typeName);
     if (typeItems) {
       let opCodesActual: string[] = [];
       typeItems.forEach((typeItem) => {
-        opCodesActual.push(calculateOpcode(typeItem.declaration, input));
+        opCodesActual.push(calculateTag(typeItem.declaration));
       });
       if (!opCodeSetsEqual(opCodesExpected, opCodesActual)) {
         throw new Error("Bool primitive type is not correct in scheme");
@@ -558,24 +558,6 @@ function convertVariableToReadonly(tlbVariable: TLBVariableBuild): TLBVariable {
     tlbVariable.deriveExpr,
     tlbVariable.initialExpr
   );
-}
-function calculateOpcode(declaration: Declaration, input: string[]): string {
-  let scheme = getStringDeclaration(declaration, input);
-  let constructor = scheme.substring(0, scheme.indexOf(" "));
-  const rest = scheme.substring(scheme.indexOf(" "));
-  if (constructor.includes("#")) {
-    constructor = constructor.substring(0, constructor.indexOf("#"));
-  }
-  scheme =
-    constructor +
-    " " +
-    rest
-      .replace(/\(/g, "")
-      .replace(/\)/g, "")
-      .replace(/\s+/g, " ")
-      .replace(/;/g, "")
-      .trim();
-  return (BigInt(crc32.str(scheme)) & BigInt(2147483647)).toString(16);
 }
 function getStringDeclaration(
   declaration: Declaration,
