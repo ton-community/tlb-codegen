@@ -18,7 +18,6 @@ import {
   NegateExpr,
   NumberExpr,
 } from "@ton-community/tlb-parser";
-import * as crc32 from "crc-32";
 import {
   TLBBinaryOp,
   TLBCode,
@@ -32,7 +31,7 @@ import {
   TLBVarExpr,
   TLBVariable,
 } from "../ast";
-import { findNotReservedName } from "../utils";
+import { Crc32, findNotReservedName } from "../utils";
 import { fillFields } from "./handle_field";
 import {
   TLBCodeBuild,
@@ -47,7 +46,6 @@ import {
   opCodeSetsEqual,
   reorganizeExpression,
 } from "./utils";
-import CRC32 from '@hqtsm/crc/crc-32/iso-hdlc';
 
 export function fillConstructors(
   declarations: Declaration[],
@@ -640,11 +638,8 @@ const TypeGuards = {
 function calculateTag(declaration: Declaration): string {
   const formattedDeclaration = formatDeclaration(declaration);
 
-  let crc = CRC32.init();
-  crc = CRC32.update(crc, new TextEncoder().encode(formattedDeclaration));
-  crc = CRC32.finalize(crc);
-
-  return BigInt(crc).toString(16);
+  const encoder = new TextEncoder();
+  return Crc32(encoder.encode(formattedDeclaration)).toString(16);
 }
 
 function isImplicitOrConstraint(field: FieldDefinition): boolean {
