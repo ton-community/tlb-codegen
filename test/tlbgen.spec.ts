@@ -1,16 +1,16 @@
 import { Address, BitString, Builder, Cell, Dictionary, ExternalAddress, Slice, Tuple, TupleItemInt, beginCell, parseTuple, serializeTuple } from '@ton/core';
 import { describe, expect, test } from '@jest/globals';
 import { loadBlock, loadHashmap, storeBlock, storeHashmap } from './generated_files/generated_block';
-import { AddressUser, AnonymousData, AnyAddressUser, BitLenArg, BitLenArgUser, BitSelection, BitUser, BoolUser, CellTypedField, CellsSimple, CheckCrc32, CheckKeyword, CombArgCellRefUser, ComplexTypedField, ConditionalField, ConditionalRef, ConstructorOrder, DollarTag, EmptyTag, EqualityExpression, ExprArgUser, ExtAddressUser, FalseAnonField, FixedIntParam, GramsUser, HashmapAugEUser, HashmapEUser, HashmapExprKeyUser, HashmapOneCombUser, HashmapTPCell, HashmapVUIUser, HashmapVarKeyUser, ImplicitCondition, IntBitsOutside, IntBitsParametrizedOutside, LessThan, LoadFromNegationOutsideExpr, ManyComb, MathExprAsCombArg, MultipleEmptyConstructor, NegationFromImplicit, OneComb, ParamConst, ParamDifNames, ParamDifNamesUser, ParamNamedArgInSecondConstr, RefCombinatorAny, RefCombinatorInRef, SharpConstructor, SharpTag, Simple, True, TupleCheck, TwoConstructors, TypedField, TypedParam, Unary, UnaryUserCheckOrder, VMStackUser, VarIntegerUser, VarUIntegerUser, loadAddressUser, loadAnonymousData, loadAnyAddressUser, loadBitLenArg, loadBitLenArgUser, loadBitSelection, loadBitUser, loadBoolUser, loadCellTypedField, loadCellsSimple, loadCheckCrc32, loadCheckKeyword, loadCombArgCellRefUser, loadComplexTypedField, loadConditionalField, loadConditionalRef, loadConstructorOrder, loadDollarTag, loadEmptyTag, loadEqualityExpression, loadExprArgUser, loadExtAddressUser, loadFalseAnonField, loadGramsUser, loadHashmapAugEUser, loadHashmapEUser, loadHashmapExprKeyUser, loadHashmapOneCombUser, loadHashmapTPCell, loadHashmapVUIUser, loadHashmapVarKeyUser, loadImplicitCondition, loadIntBitsOutside, loadIntBitsParametrizedOutside, loadLessThan, loadLoadFromNegationOutsideExpr, loadManyComb, loadMathExprAsCombArg, loadMultipleEmptyConstructor, loadNegationFromImplicit, loadParamConst, loadParamDifNames, loadParamDifNamesUser, loadParamNamedArgInSecondConstr, loadRefCombinatorAny, loadRefCombinatorInRef, loadSharpConstructor, loadSharpTag, loadSimple, loadTrue, loadTupleCheck, loadTwoConstructors, loadTypedField, loadTypedParam, loadUnary, loadUnaryUserCheckOrder, loadVMStackUser, loadVarIntegerUser, loadVarUIntegerUser, loadVmStack, loadVmStackList, storeAddressUser, storeAnonymousData, storeAnyAddressUser, storeBitLenArg, storeBitLenArgUser, storeBitSelection, storeBitUser, storeBoolUser, storeCellTypedField, storeCellsSimple, storeCheckCrc32, storeCheckKeyword, storeCombArgCellRefUser, storeComplexTypedField, storeConditionalField, storeConditionalRef, storeConstructorOrder, storeDollarTag, storeEmptyTag, storeEqualityExpression, storeExprArgUser, storeExtAddressUser, storeFalseAnonField, storeGramsUser, storeHashmapAugEUser, storeHashmapEUser, storeHashmapExprKeyUser, storeHashmapOneCombUser, storeHashmapTPCell, storeHashmapVUIUser, storeHashmapVarKeyUser, storeImplicitCondition, storeIntBitsOutside, storeIntBitsParametrizedOutside, storeLessThan, storeLoadFromNegationOutsideExpr, storeManyComb, storeMathExprAsCombArg, storeMultipleEmptyConstructor, storeNegationFromImplicit, storeParamConst, storeParamDifNames, storeParamDifNamesUser, storeParamNamedArgInSecondConstr, storeRefCombinatorAny, storeRefCombinatorInRef, storeSharpConstructor, storeSharpTag, storeSimple, storeTrue, storeTupleCheck, storeTwoConstructors, storeTypedField, storeTypedParam, storeUnary, storeUnaryUserCheckOrder, storeVMStackUser, storeVarIntegerUser, storeVarUIntegerUser, storeVmStack, storeVmStackList } from './generated_files/generated_test';
+import { AddressUser, AnonymousData, AnyAddressUser, loadVmStackValue, storeVmStackValue, BitLenArg, BitLenArgUser, BitSelection, BitUser, BoolUser, CellTypedField, CellsSimple, CheckCrc32, CheckKeyword, CombArgCellRefUser, ComplexTypedField, ConditionalField, ConditionalRef, ConstructorOrder, DollarTag, EmptyTag, EqualityExpression, ExprArgUser, ExtAddressUser, FalseAnonField, FixedIntParam, GramsUser, HashmapAugEUser, HashmapEUser, HashmapExprKeyUser, HashmapOneCombUser, HashmapTPCell, HashmapVUIUser, HashmapVarKeyUser, ImplicitCondition, IntBitsOutside, IntBitsParametrizedOutside, LessThan, LoadFromNegationOutsideExpr, ManyComb, MathExprAsCombArg, MultipleEmptyConstructor, NegationFromImplicit, OneComb, ParamConst, ParamDifNames, ParamDifNamesUser, ParamNamedArgInSecondConstr, RefCombinatorAny, RefCombinatorInRef, SharpConstructor, SharpTag, Simple, True, TupleCheck, TwoConstructors, TypedField, TypedParam, Unary, UnaryUserCheckOrder, VMStackUser, VarIntegerUser, VarUIntegerUser, VmStackValue, loadAddressUser, loadAnonymousData, loadAnyAddressUser, loadBitLenArg, loadBitLenArgUser, loadBitSelection, loadBitUser, loadBoolUser, loadCellTypedField, loadCellsSimple, loadCheckCrc32, loadCheckKeyword, loadCombArgCellRefUser, loadComplexTypedField, loadConditionalField, loadConditionalRef, loadConstructorOrder, loadDollarTag, loadEmptyTag, loadEqualityExpression, loadExprArgUser, loadExtAddressUser, loadFalseAnonField, loadGramsUser, loadHashmapAugEUser, loadHashmapEUser, loadHashmapExprKeyUser, loadHashmapOneCombUser, loadHashmapTPCell, loadHashmapVUIUser, loadHashmapVarKeyUser, loadImplicitCondition, loadIntBitsOutside, loadIntBitsParametrizedOutside, loadLessThan, loadLoadFromNegationOutsideExpr, loadManyComb, loadMathExprAsCombArg, loadMultipleEmptyConstructor, loadNegationFromImplicit, loadParamConst, loadParamDifNames, loadParamDifNamesUser, loadParamNamedArgInSecondConstr, loadRefCombinatorAny, loadRefCombinatorInRef, loadSharpConstructor, loadSharpTag, loadSimple, loadTrue, loadTupleCheck, loadTwoConstructors, loadTypedField, loadTypedParam, loadUnary, loadUnaryUserCheckOrder, loadVMStackUser, loadVarIntegerUser, loadVarUIntegerUser, loadVmStack, loadVmStackList, storeAddressUser, storeAnonymousData, storeAnyAddressUser, storeBitLenArg, storeBitLenArgUser, storeBitSelection, storeBitUser, storeBoolUser, storeCellTypedField, storeCellsSimple, storeCheckCrc32, storeCheckKeyword, storeCombArgCellRefUser, storeComplexTypedField, storeConditionalField, storeConditionalRef, storeConstructorOrder, storeDollarTag, storeEmptyTag, storeEqualityExpression, storeExprArgUser, storeExtAddressUser, storeFalseAnonField, storeGramsUser, storeHashmapAugEUser, storeHashmapEUser, storeHashmapExprKeyUser, storeHashmapOneCombUser, storeHashmapTPCell, storeHashmapVUIUser, storeHashmapVarKeyUser, storeImplicitCondition, storeIntBitsOutside, storeIntBitsParametrizedOutside, storeLessThan, storeLoadFromNegationOutsideExpr, storeManyComb, storeMathExprAsCombArg, storeMultipleEmptyConstructor, storeNegationFromImplicit, storeParamConst, storeParamDifNames, storeParamDifNamesUser, storeParamNamedArgInSecondConstr, storeRefCombinatorAny, storeRefCombinatorInRef, storeSharpConstructor, storeSharpTag, storeSimple, storeTrue, storeTupleCheck, storeTwoConstructors, storeTypedField, storeTypedParam, storeUnary, storeUnaryUserCheckOrder, storeVMStackUser, storeVarIntegerUser, storeVarUIntegerUser, storeVmStack, storeVmStackList, CheckCrc32_a, CheckCrc32_b, TagCalculatorExample, storeTagCalculatorExample, loadTagCalculatorExample } from './generated_files/generated_test';
 
 function isPrimitive(input: object) {
     if (input == null) {
-      // This is here to correctly handle document.all.
-      return input === null || input === undefined;
+        // This is here to correctly handle document.all.
+        return input === null || input === undefined;
     }
     const type = typeof input;
     return type !== "object" && type !== "function";
-  }
+}
 
 function deepEqual(object1: any, object2: any): boolean {
     if (isPrimitive(object1) && isPrimitive(object2)) {
@@ -184,24 +184,24 @@ describe('Generating tlb code', () => {
     test('Primitives', () => {
         expect.hasAssertions()
 
-        let boolUserTrue: BoolUser = { kind: 'BoolUser', a: {'kind': 'Bool', 'value': true} }
+        let boolUserTrue: BoolUser = { kind: 'BoolUser', a: { 'kind': 'Bool', 'value': true } }
         checkSameOnStoreLoad(boolUserTrue, loadBoolUser, storeBoolUser);
-        let boolUserFalse: BoolUser = { kind: 'BoolUser', a: {'kind': 'Bool', 'value': false} }
+        let boolUserFalse: BoolUser = { kind: 'BoolUser', a: { 'kind': 'Bool', 'value': false } }
         checkSameOnStoreLoad(boolUserFalse, loadBoolUser, storeBoolUser);
 
         let expectedAddressUser: AddressUser = { kind: 'AddressUser', src: Address.parseFriendly('EQBmzW4wYlFW0tiBgj5sP1CgSlLdYs-VpjPWM7oPYPYWQEdT').address }
         checkSameOnStoreLoad(expectedAddressUser, loadAddressUser, storeAddressUser)
 
-        let bitUser: BitUser = { kind: 'BitUser', b: false } 
+        let bitUser: BitUser = { kind: 'BitUser', b: false }
         checkSameOnStoreLoad(bitUser, loadBitUser, storeBitUser);
 
         let gramsUser: GramsUser = { kind: 'GramsUser', g: BigInt(100000) }
         checkSameOnStoreLoad(gramsUser, loadGramsUser, storeGramsUser)
 
-        let extAddressUser: ExtAddressUser = { kind: 'ExtAddressUser', src: new ExternalAddress(BigInt(5623048054), 48)  }
+        let extAddressUser: ExtAddressUser = { kind: 'ExtAddressUser', src: new ExternalAddress(BigInt(5623048054), 48) }
         checkSameOnStoreLoad(extAddressUser, loadExtAddressUser, storeExtAddressUser)
 
-        let extAddressUserNull: ExtAddressUser = { kind: 'ExtAddressUser', src: null  }
+        let extAddressUserNull: ExtAddressUser = { kind: 'ExtAddressUser', src: null }
         checkSameOnStoreLoad(extAddressUserNull, loadExtAddressUser, storeExtAddressUser)
 
         let anyAddressUserInt: AnyAddressUser = { kind: 'AnyAddressUser', src: Address.parseFriendly('EQBmzW4wYlFW0tiBgj5sP1CgSlLdYs-VpjPWM7oPYPYWQEdT').address }
@@ -227,37 +227,37 @@ describe('Generating tlb code', () => {
         checkSameOnStoreLoad(hashmapEUser, loadHashmapEUser, storeHashmapEUser);
 
         let vuiDict: Dictionary<bigint, VarUIntegerUser> = Dictionary.empty()
-        vuiDict.set(BigInt(6), {kind: 'VarUIntegerUser', v: BigInt(5)})      
-        vuiDict.set(BigInt(7), {kind: 'VarUIntegerUser', v: BigInt(3)})      
-        let hashmapVUIUser: HashmapVUIUser = { kind: 'HashmapVUIUser', 'x': vuiDict}
+        vuiDict.set(BigInt(6), { kind: 'VarUIntegerUser', v: BigInt(5) })
+        vuiDict.set(BigInt(7), { kind: 'VarUIntegerUser', v: BigInt(3) })
+        let hashmapVUIUser: HashmapVUIUser = { kind: 'HashmapVUIUser', 'x': vuiDict }
         checkSameOnStoreLoad(hashmapVUIUser, loadHashmapVUIUser, storeHashmapVUIUser);
 
         let tpcDict: Dictionary<bigint, TypedParam> = Dictionary.empty()
-        tpcDict.set(BigInt(5), {kind: 'TypedParam', x: {kind: 'Maybe_just', value: {kind: 'SharpConstructor', c: 3, y: {kind: 'FixedIntParam', y: 4}}}})
-        tpcDict.set(BigInt(3), {kind: 'TypedParam', x: {kind: 'Maybe_just', value: {kind: 'SharpConstructor', c: 9, y: {kind: 'FixedIntParam', y: 8}}}})
-        let hashmapTPCell: HashmapTPCell = { kind: 'HashmapTPCell', x: tpcDict}
+        tpcDict.set(BigInt(5), { kind: 'TypedParam', x: { kind: 'Maybe_just', value: { kind: 'SharpConstructor', c: 3, y: { kind: 'FixedIntParam', y: 4 } } } })
+        tpcDict.set(BigInt(3), { kind: 'TypedParam', x: { kind: 'Maybe_just', value: { kind: 'SharpConstructor', c: 9, y: { kind: 'FixedIntParam', y: 8 } } } })
+        let hashmapTPCell: HashmapTPCell = { kind: 'HashmapTPCell', x: tpcDict }
         checkSameOnStoreLoad(hashmapTPCell, loadHashmapTPCell, storeHashmapTPCell);
 
         let vkDict: Dictionary<bigint, number> = Dictionary.empty()
-        vkDict.set(BigInt(3), 6)      
-        vkDict.set(BigInt(7), 9)      
-        let hashmapVarKeyUser: HashmapVarKeyUser = { kind: 'HashmapVarKeyUser', x: {kind: 'HashmapVarKey', n: 5, x: vkDict }}
+        vkDict.set(BigInt(3), 6)
+        vkDict.set(BigInt(7), 9)
+        let hashmapVarKeyUser: HashmapVarKeyUser = { kind: 'HashmapVarKeyUser', x: { kind: 'HashmapVarKey', n: 5, x: vkDict } }
         checkSameOnStoreLoad(hashmapVarKeyUser, loadHashmapVarKeyUser, storeHashmapVarKeyUser);
-    
-        let hashmapExprKeyUser: HashmapExprKeyUser = { kind: 'HashmapExprKeyUser', x: {kind: 'HashmapExprKey', n: 5, x: vkDict }}
+
+        let hashmapExprKeyUser: HashmapExprKeyUser = { kind: 'HashmapExprKeyUser', x: { kind: 'HashmapExprKey', n: 5, x: vkDict } }
         checkSameOnStoreLoad(hashmapExprKeyUser, loadHashmapExprKeyUser, storeHashmapExprKeyUser);
 
         let ocuDict: Dictionary<bigint, OneComb<number>> = Dictionary.empty()
         ocuDict.set(BigInt(1), { kind: 'OneComb', t: 3, x: 6 })
         ocuDict.set(BigInt(19), { kind: 'OneComb', t: 5, x: 4 })
-        let hashmapOneCombUser: HashmapOneCombUser = { kind: 'HashmapOneCombUser', x: {kind: 'HashmapOneComb', x: ocuDict }}
+        let hashmapOneCombUser: HashmapOneCombUser = { kind: 'HashmapOneCombUser', x: { kind: 'HashmapOneComb', x: ocuDict } }
         checkSameOnStoreLoad(hashmapOneCombUser, loadHashmapOneCombUser, storeHashmapOneCombUser);
 
-        let dictAug: Dictionary<number, {value: bigint, extra: FixedIntParam }> = Dictionary.empty()
+        let dictAug: Dictionary<number, { value: bigint, extra: FixedIntParam }> = Dictionary.empty()
         dictAug.set(5, { value: BigInt(4), extra: { kind: 'FixedIntParam', y: 7 } })
         dictAug.set(6, { value: BigInt(3), extra: { kind: 'FixedIntParam', y: 9 } })
         dictAug.set(5, { value: BigInt(8), extra: { kind: 'FixedIntParam', y: 11 } })
-        let hashmapAugEUser: HashmapAugEUser = { kind: 'HashmapAugEUser', x:  dictAug }
+        let hashmapAugEUser: HashmapAugEUser = { kind: 'HashmapAugEUser', x: dictAug }
         checkSameOnStoreLoad(hashmapAugEUser, loadHashmapAugEUser, storeHashmapAugEUser)
     })
 
@@ -431,7 +431,7 @@ describe('Generating tlb code', () => {
         let loadFromNegationOutsideExpr: LoadFromNegationOutsideExpr = { kind: 'LoadFromNegationOutsideExpr', prev_seq_no: 3, seq_no: 4 }
         checkSameOnStoreLoad(loadFromNegationOutsideExpr, loadLoadFromNegationOutsideExpr, storeLoadFromNegationOutsideExpr)
 
-        let tupleVMStack: VMStackUser = { kind: 'VMStackUser', t: [ {'type': 'int', value: BigInt(1)}, {'type': 'int', value: BigInt(2)}, {'type': 'int', value: BigInt(3)} ] } 
+        let tupleVMStack: VMStackUser = { kind: 'VMStackUser', t: [{ 'type': 'int', value: BigInt(1) }, { 'type': 'int', value: BigInt(2) }, { 'type': 'int', value: BigInt(3) }] }
         checkSameOnStoreLoad(tupleVMStack, loadVMStackUser, storeVMStackUser);
     })
 
@@ -530,4 +530,80 @@ describe('Generating tlb code', () => {
 
         checkSameOnStoreLoad(blk2, loadBlock, storeBlock)
     })
+
+    test('Trailing underscore tags', () => {
+        expect.hasAssertions()
+
+        let vmStackValue: VmStackValue = { kind: 'VmStackValue_vm_stk_int', value: BigInt(12345) }
+        checkSameOnStoreLoad(vmStackValue, loadVmStackValue, storeVmStackValue);
+
+        let vmStackValueCell = beginCell();
+        storeVmStackValue(vmStackValue)(vmStackValueCell);
+        let vmStackValueSlice = vmStackValueCell.endCell().beginParse();
+
+        expect(vmStackValueSlice.preloadUint(15)).toBe(0x0100);
+
+        vmStackValueSlice.loadUint(15);
+        const loadedValue = vmStackValueSlice.loadIntBig(257);
+        expect(loadedValue).toBe(BigInt(12345));
+    })
+
+    test('Correct tag calculation', () => {
+        const checkA: CheckCrc32 = { kind: 'CheckCrc32_a', a: 42 };
+        const checkB: CheckCrc32 = { kind: 'CheckCrc32_b', b: 123, c: 456 };
+
+        const cellA = beginCell();
+        storeCheckCrc32(checkA)(cellA);
+        const finalCellA = cellA.endCell();
+
+        const cellB = beginCell();
+        storeCheckCrc32(checkB)(cellB);
+        const finalCellB = cellB.endCell();
+
+        const deserializedA = loadCheckCrc32(finalCellA.beginParse());
+        const deserializedB = loadCheckCrc32(finalCellB.beginParse());
+
+        expect(deserializedA.kind).toBe(checkA.kind);
+        expect((deserializedA as CheckCrc32_a).a).toBe(checkA.a);
+
+        expect(deserializedB.kind).toBe(checkB.kind);
+        expect((deserializedB as CheckCrc32_b).b).toBe(checkB.b);
+        expect((deserializedB as CheckCrc32_b).c).toBe(checkB.c);
+
+
+        const sliceA = finalCellA.beginParse();
+        const sliceB = finalCellB.beginParse();
+
+        expect(sliceA.loadUint(32)).toBe(0x9d97e7a);
+        expect(sliceB.loadUint(32)).toBe(0xa842b3f0);
+    });
+
+    test('Correct tag calculation complex', () => {
+        const seqNo = 1999;
+        const seqNoSecond = 2000;
+
+        const tagCalculatorExample: TagCalculatorExample = {
+            kind: 'TagCalculatorExample',
+            prev_seq_no: 2 + seqNo + 2 - 2 - 1,
+            prev_seq_no_2: 100 + seqNoSecond * 8 * 7,
+            seq_no: 1999,
+            seq_no_2: 2000
+        };
+
+        const cell = beginCell();
+        storeTagCalculatorExample(tagCalculatorExample)(cell);
+        const finalCell = cell.endCell();
+
+        const deserializedCell = loadTagCalculatorExample(finalCell.beginParse());
+
+        expect(deserializedCell.kind).toBe(tagCalculatorExample.kind);
+        expect((deserializedCell as TagCalculatorExample).prev_seq_no).toBe(tagCalculatorExample.prev_seq_no);
+        expect((deserializedCell as TagCalculatorExample).prev_seq_no_2).toBe(tagCalculatorExample.prev_seq_no_2);
+        expect((deserializedCell as TagCalculatorExample).seq_no).toBe(tagCalculatorExample.seq_no);
+        expect((deserializedCell as TagCalculatorExample).seq_no_2).toBe(tagCalculatorExample.seq_no_2);
+
+        const slice = finalCell.beginParse();
+
+        expect(slice.loadUint(32)).toBe(0xa63f2977);
+    });
 })

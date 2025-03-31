@@ -657,7 +657,7 @@ const TypeGuards = {
 
 function calculateTag(declaration: Declaration): string {
   const formattedDeclaration = formatDeclaration(declaration);
-  
+
   let crc = CRC32.init();
   crc = CRC32.update(crc, new TextEncoder().encode(formattedDeclaration));
   crc = CRC32.finalize(crc);

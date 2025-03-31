@@ -251,3 +251,5 @@ bool_true$1 = BoolTrue;
 
 bool_false_user$_ x:BoolFalse = BoolFalseUser;
 bool_true_user$_ x:BoolTrue = BoolTrueUser;
+
+tag_calculator_example seq_no : #  seq_no_2 : # { prev_seq_no:  #    } { 2 + ~prev_seq_no +    1 = 2 + seq_no + 2 } { prev_seq_no_2    : # } { ~prev_seq_no_2 = 100 + seq_no_2  *  8   * 7}   =    TagCalculatorExample;

@@ -12936,7 +12936,7 @@ export function loadComplaintDescr(slice: Slice): ComplaintDescr {
         }
 
     }
-    if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x4737b0ca))) {
+    if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xc737b0ca))) {
         slice.loadUint(32);
         let slice1 = slice.loadRef().beginParse(true);
         let prod_info_old: ProducerInfo = loadProducerInfo(slice1);
@@ -12965,7 +12965,7 @@ export function storeComplaintDescr(complaintDescr: ComplaintDescr): (builder: B
     }
     if ((complaintDescr.kind == 'ComplaintDescr_no_blk_gen_diff')) {
         return ((builder: Builder) => {
-            builder.storeUint(0x4737b0ca, 32);
+            builder.storeUint(0xc737b0ca, 32);
             let cell1 = beginCell();
             storeProducerInfo(complaintDescr.prod_info_old)(cell1);
             builder.storeRef(cell1);
@@ -13103,8 +13103,8 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
         }
 
     }
-    if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x0201))) {
-        slice.loadUint(16);
+    if (((slice.remainingBits >= 15) && (slice.preloadUint(15) == 0x0100))) {
+        slice.loadUint(15);
         let value: bigint = slice.loadIntBig(257);
         return {
             kind: 'VmStackValue_vm_stk_int',
@@ -13187,7 +13187,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_int')) {
         return ((builder: Builder) => {
-            builder.storeUint(0x0201, 16);
+            builder.storeUint(0x0100, 15);
             builder.storeInt(vmStackValue.value, 257);
         })
 
