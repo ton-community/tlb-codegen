@@ -1246,6 +1246,16 @@ export interface BoolTrueUser {
     readonly x: Bool;
 }
 
+// tag_calculator_example seq_no : #  seq_no_2 : # { prev_seq_no:  #    } { 2 + ~prev_seq_no +    1 = 2 + seq_no + 2 } { prev_seq_no_2    : # } { ~prev_seq_no_2 = 100 + seq_no_2  *  8   * 7}   =    TagCalculatorExample;
+
+export interface TagCalculatorExample {
+    readonly kind: 'TagCalculatorExample';
+    readonly prev_seq_no: number;
+    readonly prev_seq_no_2: number;
+    readonly seq_no: number;
+    readonly seq_no_2: number;
+}
+
 // tmpa$_ a:# b:# = Simple;
 
 export function loadSimple(slice: Slice): Simple {
@@ -3131,8 +3141,8 @@ export function storeAnonymousData(anonymousData: AnonymousData): (builder: Buil
 // vm_stk_int#0201_ value:int257 = FalseAnonField;
 
 export function loadFalseAnonField(slice: Slice): FalseAnonField {
-    if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x0201))) {
-        slice.loadUint(16);
+    if (((slice.remainingBits >= 15) && (slice.preloadUint(15) == 0x0100))) {
+        slice.loadUint(15);
         let value: bigint = slice.loadIntBig(257);
         return {
             kind: 'FalseAnonField',
@@ -3145,7 +3155,7 @@ export function loadFalseAnonField(slice: Slice): FalseAnonField {
 
 export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeUint(0x0201, 16);
+        builder.storeUint(0x0100, 15);
         builder.storeInt(falseAnonField.value, 257);
     })
 
@@ -3209,7 +3219,7 @@ export function loadCheckCrc32(slice: Slice): CheckCrc32 {
         }
 
     }
-    if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x2842b3f0))) {
+    if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xa842b3f0))) {
         slice.loadUint(32);
         let b: number = slice.loadUint(32);
         let c: number = slice.loadUint(32);
@@ -3233,7 +3243,7 @@ export function storeCheckCrc32(checkCrc32: CheckCrc32): (builder: Builder) => v
     }
     if ((checkCrc32.kind == 'CheckCrc32_b')) {
         return ((builder: Builder) => {
-            builder.storeUint(0x2842b3f0, 32);
+            builder.storeUint(0xa842b3f0, 32);
             builder.storeUint(checkCrc32.b, 32);
             builder.storeUint(checkCrc32.c, 32);
         })
@@ -4048,8 +4058,8 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
         }
 
     }
-    if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x0201))) {
-        slice.loadUint(16);
+    if (((slice.remainingBits >= 15) && (slice.preloadUint(15) == 0x0100))) {
+        slice.loadUint(15);
         let value: bigint = slice.loadIntBig(257);
         return {
             kind: 'VmStackValue_vm_stk_int',
@@ -4132,7 +4142,7 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_int')) {
         return ((builder: Builder) => {
-            builder.storeUint(0x0201, 16);
+            builder.storeUint(0x0100, 15);
             builder.storeInt(vmStackValue.value, 257);
         })
 
@@ -4864,6 +4874,34 @@ export function loadBoolTrueUser(slice: Slice): BoolTrueUser {
 export function storeBoolTrueUser(boolTrueUser: BoolTrueUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeBool(boolTrueUser.x)(builder);
+    })
+
+}
+
+// tag_calculator_example seq_no : #  seq_no_2 : # { prev_seq_no:  #    } { 2 + ~prev_seq_no +    1 = 2 + seq_no + 2 } { prev_seq_no_2    : # } { ~prev_seq_no_2 = 100 + seq_no_2  *  8   * 7}   =    TagCalculatorExample;
+
+export function loadTagCalculatorExample(slice: Slice): TagCalculatorExample {
+    if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xa63f2977))) {
+        slice.loadUint(32);
+        let seq_no: number = slice.loadUint(32);
+        let seq_no_2: number = slice.loadUint(32);
+        return {
+            kind: 'TagCalculatorExample',
+            prev_seq_no: (((2 + (seq_no + 2)) - 2) - 1),
+            prev_seq_no_2: (100 + ((seq_no_2 * 8) * 7)),
+            seq_no: seq_no,
+            seq_no_2: seq_no_2,
+        }
+
+    }
+    throw new Error('Expected one of "TagCalculatorExample" in loading "TagCalculatorExample", but data does not satisfy any constructor');
+}
+
+export function storeTagCalculatorExample(tagCalculatorExample: TagCalculatorExample): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(0xa63f2977, 32);
+        builder.storeUint(tagCalculatorExample.seq_no, 32);
+        builder.storeUint(tagCalculatorExample.seq_no_2, 32);
     })
 
 }

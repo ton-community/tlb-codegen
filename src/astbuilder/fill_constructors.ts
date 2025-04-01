@@ -1,15 +1,23 @@
 import {
+  BuiltinOneArgExpr,
+  BuiltinZeroArgs,
+  CellRefExpr,
+  CombinatorExpr,
   CompareExpr,
+  CondExpr,
   Declaration,
+  Expression,
+  FieldAnonymousDef,
   FieldBuiltinDef,
   FieldCurlyExprDef,
+  FieldDefinition,
+  FieldExprDef,
   FieldNamedDef,
   MathExpr,
   NameExpr,
   NegateExpr,
   NumberExpr,
 } from "@ton-community/tlb-parser";
-import * as crc32 from "crc-32";
 import {
   TLBBinaryOp,
   TLBCode,
@@ -23,7 +31,7 @@ import {
   TLBVarExpr,
   TLBVariable,
 } from "../ast";
-import { findNotReservedName } from "../utils";
+import { Crc32, findNotReservedName } from "../utils";
 import { fillFields } from "./handle_field";
 import {
   TLBCodeBuild,
@@ -128,7 +136,7 @@ export function fillConstructors(
           } else {
             throw new Error(
               "Field not known before using (should be tagged as implicit): " +
-                element
+              element
             );
           }
         } else if (element instanceof MathExpr) {
@@ -382,10 +390,10 @@ function getConstructorTag(
     };
   }
   if (tag == null) {
-    let opCode = calculateOpcode(declaration, input);
+    let calculatedTag = calculateTag(declaration);
     return {
       bitLen: 32,
-      binary: "0x" + opCode,
+      binary: "0x" + calculatedTag,
     };
   }
   if (tag[0] == "$") {
@@ -395,9 +403,20 @@ function getConstructorTag(
     };
   }
   if (tag[0] == "#") {
+    const hasTrailingUnderscore = tag.endsWith("_");
+    const hexPart = tag.slice(1, hasTrailingUnderscore ? -1 : undefined);
+    if (hasTrailingUnderscore) {
+      const binary = parseInt(hexPart, 16).toString(2).padStart(hexPart.length * 4, '0');
+      const truncatedBinary = binary.slice(0, -1);
+      const truncatedHex = parseInt(truncatedBinary, 2).toString(16).padStart(Math.ceil(truncatedBinary.length / 4), '0');
+      return {
+        bitLen: truncatedBinary.length,
+        binary: "0x" + truncatedHex,
+      };
+    }
     return {
-      bitLen: (tag?.length - 1) * 4,
-      binary: "0x" + tag.slice(1),
+      bitLen: hexPart.length * 4,
+      binary: "0x" + hexPart,
     };
   }
   throw new Error("Unknown tag " + tag);
@@ -424,25 +443,25 @@ function checkAndRemovePrimitives(
   let toDelete: string[] = [];
 
   let typesToDelete = new Map<string, string[]>();
-  typesToDelete.set("Bool", ["4702fd23", "f0e8d7f"]);
-  typesToDelete.set("MsgAddressInt", ["d7b672a", "6d593e8a"]);
-  typesToDelete.set("Bit", ["2873c6f5"])
-  typesToDelete.set("Grams", ["2f73160b"])
-  typesToDelete.set("MsgAddressExt", ["44163e94", "2e933043"])
-  typesToDelete.set("MsgAddress", ["606aa05e", "21d0382b"])
-  typesToDelete.set("VarUInteger", ["11d56c2e"])
-  typesToDelete.set("VarInteger", ["d466ed5"])
-  typesToDelete.set("HashmapE", ["32bae5cb", "28fa3979"])
-  typesToDelete.set("HashmapAugE", ["36820dce", "5f71ac75"])
-  typesToDelete.set("BoolTrue", ["943ebb5"])
-  typesToDelete.set("BoolFalse", ["1f5e497d"])
+  typesToDelete.set("Bool", ["b814e002", "e95dd78d"]);
+  typesToDelete.set("MsgAddressInt", ["9bb90082", "ca70d9f6"]);
+  typesToDelete.set("Bit", ["12acf7f6"])
+  typesToDelete.set("Grams", ["31468450"])
+  typesToDelete.set("MsgAddressExt", ["9ccb7139", "ee7b72a3"])
+  typesToDelete.set("MsgAddress", ["21d0382b", "e06aa05e"])
+  typesToDelete.set("VarUInteger", ["988e36b3"])
+  typesToDelete.set("VarInteger", ["225aaee0"])
+  typesToDelete.set("HashmapE", ["1cc05be9", "40b92161"])
+  typesToDelete.set("HashmapAugE", ["af55dae6", "e135d248"])
+  typesToDelete.set("BoolTrue", ["b5311773"])
+  typesToDelete.set("BoolFalse", ["f3214771"])
 
   typesToDelete.forEach((opCodesExpected: string[], typeName: string) => {
     let typeItems = typeDeclarations.get(typeName);
     if (typeItems) {
       let opCodesActual: string[] = [];
       typeItems.forEach((typeItem) => {
-        opCodesActual.push(calculateOpcode(typeItem.declaration, input));
+        opCodesActual.push(calculateTag(typeItem.declaration));
       });
       if (!opCodeSetsEqual(opCodesExpected, opCodesActual)) {
         throw new Error("Bool primitive type is not correct in scheme");
@@ -538,24 +557,6 @@ function convertVariableToReadonly(tlbVariable: TLBVariableBuild): TLBVariable {
     tlbVariable.initialExpr
   );
 }
-function calculateOpcode(declaration: Declaration, input: string[]): string {
-  let scheme = getStringDeclaration(declaration, input);
-  let constructor = scheme.substring(0, scheme.indexOf(" "));
-  const rest = scheme.substring(scheme.indexOf(" "));
-  if (constructor.includes("#")) {
-    constructor = constructor.substring(0, constructor.indexOf("#"));
-  }
-  scheme =
-    constructor +
-    " " +
-    rest
-      .replace(/\(/g, "")
-      .replace(/\)/g, "")
-      .replace(/\s+/g, " ")
-      .replace(/;/g, "")
-      .trim();
-  return (BigInt(crc32.str(scheme)) & BigInt(2147483647)).toString(16);
-}
 function getStringDeclaration(
   declaration: Declaration,
   input: string[]
@@ -585,4 +586,224 @@ function calculateVariables(constructor: TLBConstructorBuild) {
   constructor.parameters.forEach((parameter) => {
     calculateVariable(parameter.variable, constructor);
   });
+}
+
+const TypeGuards = {
+  isFieldBuiltinDef: (field: FieldDefinition): field is FieldBuiltinDef =>
+    field instanceof FieldBuiltinDef,
+
+  isFieldCurlyExprDef: (field: FieldDefinition): field is FieldCurlyExprDef =>
+    field instanceof FieldCurlyExprDef,
+
+  isFieldAnonymousDef: (field: FieldDefinition): field is FieldAnonymousDef =>
+    field instanceof FieldAnonymousDef,
+
+  isFieldNamedDef: (field: FieldDefinition): field is FieldNamedDef =>
+    field instanceof FieldNamedDef,
+
+  isFieldExprDef: (field: FieldDefinition): field is FieldExprDef =>
+    field instanceof FieldExprDef,
+
+  isCompareExpr: (expr: Expression): expr is CompareExpr =>
+    expr instanceof CompareExpr,
+
+  isMathExpr: (expr: Expression): expr is MathExpr =>
+    expr instanceof MathExpr,
+
+  isNegateExpr: (expr: Expression): expr is NegateExpr =>
+    expr instanceof NegateExpr,
+
+  isNameExpr: (expr: Expression): expr is NameExpr =>
+    expr instanceof NameExpr,
+
+  isNumberExpr: (expr: Expression): expr is NumberExpr =>
+    expr instanceof NumberExpr,
+
+  isCellRefExpr: (expr: Expression): expr is CellRefExpr =>
+    expr instanceof CellRefExpr,
+
+  isBuiltinZeroArgs: (expr: Expression): expr is BuiltinZeroArgs =>
+    expr instanceof BuiltinZeroArgs,
+
+  isBuiltinOneArgExpr: (expr: Expression): expr is BuiltinOneArgExpr =>
+    expr instanceof BuiltinOneArgExpr,
+
+  isCombinatorExpr: (expr: Expression): expr is CombinatorExpr =>
+    expr instanceof CombinatorExpr,
+
+  isCondExpr: (expr: Expression): expr is CondExpr =>
+    expr instanceof CondExpr
+};
+
+function calculateTag(declaration: Declaration): string {
+  const formattedDeclaration = formatDeclaration(declaration);
+
+  const encoder = new TextEncoder();
+  return Crc32(encoder.encode(formattedDeclaration)).toString(16);
+}
+
+function isImplicitOrConstraint(field: FieldDefinition): boolean {
+  const { isFieldBuiltinDef, isFieldCurlyExprDef, isFieldNamedDef,
+    isFieldExprDef, isCompareExpr } = TypeGuards;
+
+  if (isFieldBuiltinDef(field) || isFieldCurlyExprDef(field)) {
+    return true;
+  }
+
+  if ((isFieldNamedDef(field) || isFieldExprDef(field)) &&
+    isCompareExpr(field.expr) &&
+    field.expr.op === "=") {
+    return true;
+  }
+
+  return false;
+}
+
+function formatDeclaration(declaration: Declaration): string {
+  const parts: string[] = [declaration.constructorDef.name];
+
+  declaration.fields.forEach(field => {
+    parts.push(formatField(field));
+  });
+
+  parts.push("=", declaration.combinator.name);
+
+  declaration.combinator.args.forEach(arg => {
+    parts.push(formatExpression(arg));
+  });
+
+  return parts.join(" ");
+}
+
+function formatField(field: FieldDefinition): string {
+  const { isFieldBuiltinDef, isFieldCurlyExprDef, isFieldNamedDef,
+    isFieldExprDef, isFieldAnonymousDef } = TypeGuards;
+
+  const parts: string[] = [];
+
+  if (isImplicitOrConstraint(field)) {
+    if ((isFieldBuiltinDef(field) || isFieldNamedDef(field) ||
+      (isFieldAnonymousDef(field)) && field.name)) {
+      parts.push(`${field.name}:`);
+    }
+
+    if (isFieldBuiltinDef(field)) {
+      parts.push(field.type);
+    } else if (isFieldCurlyExprDef(field)) {
+      parts.push(formatExpression(field.expr));
+    } else if (isFieldNamedDef(field)) {
+      parts.push(formatExpression(field.expr));
+    } else if (isFieldExprDef(field)) {
+      parts.push(formatExpression(field.expr));
+    } else if (isFieldAnonymousDef(field)) {
+      parts.push(formatAnonymousField(field));
+    }
+
+    return parts.join("");
+  }
+
+  if (isFieldNamedDef(field)) {
+    parts.push(`${field.name}:`);
+  } else if (isFieldAnonymousDef(field) && field.name) {
+    parts.push(`${field.name}:`);
+  }
+
+  if (isFieldNamedDef(field)) {
+    parts.push(formatExpression(field.expr));
+  } else if (isFieldExprDef(field)) {
+    parts.push(formatExpression(field.expr));
+  } else if (isFieldAnonymousDef(field)) {
+    parts.push(formatAnonymousField(field));
+  }
+
+
+  return parts.join("");
+}
+
+function formatAnonymousField(field: FieldAnonymousDef): string {
+  const innerFields = field.fields.map((innerField, index) =>
+    index > 0 ? " " + formatField(innerField) : formatField(innerField)
+  ).join("");
+
+  return `${field.isRef ? "^[ " : "[ "}${innerFields} ]`;
+}
+
+function formatExpression(expr: Expression): string {
+  const {
+    isCompareExpr, isMathExpr, isNegateExpr, isNameExpr, isNumberExpr,
+    isCellRefExpr, isBuiltinZeroArgs, isBuiltinOneArgExpr, isCombinatorExpr, isCondExpr
+  } = TypeGuards;
+
+
+  if (isCompareExpr(expr)) {
+    return `${expr.op} ${formatExpression(expr.left)} ${formatExpression(expr.right)}`;
+  }
+
+  if (isMathExpr(expr)) {
+    return formatMathExpr(expr);
+  }
+
+  if (isNegateExpr(expr)) {
+    return "~" + formatExpression(expr.expr);
+  }
+
+  if (isNumberExpr(expr)) {
+    return String(expr.num);
+  }
+
+  if (isNameExpr(expr)) {
+    return expr.name;
+  }
+
+  if (isCellRefExpr(expr)) {
+    return "^" + formatExpression(expr.expr);
+  }
+
+  if (isBuiltinZeroArgs(expr)) {
+    return expr.name;
+  }
+
+  if (isBuiltinOneArgExpr(expr)) {
+    return `${expr.name} ${formatExpression(expr.arg)}`;
+  }
+
+  if (isCombinatorExpr(expr)) {
+    const args = expr.args.map(arg => formatExpression(arg)).join(" ");
+    return `${expr.name} ${args}`;
+  }
+
+  if (isCondExpr(expr)) {
+    let result = formatExpression(expr.left);
+
+    if (expr.dotExpr !== null) {
+      result += "." + expr.dotExpr;
+    }
+
+    result += "?" + formatExpression(expr.condExpr);
+    return result;
+  }
+
+  return String(expr);
+}
+
+function formatMathExpr(expr: MathExpr): string {
+  const { isNumberExpr } = TypeGuards;
+
+  if (expr.op === "+") {
+    return `${formatExpression(expr.left)} + ${formatExpression(expr.right)}`;
+  }
+
+  if (expr.op === "*") {
+    if (isNumberExpr(expr.right) && !isNumberExpr(expr.left)) {
+      return `${formatExpression(expr.right)} * ${formatExpression(expr.left)}`;
+    }
+
+    if (isNumberExpr(expr.left) && isNumberExpr(expr.right)) {
+      return String(expr.left.num * expr.right.num);
+    }
+
+    return `${formatExpression(expr.left)} * ${formatExpression(expr.right)}`;
+  }
+
+  return `${formatExpression(expr.left)} ${expr.op} ${formatExpression(expr.right)}`;
 }
