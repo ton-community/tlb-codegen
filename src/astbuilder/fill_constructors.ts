@@ -31,7 +31,7 @@ import {
   TLBVarExpr,
   TLBVariable,
 } from "../ast";
-import { Crc32, findNotReservedName } from "../utils";
+import { crc32, findNotReservedName } from "../utils";
 import { fillFields } from "./handle_field";
 import {
   TLBCodeBuild,
@@ -639,7 +639,7 @@ function calculateTag(declaration: Declaration): string {
   const formattedDeclaration = formatDeclaration(declaration);
 
   const encoder = new TextEncoder();
-  return Crc32(encoder.encode(formattedDeclaration)).toString(16);
+  return crc32(encoder.encode(formattedDeclaration)).toString(16);
 }
 
 function isImplicitOrConstraint(field: FieldDefinition): boolean {
