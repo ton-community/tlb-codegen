@@ -127,7 +127,7 @@ export function getSubStructName(
 
 const POLYNOMIAL = -306674912;
 
-export function Crc32(bytes: Uint8Array, crc = 0xFFFFFFFF): number {
+export function crc32(bytes: Uint8Array, crc = 0xFFFFFFFF): number {
   let result = crc;
   
   for (let n = 0; n < bytes.length; n++) {
