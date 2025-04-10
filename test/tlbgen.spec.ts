@@ -580,12 +580,10 @@ describe('Generating tlb code', () => {
 
     test('Correct tag calculation complex', () => {
         const seqNo = 1999;
-        const seqNoSecond = 2000;
+        const seqNo2 = 2000;
 
         const tagCalculatorExample: TagCalculatorExample = {
             kind: 'TagCalculatorExample',
-            prev_seq_no: 2 + seqNo + 2 - 2 - 1,
-            prev_seq_no_2: 100 + seqNoSecond * 8 * 7,
             seq_no: 1999,
             seq_no_2: 2000
         };
@@ -597,8 +595,8 @@ describe('Generating tlb code', () => {
         const deserializedCell = loadTagCalculatorExample(finalCell.beginParse());
 
         expect(deserializedCell.kind).toBe(tagCalculatorExample.kind);
-        expect((deserializedCell as TagCalculatorExample).prev_seq_no).toBe(tagCalculatorExample.prev_seq_no);
-        expect((deserializedCell as TagCalculatorExample).prev_seq_no_2).toBe(tagCalculatorExample.prev_seq_no_2);
+        expect((deserializedCell as TagCalculatorExample).prev_seq_no).toBe(((2 + (seqNo + 2)) - 2) - 1);
+        expect((deserializedCell as TagCalculatorExample).prev_seq_no_2).toBe(100 + ((seqNo2 * 8) * 7));
         expect((deserializedCell as TagCalculatorExample).seq_no).toBe(tagCalculatorExample.seq_no);
         expect((deserializedCell as TagCalculatorExample).seq_no_2).toBe(tagCalculatorExample.seq_no_2);
 

@@ -49,6 +49,7 @@ export interface TypedIdentifier extends ASTNode {
   type: "TypedIdentifier";
   name: Identifier;
   typeId: TypeExpression | Literal;
+  optional?: boolean;
 }
 
 export interface TypeParametersExpression extends ASTNode {
@@ -260,9 +261,10 @@ export function tFunctionDeclaration(
 
 export function tTypedIdentifier(
   name: Identifier,
-  typeId: TypeExpression | StringLiteral
+  typeId: TypeExpression | StringLiteral,
+  optional: boolean = false
 ): TypedIdentifier {
-  return { type: "TypedIdentifier", name: name, typeId: typeId };
+  return { type: "TypedIdentifier", name: name, typeId: typeId, optional: optional };
 }
 
 export function tTypeWithParameters(
@@ -563,7 +565,7 @@ export function toCode(
 
   if (node.type == "TypedIdentifier") {
     code.add(
-      toCode(node.name).render() + ": " + toCode(node.typeId).render(),
+      toCode(node.name).render() + (node.optional ? "?" : "") + ": " + toCode(node.typeId).render(),
       false
     );
   }
@@ -577,8 +579,7 @@ export function toCode(
 
   if (node.type == "DeclareVariable") {
     code.add(
-      `let ${toCode(node.name).render()}${
-        node.typeName ? ": " + toCode(node.typeName).render() : ""
+      `let ${toCode(node.name).render()}${node.typeName ? ": " + toCode(node.typeName).render() : ""
       }`,
       false
     );

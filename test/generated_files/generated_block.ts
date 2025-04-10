@@ -130,8 +130,8 @@ hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
 export interface Hashmap<X> {
     readonly kind: 'Hashmap';
     readonly n: number;
-    readonly l: number;
-    readonly m: number;
+    readonly l?: number;
+    readonly m?: number;
     readonly label: HmLabel;
     readonly node: HashmapNode<X>;
 }
@@ -220,8 +220,8 @@ ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#}
 export interface HashmapAug<X, Y> {
     readonly kind: 'HashmapAug';
     readonly n: number;
-    readonly l: number;
-    readonly m: number;
+    readonly l?: number;
+    readonly m?: number;
     readonly label: HmLabel;
     readonly node: HashmapAugNode<X, Y>;
 }
@@ -258,8 +258,8 @@ vhm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
 export interface VarHashmap<X> {
     readonly kind: 'VarHashmap';
     readonly n: number;
-    readonly l: number;
-    readonly m: number;
+    readonly l?: number;
+    readonly m?: number;
     readonly label: HmLabel;
     readonly node: VarHashmapNode<X>;
 }
@@ -330,8 +330,8 @@ phm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
 export interface PfxHashmap<X> {
     readonly kind: 'PfxHashmap';
     readonly n: number;
-    readonly l: number;
-    readonly m: number;
+    readonly l?: number;
+    readonly m?: number;
     readonly label: HmLabel;
     readonly node: PfxHashmapNode<X>;
 }
@@ -1658,7 +1658,7 @@ block_info#9bc7a987 version:uint32
 
 export interface BlockInfo {
     readonly kind: 'BlockInfo';
-    readonly prev_seq_no: number;
+    readonly prev_seq_no?: number;
     readonly version: number;
     readonly not_master: number;
     readonly after_merge: number;

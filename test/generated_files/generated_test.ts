@@ -423,7 +423,7 @@ export interface ParamDifNames_d {
 
 export interface ParamDifNamesUser {
     readonly kind: 'ParamDifNamesUser';
-    readonly k: number;
+    readonly k?: number;
     readonly x: ParamDifNames;
 }
 
@@ -440,8 +440,8 @@ export interface NegationFromImplicit {
 
 export interface UnaryUserCheckOrder {
     readonly kind: 'UnaryUserCheckOrder';
-    readonly l: number;
-    readonly m: number;
+    readonly l?: number;
+    readonly m?: number;
     readonly label: Unary;
 }
 
@@ -511,8 +511,8 @@ hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
 export interface Hashmap<X> {
     readonly kind: 'Hashmap';
     readonly n: number;
-    readonly l: number;
-    readonly m: number;
+    readonly l?: number;
+    readonly m?: number;
     readonly label: HmLabel;
     readonly node: HashmapNode<X>;
 }
@@ -669,7 +669,7 @@ export interface ConditionalRef {
 
 export interface LoadFromNegationOutsideExpr {
     readonly kind: 'LoadFromNegationOutsideExpr';
-    readonly prev_seq_no: number;
+    readonly prev_seq_no?: number;
     readonly seq_no: number;
 }
 
@@ -884,8 +884,8 @@ ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#}
 export interface HashmapAug<X, Y> {
     readonly kind: 'HashmapAug';
     readonly n: number;
-    readonly l: number;
-    readonly m: number;
+    readonly l?: number;
+    readonly m?: number;
     readonly label: HmLabel;
     readonly node: HashmapAugNode<X, Y>;
 }
@@ -1250,8 +1250,8 @@ export interface BoolTrueUser {
 
 export interface TagCalculatorExample {
     readonly kind: 'TagCalculatorExample';
-    readonly prev_seq_no: number;
-    readonly prev_seq_no_2: number;
+    readonly prev_seq_no?: number;
+    readonly prev_seq_no_2?: number;
     readonly seq_no: number;
     readonly seq_no_2: number;
 }

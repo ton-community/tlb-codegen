@@ -600,8 +600,9 @@ export function loadBoolTrue(slice: Slice): Bool {
     }
 
     if (variable.type == "#" && !variable.isField) {
+      const isOptional = this.isOptionalVariable(variable, ctx);
       ctx.properties.push(
-        tTypedIdentifier(id(variable.name), id("number"))
+        tTypedIdentifier(id(variable.name), id("number"), isOptional)
       );
       let parameter = constructor.parametersMap.get(variable.name);
       if (
@@ -1139,5 +1140,92 @@ export function loadBoolTrue(slice: Slice): Bool {
 
     result.storeStmtInside = result.storeStmtInside;
     return result;
+  }
+
+  private isOptionalVariable(variable: TLBVariable, ctx: ConstructorContext): boolean {
+    const usedInStore = this.collectFieldsUsedInStore(ctx);
+    const isParameter = ctx.constructor.parameters.some(
+      param => param.variable.name === variable.name || param.argName === variable.name
+    );
+
+    return !usedInStore.has(variable.name) && !isParameter;  
+  }
+
+  private collectFieldsUsedInStore(ctx: ConstructorContext): Set<string> {
+    const fieldsUsed = new Set<string>();
+
+    for (const stmt of ctx.storeStatements) {
+      this.extractFieldReferences(stmt, ctx.typeName, fieldsUsed);
+    }
+
+    return fieldsUsed;
+  }
+
+  private extractFieldReferences(node: TheNode, typeName: string, fieldsUsed: Set<string>): void {
+    if (!node) return;
+
+    switch (node.type) {
+      case "ExpressionStatement":
+        this.extractFieldReferences(node.expression, typeName, fieldsUsed);
+        break;
+
+      case "IfStatement":
+        this.extractFieldReferences(node.condition, typeName, fieldsUsed);
+        if (node.body) {
+          node.body.forEach(stmt => this.extractFieldReferences(stmt, typeName, fieldsUsed));
+        }
+        if (node.elseBody) {
+          node.elseBody.forEach(stmt => this.extractFieldReferences(stmt, typeName, fieldsUsed));
+        }
+        break;
+
+      case "MultiStatement":
+        node.statements.forEach(stmt => this.extractFieldReferences(stmt, typeName, fieldsUsed));
+        break;
+
+      case "ReturnStatement":
+        this.extractFieldReferences(node.returnValue, typeName, fieldsUsed);
+        break;
+
+      case "MemberExpression":
+        if (node.thisObject.type === "Identifier" &&
+          node.thisObject.name === typeName &&
+          node.memberName.type === "Identifier") {
+          fieldsUsed.add(node.memberName.name);
+        }
+        this.extractFieldReferences(node.thisObject, typeName, fieldsUsed);
+        break;
+
+      case "FunctionCall":
+        this.extractFieldReferences(node.functionId, typeName, fieldsUsed);
+        node.parameters.forEach(param => this.extractFieldReferences(param, typeName, fieldsUsed));
+        break;
+
+      case "BinaryExpression":
+        this.extractFieldReferences(node.left, typeName, fieldsUsed);
+        this.extractFieldReferences(node.right, typeName, fieldsUsed);
+        break;
+
+      case "UnaryOpExpression":
+        this.extractFieldReferences(node.expr, typeName, fieldsUsed);
+        break;
+
+      case "TernaryExpression":
+        this.extractFieldReferences(node.condition, typeName, fieldsUsed);
+        this.extractFieldReferences(node.body, typeName, fieldsUsed);
+        this.extractFieldReferences(node.elseBody, typeName, fieldsUsed);
+        break;
+
+      case "ArrowFunctionExpression":
+        node.body.forEach(stmt => this.extractFieldReferences(stmt, typeName, fieldsUsed));
+        break;
+
+      case "ObjectExpression":
+        node.objectValues.forEach(prop => {
+          this.extractFieldReferences(prop.key, typeName, fieldsUsed);
+          this.extractFieldReferences(prop.value, typeName, fieldsUsed);
+        });
+        break;
+    }
   }
 }
