@@ -1,7 +1,7 @@
 {
-  "name": "@ton-community/tlb-codegen",
+  "name": "@polyprogrammist_test/tlb-codegens",
   "version": "2.0.0-beta.1",
-  "description": "",
+  "description": "This package allows you to generate `Typescript` code for serializing and deserializing structures according to the `TLB` scheme provided.",
   "main": "build/index.js",
   "scripts": {
     "test": "jest",
@@ -26,5 +26,16 @@
     "@types/jest": "^29.5.11",
     "meow": "^9.0.0",
     "ts-jest": "^29.1.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ton-community/tlb-codegen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ton-community/tlb-codegen/issues"
+  },
+  "homepage": "https://github.com/ton-community/tlb-codegen#readme"
 }
