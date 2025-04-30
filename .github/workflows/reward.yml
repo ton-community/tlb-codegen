@@ -1,0 +1,24 @@
+name: Add Github User to Allowlist on PR Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  allowlist_user:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Allowlist GitHub Action
+        uses: ton-society/github-allowlist-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          x_api_key: ${{ secrets.X_API_KEY }}
+          x_partner_id: ${{ secrets.X_PARTNER_ID }}
+          github_pr_number: ${{ github.event.inputs.github_pr_number }}
+          activity_id: "9745"
