@@ -5,14 +5,13 @@ on:
     types:
       - closed
 
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
   allowlist_user:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Use Allowlist GitHub Action
         uses: ton-society/github-allowlist-action@main
