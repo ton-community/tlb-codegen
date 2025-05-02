@@ -19,5 +19,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           x_api_key: ${{ secrets.X_API_KEY }}
           x_partner_id: ${{ secrets.X_PARTNER_ID }}
-          github_pr_number: ${{ github.event.inputs.github_pr_number }}
+          github_pr_number: ${{ github.event.pull_request.number }}
           activity_id: "9745"
