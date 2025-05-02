@@ -260,52 +260,18 @@ export class TypescriptGenerator implements CodeGenerator {
   }
 
   addEmbeddedTypes() {
-    this.jsCodeDeclarations.push(tCodeAsIs(`export interface Bool {
-    readonly kind: 'Bool';
-    readonly value: boolean;
-}
-
-export function loadBool(slice: Slice): Bool {
-    if (slice.remainingBits >= 1) {
-        let value = slice.loadUint(1);
-        return {
-            kind: 'Bool',
-            value: value == 1
-        }
-
-    }
-    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
-}
-
-export function storeBool(bool: Bool): (builder: Builder) => void {
-    return ((builder: Builder) => {
-        builder.storeUint(bool.value ? 1: 0, 1);
-    })
-
-}
-
-
-
-export function loadBoolFalse(slice: Slice): Bool {
+    this.jsCodeDeclarations.push(tCodeAsIs(`export function loadBoolFalse(slice: Slice): boolean {
   if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
       slice.loadUint(1);
-      return {
-          kind: 'Bool',
-          value: false
-      }
-
+      return false;
   }
   throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
 }
 
-export function loadBoolTrue(slice: Slice): Bool {
+export function loadBoolTrue(slice: Slice): boolean {
   if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
       slice.loadUint(1);
-      return {
-          kind: 'Bool',
-          value: true
-      }
-
+      return true;
   }
   throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
 }
@@ -993,11 +959,37 @@ export function loadBoolTrue(slice: Slice): Bool {
         result.storeStmtInside = storeInNewCell(currentCell, subExprInfo.storeStmtInside);
       }
     } else if (fieldType.kind == "TLBBoolType") {
-      let loadFunction = 'load' + (fieldType.value === undefined ? 'Bool': (fieldType.value ? 'BoolTrue': 'BoolFalse'));
-      result.loadExpr = tFunctionCall(id(loadFunction), [id("slice")]);
-      result.typeParamExpr = id('Bool');
-      result.storeStmtInside = tExpressionStatement(tFunctionCall(tFunctionCall(id('storeBool'), storeParametersInside), [id('builder')]));
-      result.storeStmtOutside = tExpressionStatement(tFunctionCall(tFunctionCall(id('storeBool'), storeParametersOutside), [id('builder')]));
+      if (fieldType.value === undefined) {
+        exprForParam = {
+          argLoadExpr: undefined,
+          argStoreExpr: undefined,
+          paramType: "boolean",
+          fieldLoadSuffix: "Boolean",
+          fieldStoreSuffix: "Bit",
+        };
+      } else {
+        let localExprForParam = {
+          argLoadExpr: undefined,
+          argStoreExpr: undefined,
+          paramType: "boolean",
+          fieldLoadSuffix: "Boolean",
+          fieldStoreSuffix: "Bit",
+        }
+        let loadFunction = 'load' + (fieldType.value ? 'BoolTrue': 'BoolFalse');
+        result.loadExpr = tFunctionCall(id(loadFunction), [id("slice")]);
+        result.typeParamExpr = id('boolean');
+        result.storeStmtInside = storeExprForParam(
+          theCell,
+          localExprForParam,
+          storeParametersInside
+        );
+        result.storeStmtOutside = storeExprForParam(
+          theCell,
+          localExprForParam,
+          storeParametersOutside
+        );
+        console.log(result)
+      }
     } else if (fieldType.kind == "TLBHashmapType") {
       let keyForLoad: Expression = dictKeyExpr(fieldType.key, ctx);
       let keyForStore: Expression = dictKeyExpr(fieldType.key, ctx, ctx.typeName);
