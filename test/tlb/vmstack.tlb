@@ -1,0 +1,1 @@
+vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
