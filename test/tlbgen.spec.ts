@@ -599,8 +599,7 @@ describe('Generating tlb code', () => {
     });
 
     test('should generate correct loadVmStack function', async () => {
-        const tlbPath = path.resolve(__dirname, 'tlb/vmstack.tlb');
-        const tlbSource = fs.readFileSync(tlbPath, 'utf-8');
+        const tlbSource = 'vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;'
         const generated = await generateCodeFromData(tlbSource, 'typescript');
         expect(generated).toMatch(/export function loadVmStack\(slice: Slice\): TupleItem\[\] \{/);
         expect(generated).toMatch(/return parseTuple\(slice\.asCell\(\)\)/);
