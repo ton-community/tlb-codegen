@@ -1,4 +1,4 @@
-name: Add Github User to Allowlist on PR Merge
+name: Reward
 
 on:
   pull_request:
@@ -6,18 +6,17 @@ on:
       - closed
 
 jobs:
-  allowlist_user:
-    if: github.event.pull_request.merged == true
+  reward:
+    name: Reward
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
     steps:
-      - name: Use Allowlist GitHub Action
-        uses: ton-society/github-allowlist-action@main
+      - uses: the-ton-tech/toolchain/reward@v1.3.0
         with:
+          activity_id: tl-b
+          on_reward_label: rewarded
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          x_api_key: ${{ secrets.X_API_KEY }}
-          x_partner_id: ${{ secrets.X_PARTNER_ID }}
-          github_pr_number: ${{ github.event.pull_request.number }}
-          activity_id: "9745"
+          society_api_key: ${{ secrets.X_API_KEY }}
+          society_partner_id: ${{ secrets.X_PARTNER_ID }}
