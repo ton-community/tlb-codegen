@@ -9,7 +9,7 @@ const cli = meow(`
 	Options
 	  --output, -o Output file, default = tlbpath with .ts extension e.g. ./path/to/file.tlb -> ./path/to/file.ts
 	  --language, -l Programming language result. Supported languages: ["typescript"]. Default: "typescript"
-	  
+
 	Examples
 	  $ tlb ./path/to/file.tlb
 	  > Generated code is saved to ./path/to/file.ts

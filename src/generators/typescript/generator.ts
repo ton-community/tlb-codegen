@@ -256,7 +256,7 @@ export class TypescriptGenerator implements CodeGenerator {
     while (slice.remainingRefs) {
         to.storeRef(slice.loadRef());
     }
-}`))  
+}`))
   }
 
   addEmbeddedTypes() {
@@ -352,23 +352,29 @@ export function loadBoolTrue(slice: Slice): Bool {
 
       let slicePrefix: number[] = [0];
 
-      constructor.variables.forEach((variable) => {
-        this.addVarToConstructorLoadProperty(variable, ctx, constructor);
-      });
+      if (tlbType.name !== "VmStack") {
+        constructor.variables.forEach((variable) => {
+          this.addVarToConstructorLoadProperty(variable, ctx, constructor);
+        });
 
-      constructor.fields.forEach((field) => {
-        this.handleField(field, slicePrefix, ctx);
-      });
+        constructor.fields.forEach((field) => {
+          this.handleField(field, slicePrefix, ctx);
+        });
+      }
 
-      typeUnion.push(
-        tTypeWithParameters(id(constructorTypeName), structTypeParametersExpr)
-      );
+      if (tlbType.name !== "VmStack") {
+        typeUnion.push(
+          tTypeWithParameters(id(constructorTypeName), structTypeParametersExpr)
+        );
 
-      let structX = tStructDeclaration(
-        id(constructorTypeName),
-        ctx.properties,
-        structTypeParametersExpr
-      );
+        let structX = tStructDeclaration(
+          id(constructorTypeName),
+          ctx.properties,
+          structTypeParametersExpr
+        );
+
+        constructorsDeclarations.push(structX);
+      }
 
       constructor.constraints.forEach((constraint) => {
         this.genCodeForConstraint(
@@ -379,9 +385,22 @@ export function loadBoolTrue(slice: Slice): Bool {
         );
       });
 
-      ctx.loadStatements.push(
-        tReturnStatement(tObjectExpression(ctx.loadProperties))
-      );
+      if (tlbType.name === "VmStack") {
+        ctx.loadProperties = [];
+        ctx.properties = [];
+        ctx.loadStatements = [
+          tReturnStatement(
+            tFunctionCall(id("parseTuple"), [
+              tFunctionCall(tMemberExpression(id("slice"), id("asCell")), []),
+            ])
+          )
+        ];
+      } else {
+        ctx.loadStatements.push(
+          tReturnStatement(tObjectExpression(ctx.loadProperties))
+        );
+      }
+
       loadStatements = this.constructorStmtsToTypeStmts(
         constructor,
         tlbType,
@@ -408,10 +427,8 @@ export function loadBoolTrue(slice: Slice): Bool {
           storeStatement
         );
       }
+
       storeStatements.push(storeStatement);
-
-      constructorsDeclarations.push(structX);
-
       this.jsCodeFunctionsDeclarations.push(tComment(constructor.declaration));
       this.jsCodeConstructorDeclarations.push(tComment(constructor.declaration));
     });
@@ -419,13 +436,21 @@ export function loadBoolTrue(slice: Slice): Bool {
     this.addExceptionStmts(tlbType, loadStatements, storeStatements);
 
     let loadFunctionParameters = typedSlice();
-    const currentType = tTypeWithParameters(
-      id(tlbType.name),
-      structTypeParametersExpr
-    );
-    let storeFunctionParameters = [
-      tTypedIdentifier(id(typeName), currentType),
-    ];
+    let currentType;
+
+    if (tlbType.name === "VmStack") {
+      currentType = tTypeWithParameters(
+        id("TupleItem[]"),
+        structTypeParametersExpr
+      );
+    } else {
+      currentType = tTypeWithParameters(
+        id(tlbType.name),
+        structTypeParametersExpr
+      );
+    }
+
+    let storeFunctionParameters = [tTypedIdentifier(id(typeName), currentType)];
 
     this.addFunctionParameters(
       tlbType,
@@ -449,14 +474,17 @@ export function loadBoolTrue(slice: Slice): Bool {
       storeStatements
     );
 
-    if (tlbType.constructors.length > 1) {
+    if (tlbType.name !== "VmStack" && tlbType.constructors.length > 1) {
       this.jsCodeConstructorDeclarations.push(
         tUnionTypeDeclaration(currentType, tUnionTypeExpression(typeUnion))
       );
     }
-    constructorsDeclarations.forEach((element) => {
-      this.jsCodeConstructorDeclarations.push(element);
-    });
+
+    if (tlbType.name !== "VmStack") {
+      constructorsDeclarations.forEach((element) => {
+        this.jsCodeConstructorDeclarations.push(element);
+      });
+    }
 
     this.jsCodeFunctionsDeclarations.push(loadFunction);
     this.jsCodeFunctionsDeclarations.push(storeFunction);
@@ -791,11 +819,11 @@ export function loadBoolTrue(slice: Slice): Bool {
         fieldStoreSuffix: "Slice",
       };
       storeParametersOutside[0] = tFunctionCall(
-        tMemberExpression(storeParametersOutside[0], id("beginParse")), 
+        tMemberExpression(storeParametersOutside[0], id("beginParse")),
         [id("true")]
       )
       storeParametersInside[0] = tFunctionCall(
-        tMemberExpression(storeParametersInside[0], id("beginParse")), 
+        tMemberExpression(storeParametersInside[0], id("beginParse")),
         [id("true")]
       )
     } else if (fieldType.kind == "TLBCoinsType") {
@@ -1013,13 +1041,13 @@ export function loadBoolTrue(slice: Slice): Bool {
           valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr, extraInfo.storeFunctionExpr)
 
           if (extraInfo.loadExpr) {
-            result.loadExpr = dictLoadExpr(keyForLoad, dictAugParse(extraInfo.loadExpr, subExprInfo.loadExpr), currentSlice, fieldType.directStore) 
+            result.loadExpr = dictLoadExpr(keyForLoad, dictAugParse(extraInfo.loadExpr, subExprInfo.loadExpr), currentSlice, fieldType.directStore)
           }
         } else {
           valueStore = dictValueStore(subExprInfo.typeParamExpr, subExprInfo.storeFunctionExpr)
-          result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice, fieldType.directStore)  
+          result.loadExpr = dictLoadExpr(keyForLoad, subExprInfo.loadFunctionExpr, currentSlice, fieldType.directStore)
         }
-        result.typeParamExpr = dictTypeParamExpr(fieldType, subExprInfo.typeParamExpr) 
+        result.typeParamExpr = dictTypeParamExpr(fieldType, subExprInfo.typeParamExpr)
         result.storeStmtInside = dictStoreStmt(currentCell, storeParametersInside, keyForStore, valueStore, fieldType.directStore)
         result.storeStmtOutside = dictStoreStmt(currentCell, storeParametersOutside, keyForStore, valueStore, fieldType.directStore)
       }
@@ -1148,7 +1176,7 @@ export function loadBoolTrue(slice: Slice): Bool {
       param => param.variable.name === variable.name || param.argName === variable.name
     );
 
-    return !usedInStore.has(variable.name) && !isParameter;  
+    return !usedInStore.has(variable.name) && !isParameter;
   }
 
   private collectFieldsUsedInStore(ctx: ConstructorContext): Set<string> {

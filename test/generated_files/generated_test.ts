@@ -504,7 +504,7 @@ export interface TupleCheck {
 }
 
 /*
-hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
           {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
 */
 
@@ -520,7 +520,7 @@ export interface Hashmap<X> {
 // hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
 
 /*
-hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X)
            right:^(Hashmap n X) = HashmapNode (n + 1) X;
 */
 
@@ -876,8 +876,8 @@ export interface HashmapOneCombUser {
 }
 
 /*
-ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} 
-  label:(HmLabel ~l n) {n = (~m) + l} 
+ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#}
+  label:(HmLabel ~l n) {n = (~m) + l}
   node:(HashmapAugNode m X Y) = HashmapAug n X Y;
 */
 
@@ -1074,12 +1074,6 @@ export interface VmTuple_vm_tuple_tcons {
 }
 
 // vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
-
-export interface VmStack {
-    readonly kind: 'VmStack';
-    readonly depth: number;
-    readonly stack: VmStackList;
-}
 
 // vm_stk_nil#_ = VmStackList 0;
 
@@ -2610,7 +2604,7 @@ export function hashmap_get_l(label: HmLabel): number {
 }
 
 /*
-hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
           {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
 */
 
@@ -2640,7 +2634,7 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
 // hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
 
 /*
-hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X)
            right:^(Hashmap n X) = HashmapNode (n + 1) X;
 */
 
@@ -3774,8 +3768,8 @@ export function hashmapAug_get_l(label: HmLabel): number {
 }
 
 /*
-ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} 
-  label:(HmLabel ~l n) {n = (~m) + l} 
+ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#}
+  label:(HmLabel ~l n) {n = (~m) + l}
   node:(HashmapAugNode m X Y) = HashmapAug n X Y;
 */
 
@@ -4350,21 +4344,13 @@ export function storeVmTuple(vmTuple: VmTuple): (builder: Builder) => void {
 
 // vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
 
-export function loadVmStack(slice: Slice): VmStack {
-    let depth: number = slice.loadUint(24);
-    let stack: VmStackList = loadVmStackList(slice, depth);
-    return {
-        kind: 'VmStack',
-        depth: depth,
-        stack: stack,
-    }
+export function loadVmStack(slice: Slice): TupleItem[] {
+    return parseTuple(slice.asCell())
 
 }
 
-export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
+export function storeVmStack(vmStack: TupleItem[]): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeUint(vmStack.depth, 24);
-        storeVmStackList(vmStack.stack)(builder);
     })
 
 }
@@ -4905,4 +4891,3 @@ export function storeTagCalculatorExample(tagCalculatorExample: TagCalculatorExa
     })
 
 }
-

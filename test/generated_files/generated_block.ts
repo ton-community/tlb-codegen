@@ -123,7 +123,7 @@ export interface Both<X, Y> {
 }
 
 /*
-hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
           {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
 */
 
@@ -139,7 +139,7 @@ export interface Hashmap<X> {
 // hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
 
 /*
-hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X)
            right:^(Hashmap n X) = HashmapNode (n + 1) X;
 */
 
@@ -212,8 +212,8 @@ export interface BitstringSet {
 }
 
 /*
-ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} 
-  label:(HmLabel ~l n) {n = (~m) + l} 
+ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#}
+  label:(HmLabel ~l n) {n = (~m) + l}
   node:(HashmapAugNode m X Y) = HashmapAug n X Y;
 */
 
@@ -250,8 +250,8 @@ export interface HashmapAugNode_ahmn_fork<X, Y> {
 }
 
 /*
-vhm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
-           {n = (~m) + l} node:(VarHashmapNode m X) 
+vhm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
+           {n = (~m) + l} node:(VarHashmapNode m X)
            = VarHashmap n X;
 */
 
@@ -267,13 +267,13 @@ export interface VarHashmap<X> {
 // vhmn_leaf$00 {n:#} {X:Type} value:X = VarHashmapNode n X;
 
 /*
-vhmn_fork$01 {n:#} {X:Type} left:^(VarHashmap n X) 
-             right:^(VarHashmap n X) value:(Maybe X) 
+vhmn_fork$01 {n:#} {X:Type} left:^(VarHashmap n X)
+             right:^(VarHashmap n X) value:(Maybe X)
              = VarHashmapNode (n + 1) X;
 */
 
 /*
-vhmn_cont$1 {n:#} {X:Type} branch:Bit child:^(VarHashmap n X) 
+vhmn_cont$1 {n:#} {X:Type} branch:Bit child:^(VarHashmap n X)
             value:X = VarHashmapNode (n + 1) X;
 */
 
@@ -304,7 +304,7 @@ export interface VarHashmapNode_vhmn_cont<X> {
 // vhme_empty$0 {n:#} {X:Type} = VarHashmapE n X;
 
 /*
-vhme_root$1 {n:#} {X:Type} root:^(VarHashmap n X) 
+vhme_root$1 {n:#} {X:Type} root:^(VarHashmap n X)
             = VarHashmapE n X;
 */
 
@@ -322,8 +322,8 @@ export interface VarHashmapE_vhme_root<X> {
 }
 
 /*
-phm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
-           {n = (~m) + l} node:(PfxHashmapNode m X) 
+phm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
+           {n = (~m) + l} node:(PfxHashmapNode m X)
            = PfxHashmap n X;
 */
 
@@ -339,7 +339,7 @@ export interface PfxHashmap<X> {
 // phmn_leaf$0 {n:#} {X:Type} value:X = PfxHashmapNode n X;
 
 /*
-phmn_fork$1 {n:#} {X:Type} left:^(PfxHashmap n X) 
+phmn_fork$1 {n:#} {X:Type} left:^(PfxHashmap n X)
             right:^(PfxHashmap n X) = PfxHashmapNode (n + 1) X;
 */
 
@@ -361,7 +361,7 @@ export interface PfxHashmapNode_phmn_fork<X> {
 // phme_empty$0 {n:#} {X:Type} = PfxHashmapE n X;
 
 /*
-phme_root$1 {n:#} {X:Type} root:^(PfxHashmap n X) 
+phme_root$1 {n:#} {X:Type} root:^(PfxHashmap n X)
             = PfxHashmapE n X;
 */
 
@@ -397,7 +397,7 @@ export interface Coins {
 }
 
 /*
-extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32)) 
+extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32))
                  = ExtraCurrencyCollection;
 */
 
@@ -407,7 +407,7 @@ export interface ExtraCurrencyCollection {
 }
 
 /*
-currencies$_ grams:Grams other:ExtraCurrencyCollection 
+currencies$_ grams:Grams other:ExtraCurrencyCollection
            = CurrencyCollection;
 */
 
@@ -419,13 +419,13 @@ export interface CurrencyCollection {
 
 /*
 int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
-  src:MsgAddressInt dest:MsgAddressInt 
+  src:MsgAddressInt dest:MsgAddressInt
   value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
   created_lt:uint64 created_at:uint32 = CommonMsgInfo;
 */
 
 /*
-ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt 
+ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt
   import_fee:Grams = CommonMsgInfo;
 */
 
@@ -467,7 +467,7 @@ export interface CommonMsgInfo_ext_out_msg_info {
 
 /*
 int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
-  src:MsgAddress dest:MsgAddressInt 
+  src:MsgAddress dest:MsgAddressInt
   value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
   created_lt:uint64 created_at:uint32 = CommonMsgInfoRelaxed;
 */
@@ -581,12 +581,12 @@ export interface MessageAny {
 }
 
 /*
-interm_addr_regular$0 use_dest_bits:(#<= 96) 
+interm_addr_regular$0 use_dest_bits:(#<= 96)
   = IntermediateAddress;
 */
 
 /*
-interm_addr_simple$10 workchain_id:int8 addr_pfx:uint64 
+interm_addr_simple$10 workchain_id:int8 addr_pfx:uint64
   = IntermediateAddress;
 */
 
@@ -615,8 +615,8 @@ export interface IntermediateAddress_interm_addr_ext {
 }
 
 /*
-msg_envelope#4 cur_addr:IntermediateAddress 
-  next_addr:IntermediateAddress fwd_fee_remaining:Grams 
+msg_envelope#4 cur_addr:IntermediateAddress
+  next_addr:IntermediateAddress fwd_fee_remaining:Grams
   msg:^(Message Any) = MsgEnvelope;
 */
 
@@ -629,12 +629,12 @@ export interface MsgEnvelope {
 }
 
 /*
-msg_import_ext$000 msg:^(Message Any) transaction:^Transaction 
+msg_import_ext$000 msg:^(Message Any) transaction:^Transaction
               = InMsg;
 */
 
 /*
-msg_import_ihr$010 msg:^(Message Any) transaction:^Transaction 
+msg_import_ihr$010 msg:^(Message Any) transaction:^Transaction
     ihr_fee:Grams proof_created:^Cell = InMsg;
 */
 
@@ -644,22 +644,22 @@ msg_import_imm$011 in_msg:^MsgEnvelope
 */
 
 /*
-msg_import_fin$100 in_msg:^MsgEnvelope 
+msg_import_fin$100 in_msg:^MsgEnvelope
     transaction:^Transaction fwd_fee:Grams = InMsg;
 */
 
 /*
-msg_import_tr$101  in_msg:^MsgEnvelope out_msg:^MsgEnvelope 
+msg_import_tr$101  in_msg:^MsgEnvelope out_msg:^MsgEnvelope
     transit_fee:Grams = InMsg;
 */
 
 /*
-msg_discard_fin$110 in_msg:^MsgEnvelope transaction_id:uint64 
+msg_discard_fin$110 in_msg:^MsgEnvelope transaction_id:uint64
     fwd_fee:Grams = InMsg;
 */
 
 /*
-msg_discard_tr$111 in_msg:^MsgEnvelope transaction_id:uint64 
+msg_discard_tr$111 in_msg:^MsgEnvelope transaction_id:uint64
     fwd_fee:Grams proof_delivered:^Cell = InMsg;
 */
 
@@ -716,7 +716,7 @@ export interface InMsg_msg_discard_tr {
 }
 
 /*
-import_fees$_ fees_collected:Grams 
+import_fees$_ fees_collected:Grams
   value_imported:CurrencyCollection = ImportFees;
 */
 
@@ -739,17 +739,17 @@ msg_export_ext$000 msg:^(Message Any)
 */
 
 /*
-msg_export_imm$010 out_msg:^MsgEnvelope 
+msg_export_imm$010 out_msg:^MsgEnvelope
     transaction:^Transaction reimport:^InMsg = OutMsg;
 */
 
 /*
-msg_export_new$001 out_msg:^MsgEnvelope 
+msg_export_new$001 out_msg:^MsgEnvelope
     transaction:^Transaction = OutMsg;
 */
 
 /*
-msg_export_tr$011  out_msg:^MsgEnvelope 
+msg_export_tr$011  out_msg:^MsgEnvelope
     imported:^InMsg = OutMsg;
 */
 
@@ -765,12 +765,12 @@ msg_export_deq_short$1101 msg_env_hash:bits256
 */
 
 /*
-msg_export_tr_req$111 out_msg:^MsgEnvelope 
+msg_export_tr_req$111 out_msg:^MsgEnvelope
     imported:^InMsg = OutMsg;
 */
 
 /*
-msg_export_deq_imm$100 out_msg:^MsgEnvelope 
+msg_export_deq_imm$100 out_msg:^MsgEnvelope
     reimport:^InMsg = OutMsg;
 */
 
@@ -891,7 +891,7 @@ export interface OutMsgQueueInfo {
 }
 
 /*
-storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7) 
+storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7)
   public_cells:(VarUInteger 7) = StorageUsed;
 */
 
@@ -903,7 +903,7 @@ export interface StorageUsed {
 }
 
 /*
-storage_used_short$_ cells:(VarUInteger 7) 
+storage_used_short$_ cells:(VarUInteger 7)
   bits:(VarUInteger 7) = StorageUsedShort;
 */
 
@@ -947,7 +947,7 @@ export interface Account_account {
 
 /*
 account_storage$_ last_trans_lt:uint64
-    balance:CurrencyCollection state:AccountState 
+    balance:CurrencyCollection state:AccountState
   = AccountStorage;
 */
 
@@ -1007,7 +1007,7 @@ export interface AccountStatus_acc_state_nonexist {
 }
 
 /*
-account_descr$_ account:^Account last_trans_hash:bits256 
+account_descr$_ account:^Account last_trans_hash:bits256
   last_trans_lt:uint64 = ShardAccount;
 */
 
@@ -1034,7 +1034,7 @@ export interface ShardAccounts {
 }
 
 /*
-transaction$0111 account_addr:bits256 lt:uint64 
+transaction$0111 account_addr:bits256 lt:uint64
   prev_trans_hash:bits256 prev_trans_lt:uint64 now:uint32
   outmsg_cnt:uint15
   orig_status:AccountStatus end_status:AccountStatus
@@ -1115,7 +1115,7 @@ export interface ShardAccountBlocks {
 }
 
 /*
-tr_phase_storage$_ storage_fees_collected:Grams 
+tr_phase_storage$_ storage_fees_collected:Grams
   storage_fees_due:(Maybe Grams)
   status_change:AccStatusChange
   = TrStoragePhase;
@@ -1165,7 +1165,7 @@ tr_phase_compute_skipped$0 reason:ComputeSkipReason
 */
 
 /*
-tr_phase_compute_vm$1 success:Bool msg_state_used:Bool 
+tr_phase_compute_vm$1 success:Bool msg_state_used:Bool
   account_activated:Bool gas_fees:Grams
   ^[ gas_used:(VarUInteger 7)
   gas_limit:(VarUInteger 7) gas_credit:(Maybe (VarUInteger 3))
@@ -1230,8 +1230,8 @@ tr_phase_action$_ success:Bool valid:Bool no_funds:Bool
   status_change:AccStatusChange
   total_fwd_fees:(Maybe Grams) total_action_fees:(Maybe Grams)
   result_code:int32 result_arg:(Maybe int32) tot_actions:uint16
-  spec_actions:uint16 skipped_actions:uint16 msgs_created:uint16 
-  action_list_hash:bits256 tot_msg_size:StorageUsedShort 
+  spec_actions:uint16 skipped_actions:uint16 msgs_created:uint16
+  action_list_hash:bits256 tot_msg_size:StorageUsedShort
   = TrActionPhase;
 */
 
@@ -1261,7 +1261,7 @@ tr_phase_bounce_nofunds$01 msg_size:StorageUsedShort
 */
 
 /*
-tr_phase_bounce_ok$1 msg_size:StorageUsedShort 
+tr_phase_bounce_ok$1 msg_size:StorageUsedShort
   msg_fees:Grams fwd_fees:Grams = TrBouncePhase;
 */
 
@@ -1416,7 +1416,7 @@ export interface SplitMergeInfo {
 
 /*
 smc_info#076ef1ea actions:uint16 msgs_sent:uint16
-  unixtime:uint32 block_lt:uint64 trans_lt:uint64 
+  unixtime:uint32 block_lt:uint64 trans_lt:uint64
   rand_seed:bits256 balance_remaining:CurrencyCollection
   myself:MsgAddressInt global_config:(Maybe Cell) = SmartContractInfo;
 */
@@ -1455,7 +1455,7 @@ export interface OutList_out_list {
 }
 
 /*
-action_send_msg#0ec3c86d mode:(## 8) 
+action_send_msg#0ec3c86d mode:(## 8)
   out_msg:^(MessageRelaxed Any) = OutAction;
 */
 
@@ -1521,7 +1521,7 @@ export interface OutListNode {
 }
 
 /*
-shard_ident$00 shard_pfx_bits:(#<= 60) 
+shard_ident$00 shard_pfx_bits:(#<= 60)
   workchain_id:int32 shard_prefix:uint64 = ShardIdent;
 */
 
@@ -1534,7 +1534,7 @@ export interface ShardIdent {
 
 /*
 ext_blk_ref$_ end_lt:uint64
-  seq_no:uint32 root_hash:bits256 file_hash:bits256 
+  seq_no:uint32 root_hash:bits256 file_hash:bits256
   = ExtBlkRef;
 */
 
@@ -1568,7 +1568,7 @@ export interface BlkMasterInfo {
 
 /*
 shard_state#9023afe2 global_id:int32
-  shard_id:ShardIdent 
+  shard_id:ShardIdent
   seq_no:uint32 vert_seq_no:#
   gen_utime:uint32 gen_lt:uint64
   min_ref_mc_seqno:uint32
@@ -1634,15 +1634,15 @@ export interface LibDescr {
 }
 
 /*
-block_info#9bc7a987 version:uint32 
-  not_master:(## 1) 
-  after_merge:(## 1) before_split:(## 1) 
-  after_split:(## 1) 
+block_info#9bc7a987 version:uint32
+  not_master:(## 1)
+  after_merge:(## 1) before_split:(## 1)
+  after_split:(## 1)
   want_split:Bool want_merge:Bool
   key_block:Bool vert_seqno_incr:(## 1)
   flags:(## 8) { flags <= 1 }
-  seq_no:# vert_seq_no:# { vert_seq_no >= vert_seqno_incr } 
-  { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no } 
+  seq_no:# vert_seq_no:# { vert_seq_no >= vert_seqno_incr }
+  { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no }
   shard:ShardIdent gen_utime:uint32
   start_lt:uint64 end_lt:uint64
   gen_validator_list_hash_short:uint32
@@ -1650,7 +1650,7 @@ block_info#9bc7a987 version:uint32
   min_ref_mc_seqno:uint32
   prev_key_block_seqno:uint32
   gen_software:flags . 0?GlobalVersion
-  master_ref:not_master?^BlkMasterInfo 
+  master_ref:not_master?^BlkMasterInfo
   prev_ref:^(BlkPrevInfo after_merge)
   prev_vert_ref:vert_seqno_incr?^(BlkPrevInfo 0)
   = BlockInfo;
@@ -1705,7 +1705,7 @@ export interface BlkPrevInfo_prev_blks_info {
 /*
 block#11ef55aa global_id:int32
   info:^BlockInfo value_flow:^ValueFlow
-  state_update:^(MERKLE_UPDATE ShardState) 
+  state_update:^(MERKLE_UPDATE ShardState)
   extra:^BlockExtra = Block;
 */
 
@@ -1738,7 +1738,7 @@ export interface BlockExtra {
 }
 
 /*
-value_flow#b8e48dfb ^[ from_prev_blk:CurrencyCollection 
+value_flow#b8e48dfb ^[ from_prev_blk:CurrencyCollection
   to_next_blk:CurrencyCollection
   imported:CurrencyCollection
   exported:CurrencyCollection ]
@@ -1798,7 +1798,7 @@ export interface ValueFlow_value_flow_v2 {
 // bt_leaf$0 {X:Type} leaf:X = BinTree X;
 
 /*
-bt_fork$1 {X:Type} left:^(BinTree X) right:^(BinTree X) 
+bt_fork$1 {X:Type} left:^(BinTree X) right:^(BinTree X)
           = BinTree X;
 */
 
@@ -1842,7 +1842,7 @@ export interface FutureSplitMerge_fsm_merge {
 /*
 shard_descr#b seq_no:uint32 reg_mc_seqno:uint32
   start_lt:uint64 end_lt:uint64
-  root_hash:bits256 file_hash:bits256 
+  root_hash:bits256 file_hash:bits256
   before_split:Bool before_merge:Bool
   want_split:Bool want_merge:Bool
   nx_cc_updated:Bool flags:(## 3) { flags = 0 }
@@ -1856,7 +1856,7 @@ shard_descr#b seq_no:uint32 reg_mc_seqno:uint32
 /*
 shard_descr_new#a seq_no:uint32 reg_mc_seqno:uint32
   start_lt:uint64 end_lt:uint64
-  root_hash:bits256 file_hash:bits256 
+  root_hash:bits256 file_hash:bits256
   before_split:Bool before_merge:Bool
   want_split:Bool want_merge:Bool
   nx_cc_updated:Bool flags:(## 3) { flags = 0 }
@@ -1925,7 +1925,7 @@ export interface ShardHashes {
 // bta_leaf$0 {X:Type} {Y:Type} extra:Y leaf:X = BinTreeAug X Y;
 
 /*
-bta_fork$1 {X:Type} {Y:Type} left:^(BinTreeAug X Y) 
+bta_fork$1 {X:Type} {Y:Type} left:^(BinTreeAug X Y)
            right:^(BinTreeAug X Y) extra:Y = BinTreeAug X Y;
 */
 
@@ -1960,7 +1960,7 @@ export interface ShardFees {
 }
 
 /*
-_ config_addr:bits256 config:^(Hashmap 32 ^Cell) 
+_ config_addr:bits256 config:^(Hashmap 32 ^Cell)
   = ConfigParams;
 */
 
@@ -1972,7 +1972,7 @@ export interface ConfigParams {
 
 /*
 validator_info$_
-  validator_list_hash_short:uint32 
+  validator_list_hash_short:uint32
   catchain_seqno:uint32
   nx_cc_updated:Bool
 = ValidatorInfo;
@@ -1987,7 +1987,7 @@ export interface ValidatorInfo {
 
 /*
 validator_base_info$_
-  validator_list_hash_short:uint32 
+  validator_list_hash_short:uint32
   catchain_seqno:uint32
 = ValidatorBaseInfo;
 */
@@ -2195,14 +2195,14 @@ export interface ValidatorDescr_validator_addr {
 }
 
 /*
-validators#11 utime_since:uint32 utime_until:uint32 
-  total:(## 16) main:(## 16) { main <= total } { main >= 1 } 
+validators#11 utime_since:uint32 utime_until:uint32
+  total:(## 16) main:(## 16) { main <= total } { main >= 1 }
   list:(Hashmap 16 ValidatorDescr) = ValidatorSet;
 */
 
 /*
-validators_ext#12 utime_since:uint32 utime_until:uint32 
-  total:(## 16) main:(## 16) { main <= total } { main >= 1 } 
+validators_ext#12 utime_since:uint32 utime_until:uint32
+  total:(## 16) main:(## 16) { main <= total } { main >= 1 }
   total_weight:uint64 list:(HashmapE 16 ValidatorDescr) = ValidatorSet;
 */
 
@@ -2258,15 +2258,15 @@ export interface ValidatorSet_validators_ext {
 // _ BlockCreateFees = ConfigParam 14;
 
 /*
-_ validators_elected_for:uint32 elections_start_before:uint32 
+_ validators_elected_for:uint32 elections_start_before:uint32
   elections_end_before:uint32 stake_held_for:uint32
   = ConfigParam 15;
 */
 
 /*
-_ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16) 
-  { max_validators >= max_main_validators } 
-  { max_main_validators >= min_validators } 
+_ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16)
+  { max_validators >= max_main_validators }
+  { max_main_validators >= min_validators }
   { min_validators >= 1 }
   = ConfigParam 16;
 */
@@ -2607,7 +2607,7 @@ export interface ConfigVotingSetup {
 }
 
 /*
-cfg_proposal#f3 param_id:int32 param_value:(Maybe ^Cell) if_hash_equal:(Maybe uint256) 
+cfg_proposal#f3 param_id:int32 param_value:(Maybe ^Cell) if_hash_equal:(Maybe uint256)
   = ConfigProposal;
 */
 
@@ -2620,7 +2620,7 @@ export interface ConfigProposal {
 
 /*
 cfg_proposal_status#ce expires:uint32 proposal:^ConfigProposal is_critical:Bool
-  voters:(HashmapE 16 True) remaining_weight:int64 validator_set_id:uint256 
+  voters:(HashmapE 16 True) remaining_weight:int64 validator_set_id:uint256
   rounds_remaining:uint8 wins:uint8 losses:uint8 = ConfigProposalStatus;
 */
 
@@ -2641,7 +2641,7 @@ export interface ConfigProposalStatus {
 
 /*
 wfmt_ext#0 min_addr_len:(## 12) max_addr_len:(## 12) addr_len_step:(## 12)
-  { min_addr_len >= 64 } { min_addr_len <= max_addr_len } 
+  { min_addr_len >= 64 } { min_addr_len <= max_addr_len }
   { max_addr_len <= 1023 } { addr_len_step <= 1023 }
   workchain_type_id:(## 32) { workchain_type_id >= 1 }
   = WorkchainFormat 0;
@@ -2679,7 +2679,7 @@ export interface WcSplitMergeTimings {
 }
 
 /*
-workchain#a6 enabled_since:uint32 actual_min_split:(## 8) 
+workchain#a6 enabled_since:uint32 actual_min_split:(## 8)
   min_split:(## 8) max_split:(## 8) { actual_min_split <= min_split }
   basic:(## 1) active:Bool accept_msgs:Bool flags:(## 13) { flags = 0 }
   zerostate_root_hash:bits256 zerostate_file_hash:bits256
@@ -2753,7 +2753,7 @@ export interface BlockCreateFees {
 }
 
 /*
-_#cc utime_since:uint32 bit_price_ps:uint64 cell_price_ps:uint64 
+_#cc utime_since:uint32 bit_price_ps:uint64 cell_price_ps:uint64
   mc_bit_price_ps:uint64 mc_cell_price_ps:uint64 = StoragePrices;
 */
 
@@ -2767,14 +2767,14 @@ export interface StoragePrices {
 }
 
 /*
-gas_prices#dd gas_price:uint64 gas_limit:uint64 gas_credit:uint64 
-  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64 
+gas_prices#dd gas_price:uint64 gas_limit:uint64 gas_credit:uint64
+  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64
   = GasLimitsPrices;
 */
 
 /*
-gas_prices_ext#de gas_price:uint64 gas_limit:uint64 special_gas_limit:uint64 gas_credit:uint64 
-  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64 
+gas_prices_ext#de gas_price:uint64 gas_limit:uint64 special_gas_limit:uint64 gas_credit:uint64
+  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64
   = GasLimitsPrices;
 */
 
@@ -2853,7 +2853,7 @@ export interface MsgForwardPrices {
 }
 
 /*
-catchain_config#c1 mc_catchain_lifetime:uint32 shard_catchain_lifetime:uint32 
+catchain_config#c1 mc_catchain_lifetime:uint32 shard_catchain_lifetime:uint32
   shard_validators_lifetime:uint32 shard_validators_num:uint32 = CatchainConfig;
 */
 
@@ -2903,7 +2903,7 @@ consensus_config_v3#d8 flags:(## 7) { flags = 0 } new_catchain_ids:Bool
   round_candidates:(## 8) { round_candidates >= 1 }
   next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32
   fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32
-  max_block_bytes:uint32 max_collated_bytes:uint32 
+  max_block_bytes:uint32 max_collated_bytes:uint32
   proto_version:uint16 = ConsensusConfig;
 */
 
@@ -2994,7 +2994,7 @@ export interface ValidatorSignedTempKey {
 }
 
 /*
-misbehaviour_punishment_config_v1#01 
+misbehaviour_punishment_config_v1#01
   default_flat_fine:Grams default_proportional_fine:uint32
   severity_flat_mult:uint16 severity_proportional_mult:uint16
   unpunishable_interval:uint16
@@ -3073,7 +3073,7 @@ export interface OracleBridgeParams {
 }
 
 /*
-jetton_bridge_prices#_ bridge_burn_fee:Coins bridge_mint_fee:Coins 
+jetton_bridge_prices#_ bridge_burn_fee:Coins bridge_mint_fee:Coins
                        wallet_min_tons_for_storage:Coins
                        wallet_gas_consumption:Coins
                        minter_min_tons_for_storage:Coins
@@ -3162,7 +3162,7 @@ export interface ProofChain_chain_link {
 }
 
 /*
-top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures) 
+top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures)
   len:(## 8) { len >= 1 } { len <= 8 } chain:(ProofChain len) = TopBlockDescr;
 */
 
@@ -3355,12 +3355,6 @@ export interface VmTuple_vm_tuple_tcons {
 }
 
 // vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
-
-export interface VmStack {
-    readonly kind: 'VmStack';
-    readonly depth: number;
-    readonly stack: VmStackList;
-}
 
 // vm_stk_nil#_ = VmStackList 0;
 
@@ -3668,7 +3662,7 @@ export interface SmcCapability_cap_name {
 }
 
 /*
-chan_config$_  init_timeout:uint32 close_timeout:uint32 a_key:bits256 b_key:bits256 
+chan_config$_  init_timeout:uint32 close_timeout:uint32 a_key:bits256 b_key:bits256
   a_addr:^MsgAddressInt b_addr:^MsgAddressInt channel_id:uint64 min_A_extra:Grams = ChanConfig;
 */
 
@@ -3951,7 +3945,7 @@ export function hashmap_get_l(label: HmLabel): number {
 }
 
 /*
-hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
+hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
           {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
 */
 
@@ -3981,7 +3975,7 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
 // hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
 
 /*
-hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X)
            right:^(Hashmap n X) = HashmapNode (n + 1) X;
 */
 
@@ -4239,8 +4233,8 @@ export function hashmapAug_get_l(label: HmLabel): number {
 }
 
 /*
-ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#} 
-  label:(HmLabel ~l n) {n = (~m) + l} 
+ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#}
+  label:(HmLabel ~l n) {n = (~m) + l}
   node:(HashmapAugNode m X Y) = HashmapAug n X Y;
 */
 
@@ -4346,8 +4340,8 @@ export function varHashmap_get_l(label: HmLabel): number {
 }
 
 /*
-vhm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
-           {n = (~m) + l} node:(VarHashmapNode m X) 
+vhm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
+           {n = (~m) + l} node:(VarHashmapNode m X)
            = VarHashmap n X;
 */
 
@@ -4377,13 +4371,13 @@ export function storeVarHashmap<X>(varHashmap: VarHashmap<X>, storeX: (x: X) => 
 // vhmn_leaf$00 {n:#} {X:Type} value:X = VarHashmapNode n X;
 
 /*
-vhmn_fork$01 {n:#} {X:Type} left:^(VarHashmap n X) 
-             right:^(VarHashmap n X) value:(Maybe X) 
+vhmn_fork$01 {n:#} {X:Type} left:^(VarHashmap n X)
+             right:^(VarHashmap n X) value:(Maybe X)
              = VarHashmapNode (n + 1) X;
 */
 
 /*
-vhmn_cont$1 {n:#} {X:Type} branch:Bit child:^(VarHashmap n X) 
+vhmn_cont$1 {n:#} {X:Type} branch:Bit child:^(VarHashmap n X)
             value:X = VarHashmapNode (n + 1) X;
 */
 
@@ -4470,7 +4464,7 @@ export function storeVarHashmapNode<X>(varHashmapNode: VarHashmapNode<X>, storeX
 // vhme_empty$0 {n:#} {X:Type} = VarHashmapE n X;
 
 /*
-vhme_root$1 {n:#} {X:Type} root:^(VarHashmap n X) 
+vhme_root$1 {n:#} {X:Type} root:^(VarHashmap n X)
             = VarHashmapE n X;
 */
 
@@ -4536,8 +4530,8 @@ export function pfxHashmap_get_l(label: HmLabel): number {
 }
 
 /*
-phm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n) 
-           {n = (~m) + l} node:(PfxHashmapNode m X) 
+phm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
+           {n = (~m) + l} node:(PfxHashmapNode m X)
            = PfxHashmap n X;
 */
 
@@ -4567,7 +4561,7 @@ export function storePfxHashmap<X>(pfxHashmap: PfxHashmap<X>, storeX: (x: X) => 
 // phmn_leaf$0 {n:#} {X:Type} value:X = PfxHashmapNode n X;
 
 /*
-phmn_fork$1 {n:#} {X:Type} left:^(PfxHashmap n X) 
+phmn_fork$1 {n:#} {X:Type} left:^(PfxHashmap n X)
             right:^(PfxHashmap n X) = PfxHashmapNode (n + 1) X;
 */
 
@@ -4625,7 +4619,7 @@ export function storePfxHashmapNode<X>(pfxHashmapNode: PfxHashmapNode<X>, storeX
 // phme_empty$0 {n:#} {X:Type} = PfxHashmapE n X;
 
 /*
-phme_root$1 {n:#} {X:Type} root:^(PfxHashmap n X) 
+phme_root$1 {n:#} {X:Type} root:^(PfxHashmap n X)
             = PfxHashmapE n X;
 */
 
@@ -4720,7 +4714,7 @@ export function storeCoins(coins: Coins): (builder: Builder) => void {
 }
 
 /*
-extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32)) 
+extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32))
                  = ExtraCurrencyCollection;
 */
 
@@ -4757,7 +4751,7 @@ export function storeExtraCurrencyCollection(extraCurrencyCollection: ExtraCurre
 }
 
 /*
-currencies$_ grams:Grams other:ExtraCurrencyCollection 
+currencies$_ grams:Grams other:ExtraCurrencyCollection
            = CurrencyCollection;
 */
 
@@ -4782,13 +4776,13 @@ export function storeCurrencyCollection(currencyCollection: CurrencyCollection):
 
 /*
 int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
-  src:MsgAddressInt dest:MsgAddressInt 
+  src:MsgAddressInt dest:MsgAddressInt
   value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
   created_lt:uint64 created_at:uint32 = CommonMsgInfo;
 */
 
 /*
-ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt 
+ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt
   import_fee:Grams = CommonMsgInfo;
 */
 
@@ -4897,7 +4891,7 @@ export function storeCommonMsgInfo(commonMsgInfo: CommonMsgInfo): (builder: Buil
 
 /*
 int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
-  src:MsgAddress dest:MsgAddressInt 
+  src:MsgAddress dest:MsgAddressInt
   value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
   created_lt:uint64 created_at:uint32 = CommonMsgInfoRelaxed;
 */
@@ -5327,12 +5321,12 @@ export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => v
 }
 
 /*
-interm_addr_regular$0 use_dest_bits:(#<= 96) 
+interm_addr_regular$0 use_dest_bits:(#<= 96)
   = IntermediateAddress;
 */
 
 /*
-interm_addr_simple$10 workchain_id:int8 addr_pfx:uint64 
+interm_addr_simple$10 workchain_id:int8 addr_pfx:uint64
   = IntermediateAddress;
 */
 
@@ -5404,8 +5398,8 @@ export function storeIntermediateAddress(intermediateAddress: IntermediateAddres
 }
 
 /*
-msg_envelope#4 cur_addr:IntermediateAddress 
-  next_addr:IntermediateAddress fwd_fee_remaining:Grams 
+msg_envelope#4 cur_addr:IntermediateAddress
+  next_addr:IntermediateAddress fwd_fee_remaining:Grams
   msg:^(Message Any) = MsgEnvelope;
 */
 
@@ -5451,12 +5445,12 @@ export function storeMsgEnvelope(msgEnvelope: MsgEnvelope): (builder: Builder) =
 }
 
 /*
-msg_import_ext$000 msg:^(Message Any) transaction:^Transaction 
+msg_import_ext$000 msg:^(Message Any) transaction:^Transaction
               = InMsg;
 */
 
 /*
-msg_import_ihr$010 msg:^(Message Any) transaction:^Transaction 
+msg_import_ihr$010 msg:^(Message Any) transaction:^Transaction
     ihr_fee:Grams proof_created:^Cell = InMsg;
 */
 
@@ -5466,22 +5460,22 @@ msg_import_imm$011 in_msg:^MsgEnvelope
 */
 
 /*
-msg_import_fin$100 in_msg:^MsgEnvelope 
+msg_import_fin$100 in_msg:^MsgEnvelope
     transaction:^Transaction fwd_fee:Grams = InMsg;
 */
 
 /*
-msg_import_tr$101  in_msg:^MsgEnvelope out_msg:^MsgEnvelope 
+msg_import_tr$101  in_msg:^MsgEnvelope out_msg:^MsgEnvelope
     transit_fee:Grams = InMsg;
 */
 
 /*
-msg_discard_fin$110 in_msg:^MsgEnvelope transaction_id:uint64 
+msg_discard_fin$110 in_msg:^MsgEnvelope transaction_id:uint64
     fwd_fee:Grams = InMsg;
 */
 
 /*
-msg_discard_tr$111 in_msg:^MsgEnvelope transaction_id:uint64 
+msg_discard_tr$111 in_msg:^MsgEnvelope transaction_id:uint64
     fwd_fee:Grams proof_delivered:^Cell = InMsg;
 */
 
@@ -5709,7 +5703,7 @@ export function storeInMsg(inMsg: InMsg): (builder: Builder) => void {
 }
 
 /*
-import_fees$_ fees_collected:Grams 
+import_fees$_ fees_collected:Grams
   value_imported:CurrencyCollection = ImportFees;
 */
 
@@ -5781,17 +5775,17 @@ msg_export_ext$000 msg:^(Message Any)
 */
 
 /*
-msg_export_imm$010 out_msg:^MsgEnvelope 
+msg_export_imm$010 out_msg:^MsgEnvelope
     transaction:^Transaction reimport:^InMsg = OutMsg;
 */
 
 /*
-msg_export_new$001 out_msg:^MsgEnvelope 
+msg_export_new$001 out_msg:^MsgEnvelope
     transaction:^Transaction = OutMsg;
 */
 
 /*
-msg_export_tr$011  out_msg:^MsgEnvelope 
+msg_export_tr$011  out_msg:^MsgEnvelope
     imported:^InMsg = OutMsg;
 */
 
@@ -5807,12 +5801,12 @@ msg_export_deq_short$1101 msg_env_hash:bits256
 */
 
 /*
-msg_export_tr_req$111 out_msg:^MsgEnvelope 
+msg_export_tr_req$111 out_msg:^MsgEnvelope
     imported:^InMsg = OutMsg;
 */
 
 /*
-msg_export_deq_imm$100 out_msg:^MsgEnvelope 
+msg_export_deq_imm$100 out_msg:^MsgEnvelope
     reimport:^InMsg = OutMsg;
 */
 
@@ -6264,7 +6258,7 @@ export function storeOutMsgQueueInfo(outMsgQueueInfo: OutMsgQueueInfo): (builder
 }
 
 /*
-storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7) 
+storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7)
   public_cells:(VarUInteger 7) = StorageUsed;
 */
 
@@ -6291,7 +6285,7 @@ export function storeStorageUsed(storageUsed: StorageUsed): (builder: Builder) =
 }
 
 /*
-storage_used_short$_ cells:(VarUInteger 7) 
+storage_used_short$_ cells:(VarUInteger 7)
   bits:(VarUInteger 7) = StorageUsedShort;
 */
 
@@ -6401,7 +6395,7 @@ export function storeAccount(account: Account): (builder: Builder) => void {
 
 /*
 account_storage$_ last_trans_lt:uint64
-    balance:CurrencyCollection state:AccountState 
+    balance:CurrencyCollection state:AccountState
   = AccountStorage;
 */
 
@@ -6555,7 +6549,7 @@ export function storeAccountStatus(accountStatus: AccountStatus): (builder: Buil
 }
 
 /*
-account_descr$_ account:^Account last_trans_hash:bits256 
+account_descr$_ account:^Account last_trans_hash:bits256
   last_trans_lt:uint64 = ShardAccount;
 */
 
@@ -6649,7 +6643,7 @@ export function storeShardAccounts(shardAccounts: ShardAccounts): (builder: Buil
 }
 
 /*
-transaction$0111 account_addr:bits256 lt:uint64 
+transaction$0111 account_addr:bits256 lt:uint64
   prev_trans_hash:bits256 prev_trans_lt:uint64 now:uint32
   outmsg_cnt:uint15
   orig_status:AccountStatus end_status:AccountStatus
@@ -6967,7 +6961,7 @@ export function storeShardAccountBlocks(shardAccountBlocks: ShardAccountBlocks):
 }
 
 /*
-tr_phase_storage$_ storage_fees_collected:Grams 
+tr_phase_storage$_ storage_fees_collected:Grams
   storage_fees_due:(Maybe Grams)
   status_change:AccStatusChange
   = TrStoragePhase;
@@ -7094,7 +7088,7 @@ tr_phase_compute_skipped$0 reason:ComputeSkipReason
 */
 
 /*
-tr_phase_compute_vm$1 success:Bool msg_state_used:Bool 
+tr_phase_compute_vm$1 success:Bool msg_state_used:Bool
   account_activated:Bool gas_fees:Grams
   ^[ gas_used:(VarUInteger 7)
   gas_limit:(VarUInteger 7) gas_credit:(Maybe (VarUInteger 3))
@@ -7272,8 +7266,8 @@ tr_phase_action$_ success:Bool valid:Bool no_funds:Bool
   status_change:AccStatusChange
   total_fwd_fees:(Maybe Grams) total_action_fees:(Maybe Grams)
   result_code:int32 result_arg:(Maybe int32) tot_actions:uint16
-  spec_actions:uint16 skipped_actions:uint16 msgs_created:uint16 
-  action_list_hash:bits256 tot_msg_size:StorageUsedShort 
+  spec_actions:uint16 skipped_actions:uint16 msgs_created:uint16
+  action_list_hash:bits256 tot_msg_size:StorageUsedShort
   = TrActionPhase;
 */
 
@@ -7364,7 +7358,7 @@ tr_phase_bounce_nofunds$01 msg_size:StorageUsedShort
 */
 
 /*
-tr_phase_bounce_ok$1 msg_size:StorageUsedShort 
+tr_phase_bounce_ok$1 msg_size:StorageUsedShort
   msg_fees:Grams fwd_fees:Grams = TrBouncePhase;
 */
 
@@ -7772,7 +7766,7 @@ export function storeSplitMergeInfo(splitMergeInfo: SplitMergeInfo): (builder: B
 
 /*
 smc_info#076ef1ea actions:uint16 msgs_sent:uint16
-  unixtime:uint32 block_lt:uint64 trans_lt:uint64 
+  unixtime:uint32 block_lt:uint64 trans_lt:uint64
   rand_seed:bits256 balance_remaining:CurrencyCollection
   myself:MsgAddressInt global_config:(Maybe Cell) = SmartContractInfo;
 */
@@ -7878,7 +7872,7 @@ export function storeOutList(outList: OutList): (builder: Builder) => void {
 }
 
 /*
-action_send_msg#0ec3c86d mode:(## 8) 
+action_send_msg#0ec3c86d mode:(## 8)
   out_msg:^(MessageRelaxed Any) = OutAction;
 */
 
@@ -8061,7 +8055,7 @@ export function storeOutListNode(outListNode: OutListNode): (builder: Builder) =
 }
 
 /*
-shard_ident$00 shard_pfx_bits:(#<= 60) 
+shard_ident$00 shard_pfx_bits:(#<= 60)
   workchain_id:int32 shard_prefix:uint64 = ShardIdent;
 */
 
@@ -8094,7 +8088,7 @@ export function storeShardIdent(shardIdent: ShardIdent): (builder: Builder) => v
 
 /*
 ext_blk_ref$_ end_lt:uint64
-  seq_no:uint32 root_hash:bits256 file_hash:bits256 
+  seq_no:uint32 root_hash:bits256 file_hash:bits256
   = ExtBlkRef;
 */
 
@@ -8173,7 +8167,7 @@ export function storeBlkMasterInfo(blkMasterInfo: BlkMasterInfo): (builder: Buil
 
 /*
 shard_state#9023afe2 global_id:int32
-  shard_id:ShardIdent 
+  shard_id:ShardIdent
   seq_no:uint32 vert_seq_no:#
   gen_utime:uint32 gen_lt:uint64
   min_ref_mc_seqno:uint32
@@ -8379,15 +8373,15 @@ export function storeLibDescr(libDescr: LibDescr): (builder: Builder) => void {
 }
 
 /*
-block_info#9bc7a987 version:uint32 
-  not_master:(## 1) 
-  after_merge:(## 1) before_split:(## 1) 
-  after_split:(## 1) 
+block_info#9bc7a987 version:uint32
+  not_master:(## 1)
+  after_merge:(## 1) before_split:(## 1)
+  after_split:(## 1)
   want_split:Bool want_merge:Bool
   key_block:Bool vert_seqno_incr:(## 1)
   flags:(## 8) { flags <= 1 }
-  seq_no:# vert_seq_no:# { vert_seq_no >= vert_seqno_incr } 
-  { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no } 
+  seq_no:# vert_seq_no:# { vert_seq_no >= vert_seqno_incr }
+  { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no }
   shard:ShardIdent gen_utime:uint32
   start_lt:uint64 end_lt:uint64
   gen_validator_list_hash_short:uint32
@@ -8395,7 +8389,7 @@ block_info#9bc7a987 version:uint32
   min_ref_mc_seqno:uint32
   prev_key_block_seqno:uint32
   gen_software:flags . 0?GlobalVersion
-  master_ref:not_master?^BlkMasterInfo 
+  master_ref:not_master?^BlkMasterInfo
   prev_ref:^(BlkPrevInfo after_merge)
   prev_vert_ref:vert_seqno_incr?^(BlkPrevInfo 0)
   = BlockInfo;
@@ -8579,7 +8573,7 @@ export function storeBlkPrevInfo(blkPrevInfo: BlkPrevInfo): (builder: Builder) =
 /*
 block#11ef55aa global_id:int32
   info:^BlockInfo value_flow:^ValueFlow
-  state_update:^(MERKLE_UPDATE ShardState) 
+  state_update:^(MERKLE_UPDATE ShardState)
   extra:^BlockExtra = Block;
 */
 
@@ -8693,7 +8687,7 @@ export function storeBlockExtra(blockExtra: BlockExtra): (builder: Builder) => v
 }
 
 /*
-value_flow#b8e48dfb ^[ from_prev_blk:CurrencyCollection 
+value_flow#b8e48dfb ^[ from_prev_blk:CurrencyCollection
   to_next_blk:CurrencyCollection
   imported:CurrencyCollection
   exported:CurrencyCollection ]
@@ -8827,7 +8821,7 @@ export function storeValueFlow(valueFlow: ValueFlow): (builder: Builder) => void
 // bt_leaf$0 {X:Type} leaf:X = BinTree X;
 
 /*
-bt_fork$1 {X:Type} left:^(BinTree X) right:^(BinTree X) 
+bt_fork$1 {X:Type} left:^(BinTree X) right:^(BinTree X)
           = BinTree X;
 */
 
@@ -8948,7 +8942,7 @@ export function storeFutureSplitMerge(futureSplitMerge: FutureSplitMerge): (buil
 /*
 shard_descr#b seq_no:uint32 reg_mc_seqno:uint32
   start_lt:uint64 end_lt:uint64
-  root_hash:bits256 file_hash:bits256 
+  root_hash:bits256 file_hash:bits256
   before_split:Bool before_merge:Bool
   want_split:Bool want_merge:Bool
   nx_cc_updated:Bool flags:(## 3) { flags = 0 }
@@ -8962,7 +8956,7 @@ shard_descr#b seq_no:uint32 reg_mc_seqno:uint32
 /*
 shard_descr_new#a seq_no:uint32 reg_mc_seqno:uint32
   start_lt:uint64 end_lt:uint64
-  root_hash:bits256 file_hash:bits256 
+  root_hash:bits256 file_hash:bits256
   before_split:Bool before_merge:Bool
   want_split:Bool want_merge:Bool
   nx_cc_updated:Bool flags:(## 3) { flags = 0 }
@@ -9177,7 +9171,7 @@ export function storeShardHashes(shardHashes: ShardHashes): (builder: Builder) =
 // bta_leaf$0 {X:Type} {Y:Type} extra:Y leaf:X = BinTreeAug X Y;
 
 /*
-bta_fork$1 {X:Type} {Y:Type} left:^(BinTreeAug X Y) 
+bta_fork$1 {X:Type} {Y:Type} left:^(BinTreeAug X Y)
            right:^(BinTreeAug X Y) extra:Y = BinTreeAug X Y;
 */
 
@@ -9301,7 +9295,7 @@ export function storeShardFees(shardFees: ShardFees): (builder: Builder) => void
 }
 
 /*
-_ config_addr:bits256 config:^(Hashmap 32 ^Cell) 
+_ config_addr:bits256 config:^(Hashmap 32 ^Cell)
   = ConfigParams;
 */
 
@@ -9349,7 +9343,7 @@ export function storeConfigParams(configParams: ConfigParams): (builder: Builder
 
 /*
 validator_info$_
-  validator_list_hash_short:uint32 
+  validator_list_hash_short:uint32
   catchain_seqno:uint32
   nx_cc_updated:Bool
 = ValidatorInfo;
@@ -9379,7 +9373,7 @@ export function storeValidatorInfo(validatorInfo: ValidatorInfo): (builder: Buil
 
 /*
 validator_base_info$_
-  validator_list_hash_short:uint32 
+  validator_list_hash_short:uint32
   catchain_seqno:uint32
 = ValidatorBaseInfo;
 */
@@ -10021,14 +10015,14 @@ export function storeValidatorDescr(validatorDescr: ValidatorDescr): (builder: B
 }
 
 /*
-validators#11 utime_since:uint32 utime_until:uint32 
-  total:(## 16) main:(## 16) { main <= total } { main >= 1 } 
+validators#11 utime_since:uint32 utime_until:uint32
+  total:(## 16) main:(## 16) { main <= total } { main >= 1 }
   list:(Hashmap 16 ValidatorDescr) = ValidatorSet;
 */
 
 /*
-validators_ext#12 utime_since:uint32 utime_until:uint32 
-  total:(## 16) main:(## 16) { main <= total } { main >= 1 } 
+validators_ext#12 utime_since:uint32 utime_until:uint32
+  total:(## 16) main:(## 16) { main <= total } { main >= 1 }
   total_weight:uint64 list:(HashmapE 16 ValidatorDescr) = ValidatorSet;
 */
 
@@ -10170,15 +10164,15 @@ export function storeValidatorSet(validatorSet: ValidatorSet): (builder: Builder
 // _ BlockCreateFees = ConfigParam 14;
 
 /*
-_ validators_elected_for:uint32 elections_start_before:uint32 
+_ validators_elected_for:uint32 elections_start_before:uint32
   elections_end_before:uint32 stake_held_for:uint32
   = ConfigParam 15;
 */
 
 /*
-_ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16) 
-  { max_validators >= max_main_validators } 
-  { max_main_validators >= min_validators } 
+_ max_validators:(## 16) max_main_validators:(## 16) min_validators:(## 16)
+  { max_validators >= max_main_validators }
+  { max_main_validators >= min_validators }
   { min_validators >= 1 }
   = ConfigParam 16;
 */
@@ -11126,7 +11120,7 @@ export function storeConfigVotingSetup(configVotingSetup: ConfigVotingSetup): (b
 }
 
 /*
-cfg_proposal#f3 param_id:int32 param_value:(Maybe ^Cell) if_hash_equal:(Maybe uint256) 
+cfg_proposal#f3 param_id:int32 param_value:(Maybe ^Cell) if_hash_equal:(Maybe uint256)
   = ConfigProposal;
 */
 
@@ -11179,7 +11173,7 @@ export function storeConfigProposal(configProposal: ConfigProposal): (builder: B
 
 /*
 cfg_proposal_status#ce expires:uint32 proposal:^ConfigProposal is_critical:Bool
-  voters:(HashmapE 16 True) remaining_weight:int64 validator_set_id:uint256 
+  voters:(HashmapE 16 True) remaining_weight:int64 validator_set_id:uint256
   rounds_remaining:uint8 wins:uint8 losses:uint8 = ConfigProposalStatus;
 */
 
@@ -11243,7 +11237,7 @@ export function storeConfigProposalStatus(configProposalStatus: ConfigProposalSt
 
 /*
 wfmt_ext#0 min_addr_len:(## 12) max_addr_len:(## 12) addr_len_step:(## 12)
-  { min_addr_len >= 64 } { min_addr_len <= max_addr_len } 
+  { min_addr_len >= 64 } { min_addr_len <= max_addr_len }
   { max_addr_len <= 1023 } { addr_len_step <= 1023 }
   workchain_type_id:(## 32) { workchain_type_id >= 1 }
   = WorkchainFormat 0;
@@ -11369,7 +11363,7 @@ export function storeWcSplitMergeTimings(wcSplitMergeTimings: WcSplitMergeTiming
 }
 
 /*
-workchain#a6 enabled_since:uint32 actual_min_split:(## 8) 
+workchain#a6 enabled_since:uint32 actual_min_split:(## 8)
   min_split:(## 8) max_split:(## 8) { actual_min_split <= min_split }
   basic:(## 1) active:Bool accept_msgs:Bool flags:(## 13) { flags = 0 }
   zerostate_root_hash:bits256 zerostate_file_hash:bits256
@@ -11579,7 +11573,7 @@ export function storeBlockCreateFees(blockCreateFees: BlockCreateFees): (builder
 }
 
 /*
-_#cc utime_since:uint32 bit_price_ps:uint64 cell_price_ps:uint64 
+_#cc utime_since:uint32 bit_price_ps:uint64 cell_price_ps:uint64
   mc_bit_price_ps:uint64 mc_cell_price_ps:uint64 = StoragePrices;
 */
 
@@ -11617,14 +11611,14 @@ export function storeStoragePrices(storagePrices: StoragePrices): (builder: Buil
 }
 
 /*
-gas_prices#dd gas_price:uint64 gas_limit:uint64 gas_credit:uint64 
-  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64 
+gas_prices#dd gas_price:uint64 gas_limit:uint64 gas_credit:uint64
+  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64
   = GasLimitsPrices;
 */
 
 /*
-gas_prices_ext#de gas_price:uint64 gas_limit:uint64 special_gas_limit:uint64 gas_credit:uint64 
-  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64 
+gas_prices_ext#de gas_price:uint64 gas_limit:uint64 special_gas_limit:uint64 gas_credit:uint64
+  block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64
   = GasLimitsPrices;
 */
 
@@ -11846,7 +11840,7 @@ export function storeMsgForwardPrices(msgForwardPrices: MsgForwardPrices): (buil
 }
 
 /*
-catchain_config#c1 mc_catchain_lifetime:uint32 shard_catchain_lifetime:uint32 
+catchain_config#c1 mc_catchain_lifetime:uint32 shard_catchain_lifetime:uint32
   shard_validators_lifetime:uint32 shard_validators_num:uint32 = CatchainConfig;
 */
 
@@ -11946,7 +11940,7 @@ consensus_config_v3#d8 flags:(## 7) { flags = 0 } new_catchain_ids:Bool
   round_candidates:(## 8) { round_candidates >= 1 }
   next_candidate_delay_ms:uint32 consensus_timeout_ms:uint32
   fast_attempts:uint32 attempt_duration:uint32 catchain_max_deps:uint32
-  max_block_bytes:uint32 max_collated_bytes:uint32 
+  max_block_bytes:uint32 max_collated_bytes:uint32
   proto_version:uint16 = ConsensusConfig;
 */
 
@@ -12246,7 +12240,7 @@ export function storeValidatorSignedTempKey(validatorSignedTempKey: ValidatorSig
 }
 
 /*
-misbehaviour_punishment_config_v1#01 
+misbehaviour_punishment_config_v1#01
   default_flat_fine:Grams default_proportional_fine:uint32
   severity_flat_mult:uint16 severity_proportional_mult:uint16
   unpunishable_interval:uint16
@@ -12474,7 +12468,7 @@ export function storeOracleBridgeParams(oracleBridgeParams: OracleBridgeParams):
 }
 
 /*
-jetton_bridge_prices#_ bridge_burn_fee:Coins bridge_mint_fee:Coins 
+jetton_bridge_prices#_ bridge_burn_fee:Coins bridge_mint_fee:Coins
                        wallet_min_tons_for_storage:Coins
                        wallet_gas_consumption:Coins
                        minter_min_tons_for_storage:Coins
@@ -12777,7 +12771,7 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
 }
 
 /*
-top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures) 
+top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures)
   len:(## 8) { len >= 1 } { len <= 8 } chain:(ProofChain len) = TopBlockDescr;
 */
 
@@ -13395,21 +13389,13 @@ export function storeVmTuple(vmTuple: VmTuple): (builder: Builder) => void {
 
 // vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
 
-export function loadVmStack(slice: Slice): VmStack {
-    let depth: number = slice.loadUint(24);
-    let stack: VmStackList = loadVmStackList(slice, depth);
-    return {
-        kind: 'VmStack',
-        depth: depth,
-        stack: stack,
-    }
+export function loadVmStack(slice: Slice): TupleItem[] {
+    return parseTuple(slice.asCell())
 
 }
 
-export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
+export function storeVmStack(vmStack: TupleItem[]): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeUint(vmStack.depth, 24);
-        storeVmStackList(vmStack.stack)(builder);
     })
 
 }
@@ -14325,7 +14311,7 @@ export function storeSmcCapability(smcCapability: SmcCapability): (builder: Buil
 }
 
 /*
-chan_config$_  init_timeout:uint32 close_timeout:uint32 a_key:bits256 b_key:bits256 
+chan_config$_  init_timeout:uint32 close_timeout:uint32 a_key:bits256 b_key:bits256
   a_addr:^MsgAddressInt b_addr:^MsgAddressInt channel_id:uint64 min_A_extra:Grams = ChanConfig;
 */
 
@@ -14719,4 +14705,3 @@ export function storeChanData(chanData: ChanData): (builder: Builder) => void {
     })
 
 }
-
