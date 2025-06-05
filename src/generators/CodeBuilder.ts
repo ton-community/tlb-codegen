@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Whales Corp. 
+ * Copyright (c) Whales Corp.
  * All Rights Reserved.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,58 +7,58 @@
  */
 
 export class CodeBuilder {
-    tabLevel = 0
-    code = ''
+    tabLevel = 0;
+    code = '';
 
     tab() {
-        this.tabLevel++
+        this.tabLevel++;
     }
 
     unTab() {
-        this.tabLevel--
+        this.tabLevel--;
     }
 
     inTab(callback: () => void) {
         this.tab();
-        callback()
+        callback();
         this.unTab();
     }
 
     add(text?: string, moveLine = true) {
         if (!text) {
-            this.code += '\n'
-            return
+            this.code += '\n';
+            return;
         }
 
-        let tab = ' '.repeat(this.tabLevel * 4)
-        this.code += tab + text + (moveLine ? '\n' : '')
+        let tab = ' '.repeat(this.tabLevel * 4);
+        this.code += tab + text + (moveLine ? '\n' : '');
     }
 
     addMultiline(text: string, inline = false) {
-        let lines = text.split('\n')
-        let i = 0
+        let lines = text.split('\n');
+        let i = 0;
         for (let line of lines) {
             if (line === '\n' && lines.indexOf(line) === lines.length - 1) {
-                continue
+                continue;
             }
             if (inline && i === 0) {
-                this.code += line + '\n'
+                this.code += line + '\n';
             } else {
-                this.add(line)
+                this.add(line);
             }
-            i++
+            i++;
         }
     }
 
     append(code: CodeBuilder) {
-        this.addMultiline(code.render())
+        this.addMultiline(code.render());
     }
 
     appendInline(code: CodeBuilder) {
-        this.addMultiline(code.render(), true)
+        this.addMultiline(code.render(), true);
     }
 
     render() {
-        return this.code
+        return this.code;
     }
 }

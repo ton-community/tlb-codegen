@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import meow from 'meow';
+
 import { generateCode } from './src/main';
 
-const cli = meow(`
+const cli = meow(
+    `
 	Usage
 	  $ tlb <tlbpath>
 
@@ -19,34 +21,36 @@ const cli = meow(`
 
 	  $ tlb -l typescript ./path/to/file.tlb
 	  > Generated code is saved to ./path/to/file.ts
-`, {
-	flags: {
-		output: {
-			type: 'string',
-			alias: 'o'
-		},
-		language: {
-			type: 'string',
-			alias: 'l'
-		}
-	}
-});
+`,
+    {
+        flags: {
+            output: {
+                type: 'string',
+                alias: 'o',
+            },
+            language: {
+                type: 'string',
+                alias: 'l',
+            },
+        },
+    },
+);
 
-
-let input = cli.input.at(0)
+let input = cli.input.at(0);
 if (input) {
-	if (input.match(/\.tlb$/) == null) {
-		console.error('Input file must have .tlb extension')
-		process.exit(1)
-	}
+    if (input.match(/\.tlb$/) == null) {
+        // eslint-disable-next-line no-console
+        console.error('Input file must have .tlb extension');
+        process.exit(1);
+    }
 
-	let output = input.replace('.tlb', '.ts')
-	if (cli.flags.output) {
-		output = cli.flags.output;
-	}
-	let language = 'typescript'
-	if (cli.flags.language) {
-		language = cli.flags.language
-	}
-	generateCode(input, output, language);
+    let output = input.replace('.tlb', '.ts');
+    if (cli.flags.output) {
+        output = cli.flags.output;
+    }
+    let language = 'typescript';
+    if (cli.flags.language) {
+        language = cli.flags.language;
+    }
+    generateCode(input, output, language);
 }
