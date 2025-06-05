@@ -3,7 +3,10 @@
   "version": "2.0.0-beta.1",
   "description": "",
   "main": "build/index.js",
+  "prettier": "@ton/toolchain/prettier",
   "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --max-warnings 0 --fix",
     "test": "jest",
     "build": "npm run compile",
     "compile": "tsc"
@@ -16,6 +19,7 @@
   "license": "ISC",
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@ton/toolchain": "github:the-ton-tech/toolchain#v1.4.0",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"

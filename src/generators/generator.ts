@@ -1,17 +1,17 @@
-import { TLBCode, TLBType } from "../ast"
-import { CodeBuilder } from "./CodeBuilder"
-import { GenDeclaration as TSGenDeclaration, TheNode } from "./typescript/tsgen"
+import { TLBCode, TLBType } from '../ast';
+import { CodeBuilder } from './CodeBuilder';
+import { GenDeclaration as TSGenDeclaration, TheNode } from './typescript/tsgen';
 
 export interface CodeGenerator {
-    jsCodeDeclarations: CommonGenDeclaration[]
-    jsCodeConstructorDeclarations: CommonGenDeclaration[]
-    jsCodeFunctionsDeclarations: CommonGenDeclaration[]
-    tlbCode: TLBCode
+    jsCodeDeclarations: CommonGenDeclaration[];
+    jsCodeConstructorDeclarations: CommonGenDeclaration[];
+    jsCodeFunctionsDeclarations: CommonGenDeclaration[];
+    tlbCode: TLBCode;
 
-    addTonCoreClassUsage(name: string): void
-    addBuiltinCode(): void
-    addTlbType(tlbType: TLBType): void
-    toCode(node: TheNode, code: CodeBuilder): CodeBuilder
+    addTonCoreClassUsage(name: string): void;
+    addBuiltinCode(): void;
+    addTlbType(tlbType: TLBType): void;
+    toCode(node: TheNode, code: CodeBuilder): CodeBuilder;
 }
 
 export type CommonGenDeclaration = TSGenDeclaration;

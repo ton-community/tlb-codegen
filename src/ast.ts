@@ -1,208 +1,205 @@
 export class TLBBinaryOp {
-  constructor(
-    readonly left: TLBMathExpr,
-    readonly right: TLBMathExpr,
-    readonly operation: string,
-    readonly variables: Set<string> = new Set([
-      ...left.variables,
-      ...right.variables,
-    ]),
-    readonly hasNeg: boolean = left.hasNeg || right.hasNeg
-  ) {}
+    constructor(
+        readonly left: TLBMathExpr,
+        readonly right: TLBMathExpr,
+        readonly operation: string,
+        readonly variables: Set<string> = new Set([...left.variables, ...right.variables]),
+        readonly hasNeg: boolean = left.hasNeg || right.hasNeg,
+    ) {}
 }
 
 export class TLBNumberExpr {
-  constructor(
-    readonly n: number,
-    readonly variables: Set<string> = new Set<string>(),
-    readonly hasNeg: boolean = false
-  ) {}
+    constructor(
+        readonly n: number,
+        readonly variables: Set<string> = new Set<string>(),
+        readonly hasNeg: boolean = false,
+    ) {}
 }
 
 export class TLBUnaryOp {
-  constructor(
-    readonly value: TLBMathExpr,
-    readonly operation: string,
-    readonly variables: Set<string> = value.variables,
-    readonly hasNeg: boolean = value.hasNeg
-  ) {}
+    constructor(
+        readonly value: TLBMathExpr,
+        readonly operation: string,
+        readonly variables: Set<string> = value.variables,
+        readonly hasNeg: boolean = value.hasNeg,
+    ) {}
 }
 
 export class TLBVarExpr {
-  constructor(
-    readonly x: string,
-    readonly variables: Set<string> = new Set<string>(),
-    readonly hasNeg: boolean = false
-  ) {
-    if (variables.size == 0) {
-      variables.add(x);
+    constructor(
+        readonly x: string,
+        readonly variables: Set<string> = new Set<string>(),
+        readonly hasNeg: boolean = false,
+    ) {
+        if (variables.size == 0) {
+            variables.add(x);
+        }
     }
-  }
 }
 
 export type TLBMathExpr = TLBBinaryOp | TLBNumberExpr | TLBVarExpr | TLBUnaryOp;
 
-export type TLBVariableType = "Type" | "#";
+export type TLBVariableType = 'Type' | '#';
 
 export class TLBVariable {
-  constructor(
-    readonly isConst: boolean,
-    readonly negated: boolean,
-    readonly type: TLBVariableType,
-    readonly name: string,
-    readonly isField: boolean,
-    readonly deriveExpr?: TLBMathExpr,
-    readonly initialExpr?: TLBMathExpr
-  ) {}
+    constructor(
+        readonly isConst: boolean,
+        readonly negated: boolean,
+        readonly type: TLBVariableType,
+        readonly name: string,
+        readonly isField: boolean,
+        readonly deriveExpr?: TLBMathExpr,
+        readonly initialExpr?: TLBMathExpr,
+    ) {}
 }
 
 export type TLBBitsType = {
-  kind: "TLBBitsType";
-  bits: TLBMathExpr;
+    kind: 'TLBBitsType';
+    bits: TLBMathExpr;
 };
 
 export type TLBNamedType = {
-  kind: "TLBNamedType";
-  name: string;
-  arguments: TLBFieldType[];
+    kind: 'TLBNamedType';
+    name: string;
+    arguments: TLBFieldType[];
 };
 
 export type TLBMathExprType = {
-  kind: "TLBExprMathType";
-  expr: TLBMathExpr;
-  initialExpr: TLBMathExpr;
+    kind: 'TLBExprMathType';
+    expr: TLBMathExpr;
+    initialExpr: TLBMathExpr;
 };
 
 export type TLBCoinsType = {
-  kind: "TLBCoinsType";
-}
+    kind: 'TLBCoinsType';
+};
 
 export type TLBAddressType = {
-  kind: "TLBAddressType";
-  addrType: "Internal" | "External" | "Any"
+    kind: 'TLBAddressType';
+    addrType: 'Internal' | 'External' | 'Any';
 };
 
 export type TLBVarIntegerType = {
-  kind: "TLBVarIntegerType";
-  signed: boolean;
-  n: TLBMathExpr;
-}
+    kind: 'TLBVarIntegerType';
+    signed: boolean;
+    n: TLBMathExpr;
+};
 
 export type TLBHashmapType = {
-  kind: "TLBHashmapType";
-  key: TLBMathExprType;
-  value: TLBFieldType;
-  extra?: TLBFieldType;
-  directStore: boolean;
-}
+    kind: 'TLBHashmapType';
+    key: TLBMathExprType;
+    value: TLBFieldType;
+    extra?: TLBFieldType;
+    directStore: boolean;
+};
 
 export type TLBCellType = {
-  kind: "TLBCellType";
+    kind: 'TLBCellType';
 };
 
 export type TLBNumberType = {
-  kind: "TLBNumberType";
-  bits: TLBMathExpr;
-  signed: boolean;
-  storeBits: TLBMathExpr;
-  maxBits: number | undefined;
+    kind: 'TLBNumberType';
+    bits: TLBMathExpr;
+    signed: boolean;
+    storeBits: TLBMathExpr;
+    maxBits: number | undefined;
 };
 
 export type TLBNegatedType = {
-  kind: "TLBNegatedType";
-  variableName: string;
+    kind: 'TLBNegatedType';
+    variableName: string;
 };
 
 export type TLBCellInsideType = {
-  kind: "TLBCellInsideType";
-  value: TLBFieldType;
+    kind: 'TLBCellInsideType';
+    value: TLBFieldType;
 };
 
 export type TLBMultipleType = {
-  kind: "TLBMultipleType";
-  value: TLBFieldType;
-  times: TLBMathExpr;
+    kind: 'TLBMultipleType';
+    value: TLBFieldType;
+    times: TLBMathExpr;
 };
 
 export type TLBTupleType = {
-  kind: "TLBTupleType";
-}
+    kind: 'TLBTupleType';
+};
 
 export type TLBCondType = {
-  kind: "TLBCondType";
-  value: TLBFieldType;
-  condition: TLBMathExpr;
+    kind: 'TLBCondType';
+    value: TLBFieldType;
+    condition: TLBMathExpr;
 };
 
 export type TLBExoticType = {
-  kind: "TLBExoticType";
+    kind: 'TLBExoticType';
 };
 
 export type TLBBoolType = {
-  kind: "TLBBoolType";
-  value: boolean | undefined;
-}
+    kind: 'TLBBoolType';
+    value: boolean | undefined;
+};
 
 export type TLBFieldType =
-  | TLBNumberType
-  | TLBBoolType
-  | TLBBitsType
-  | TLBNamedType
-  | TLBCoinsType
-  | TLBAddressType
-  | TLBHashmapType
-  | TLBVarIntegerType
-  | TLBCellType
-  | TLBMathExprType
-  | TLBNegatedType
-  | TLBCellInsideType
-  | TLBMultipleType
-  | TLBTupleType
-  | TLBCondType
-  | TLBExoticType;
+    | TLBNumberType
+    | TLBBoolType
+    | TLBBitsType
+    | TLBNamedType
+    | TLBCoinsType
+    | TLBAddressType
+    | TLBHashmapType
+    | TLBVarIntegerType
+    | TLBCellType
+    | TLBMathExprType
+    | TLBNegatedType
+    | TLBCellInsideType
+    | TLBMultipleType
+    | TLBTupleType
+    | TLBCondType
+    | TLBExoticType;
 
 export type TLBField = {
-  name: string;
-  anonymous: boolean;
-  fieldType: TLBFieldType;
-  subFields: TLBField[];
+    name: string;
+    anonymous: boolean;
+    fieldType: TLBFieldType;
+    subFields: TLBField[];
 };
 
 export class TLBParameter {
-  constructor(
-    readonly variable: TLBVariable,
-    readonly paramExpr: TLBMathExpr,
-    readonly argName?: string
-  ) {}
+    constructor(
+        readonly variable: TLBVariable,
+        readonly paramExpr: TLBMathExpr,
+        readonly argName?: string,
+    ) {}
 }
 
 export type TLBConstructorTag = {
-  bitLen: number;
-  binary: string;
+    bitLen: number;
+    binary: string;
 };
 
 export class TLBConstructor {
-  constructor(
-    readonly parameters: Array<TLBParameter>,
-    readonly variables: Array<TLBVariable>,
-    readonly variablesMap: Map<string, TLBVariable>,
-    readonly parametersMap: Map<string, TLBParameter>,
-    readonly name: string,
-    readonly fields: Array<TLBField>,
-    readonly tag: TLBConstructorTag,
-    readonly constraints: Array<TLBMathExpr>,
-    readonly declaration: string,
-    readonly tlbType: string
-  ) {}
+    constructor(
+        readonly parameters: Array<TLBParameter>,
+        readonly variables: Array<TLBVariable>,
+        readonly variablesMap: Map<string, TLBVariable>,
+        readonly parametersMap: Map<string, TLBParameter>,
+        readonly name: string,
+        readonly fields: Array<TLBField>,
+        readonly tag: TLBConstructorTag,
+        readonly constraints: Array<TLBMathExpr>,
+        readonly declaration: string,
+        readonly tlbType: string,
+    ) {}
 }
 
 export class TLBType {
-  constructor(
-    readonly name: string,
-    readonly constructors: Array<TLBConstructor>
-  ) {}
+    constructor(
+        readonly name: string,
+        readonly constructors: Array<TLBConstructor>,
+    ) {}
 }
 
 export class TLBCode {
-  constructor(readonly types: Map<string, TLBType>) {}
+    constructor(readonly types: Map<string, TLBType>) {}
 }
