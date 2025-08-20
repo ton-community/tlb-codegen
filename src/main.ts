@@ -1,5 +1,3 @@
-import fs from 'fs/promises';
-
 import { ast, Program } from '@ton-community/tlb-parser';
 
 import { TLBCode, TLBType } from './ast';
@@ -17,14 +15,6 @@ export function getTLBCodeByAST(tree: Program, input: string) {
     let tlbCode: TLBCode = convertCodeToReadonly(oldTlbCode);
 
     return tlbCode;
-}
-
-export async function getTLBCode(inputPath: string) {
-    const input = await fs.readFile(inputPath, 'utf-8');
-
-    const tree = ast(input);
-
-    return getTLBCodeByAST(tree, input);
 }
 
 export function generateCodeByAST(tree: Program, input: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator) {
@@ -72,7 +62,7 @@ export function generateCodeByAST(tree: Program, input: string, getGenerator: (t
     return generatedCode;
 }
 
-function getGenerator(resultLanguage: string) {
+export function getGenerator(resultLanguage: string) {
     return (tlbCode: TLBCode) => {
         if (resultLanguage == 'typescript') {
             return new TypescriptGenerator(tlbCode);
@@ -85,22 +75,4 @@ function getGenerator(resultLanguage: string) {
 export async function generateCodeFromData(input: string, resultLanguage: string): Promise<string> {
     const tree = ast(input);
     return generateCodeByAST(tree, input, getGenerator(resultLanguage));
-}
-
-export async function generateCodeWithGenerator(
-    inputPath: string,
-    outputPath: string,
-    getGenerator: (tlbCode: TLBCode) => CodeGenerator,
-) {
-    const input = await fs.readFile(inputPath, 'utf-8');
-
-    const tree = ast(input);
-
-    await fs.writeFile(outputPath, generateCodeByAST(tree, input, getGenerator), {});
-    // eslint-disable-next-line no-console
-    console.log(`Generated code is saved to ${outputPath}`);
-}
-
-export async function generateCode(inputPath: string, outputPath: string, resultLanguage: string) {
-    return generateCodeWithGenerator(inputPath, outputPath, getGenerator(resultLanguage));
 }
