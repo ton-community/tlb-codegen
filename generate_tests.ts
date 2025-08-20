@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { generateCode } from './src/main';
+import { generateCode } from './src/node';
 
 function genCodeForTest(name: string) {
     const fixturesDir = path.resolve(__dirname, 'test');

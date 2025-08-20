@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import meow from 'meow';
 
-import { generateCode } from './src/main';
+import { generateCode } from './src/node';
 
 const cli = meow(
     `
