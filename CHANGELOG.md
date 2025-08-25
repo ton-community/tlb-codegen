@@ -1,7 +1,8 @@
 # Changelog
 
-## [Unreleased] – YYYY-MM-DD
+## [2.0.0-beta.2] – 2025-08-25
 
+- Make friendly for use in web 
 - Fixed and optimization crc32 computation
 
 ## [2.0.0-beta.1] – 2025-04-01

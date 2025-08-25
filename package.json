@@ -1,6 +1,6 @@
 {
   "name": "@ton-community/tlb-codegen",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "",
   "main": "build/index.js",
   "prettier": "@ton/toolchain/prettier",
