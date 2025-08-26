@@ -191,6 +191,7 @@ import {
     storeTagCalculatorExample,
     loadTagCalculatorExample,
 } from './generated_files/generated_test';
+import { genCodeForTest } from './generate';
 
 function isPrimitive(input: object) {
     if (input == null) {
@@ -306,6 +307,11 @@ export type TLFunction = {
 };
 
 describe('Generating tlb code', () => {
+    beforeAll(async () => {
+        await genCodeForTest('block');
+        await genCodeForTest('test');
+    });
+
     test('Basic types', () => {
         expect.hasAssertions();
 

@@ -1,15 +1,12 @@
 import path from 'path';
+import fs from 'fs/promises';
 
-import { generateCode } from '../src/node';
+import { generateCode } from '../src';
 
-function genCodeForTest(name: string) {
+export async function genCodeForTest(name: string) {
     const fixturesDir = path.resolve(__dirname, 'tlb');
-    generateCode(
-        path.resolve(fixturesDir, name + '.tlb'),
-        'test/generated_files/generated_' + name + '.ts',
-        'typescript',
-    );
+    const tlb = await fs.readFile(path.resolve(fixturesDir, name + '.tlb'), 'utf-8');
+    const code = generateCode(tlb, 'typescript');
+    const output = path.resolve(__dirname, 'generated_files/generated_' + name + '.ts');
+    await fs.writeFile(output, code, {});
 }
-
-genCodeForTest('block');
-genCodeForTest('test');

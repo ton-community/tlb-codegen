@@ -3,7 +3,7 @@
   "version": "2.0.0-beta.3",
   "description": "TLB code generator",
   "files": [
-    "./build/*",
+    "./build/**/*",
     "LICENSE",
     "README.md"
   ],
@@ -16,12 +16,6 @@
       "import": "./build/index.js",
       "require": "./build/index.js",
       "default": "./index.js"
-    },
-    "./node": {
-      "types": "./build/node.d.ts",
-      "import": "./build/node.js",
-      "require": "./build/node.js",
-      "default": "./build/node.js"
     }
   },
   "typesVersions": {
@@ -39,7 +33,7 @@
   "scripts": {
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --max-warnings 0 --fix",
-    "test:gen": "ts-node test/generate.ts",
+    "test:coverage": "jest --coverage",
     "test": "jest",
     "build": "npm run compile",
     "prepublishOnly": "npm run build",

@@ -1,7 +1,9 @@
 #!/usr/bin/env node
+import fs from 'fs/promises';
+
 import meow from 'meow';
 
-import { generateCode } from './node';
+import { generateCode } from '.';
 
 const cli = meow(
     `
@@ -36,21 +38,38 @@ const cli = meow(
     },
 );
 
-let input = cli.input.at(0);
-if (input) {
-    if (input.match(/\.tlb$/) == null) {
-        // eslint-disable-next-line no-console
-        console.error('Input file must have .tlb extension');
-        process.exit(1);
-    }
+async function main() {
+    let input = cli.input.at(0);
+    if (input) {
+        if (input.match(/\.tlb$/) == null) {
+            // eslint-disable-next-line no-console
+            console.error('Input file must have .tlb extension');
+            process.exit(1);
+        }
 
-    let output = input.replace('.tlb', '.ts');
-    if (cli.flags.output) {
-        output = cli.flags.output;
+        let output = input.replace('.tlb', '.ts');
+        if (cli.flags.output) {
+            output = cli.flags.output;
+        }
+        let language = 'typescript';
+        if (cli.flags.language) {
+            language = cli.flags.language;
+        }
+        const tlb = await fs.readFile(input, 'utf-8');
+        const code = generateCode(tlb, language);
+        await fs.writeFile(output, code, {});
+        // eslint-disable-next-line no-console
+        console.log(`Generated code is saved to ${output}`);
     }
-    let language = 'typescript';
-    if (cli.flags.language) {
-        language = cli.flags.language;
-    }
-    generateCode(input, output, language);
 }
+
+main().catch((error) => {
+    if (error instanceof Error) {
+        // eslint-disable-next-line no-console
+        console.error(error.message);
+    } else {
+        // eslint-disable-next-line no-console
+        console.error('Unknown error:', error);
+    }
+    process.exit(1);
+});

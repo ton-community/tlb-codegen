@@ -1,0 +1,171 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`main generateCode 1`] = `
+"import { Builder } from '@ton/core'
+import { Slice } from '@ton/core'
+import { beginCell } from '@ton/core'
+import { BitString } from '@ton/core'
+import { Cell } from '@ton/core'
+import { Address } from '@ton/core'
+import { ExternalAddress } from '@ton/core'
+import { Dictionary } from '@ton/core'
+import { DictionaryValue } from '@ton/core'
+import { TupleItem } from '@ton/core'
+import { parseTuple } from '@ton/core'
+import { serializeTuple } from '@ton/core'
+export function bitLen(n: number) {
+    return n.toString(2).length;
+}
+
+export interface Bool {
+    readonly kind: 'Bool';
+    readonly value: boolean;
+}
+
+export function loadBool(slice: Slice): Bool {
+    if (slice.remainingBits >= 1) {
+        let value = slice.loadUint(1);
+        return {
+            kind: 'Bool',
+            value: value == 1
+        }
+
+    }
+    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function storeBool(bool: Bool): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(bool.value ? 1: 0, 1);
+    })
+
+}
+
+
+
+export function loadBoolFalse(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: false
+      }
+
+  }
+  throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function loadBoolTrue(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: true
+      }
+
+  }
+  throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
+}
+
+export function copyCellToBuilder(from: Cell, to: Builder): void {
+    let slice = from.beginParse();
+    to.storeBits(slice.loadBits(slice.remainingBits));
+    while (slice.remainingRefs) {
+        to.storeRef(slice.loadRef());
+    }
+}
+// _ x:# = Foo;
+
+export interface Foo {
+    readonly kind: 'Foo';
+    readonly x: number;
+}
+
+// _ x:# = Foo;
+
+export function loadFoo(slice: Slice): Foo {
+    let x: number = slice.loadUint(32);
+    return {
+        kind: 'Foo',
+        x: x,
+    }
+
+}
+
+export function storeFoo(foo: Foo): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(foo.x, 32);
+    })
+
+}
+
+"
+`;
+
+exports[`main getTLBCode 1`] = `
+TLBCode {
+  "types": Map {
+    "Foo" => TLBType {
+      "constructors": [
+        TLBConstructor {
+          "constraints": [],
+          "declaration": "_ x:# = Foo;",
+          "fields": [
+            {
+              "anonymous": false,
+              "fieldType": {
+                "bits": TLBNumberExpr {
+                  "hasNeg": false,
+                  "n": 32,
+                  "variables": Set {},
+                },
+                "kind": "TLBNumberType",
+                "maxBits": 32,
+                "signed": false,
+                "storeBits": TLBNumberExpr {
+                  "hasNeg": false,
+                  "n": 32,
+                  "variables": Set {},
+                },
+              },
+              "name": "x",
+              "subFields": [],
+            },
+          ],
+          "name": "_",
+          "parameters": [],
+          "parametersMap": Map {},
+          "tag": {
+            "binary": "",
+            "bitLen": 0,
+          },
+          "tlbType": "Foo",
+          "variables": [
+            TLBVariable {
+              "deriveExpr": undefined,
+              "initialExpr": undefined,
+              "isConst": false,
+              "isField": true,
+              "name": "x",
+              "negated": false,
+              "type": "#",
+            },
+          ],
+          "variablesMap": Map {
+            "x" => TLBVariable {
+              "deriveExpr": undefined,
+              "initialExpr": undefined,
+              "isConst": false,
+              "isField": true,
+              "name": "x",
+              "negated": false,
+              "type": "#",
+            },
+          },
+        },
+      ],
+      "name": "Foo",
+    },
+  },
+}
+`;

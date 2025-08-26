@@ -15,7 +15,11 @@ export function getTLBCodeByAST(tree: Program, input: string): TLBCode {
     return convertCodeToReadonly(oldTlbCode);
 }
 
-export function generateCodeByAST(tree: Program, input: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator) {
+export function generateCodeByAST(
+    tree: Program,
+    input: string,
+    getGenerator: (tlbCode: TLBCode) => CodeGenerator,
+): string {
     let tlbCode = getTLBCodeByAST(tree, input);
     let codeGenerator: CodeGenerator = getGenerator(tlbCode);
 
@@ -70,7 +74,14 @@ export function getGenerator(resultLanguage: string) {
     };
 }
 
-export async function generateCodeFromData(input: string, resultLanguage: string): Promise<string> {
-    const tree = ast(input);
-    return generateCodeByAST(tree, input, getGenerator(resultLanguage));
+export function getTLBCode(input: string) {
+    return getTLBCodeByAST(ast(input), input);
+}
+
+export function generateCodeWithGenerator(input: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator): string {
+    return generateCodeByAST(ast(input), input, getGenerator);
+}
+
+export function generateCode(input: string, resultLanguage: string): string {
+    return generateCodeWithGenerator(input, getGenerator(resultLanguage));
 }
