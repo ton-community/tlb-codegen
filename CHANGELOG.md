@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.0-beta.3] – 2025-08-25
+
+- Make export friendly use in web
+
 ## [2.0.0-beta.2] – 2025-08-25
 
 - Make friendly for use in web 

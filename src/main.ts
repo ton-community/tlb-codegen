@@ -8,13 +8,11 @@ import { CodeBuilder } from './generators/CodeBuilder';
 import { CodeGenerator, CommonGenDeclaration } from './generators/generator';
 import { TypescriptGenerator } from './generators/typescript/generator';
 
-export function getTLBCodeByAST(tree: Program, input: string) {
+export function getTLBCodeByAST(tree: Program, input: string): TLBCode {
     let oldTlbCode: TLBCodeBuild = { types: new Map<string, TLBTypeBuild>() };
     let splittedInput = input.split('\n');
     fillConstructors(tree.declarations, oldTlbCode, splittedInput);
-    let tlbCode: TLBCode = convertCodeToReadonly(oldTlbCode);
-
-    return tlbCode;
+    return convertCodeToReadonly(oldTlbCode);
 }
 
 export function generateCodeByAST(tree: Program, input: string, getGenerator: (tlbCode: TLBCode) => CodeGenerator) {

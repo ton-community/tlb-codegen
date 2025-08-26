@@ -1,22 +1,60 @@
 {
   "name": "@ton-community/tlb-codegen",
-  "version": "2.0.0-beta.2",
-  "description": "",
-  "main": "build/index.js",
+  "version": "2.0.0-beta.3",
+  "description": "TLB code generator",
+  "files": [
+    "./build/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "main": "./build/index.js",
+  "module": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js",
+      "require": "./build/index.js",
+      "default": "./index.js"
+    },
+    "./node": {
+      "types": "./build/node.d.ts",
+      "import": "./build/node.js",
+      "require": "./build/node.js",
+      "default": "./build/node.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["*"]
+    }
+  },
+  "bin": {
+    "tlb": "./build/cli.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "prettier": "@ton/toolchain/prettier",
   "scripts": {
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --max-warnings 0 --fix",
+    "test:gen": "ts-node test/generate.ts",
     "test": "jest",
     "build": "npm run compile",
+    "prepublishOnly": "npm run build",
     "compile": "tsc"
   },
-  "bin": {
-    "tlb": "build/main.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "ton",
+    "tlb",
+    "tl-b",
+    "codegen",
+    "react-native",
+    "browser"
+  ],
+  "author": "TON Tech",
+  "license": "MIT",
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@ton/toolchain": "github:the-ton-tech/toolchain#v1.4.0",
