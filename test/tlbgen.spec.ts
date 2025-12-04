@@ -1,5 +1,4 @@
 import { Address, BitString, Cell, Dictionary, ExternalAddress, Slice, beginCell } from '@ton/core';
-import { describe, expect, test } from '@jest/globals';
 
 import { loadBlock, storeBlock } from './generated_files/generated_block';
 import {

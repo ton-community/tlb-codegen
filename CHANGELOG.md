@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Chore
+
+- Upgrade develop dependencies
+
 ## [2.0.0-beta.3] – 2025-08-25
 
 - Remove node dependency form exports
