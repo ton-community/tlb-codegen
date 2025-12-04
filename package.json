@@ -60,7 +60,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@ton-community/tlb-parser": "^0.1.5",
+    "@ton-community/tlb-parser": "https://gist.github.com/ilyar/baac357ceafa1112161418d7df5247b9/raw/29eef5db84610e08f1f9ad5af67d400a3b84d22a/ton-community-tlb-parser-dev.tgz",
     "@ton/core": "^0.62.0",
     "meow": "^9.0.0"
   }
