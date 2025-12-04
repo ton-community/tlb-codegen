@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`main generateCode 1`] = `
 "import { Builder } from '@ton/core'
@@ -84,19 +84,125 @@ export interface Foo {
 // _ x:# = Foo;
 
 export function loadFoo(slice: Slice): Foo {
-    let x: number = slice.loadUint(32);
+    const x: number = slice.loadUint(32);
     return {
         kind: 'Foo',
         x: x,
     }
-
 }
 
 export function storeFoo(foo: Foo): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(foo.x, 32);
     })
+}
 
+"
+`;
+
+exports[`main generateCode for cell as ref 1`] = `
+"import { Builder } from '@ton/core'
+import { Slice } from '@ton/core'
+import { beginCell } from '@ton/core'
+import { BitString } from '@ton/core'
+import { Cell } from '@ton/core'
+import { Address } from '@ton/core'
+import { ExternalAddress } from '@ton/core'
+import { Dictionary } from '@ton/core'
+import { DictionaryValue } from '@ton/core'
+import { TupleItem } from '@ton/core'
+import { parseTuple } from '@ton/core'
+import { serializeTuple } from '@ton/core'
+export function bitLen(n: number) {
+    return n.toString(2).length;
+}
+
+export interface Bool {
+    readonly kind: 'Bool';
+    readonly value: boolean;
+}
+
+export function loadBool(slice: Slice): Bool {
+    if (slice.remainingBits >= 1) {
+        let value = slice.loadUint(1);
+        return {
+            kind: 'Bool',
+            value: value == 1
+        }
+
+    }
+    throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function storeBool(bool: Bool): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(bool.value ? 1: 0, 1);
+    })
+
+}
+
+
+
+export function loadBoolFalse(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: false
+      }
+
+  }
+  throw new Error('Expected one of "BoolFalse" in loading "BoolFalse", but data does not satisfy any constructor');
+}
+
+export function loadBoolTrue(slice: Slice): Bool {
+  if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
+      slice.loadUint(1);
+      return {
+          kind: 'Bool',
+          value: true
+      }
+
+  }
+  throw new Error('Expected one of "BoolTrue" in loading "BoolTrue", but data does not satisfy any constructor');
+}
+
+export function copyCellToBuilder(from: Cell, to: Builder): void {
+    let slice = from.beginParse();
+    to.storeBits(slice.loadBits(slice.remainingBits));
+    while (slice.remainingRefs) {
+        to.storeRef(slice.loadRef());
+    }
+}
+// _ n:(## 3) c:(n * ^Cell) = T;
+
+export interface T {
+    readonly kind: 'T';
+    readonly n: number;
+    readonly c: Array<Cell>;
+}
+
+// _ n:(## 3) c:(n * ^Cell) = T;
+
+export function loadT(slice: Slice): T {
+    const n: number = slice.loadUint(3);
+    const c: Array<Cell> = Array.from(Array(n).keys()).map((() => {
+        return slice.loadRef()
+    }));
+    return {
+        kind: 'T',
+        n: n,
+        c: c,
+    }
+}
+
+export function storeT(t: T): (builder: Builder) => void {
+    return ((builder: Builder) => {
+        builder.storeUint(t.n, 3);
+        t.c.forEach(((arg: Cell) => {
+            builder.storeRef(arg);
+        }));
+    })
 }
 
 "

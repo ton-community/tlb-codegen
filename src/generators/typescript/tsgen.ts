@@ -487,7 +487,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
 
     if (node.type == 'DeclareVariable') {
         code.add(
-            `let ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}`,
+            `const ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}`,
             false,
         );
         if (node.init) {

@@ -64,6 +64,7 @@ import {
     TypeParametersExpression,
     TypedIdentifier,
     id,
+    tArrowFunctionExpression,
     tBinaryExpression,
     tCodeAsIs,
     tComment,
@@ -778,7 +779,28 @@ export function loadBoolTrue(slice: Slice): Bool {
             let currentParamOutside = storeParametersOutside[0];
             let currentParamInside = storeParametersInside[0];
             if (subExprInfo.loadExpr) {
-                result.loadExpr = loadTupleExpr(arrayLength, subExprInfo.loadExpr);
+                // Special handling for arrays of Cell references - use loadRef() instead of asCell()
+                if (fieldType.value.kind == 'TLBCellType') {
+                    result.loadExpr = tFunctionCall(
+                        tMemberExpression(
+                            tFunctionCall(tMemberExpression(id('Array'), id('from')), [
+                                tFunctionCall(
+                                    tMemberExpression(tFunctionCall(id('Array'), [arrayLength]), id('keys')),
+                                    [],
+                                ),
+                            ]),
+                            id('map'),
+                        ),
+                        [
+                            tArrowFunctionExpression(
+                                [],
+                                [tReturnStatement(tFunctionCall(tMemberExpression(id(theSlice), id('loadRef')), []))],
+                            ),
+                        ],
+                    );
+                } else {
+                    result.loadExpr = loadTupleExpr(arrayLength, subExprInfo.loadExpr);
+                }
             }
             if (
                 currentParamOutside &&
@@ -787,16 +809,44 @@ export function loadBoolTrue(slice: Slice): Bool {
                 subExprInfo.storeStmtOutside
             ) {
                 if (subExprInfo.storeFunctionExpr && subExprInfo.storeStmtInside) {
-                    result.storeStmtOutside = storeTupleStmt(
-                        currentParamOutside,
-                        subExprInfo.storeStmtInside,
-                        subExprInfo.typeParamExpr,
-                    );
-                    result.storeStmtInside = storeTupleStmt(
-                        currentParamInside,
-                        subExprInfo.storeStmtInside,
-                        subExprInfo.typeParamExpr,
-                    );
+                    // Special handling for arrays of Cell references - use storeRef() instead of storeSlice()
+                    if (fieldType.value.kind == 'TLBCellType') {
+                        result.storeStmtOutside = tExpressionStatement(
+                            tFunctionCall(tMemberExpression(currentParamOutside, id('forEach')), [
+                                tArrowFunctionExpression(
+                                    [tTypedIdentifier(id('arg'), id('Cell'))],
+                                    [
+                                        tExpressionStatement(
+                                            tFunctionCall(tMemberExpression(id(theCell), id('storeRef')), [id('arg')]),
+                                        ),
+                                    ],
+                                ),
+                            ]),
+                        );
+                        result.storeStmtInside = tExpressionStatement(
+                            tFunctionCall(tMemberExpression(currentParamInside, id('forEach')), [
+                                tArrowFunctionExpression(
+                                    [tTypedIdentifier(id('arg'), id('Cell'))],
+                                    [
+                                        tExpressionStatement(
+                                            tFunctionCall(tMemberExpression(id(theCell), id('storeRef')), [id('arg')]),
+                                        ),
+                                    ],
+                                ),
+                            ]),
+                        );
+                    } else {
+                        result.storeStmtOutside = storeTupleStmt(
+                            currentParamOutside,
+                            subExprInfo.storeStmtInside,
+                            subExprInfo.typeParamExpr,
+                        );
+                        result.storeStmtInside = storeTupleStmt(
+                            currentParamInside,
+                            subExprInfo.storeStmtInside,
+                            subExprInfo.typeParamExpr,
+                        );
+                    }
                 }
             }
             if (subExprInfo.typeParamExpr) {

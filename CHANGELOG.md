@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fix generate code for cell as ref [issues #59](https://github.com/ton-community/tlb-codegen/issues/59)
+
 ### Chore
 
 - Upgrade develop dependencies

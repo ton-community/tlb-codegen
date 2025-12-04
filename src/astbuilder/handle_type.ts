@@ -260,6 +260,19 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
     } else if (expr instanceof MathExpr) {
         if (fieldTypeName == '') {
             if (expr.op == '*') {
+                // Handle (x * ^Cell) case - if right is CellRefExpr, treat it as array of Cell references
+                if (expr.right instanceof CellRefExpr) {
+                    // For (x * ^Cell), we want TLBMultipleType with TLBCellType
+                    // Check if the inner expression is Cell or Any
+                    let innerExpr = expr.right.expr;
+                    if (innerExpr instanceof NameExpr && (innerExpr.name == 'Cell' || innerExpr.name == 'Any')) {
+                        return {
+                            kind: 'TLBMultipleType',
+                            times: getCalculatedExpression(convertToMathExpr(expr.left), constructor),
+                            value: { kind: 'TLBCellType' },
+                        };
+                    }
+                }
                 let subExprInfo = getType(expr.right, constructor, fieldTypeName);
                 return {
                     kind: 'TLBMultipleType',

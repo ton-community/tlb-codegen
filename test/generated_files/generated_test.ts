@@ -1259,14 +1259,13 @@ export interface TagCalculatorExample {
 // tmpa$_ a:# b:# = Simple;
 
 export function loadSimple(slice: Slice): Simple {
-    let a: number = slice.loadUint(32);
-    let b: number = slice.loadUint(32);
+    const a: number = slice.loadUint(32);
+    const b: number = slice.loadUint(32);
     return {
         kind: 'Simple',
         a: a,
         b: b,
     }
-
 }
 
 export function storeSimple(simple: Simple): (builder: Builder) => void {
@@ -1274,57 +1273,51 @@ export function storeSimple(simple: Simple): (builder: Builder) => void {
         builder.storeUint(simple.a, 32);
         builder.storeUint(simple.b, 32);
     })
-
 }
 
 // a$_ {Arg:Type} arg:Arg = TypedArg Arg;
 
 export function loadTypedArg<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): TypedArg<Arg> {
-    let arg: Arg = loadArg(slice);
+    const arg: Arg = loadArg(slice);
     return {
         kind: 'TypedArg',
         arg: arg,
     }
-
 }
 
 export function storeTypedArg<Arg>(typedArg: TypedArg<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeArg(typedArg.arg)(builder);
     })
-
 }
 
 // a$_ x:(TypedArg Simple) = TypedArgUser;
 
 export function loadTypedArgUser(slice: Slice): TypedArgUser {
-    let x: TypedArg<Simple> = loadTypedArg<Simple>(slice, loadSimple);
+    const x: TypedArg<Simple> = loadTypedArg<Simple>(slice, loadSimple);
     return {
         kind: 'TypedArgUser',
         x: x,
     }
-
 }
 
 export function storeTypedArgUser(typedArgUser: TypedArgUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeTypedArg<Simple>(typedArgUser.x, storeSimple)(builder);
     })
-
 }
 
 // a$_ {Arg:Type} {n:#} arg:Arg c:(## n) = ParamAndTypedArg n Arg;
 
 export function loadParamAndTypedArg<Arg>(slice: Slice, n: number, loadArg: (slice: Slice) => Arg): ParamAndTypedArg<Arg> {
-    let arg: Arg = loadArg(slice);
-    let c: bigint = slice.loadUintBig(n);
+    const arg: Arg = loadArg(slice);
+    const c: bigint = slice.loadUintBig(n);
     return {
         kind: 'ParamAndTypedArg',
         n: n,
         arg: arg,
         c: c,
     }
-
 }
 
 export function storeParamAndTypedArg<Arg>(paramAndTypedArg: ParamAndTypedArg<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
@@ -1332,38 +1325,34 @@ export function storeParamAndTypedArg<Arg>(paramAndTypedArg: ParamAndTypedArg<Ar
         storeArg(paramAndTypedArg.arg)(builder);
         builder.storeUint(paramAndTypedArg.c, paramAndTypedArg.n);
     })
-
 }
 
 // a$_ x:(ParamAndTypedArg 5 Simple) = ParamAndTypedArgUser;
 
 export function loadParamAndTypedArgUser(slice: Slice): ParamAndTypedArgUser {
-    let x: ParamAndTypedArg<Simple> = loadParamAndTypedArg<Simple>(slice, 5, loadSimple);
+    const x: ParamAndTypedArg<Simple> = loadParamAndTypedArg<Simple>(slice, 5, loadSimple);
     return {
         kind: 'ParamAndTypedArgUser',
         x: x,
     }
-
 }
 
 export function storeParamAndTypedArgUser(paramAndTypedArgUser: ParamAndTypedArgUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeParamAndTypedArg<Simple>(paramAndTypedArgUser.x, storeSimple)(builder);
     })
-
 }
 
 // _ x:Simple y:Simple = TwoSimples;
 
 export function loadTwoSimples(slice: Slice): TwoSimples {
-    let x: Simple = loadSimple(slice);
-    let y: Simple = loadSimple(slice);
+    const x: Simple = loadSimple(slice);
+    const y: Simple = loadSimple(slice);
     return {
         kind: 'TwoSimples',
         x: x,
         y: y,
     }
-
 }
 
 export function storeTwoSimples(twoSimples: TwoSimples): (builder: Builder) => void {
@@ -1371,20 +1360,18 @@ export function storeTwoSimples(twoSimples: TwoSimples): (builder: Builder) => v
         storeSimple(twoSimples.x)(builder);
         storeSimple(twoSimples.y)(builder);
     })
-
 }
 
 // _ one_maybe:(Maybe Simple) second_maybe:(Maybe Simple) = TwoMaybes;
 
 export function loadTwoMaybes(slice: Slice): TwoMaybes {
-    let one_maybe: Maybe<Simple> = loadMaybe<Simple>(slice, loadSimple);
-    let second_maybe: Maybe<Simple> = loadMaybe<Simple>(slice, loadSimple);
+    const one_maybe: Maybe<Simple> = loadMaybe<Simple>(slice, loadSimple);
+    const second_maybe: Maybe<Simple> = loadMaybe<Simple>(slice, loadSimple);
     return {
         kind: 'TwoMaybes',
         one_maybe: one_maybe,
         second_maybe: second_maybe,
     }
-
 }
 
 export function storeTwoMaybes(twoMaybes: TwoMaybes): (builder: Builder) => void {
@@ -1392,7 +1379,6 @@ export function storeTwoMaybes(twoMaybes: TwoMaybes): (builder: Builder) => void
         storeMaybe<Simple>(twoMaybes.one_maybe, storeSimple)(builder);
         storeMaybe<Simple>(twoMaybes.second_maybe, storeSimple)(builder);
     })
-
 }
 
 // bool_false$0 a:# b:(## 7) c:# = TwoConstructors;
@@ -1402,25 +1388,23 @@ export function storeTwoMaybes(twoMaybes: TwoMaybes): (builder: Builder) => void
 export function loadTwoConstructors(slice: Slice): TwoConstructors {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
-        let a: number = slice.loadUint(32);
-        let b: number = slice.loadUint(7);
-        let c: number = slice.loadUint(32);
+        const a: number = slice.loadUint(32);
+        const b: number = slice.loadUint(7);
+        const c: number = slice.loadUint(32);
         return {
             kind: 'TwoConstructors_bool_false',
             a: a,
             b: b,
             c: c,
         }
-
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let b: number = slice.loadUint(32);
+        const b: number = slice.loadUint(32);
         return {
             kind: 'TwoConstructors_bool_true',
             b: b,
         }
-
     }
     throw new Error('Expected one of "TwoConstructors_bool_false", "TwoConstructors_bool_true" in loading "TwoConstructors", but data does not satisfy any constructor');
 }
@@ -1433,14 +1417,12 @@ export function storeTwoConstructors(twoConstructors: TwoConstructors): (builder
             builder.storeUint(twoConstructors.b, 7);
             builder.storeUint(twoConstructors.c, 32);
         })
-
     }
     if ((twoConstructors.kind == 'TwoConstructors_bool_true')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
             builder.storeUint(twoConstructors.b, 32);
         })
-
     }
     throw new Error('Expected one of "TwoConstructors_bool_false", "TwoConstructors_bool_true" in loading "TwoConstructors", but data does not satisfy any constructor');
 }
@@ -1448,32 +1430,29 @@ export function storeTwoConstructors(twoConstructors: TwoConstructors): (builder
 // tmpb$_ y:(## 5) = FixedIntParam;
 
 export function loadFixedIntParam(slice: Slice): FixedIntParam {
-    let y: number = slice.loadUint(5);
+    const y: number = slice.loadUint(5);
     return {
         kind: 'FixedIntParam',
         y: y,
     }
-
 }
 
 export function storeFixedIntParam(fixedIntParam: FixedIntParam): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(fixedIntParam.y, 5);
     })
-
 }
 
 // tmpc$_ y:FixedIntParam c:# = TypedField;
 
 export function loadTypedField(slice: Slice): TypedField {
-    let y: FixedIntParam = loadFixedIntParam(slice);
-    let c: number = slice.loadUint(32);
+    const y: FixedIntParam = loadFixedIntParam(slice);
+    const c: number = slice.loadUint(32);
     return {
         kind: 'TypedField',
         y: y,
         c: c,
     }
-
 }
 
 export function storeTypedField(typedField: TypedField): (builder: Builder) => void {
@@ -1481,20 +1460,18 @@ export function storeTypedField(typedField: TypedField): (builder: Builder) => v
         storeFixedIntParam(typedField.y)(builder);
         builder.storeUint(typedField.c, 32);
     })
-
 }
 
 // tmpd#_ y:FixedIntParam c:# = SharpConstructor;
 
 export function loadSharpConstructor(slice: Slice): SharpConstructor {
-    let y: FixedIntParam = loadFixedIntParam(slice);
-    let c: number = slice.loadUint(32);
+    const y: FixedIntParam = loadFixedIntParam(slice);
+    const c: number = slice.loadUint(32);
     return {
         kind: 'SharpConstructor',
         y: y,
         c: c,
     }
-
 }
 
 export function storeSharpConstructor(sharpConstructor: SharpConstructor): (builder: Builder) => void {
@@ -1502,7 +1479,6 @@ export function storeSharpConstructor(sharpConstructor: SharpConstructor): (buil
         storeFixedIntParam(sharpConstructor.y)(builder);
         builder.storeUint(sharpConstructor.c, 32);
     })
-
 }
 
 // nothing$0 {TheType:Type} = Maybe TheType;
@@ -1515,16 +1491,14 @@ export function loadMaybe<TheType>(slice: Slice, loadTheType: (slice: Slice) => 
         return {
             kind: 'Maybe_nothing',
         }
-
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let value: TheType = loadTheType(slice);
+        const value: TheType = loadTheType(slice);
         return {
             kind: 'Maybe_just',
             value: value,
         }
-
     }
     throw new Error('Expected one of "Maybe_nothing", "Maybe_just" in loading "Maybe", but data does not satisfy any constructor');
 }
@@ -1534,14 +1508,12 @@ export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theTyp
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
         })
-
     }
     if ((maybe.kind == 'Maybe_just')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
             storeTheType(maybe.value)(builder);
         })
-
     }
     throw new Error('Expected one of "Maybe_nothing", "Maybe_just" in loading "Maybe", but data does not satisfy any constructor');
 }
@@ -1549,19 +1521,17 @@ export function storeMaybe<TheType>(maybe: Maybe<TheType>, storeTheType: (theTyp
 // thejust$_ x:(Maybe SharpConstructor) = TypedParam;
 
 export function loadTypedParam(slice: Slice): TypedParam {
-    let x: Maybe<SharpConstructor> = loadMaybe<SharpConstructor>(slice, loadSharpConstructor);
+    const x: Maybe<SharpConstructor> = loadMaybe<SharpConstructor>(slice, loadSharpConstructor);
     return {
         kind: 'TypedParam',
         x: x,
     }
-
 }
 
 export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeMaybe<SharpConstructor>(typedParam.x, storeSharpConstructor)(builder);
     })
-
 }
 
 // left$0 {X:Type} {Y:Type} value:X = Either X Y;
@@ -1571,21 +1541,19 @@ export function storeTypedParam(typedParam: TypedParam): (builder: Builder) => v
 export function loadEither<X, Y>(slice: Slice, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): Either<X, Y> {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
-        let value: X = loadX(slice);
+        const value: X = loadX(slice);
         return {
             kind: 'Either_left',
             value: value,
         }
-
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let value: Y = loadY(slice);
+        const value: Y = loadY(slice);
         return {
             kind: 'Either_right',
             value: value,
         }
-
     }
     throw new Error('Expected one of "Either_left", "Either_right" in loading "Either", but data does not satisfy any constructor');
 }
@@ -1596,14 +1564,12 @@ export function storeEither<X, Y>(either: Either<X, Y>, storeX: (x: X) => (build
             builder.storeUint(0b0, 1);
             storeX(either.value)(builder);
         })
-
     }
     if ((either.kind == 'Either_right')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
             storeY(either.value)(builder);
         })
-
     }
     throw new Error('Expected one of "Either_left", "Either_right" in loading "Either", but data does not satisfy any constructor');
 }
@@ -1611,131 +1577,119 @@ export function storeEither<X, Y>(either: Either<X, Y>, storeX: (x: X) => (build
 // a$_ {x:#} value:(## x) = BitLenArg x;
 
 export function loadBitLenArg(slice: Slice, x: number): BitLenArg {
-    let value: bigint = slice.loadUintBig(x);
+    const value: bigint = slice.loadUintBig(x);
     return {
         kind: 'BitLenArg',
         x: x,
         value: value,
     }
-
 }
 
 export function storeBitLenArg(bitLenArg: BitLenArg): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(bitLenArg.value, bitLenArg.x);
     })
-
 }
 
 // a$_ t:(BitLenArg 4) = BitLenArgUser;
 
 export function loadBitLenArgUser(slice: Slice): BitLenArgUser {
-    let t: BitLenArg = loadBitLenArg(slice, 4);
+    const t: BitLenArg = loadBitLenArg(slice, 4);
     return {
         kind: 'BitLenArgUser',
         t: t,
     }
-
 }
 
 export function storeBitLenArgUser(bitLenArgUser: BitLenArgUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeBitLenArg(bitLenArgUser.t)(builder);
     })
-
 }
 
 // a$_ {x:#} value:(## x) = ExprArg (2 + x);
 
 export function loadExprArg(slice: Slice, arg0: number): ExprArg {
-    let value: bigint = slice.loadUintBig((arg0 - 2));
+    const value: bigint = slice.loadUintBig((arg0 - 2));
     return {
         kind: 'ExprArg',
         x: (arg0 - 2),
         value: value,
     }
-
 }
 
 export function storeExprArg(exprArg: ExprArg): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(exprArg.value, exprArg.x);
     })
-
 }
 
 // a$_ t:(ExprArg 6) = ExprArgUser;
 
 export function loadExprArgUser(slice: Slice): ExprArgUser {
-    let t: ExprArg = loadExprArg(slice, 6);
+    const t: ExprArg = loadExprArg(slice, 6);
     return {
         kind: 'ExprArgUser',
         t: t,
     }
-
 }
 
 export function storeExprArgUser(exprArgUser: ExprArgUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeExprArg(exprArgUser.t)(builder);
     })
-
 }
 
 // a$_ a:ExprArgUser = ComplexTypedField;
 
 export function loadComplexTypedField(slice: Slice): ComplexTypedField {
-    let a: ExprArgUser = loadExprArgUser(slice);
+    const a: ExprArgUser = loadExprArgUser(slice);
     return {
         kind: 'ComplexTypedField',
         a: a,
     }
-
 }
 
 export function storeComplexTypedField(complexTypedField: ComplexTypedField): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeExprArgUser(complexTypedField.a)(builder);
     })
-
 }
 
 // a$_ a:^ExprArgUser = CellTypedField;
 
 export function loadCellTypedField(slice: Slice): CellTypedField {
-    let slice1 = slice.loadRef().beginParse(true);
-    let a: ExprArgUser = loadExprArgUser(slice1);
+    const slice1 = slice.loadRef().beginParse(true);
+    const a: ExprArgUser = loadExprArgUser(slice1);
     return {
         kind: 'CellTypedField',
         a: a,
     }
-
 }
 
 export function storeCellTypedField(_cellTypedField: CellTypedField): (builder: Builder) => void {
     return ((builder: Builder) => {
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         storeExprArgUser(_cellTypedField.a)(cell1);
         builder.storeRef(cell1);
     })
-
 }
 
 // a$_ t:# ^[ q:# ] ^[ a:(## 32) ^[ e:# ] ^[ b:(## 32) d:# ^[ c:(## 32) ] ] ] = CellsSimple;
 
 export function loadCellsSimple(slice: Slice): CellsSimple {
-    let t: number = slice.loadUint(32);
-    let slice1 = slice.loadRef().beginParse(true);
-    let q: number = slice1.loadUint(32);
-    let slice2 = slice.loadRef().beginParse(true);
-    let a: number = slice2.loadUint(32);
-    let slice21 = slice2.loadRef().beginParse(true);
-    let e: number = slice21.loadUint(32);
-    let slice22 = slice2.loadRef().beginParse(true);
-    let b: number = slice22.loadUint(32);
-    let d: number = slice22.loadUint(32);
-    let slice221 = slice22.loadRef().beginParse(true);
-    let c: number = slice221.loadUint(32);
+    const t: number = slice.loadUint(32);
+    const slice1 = slice.loadRef().beginParse(true);
+    const q: number = slice1.loadUint(32);
+    const slice2 = slice.loadRef().beginParse(true);
+    const a: number = slice2.loadUint(32);
+    const slice21 = slice2.loadRef().beginParse(true);
+    const e: number = slice21.loadUint(32);
+    const slice22 = slice2.loadRef().beginParse(true);
+    const b: number = slice22.loadUint(32);
+    const d: number = slice22.loadUint(32);
+    const slice221 = slice22.loadRef().beginParse(true);
+    const c: number = slice221.loadUint(32);
     return {
         kind: 'CellsSimple',
         t: t,
@@ -1746,39 +1700,37 @@ export function loadCellsSimple(slice: Slice): CellsSimple {
         d: d,
         c: c,
     }
-
 }
 
 export function storeCellsSimple(_cellsSimple: CellsSimple): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(_cellsSimple.t, 32);
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         cell1.storeUint(_cellsSimple.q, 32);
         builder.storeRef(cell1);
-        let cell2 = beginCell();
+        const cell2 = beginCell();
         cell2.storeUint(_cellsSimple.a, 32);
-        let cell21 = beginCell();
+        const cell21 = beginCell();
         cell21.storeUint(_cellsSimple.e, 32);
         cell2.storeRef(cell21);
-        let cell22 = beginCell();
+        const cell22 = beginCell();
         cell22.storeUint(_cellsSimple.b, 32);
         cell22.storeUint(_cellsSimple.d, 32);
-        let cell221 = beginCell();
+        const cell221 = beginCell();
         cell221.storeUint(_cellsSimple.c, 32);
         cell22.storeRef(cell221);
         cell2.storeRef(cell22);
         builder.storeRef(cell2);
     })
-
 }
 
 // b$_ d:int11 g:bits2 {Arg:Type} arg:Arg x:Any = IntBits Arg;
 
 export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): IntBits<Arg> {
-    let d: number = slice.loadInt(11);
-    let g: BitString = slice.loadBits(2);
-    let arg: Arg = loadArg(slice);
-    let x: Cell = slice.asCell();
+    const d: number = slice.loadInt(11);
+    const g: BitString = slice.loadBits(2);
+    const arg: Arg = loadArg(slice);
+    const x: Cell = slice.asCell();
     return {
         kind: 'IntBits',
         d: d,
@@ -1786,7 +1738,6 @@ export function loadIntBits<Arg>(slice: Slice, loadArg: (slice: Slice) => Arg): 
         arg: arg,
         x: x,
     }
-
 }
 
 export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) => (builder: Builder) => void): (builder: Builder) => void {
@@ -1796,22 +1747,19 @@ export function storeIntBits<Arg>(intBits: IntBits<Arg>, storeArg: (arg: Arg) =>
         storeArg(intBits.arg)(builder);
         builder.storeSlice(intBits.x.beginParse(true));
     })
-
 }
 
 // a$_ {x:#} a:(IntBits (int (1 + x))) = IntBitsInside (x * 2);
 
 export function loadIntBitsInside(slice: Slice, arg0: number): IntBitsInside {
-    let a: IntBits<bigint> = loadIntBits<bigint>(slice, ((slice: Slice) => {
+    const a: IntBits<bigint> = loadIntBits<bigint>(slice, ((slice: Slice) => {
         return slice.loadIntBig((1 + (arg0 / 2)))
-
     }));
     return {
         kind: 'IntBitsInside',
         x: (arg0 / 2),
         a: a,
     }
-
 }
 
 export function storeIntBitsInside(intBitsInside: IntBitsInside): (builder: Builder) => void {
@@ -1820,39 +1768,35 @@ export function storeIntBitsInside(intBitsInside: IntBitsInside): (builder: Buil
             return ((builder: Builder) => {
                 builder.storeInt(arg, (1 + intBitsInside.x));
             })
-
         }))(builder);
     })
-
 }
 
 // a$_ x:(IntBitsInside 6) = IntBitsOutside;
 
 export function loadIntBitsOutside(slice: Slice): IntBitsOutside {
-    let x: IntBitsInside = loadIntBitsInside(slice, 6);
+    const x: IntBitsInside = loadIntBitsInside(slice, 6);
     return {
         kind: 'IntBitsOutside',
         x: x,
     }
-
 }
 
 export function storeIntBitsOutside(intBitsOutside: IntBitsOutside): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeIntBitsInside(intBitsOutside.x)(builder);
     })
-
 }
 
 // a$_ {e:#} h:(int (e * 8)) f:(uint (7 * e)) i:(bits (5 + e)) j:(int 5) k:(uint e) tc:Cell = IntBitsParametrized e;
 
 export function loadIntBitsParametrized(slice: Slice, e: number): IntBitsParametrized {
-    let h: bigint = slice.loadIntBig((e * 8));
-    let f: bigint = slice.loadUintBig((7 * e));
-    let i: BitString = slice.loadBits((5 + e));
-    let j: number = slice.loadInt(5);
-    let k: bigint = slice.loadUintBig(e);
-    let tc: Cell = slice.asCell();
+    const h: bigint = slice.loadIntBig((e * 8));
+    const f: bigint = slice.loadUintBig((7 * e));
+    const i: BitString = slice.loadBits((5 + e));
+    const j: number = slice.loadInt(5);
+    const k: bigint = slice.loadUintBig(e);
+    const tc: Cell = slice.asCell();
     return {
         kind: 'IntBitsParametrized',
         e: e,
@@ -1863,7 +1807,6 @@ export function loadIntBitsParametrized(slice: Slice, e: number): IntBitsParamet
         k: k,
         tc: tc,
     }
-
 }
 
 export function storeIntBitsParametrized(intBitsParametrized: IntBitsParametrized): (builder: Builder) => void {
@@ -1875,57 +1818,51 @@ export function storeIntBitsParametrized(intBitsParametrized: IntBitsParametrize
         builder.storeUint(intBitsParametrized.k, intBitsParametrized.e);
         builder.storeSlice(intBitsParametrized.tc.beginParse(true));
     })
-
 }
 
 // a$_ {x:#} a:(IntBitsParametrized x) = IntBitsParametrizedInside x;
 
 export function loadIntBitsParametrizedInside(slice: Slice, x: number): IntBitsParametrizedInside {
-    let a: IntBitsParametrized = loadIntBitsParametrized(slice, x);
+    const a: IntBitsParametrized = loadIntBitsParametrized(slice, x);
     return {
         kind: 'IntBitsParametrizedInside',
         x: x,
         a: a,
     }
-
 }
 
 export function storeIntBitsParametrizedInside(intBitsParametrizedInside: IntBitsParametrizedInside): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeIntBitsParametrized(intBitsParametrizedInside.a)(builder);
     })
-
 }
 
 // a$_ x:(IntBitsParametrizedInside 5) = IntBitsParametrizedOutside;
 
 export function loadIntBitsParametrizedOutside(slice: Slice): IntBitsParametrizedOutside {
-    let x: IntBitsParametrizedInside = loadIntBitsParametrizedInside(slice, 5);
+    const x: IntBitsParametrizedInside = loadIntBitsParametrizedInside(slice, 5);
     return {
         kind: 'IntBitsParametrizedOutside',
         x: x,
     }
-
 }
 
 export function storeIntBitsParametrizedOutside(intBitsParametrizedOutside: IntBitsParametrizedOutside): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeIntBitsParametrizedInside(intBitsParametrizedOutside.x)(builder);
     })
-
 }
 
 // a$_ x:(#< 4) y:(#<= 4) = LessThan;
 
 export function loadLessThan(slice: Slice): LessThan {
-    let x: number = slice.loadUint(bitLen((4 - 1)));
-    let y: number = slice.loadUint(bitLen(4));
+    const x: number = slice.loadUint(bitLen((4 - 1)));
+    const y: number = slice.loadUint(bitLen(4));
     return {
         kind: 'LessThan',
         x: x,
         y: y,
     }
-
 }
 
 export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
@@ -1933,20 +1870,18 @@ export function storeLessThan(lessThan: LessThan): (builder: Builder) => void {
         builder.storeUint(lessThan.x, bitLen((4 - 1)));
         builder.storeUint(lessThan.y, bitLen(4));
     })
-
 }
 
 // a$_ {A:Type} t:# x:A = OneComb A;
 
 export function loadOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): OneComb<A> {
-    let t: number = slice.loadUint(32);
-    let x: A = loadA(slice);
+    const t: number = slice.loadUint(32);
+    const x: A = loadA(slice);
     return {
         kind: 'OneComb',
         t: t,
         x: x,
     }
-
 }
 
 export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
@@ -1954,27 +1889,22 @@ export function storeOneComb<A>(oneComb: OneComb<A>, storeA: (a: A) => (builder:
         builder.storeUint(oneComb.t, 32);
         storeA(oneComb.x)(builder);
     })
-
 }
 
 // a$_ y:(OneComb(OneComb(OneComb int3))) = ManyComb;
 
 export function loadManyComb(slice: Slice): ManyComb {
-    let y: OneComb<OneComb<OneComb<number>>> = loadOneComb<OneComb<OneComb<number>>>(slice, ((slice: Slice) => {
+    const y: OneComb<OneComb<OneComb<number>>> = loadOneComb<OneComb<OneComb<number>>>(slice, ((slice: Slice) => {
         return loadOneComb<OneComb<number>>(slice, ((slice: Slice) => {
             return loadOneComb<number>(slice, ((slice: Slice) => {
                 return slice.loadInt(3)
-
             }))
-
         }))
-
     }));
     return {
         kind: 'ManyComb',
         y: y,
     }
-
 }
 
 export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
@@ -1987,16 +1917,12 @@ export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
                             return ((builder: Builder) => {
                                 builder.storeInt(arg, 3);
                             })
-
                         }))(builder);
                     })
-
                 }))(builder);
             })
-
         }))(builder);
     })
-
 }
 
 // unary_zero$0 = Unary ~0;
@@ -2004,12 +1930,10 @@ export function storeManyComb(manyComb: ManyComb): (builder: Builder) => void {
 export function unary_unary_succ_get_n(x: Unary): number {
     if ((x.kind == 'Unary_unary_zero')) {
         return 0
-
     }
     if ((x.kind == 'Unary_unary_succ')) {
-        let n = x.n;
+        const n = x.n;
         return (n + 1)
-
     }
     throw new Error('Expected one of "Unary_unary_zero", "Unary_unary_succ" for type "Unary" while getting "x", but data does not satisfy any constructor');
 }
@@ -2022,18 +1946,16 @@ export function loadUnary(slice: Slice): Unary {
         return {
             kind: 'Unary_unary_zero',
         }
-
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let x: Unary = loadUnary(slice);
-        let n = unary_unary_succ_get_n(x);
+        const x: Unary = loadUnary(slice);
+        const n = unary_unary_succ_get_n(x);
         return {
             kind: 'Unary_unary_succ',
             x: x,
             n: n,
         }
-
     }
     throw new Error('Expected one of "Unary_unary_zero", "Unary_unary_succ" in loading "Unary", but data does not satisfy any constructor');
 }
@@ -2043,14 +1965,12 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
         })
-
     }
     if ((unary.kind == 'Unary_unary_succ')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
             storeUnary(unary.x)(builder);
         })
-
     }
     throw new Error('Expected one of "Unary_unary_zero", "Unary_unary_succ" in loading "Unary", but data does not satisfy any constructor');
 }
@@ -2066,41 +1986,38 @@ export function storeUnary(unary: Unary): (builder: Builder) => void {
 export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamConst {
     if (((slice.remainingBits >= 2) && ((slice.preloadUint(2) == 0b01) && ((arg0 == 2) && (arg1 == 1))))) {
         slice.loadUint(2);
-        let m: number = slice.loadUint(32);
-        let k: number = slice.loadUint(32);
+        const m: number = slice.loadUint(32);
+        const k: number = slice.loadUint(32);
         return {
             kind: 'ParamConst_b',
             m: m,
             k: k,
         }
-
     }
     if (((slice.remainingBits >= 2) && ((slice.preloadUint(2) == 0b01) && ((arg0 == 3) && (arg1 == 3))))) {
         slice.loadUint(2);
-        let n: number = slice.loadUint(32);
-        let m: number = slice.loadUint(32);
-        let k: number = slice.loadUint(32);
+        const n: number = slice.loadUint(32);
+        const m: number = slice.loadUint(32);
+        const k: number = slice.loadUint(32);
         return {
             kind: 'ParamConst_c',
             n: n,
             m: m,
             k: k,
         }
-
     }
     if (((arg0 == 1) && (arg1 == 1))) {
-        let n: number = slice.loadUint(32);
+        const n: number = slice.loadUint(32);
         return {
             kind: 'ParamConst_a',
             n: n,
         }
-
     }
     if (((arg0 == 4) && (arg1 == 2))) {
-        let n: number = slice.loadUint(32);
-        let m: number = slice.loadUint(32);
-        let k: number = slice.loadUint(32);
-        let l: number = slice.loadUint(32);
+        const n: number = slice.loadUint(32);
+        const m: number = slice.loadUint(32);
+        const k: number = slice.loadUint(32);
+        const l: number = slice.loadUint(32);
         return {
             kind: 'ParamConst_d',
             n: n,
@@ -2108,7 +2025,6 @@ export function loadParamConst(slice: Slice, arg0: number, arg1: number): ParamC
             k: k,
             l: l,
         }
-
     }
     throw new Error('Expected one of "ParamConst_b", "ParamConst_c", "ParamConst_a", "ParamConst_d" in loading "ParamConst", but data does not satisfy any constructor');
 }
@@ -2120,7 +2036,6 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
             builder.storeUint(paramConst.m, 32);
             builder.storeUint(paramConst.k, 32);
         })
-
     }
     if ((paramConst.kind == 'ParamConst_c')) {
         return ((builder: Builder) => {
@@ -2129,13 +2044,11 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
             builder.storeUint(paramConst.m, 32);
             builder.storeUint(paramConst.k, 32);
         })
-
     }
     if ((paramConst.kind == 'ParamConst_a')) {
         return ((builder: Builder) => {
             builder.storeUint(paramConst.n, 32);
         })
-
     }
     if ((paramConst.kind == 'ParamConst_d')) {
         return ((builder: Builder) => {
@@ -2144,7 +2057,6 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
             builder.storeUint(paramConst.k, 32);
             builder.storeUint(paramConst.l, 32);
         })
-
     }
     throw new Error('Expected one of "ParamConst_b", "ParamConst_c", "ParamConst_a", "ParamConst_d" in loading "ParamConst", but data does not satisfy any constructor');
 }
@@ -2156,21 +2068,17 @@ export function storeParamConst(paramConst: ParamConst): (builder: Builder) => v
 export function paramDifNames_c_get_n(x: ParamDifNames): number {
     if ((x.kind == 'ParamDifNames_a')) {
         return 1
-
     }
     if ((x.kind == 'ParamDifNames_b')) {
         return 1
-
     }
     if ((x.kind == 'ParamDifNames_c')) {
-        let n = x.n;
+        const n = x.n;
         return (n + 1)
-
     }
     if ((x.kind == 'ParamDifNames_d')) {
-        let m = x.m;
+        const m = x.m;
         return (m * 2)
-
     }
     throw new Error('Expected one of "ParamDifNames_a", "ParamDifNames_b", "ParamDifNames_c", "ParamDifNames_d" for type "ParamDifNames" while getting "x", but data does not satisfy any constructor');
 }
@@ -2180,21 +2088,17 @@ export function paramDifNames_c_get_n(x: ParamDifNames): number {
 export function paramDifNames_d_get_m(x: ParamDifNames): number {
     if ((x.kind == 'ParamDifNames_a')) {
         return 1
-
     }
     if ((x.kind == 'ParamDifNames_b')) {
         return 1
-
     }
     if ((x.kind == 'ParamDifNames_c')) {
-        let n = x.n;
+        const n = x.n;
         return (n + 1)
-
     }
     if ((x.kind == 'ParamDifNames_d')) {
-        let m = x.m;
+        const m = x.m;
         return (m * 2)
-
     }
     throw new Error('Expected one of "ParamDifNames_a", "ParamDifNames_b", "ParamDifNames_c", "ParamDifNames_d" for type "ParamDifNames" while getting "x", but data does not satisfy any constructor');
 }
@@ -2207,36 +2111,32 @@ export function loadParamDifNames(slice: Slice, arg0: number): ParamDifNames {
         return {
             kind: 'ParamDifNames_a',
         }
-
     }
     if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b1) && (arg0 == 3)))) {
         slice.loadUint(1);
         return {
             kind: 'ParamDifNames_b',
         }
-
     }
     if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b1) && (arg0 == 2)))) {
         slice.loadUint(1);
-        let x: ParamDifNames = loadParamDifNames(slice, 2);
-        let n = paramDifNames_c_get_n(x);
+        const x: ParamDifNames = loadParamDifNames(slice, 2);
+        const n = paramDifNames_c_get_n(x);
         return {
             kind: 'ParamDifNames_c',
             x: x,
             n: n,
         }
-
     }
     if (((slice.remainingBits >= 1) && ((slice.preloadUint(1) == 0b0) && (arg0 == 3)))) {
         slice.loadUint(1);
-        let x: ParamDifNames = loadParamDifNames(slice, 3);
-        let m = paramDifNames_d_get_m(x);
+        const x: ParamDifNames = loadParamDifNames(slice, 3);
+        const m = paramDifNames_d_get_m(x);
         return {
             kind: 'ParamDifNames_d',
             x: x,
             m: m,
         }
-
     }
     throw new Error('Expected one of "ParamDifNames_a", "ParamDifNames_b", "ParamDifNames_c", "ParamDifNames_d" in loading "ParamDifNames", but data does not satisfy any constructor');
 }
@@ -2246,27 +2146,23 @@ export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Buil
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
         })
-
     }
     if ((paramDifNames.kind == 'ParamDifNames_b')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
         })
-
     }
     if ((paramDifNames.kind == 'ParamDifNames_c')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
             storeParamDifNames(paramDifNames.x)(builder);
         })
-
     }
     if ((paramDifNames.kind == 'ParamDifNames_d')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
             storeParamDifNames(paramDifNames.x)(builder);
         })
-
     }
     throw new Error('Expected one of "ParamDifNames_a", "ParamDifNames_b", "ParamDifNames_c", "ParamDifNames_d" in loading "ParamDifNames", but data does not satisfy any constructor');
 }
@@ -2274,21 +2170,17 @@ export function storeParamDifNames(paramDifNames: ParamDifNames): (builder: Buil
 export function paramDifNamesUser_get_k(x: ParamDifNames): number {
     if ((x.kind == 'ParamDifNames_a')) {
         return 1
-
     }
     if ((x.kind == 'ParamDifNames_b')) {
         return 1
-
     }
     if ((x.kind == 'ParamDifNames_c')) {
-        let n = x.n;
+        const n = x.n;
         return (n + 1)
-
     }
     if ((x.kind == 'ParamDifNames_d')) {
-        let m = x.m;
+        const m = x.m;
         return (m * 2)
-
     }
     throw new Error('Expected one of "ParamDifNames_a", "ParamDifNames_b", "ParamDifNames_c", "ParamDifNames_d" for type "ParamDifNames" while getting "x", but data does not satisfy any constructor');
 }
@@ -2298,14 +2190,13 @@ export function paramDifNamesUser_get_k(x: ParamDifNames): number {
 export function loadParamDifNamesUser(slice: Slice): ParamDifNamesUser {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
-        let x: ParamDifNames = loadParamDifNames(slice, 2);
-        let k = paramDifNamesUser_get_k(x);
+        const x: ParamDifNames = loadParamDifNames(slice, 2);
+        const k = paramDifNamesUser_get_k(x);
         return {
             kind: 'ParamDifNamesUser',
             x: x,
             k: k,
         }
-
     }
     throw new Error('Expected one of "ParamDifNamesUser" in loading "ParamDifNamesUser", but data does not satisfy any constructor');
 }
@@ -2315,7 +2206,6 @@ export function storeParamDifNamesUser(paramDifNamesUser: ParamDifNamesUser): (b
         builder.storeUint(0b0, 1);
         storeParamDifNames(paramDifNamesUser.x)(builder);
     })
-
 }
 
 // b$1 {y:#} t:# z:# { t = (~y) * 2} = NegationFromImplicit ~(y + 1);
@@ -2323,15 +2213,14 @@ export function storeParamDifNamesUser(paramDifNamesUser: ParamDifNamesUser): (b
 export function loadNegationFromImplicit(slice: Slice): NegationFromImplicit {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let t: number = slice.loadUint(32);
-        let z: number = slice.loadUint(32);
+        const t: number = slice.loadUint(32);
+        const z: number = slice.loadUint(32);
         return {
             kind: 'NegationFromImplicit',
             y: (t / 2),
             t: t,
             z: z,
         }
-
     }
     throw new Error('Expected one of "NegationFromImplicit" in loading "NegationFromImplicit", but data does not satisfy any constructor');
 }
@@ -2342,18 +2231,15 @@ export function storeNegationFromImplicit(negationFromImplicit: NegationFromImpl
         builder.storeUint(negationFromImplicit.t, 32);
         builder.storeUint(negationFromImplicit.z, 32);
     })
-
 }
 
 export function unaryUserCheckOrder_get_l(label: Unary): number {
     if ((label.kind == 'Unary_unary_zero')) {
         return 0
-
     }
     if ((label.kind == 'Unary_unary_succ')) {
-        let n = label.n;
+        const n = label.n;
         return (n + 1)
-
     }
     throw new Error('Expected one of "Unary_unary_zero", "Unary_unary_succ" for type "Unary" while getting "label", but data does not satisfy any constructor');
 }
@@ -2361,22 +2247,20 @@ export function unaryUserCheckOrder_get_l(label: Unary): number {
 // hm_edge#_ {l:#} {m:#} label:(Unary ~l) {7 = (~m) + l} = UnaryUserCheckOrder;
 
 export function loadUnaryUserCheckOrder(slice: Slice): UnaryUserCheckOrder {
-    let label: Unary = loadUnary(slice);
-    let l = unaryUserCheckOrder_get_l(label);
+    const label: Unary = loadUnary(slice);
+    const l = unaryUserCheckOrder_get_l(label);
     return {
         kind: 'UnaryUserCheckOrder',
         m: (7 - l),
         label: label,
         l: l,
     }
-
 }
 
 export function storeUnaryUserCheckOrder(unaryUserCheckOrder: UnaryUserCheckOrder): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeUnary(unaryUserCheckOrder.label)(builder);
     })
-
 }
 
 /*
@@ -2387,24 +2271,20 @@ a$_ {X:Type} info:int32
 */
 
 export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X): CombArgCellRef<X> {
-    let info: number = slice.loadInt(32);
-    let init: Maybe<Either<X, number>> = loadMaybe<Either<X, number>>(slice, ((slice: Slice) => {
+    const info: number = slice.loadInt(32);
+    const init: Maybe<Either<X, number>> = loadMaybe<Either<X, number>>(slice, ((slice: Slice) => {
         return loadEither<X, number>(slice, loadX, ((slice: Slice) => {
-            let slice1 = slice.loadRef().beginParse(true);
+            const slice1 = slice.loadRef().beginParse(true);
             return slice1.loadInt(22)
-
         }))
-
     }));
-    let other: Either<X, OneComb<X>> = loadEither<X, OneComb<X>>(slice, loadX, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse(true);
+    const other: Either<X, OneComb<X>> = loadEither<X, OneComb<X>>(slice, loadX, ((slice: Slice) => {
+        const slice1 = slice.loadRef().beginParse(true);
         return loadOneComb<X>(slice1, loadX)
-
     }));
-    let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse(true);
+    const body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
+        const slice1 = slice.loadRef().beginParse(true);
         return loadX(slice1)
-
     }));
     return {
         kind: 'CombArgCellRef',
@@ -2413,7 +2293,6 @@ export function loadCombArgCellRef<X>(slice: Slice, loadX: (slice: Slice) => X):
         other: other,
         body: body,
     }
-
 }
 
 export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
@@ -2423,50 +2302,40 @@ export function storeCombArgCellRef<X>(combArgCellRef: CombArgCellRef<X>, storeX
             return ((builder: Builder) => {
                 storeEither<X, number>(arg, storeX, ((arg: number) => {
                     return ((builder: Builder) => {
-                        let cell1 = beginCell();
+                        const cell1 = beginCell();
                         cell1.storeInt(arg, 22);
                         builder.storeRef(cell1);
-
                     })
-
                 }))(builder);
             })
-
         }))(builder);
         storeEither<X, OneComb<X>>(combArgCellRef.other, storeX, ((arg: OneComb<X>) => {
             return ((builder: Builder) => {
-                let cell1 = beginCell();
+                const cell1 = beginCell();
                 storeOneComb<X>(arg, storeX)(cell1);
                 builder.storeRef(cell1);
-
             })
-
         }))(builder);
         storeEither<X, X>(combArgCellRef.body, storeX, ((arg: X) => {
             return ((builder: Builder) => {
-                let cell1 = beginCell();
+                const cell1 = beginCell();
                 storeX(arg)(cell1);
                 builder.storeRef(cell1);
-
             })
-
         }))(builder);
     })
-
 }
 
 // a$_ x:(CombArgCellRef int12) = CombArgCellRefUser;
 
 export function loadCombArgCellRefUser(slice: Slice): CombArgCellRefUser {
-    let x: CombArgCellRef<number> = loadCombArgCellRef<number>(slice, ((slice: Slice) => {
+    const x: CombArgCellRef<number> = loadCombArgCellRef<number>(slice, ((slice: Slice) => {
         return slice.loadInt(12)
-
     }));
     return {
         kind: 'CombArgCellRefUser',
         x: x,
     }
-
 }
 
 export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser): (builder: Builder) => void {
@@ -2475,50 +2344,44 @@ export function storeCombArgCellRefUser(combArgCellRefUser: CombArgCellRefUser):
             return ((builder: Builder) => {
                 builder.storeInt(arg, 12);
             })
-
         }))(builder);
     })
-
 }
 
 // a$_ {n:#} ref:^(BitLenArg (n + 2)) = MathExprAsCombArg (n + 2);
 
 export function loadMathExprAsCombArg(slice: Slice, arg0: number): MathExprAsCombArg {
-    let slice1 = slice.loadRef().beginParse(true);
-    let ref: BitLenArg = loadBitLenArg(slice1, ((arg0 - 2) + 2));
+    const slice1 = slice.loadRef().beginParse(true);
+    const ref: BitLenArg = loadBitLenArg(slice1, ((arg0 - 2) + 2));
     return {
         kind: 'MathExprAsCombArg',
         n: (arg0 - 2),
         ref: ref,
     }
-
 }
 
 export function storeMathExprAsCombArg(mathExprAsCombArg: MathExprAsCombArg): (builder: Builder) => void {
     return ((builder: Builder) => {
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         storeBitLenArg(mathExprAsCombArg.ref)(cell1);
         builder.storeRef(cell1);
     })
-
 }
 
 // _ a:# = EmptyTag;
 
 export function loadEmptyTag(slice: Slice): EmptyTag {
-    let a: number = slice.loadUint(32);
+    const a: number = slice.loadUint(32);
     return {
         kind: 'EmptyTag',
         a: a,
     }
-
 }
 
 export function storeEmptyTag(emptyTag: EmptyTag): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(emptyTag.a, 32);
     })
-
 }
 
 // a#f4 x:# = SharpTag;
@@ -2526,12 +2389,11 @@ export function storeEmptyTag(emptyTag: EmptyTag): (builder: Builder) => void {
 export function loadSharpTag(slice: Slice): SharpTag {
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0xf4))) {
         slice.loadUint(8);
-        let x: number = slice.loadUint(32);
+        const x: number = slice.loadUint(32);
         return {
             kind: 'SharpTag',
             x: x,
         }
-
     }
     throw new Error('Expected one of "SharpTag" in loading "SharpTag", but data does not satisfy any constructor');
 }
@@ -2541,7 +2403,6 @@ export function storeSharpTag(sharpTag: SharpTag): (builder: Builder) => void {
         builder.storeUint(0xf4, 8);
         builder.storeUint(sharpTag.x, 32);
     })
-
 }
 
 // a$1011 x:# = DollarTag;
@@ -2549,12 +2410,11 @@ export function storeSharpTag(sharpTag: SharpTag): (builder: Builder) => void {
 export function loadDollarTag(slice: Slice): DollarTag {
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1011))) {
         slice.loadUint(4);
-        let x: number = slice.loadUint(32);
+        const x: number = slice.loadUint(32);
         return {
             kind: 'DollarTag',
             x: x,
         }
-
     }
     throw new Error('Expected one of "DollarTag" in loading "DollarTag", but data does not satisfy any constructor');
 }
@@ -2564,21 +2424,18 @@ export function storeDollarTag(dollarTag: DollarTag): (builder: Builder) => void
         builder.storeUint(0b1011, 4);
         builder.storeUint(dollarTag.x, 32);
     })
-
 }
 
 // a$_ s:(3 * int5) = TupleCheck;
 
 export function loadTupleCheck(slice: Slice): TupleCheck {
-    let s: Array<number> = Array.from(Array(3).keys()).map(((arg: number) => {
+    const s: Array<number> = Array.from(Array(3).keys()).map(((arg: number) => {
         return slice.loadInt(5)
-
     }));
     return {
         kind: 'TupleCheck',
         s: s,
     }
-
 }
 
 export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => void {
@@ -2587,24 +2444,20 @@ export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => v
             builder.storeInt(arg, 5);
         }));
     })
-
 }
 
 export function hashmap_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
-        let n = label.n;
+        const n = label.n;
         return n
-
     }
     if ((label.kind == 'HmLabel_hml_long')) {
-        let n = label.n;
+        const n = label.n;
         return n
-
     }
     if ((label.kind == 'HmLabel_hml_same')) {
-        let n = label.n;
+        const n = label.n;
         return n
-
     }
     throw new Error('Expected one of "HmLabel_hml_short", "HmLabel_hml_long", "HmLabel_hml_same" for type "HmLabel" while getting "label", but data does not satisfy any constructor');
 }
@@ -2615,9 +2468,9 @@ hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
 */
 
 export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) => X): Hashmap<X> {
-    let label: HmLabel = loadHmLabel(slice, n);
-    let l = hashmap_get_l(label);
-    let node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
+    const label: HmLabel = loadHmLabel(slice, n);
+    const l = hashmap_get_l(label);
+    const node: HashmapNode<X> = loadHashmapNode<X>(slice, (n - l), loadX);
     return {
         kind: 'Hashmap',
         n: n,
@@ -2626,7 +2479,6 @@ export function loadHashmap<X>(slice: Slice, n: number, loadX: (slice: Slice) =>
         l: l,
         node: node,
     }
-
 }
 
 export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
@@ -2634,7 +2486,6 @@ export function storeHashmap<X>(hashmap: Hashmap<X>, storeX: (x: X) => (builder:
         storeHmLabel(hashmap.label)(builder);
         storeHashmapNode<X>(hashmap.node, storeX)(builder);
     })
-
 }
 
 // hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
@@ -2646,25 +2497,23 @@ hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X)
 
 export function loadHashmapNode<X>(slice: Slice, arg0: number, loadX: (slice: Slice) => X): HashmapNode<X> {
     if ((arg0 == 0)) {
-        let value: X = loadX(slice);
+        const value: X = loadX(slice);
         return {
             kind: 'HashmapNode_hmn_leaf',
             value: value,
         }
-
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse(true);
-        let left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX);
-        let slice2 = slice.loadRef().beginParse(true);
-        let right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX);
+        const slice1 = slice.loadRef().beginParse(true);
+        const left: Hashmap<X> = loadHashmap<X>(slice1, (arg0 - 1), loadX);
+        const slice2 = slice.loadRef().beginParse(true);
+        const right: Hashmap<X> = loadHashmap<X>(slice2, (arg0 - 1), loadX);
         return {
             kind: 'HashmapNode_hmn_fork',
             n: (arg0 - 1),
             left: left,
             right: right,
         }
-
     }
     throw new Error('Expected one of "HashmapNode_hmn_leaf", "HashmapNode_hmn_fork" in loading "HashmapNode", but data does not satisfy any constructor');
 }
@@ -2674,18 +2523,16 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
         return ((builder: Builder) => {
             storeX(hashmapNode.value)(builder);
         })
-
     }
     if ((hashmapNode.kind == 'HashmapNode_hmn_fork')) {
         return ((builder: Builder) => {
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeHashmap<X>(hashmapNode.left, storeX)(cell1);
             builder.storeRef(cell1);
-            let cell2 = beginCell();
+            const cell2 = beginCell();
             storeHashmap<X>(hashmapNode.right, storeX)(cell2);
             builder.storeRef(cell2);
         })
-
     }
     throw new Error('Expected one of "HashmapNode_hmn_leaf", "HashmapNode_hmn_fork" in loading "HashmapNode", but data does not satisfy any constructor');
 }
@@ -2693,12 +2540,10 @@ export function storeHashmapNode<X>(hashmapNode: HashmapNode<X>, storeX: (x: X) 
 export function hmLabel_hml_short_get_n(len: Unary): number {
     if ((len.kind == 'Unary_unary_zero')) {
         return 0
-
     }
     if ((len.kind == 'Unary_unary_succ')) {
-        let n = len.n;
+        const n = len.n;
         return (n + 1)
-
     }
     throw new Error('Expected one of "Unary_unary_zero", "Unary_unary_succ" for type "Unary" while getting "len", but data does not satisfy any constructor');
 }
@@ -2712,11 +2557,10 @@ export function hmLabel_hml_short_get_n(len: Unary): number {
 export function loadHmLabel(slice: Slice, m: number): HmLabel {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
-        let len: Unary = loadUnary(slice);
-        let n = hmLabel_hml_short_get_n(len);
-        let s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
+        const len: Unary = loadUnary(slice);
+        const n = hmLabel_hml_short_get_n(len);
+        const s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
             return slice.loadBit()
-
         }));
         if ((!(n <= m))) {
             throw new Error('Condition (n <= m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -2728,14 +2572,12 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
             n: n,
             s: s,
         }
-
     }
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
         slice.loadUint(2);
-        let n: number = slice.loadUint(bitLen(m));
-        let s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
+        const n: number = slice.loadUint(bitLen(m));
+        const s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
             return slice.loadBit()
-
         }));
         return {
             kind: 'HmLabel_hml_long',
@@ -2743,19 +2585,17 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
             n: n,
             s: s,
         }
-
     }
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b11))) {
         slice.loadUint(2);
-        let v: boolean = slice.loadBit();
-        let n: number = slice.loadUint(bitLen(m));
+        const v: boolean = slice.loadBit();
+        const n: number = slice.loadUint(bitLen(m));
         return {
             kind: 'HmLabel_hml_same',
             m: m,
             v: v,
             n: n,
         }
-
     }
     throw new Error('Expected one of "HmLabel_hml_short", "HmLabel_hml_long", "HmLabel_hml_same" in loading "HmLabel", but data does not satisfy any constructor');
 }
@@ -2772,7 +2612,6 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
                 throw new Error('Condition (hmLabel.n <= hmLabel.m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
             }
         })
-
     }
     if ((hmLabel.kind == 'HmLabel_hml_long')) {
         return ((builder: Builder) => {
@@ -2782,7 +2621,6 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
                 builder.storeBit(arg);
             }));
         })
-
     }
     if ((hmLabel.kind == 'HmLabel_hml_same')) {
         return ((builder: Builder) => {
@@ -2790,7 +2628,6 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
             builder.storeBit(hmLabel.v);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
         })
-
     }
     throw new Error('Expected one of "HmLabel_hml_short", "HmLabel_hml_long", "HmLabel_hml_same" in loading "HmLabel", but data does not satisfy any constructor');
 }
@@ -2798,18 +2635,16 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
 // a$_ x:(HashmapE 8 uint16) = HashmapEUser;
 
 export function loadHashmapEUser(slice: Slice): HashmapEUser {
-    let x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), {
+    const x: Dictionary<number, number> = Dictionary.load(Dictionary.Keys.Uint(8), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return slice.loadUint(16)
-
     }),
     }, slice);
     return {
         kind: 'HashmapEUser',
         x: x,
     }
-
 }
 
 export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder) => void {
@@ -2820,26 +2655,23 @@ export function storeHashmapEUser(hashmapEUser: HashmapEUser): (builder: Builder
                 return ((builder: Builder) => {
                     builder.storeUint(arg, 16);
                 })
-
             })(arg)(builder);
         }),
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 // _ a:(## 1) b:a?(## 32) = ConditionalField;
 
 export function loadConditionalField(slice: Slice): ConditionalField {
-    let a: number = slice.loadUint(1);
-    let b: number | undefined = (a ? slice.loadUint(32) : undefined);
+    const a: number = slice.loadUint(1);
+    const b: number | undefined = (a ? slice.loadUint(32) : undefined);
     return {
         kind: 'ConditionalField',
         a: a,
         b: b,
     }
-
 }
 
 export function storeConditionalField(conditionalField: ConditionalField): (builder: Builder) => void {
@@ -2849,20 +2681,18 @@ export function storeConditionalField(conditionalField: ConditionalField): (buil
             builder.storeUint(conditionalField.b, 32);
         }
     })
-
 }
 
 // _ a:(## 6) b:(a . 2)?(## 32) = BitSelection;
 
 export function loadBitSelection(slice: Slice): BitSelection {
-    let a: number = slice.loadUint(6);
-    let b: number | undefined = ((a & (1 << 2)) ? slice.loadUint(32) : undefined);
+    const a: number = slice.loadUint(6);
+    const b: number | undefined = ((a & (1 << 2)) ? slice.loadUint(32) : undefined);
     return {
         kind: 'BitSelection',
         a: a,
         b: b,
     }
-
 }
 
 export function storeBitSelection(bitSelection: BitSelection): (builder: Builder) => void {
@@ -2872,13 +2702,12 @@ export function storeBitSelection(bitSelection: BitSelection): (builder: Builder
             builder.storeUint(bitSelection.b, 32);
         }
     })
-
 }
 
 // _ flags:(## 10) { flags <= 100 } = ImplicitCondition;
 
 export function loadImplicitCondition(slice: Slice): ImplicitCondition {
-    let flags: number = slice.loadUint(10);
+    const flags: number = slice.loadUint(10);
     if ((!(flags <= 100))) {
         throw new Error('Condition (flags <= 100) is not satisfied while loading "ImplicitCondition" for type "ImplicitCondition"');
     }
@@ -2886,7 +2715,6 @@ export function loadImplicitCondition(slice: Slice): ImplicitCondition {
         kind: 'ImplicitCondition',
         flags: flags,
     }
-
 }
 
 export function storeImplicitCondition(implicitCondition: ImplicitCondition): (builder: Builder) => void {
@@ -2896,7 +2724,6 @@ export function storeImplicitCondition(implicitCondition: ImplicitCondition): (b
             throw new Error('Condition (implicitCondition.flags <= 100) is not satisfied while loading "ImplicitCondition" for type "ImplicitCondition"');
         }
     })
-
 }
 
 // _ a:# = MultipleEmptyConstructor 0;
@@ -2907,28 +2734,25 @@ export function storeImplicitCondition(implicitCondition: ImplicitCondition): (b
 
 export function loadMultipleEmptyConstructor(slice: Slice, arg0: number): MultipleEmptyConstructor {
     if ((arg0 == 0)) {
-        let a: number = slice.loadUint(32);
+        const a: number = slice.loadUint(32);
         return {
             kind: 'MultipleEmptyConstructor__',
             a: a,
         }
-
     }
     if ((arg0 == 1)) {
-        let b: number = slice.loadUint(5);
+        const b: number = slice.loadUint(5);
         return {
             kind: 'MultipleEmptyConstructor__1',
             b: b,
         }
-
     }
     if ((arg0 == 2)) {
-        let x: number = slice.loadUint(6);
+        const x: number = slice.loadUint(6);
         return {
             kind: 'MultipleEmptyConstructor_a',
             x: x,
         }
-
     }
     throw new Error('Expected one of "MultipleEmptyConstructor__", "MultipleEmptyConstructor__1", "MultipleEmptyConstructor_a" in loading "MultipleEmptyConstructor", but data does not satisfy any constructor');
 }
@@ -2938,19 +2762,16 @@ export function storeMultipleEmptyConstructor(multipleEmptyConstructor: Multiple
         return ((builder: Builder) => {
             builder.storeUint(multipleEmptyConstructor.a, 32);
         })
-
     }
     if ((multipleEmptyConstructor.kind == 'MultipleEmptyConstructor__1')) {
         return ((builder: Builder) => {
             builder.storeUint(multipleEmptyConstructor.b, 5);
         })
-
     }
     if ((multipleEmptyConstructor.kind == 'MultipleEmptyConstructor_a')) {
         return ((builder: Builder) => {
             builder.storeUint(multipleEmptyConstructor.x, 6);
         })
-
     }
     throw new Error('Expected one of "MultipleEmptyConstructor__", "MultipleEmptyConstructor__1", "MultipleEmptyConstructor_a" in loading "MultipleEmptyConstructor", but data does not satisfy any constructor');
 }
@@ -2961,13 +2782,11 @@ export function loadTrue(slice: Slice): True {
     return {
         kind: 'True',
     }
-
 }
 
 export function storeTrue(true0: True): (builder: Builder) => void {
     return ((builder: Builder) => {
     })
-
 }
 
 // a$0 {n:#} = ParamNamedArgInSecondConstr n;
@@ -2981,7 +2800,6 @@ export function loadParamNamedArgInSecondConstr(slice: Slice, arg0: number): Par
             kind: 'ParamNamedArgInSecondConstr_a',
             n: arg0,
         }
-
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
@@ -2989,7 +2807,6 @@ export function loadParamNamedArgInSecondConstr(slice: Slice, arg0: number): Par
             kind: 'ParamNamedArgInSecondConstr_b',
             n: (arg0 - 1),
         }
-
     }
     throw new Error('Expected one of "ParamNamedArgInSecondConstr_a", "ParamNamedArgInSecondConstr_b" in loading "ParamNamedArgInSecondConstr", but data does not satisfy any constructor');
 }
@@ -2999,13 +2816,11 @@ export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: Pa
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
         })
-
     }
     if ((paramNamedArgInSecondConstr.kind == 'ParamNamedArgInSecondConstr_b')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1, 1);
         })
-
     }
     throw new Error('Expected one of "ParamNamedArgInSecondConstr_a", "ParamNamedArgInSecondConstr_b" in loading "ParamNamedArgInSecondConstr", but data does not satisfy any constructor');
 }
@@ -3013,36 +2828,32 @@ export function storeParamNamedArgInSecondConstr(paramNamedArgInSecondConstr: Pa
 // a$_ msg:^(Maybe Any) = RefCombinatorAny;
 
 export function loadRefCombinatorAny(slice: Slice): RefCombinatorAny {
-    let slice1 = slice.loadRef().beginParse(true);
-    let msg: Maybe<Cell> = loadMaybe<Cell>(slice1, ((slice: Slice) => {
+    const slice1 = slice.loadRef().beginParse(true);
+    const msg: Maybe<Cell> = loadMaybe<Cell>(slice1, ((slice: Slice) => {
         return slice.asCell()
-
     }));
     return {
         kind: 'RefCombinatorAny',
         msg: msg,
     }
-
 }
 
 export function storeRefCombinatorAny(refCombinatorAny: RefCombinatorAny): (builder: Builder) => void {
     return ((builder: Builder) => {
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         storeMaybe<Cell>(refCombinatorAny.msg, ((arg: Cell) => {
             return ((builder: Builder) => {
                 builder.storeSlice(arg.beginParse(true));
             })
-
         }))(cell1);
         builder.storeRef(cell1);
     })
-
 }
 
 // a$_ n:# { 5 + n = 7 } = EqualityExpression;
 
 export function loadEqualityExpression(slice: Slice): EqualityExpression {
-    let n: number = slice.loadUint(32);
+    const n: number = slice.loadUint(32);
     if ((!((5 + n) == 7))) {
         throw new Error('Condition ((5 + n) == 7) is not satisfied while loading "EqualityExpression" for type "EqualityExpression"');
     }
@@ -3050,7 +2861,6 @@ export function loadEqualityExpression(slice: Slice): EqualityExpression {
         kind: 'EqualityExpression',
         n: n,
     }
-
 }
 
 export function storeEqualityExpression(equalityExpression: EqualityExpression): (builder: Builder) => void {
@@ -3060,37 +2870,32 @@ export function storeEqualityExpression(equalityExpression: EqualityExpression):
             throw new Error('Condition ((5 + equalityExpression.n) == 7) is not satisfied while loading "EqualityExpression" for type "EqualityExpression"');
         }
     })
-
 }
 
 // a$_ x:(## 1) y:x?^Simple = ConditionalRef;
 
 export function loadConditionalRef(slice: Slice): ConditionalRef {
-    let x: number = slice.loadUint(1);
-    let y: Simple | undefined = (x ? ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse(true);
+    const x: number = slice.loadUint(1);
+    const y: Simple | undefined = (x ? ((slice: Slice) => {
+        const slice1 = slice.loadRef().beginParse(true);
         return loadSimple(slice1)
-
     })(slice) : undefined);
     return {
         kind: 'ConditionalRef',
         x: x,
         y: y,
     }
-
 }
 
 export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(conditionalRef.x, 1);
         if ((conditionalRef.y != undefined)) {
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeSimple(conditionalRef.y)(cell1);
             builder.storeRef(cell1);
-
         }
     })
-
 }
 
 // block_info#9bc7a987 seq_no:# { prev_seq_no:# } { ~prev_seq_no + 1 = seq_no } = LoadFromNegationOutsideExpr;
@@ -3098,13 +2903,12 @@ export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: B
 export function loadLoadFromNegationOutsideExpr(slice: Slice): LoadFromNegationOutsideExpr {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9bc7a987))) {
         slice.loadUint(32);
-        let seq_no: number = slice.loadUint(32);
+        const seq_no: number = slice.loadUint(32);
         return {
             kind: 'LoadFromNegationOutsideExpr',
             prev_seq_no: (seq_no - 1),
             seq_no: seq_no,
         }
-
     }
     throw new Error('Expected one of "LoadFromNegationOutsideExpr" in loading "LoadFromNegationOutsideExpr", but data does not satisfy any constructor');
 }
@@ -3114,20 +2918,18 @@ export function storeLoadFromNegationOutsideExpr(loadFromNegationOutsideExpr: Lo
         builder.storeUint(0x9bc7a987, 32);
         builder.storeUint(loadFromNegationOutsideExpr.seq_no, 32);
     })
-
 }
 
 // bit$_ (## 1) anon0:# = AnonymousData;
 
 export function loadAnonymousData(slice: Slice): AnonymousData {
-    let anon0: number = slice.loadUint(1);
-    let anon0_0: number = slice.loadUint(32);
+    const anon0: number = slice.loadUint(1);
+    const anon0_0: number = slice.loadUint(32);
     return {
         kind: 'AnonymousData',
         anon0: anon0,
         anon0_0: anon0_0,
     }
-
 }
 
 export function storeAnonymousData(anonymousData: AnonymousData): (builder: Builder) => void {
@@ -3135,7 +2937,6 @@ export function storeAnonymousData(anonymousData: AnonymousData): (builder: Buil
         builder.storeUint(anonymousData.anon0, 1);
         builder.storeUint(anonymousData.anon0_0, 32);
     })
-
 }
 
 // vm_stk_int#0201_ value:int257 = FalseAnonField;
@@ -3143,12 +2944,11 @@ export function storeAnonymousData(anonymousData: AnonymousData): (builder: Buil
 export function loadFalseAnonField(slice: Slice): FalseAnonField {
     if (((slice.remainingBits >= 15) && (slice.preloadUint(15) == 0x0100))) {
         slice.loadUint(15);
-        let value: bigint = slice.loadIntBig(257);
+        const value: bigint = slice.loadIntBig(257);
         return {
             kind: 'FalseAnonField',
             value: value,
         }
-
     }
     throw new Error('Expected one of "FalseAnonField" in loading "FalseAnonField", but data does not satisfy any constructor');
 }
@@ -3158,7 +2958,6 @@ export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: B
         builder.storeUint(0x0100, 15);
         builder.storeInt(falseAnonField.value, 257);
     })
-
 }
 
 // b$1 Simple = ConstructorOrder;
@@ -3168,21 +2967,19 @@ export function storeFalseAnonField(falseAnonField: FalseAnonField): (builder: B
 export function loadConstructorOrder(slice: Slice): ConstructorOrder {
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b1))) {
         slice.loadUint(1);
-        let anon0: Simple = loadSimple(slice);
+        const anon0: Simple = loadSimple(slice);
         return {
             kind: 'ConstructorOrder_b',
             anon0: anon0,
         }
-
     }
     if (((slice.remainingBits >= 1) && (slice.preloadUint(1) == 0b0))) {
         slice.loadUint(1);
-        let a: Simple = loadSimple(slice);
+        const a: Simple = loadSimple(slice);
         return {
             kind: 'ConstructorOrder_a',
             a: a,
         }
-
     }
     throw new Error('Expected one of "ConstructorOrder_b", "ConstructorOrder_a" in loading "ConstructorOrder", but data does not satisfy any constructor');
 }
@@ -3193,14 +2990,12 @@ export function storeConstructorOrder(constructorOrder: ConstructorOrder): (buil
             builder.storeUint(0b1, 1);
             storeSimple(constructorOrder.anon0)(builder);
         })
-
     }
     if ((constructorOrder.kind == 'ConstructorOrder_a')) {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
             storeSimple(constructorOrder.a)(builder);
         })
-
     }
     throw new Error('Expected one of "ConstructorOrder_b", "ConstructorOrder_a" in loading "ConstructorOrder", but data does not satisfy any constructor');
 }
@@ -3212,23 +3007,21 @@ export function storeConstructorOrder(constructorOrder: ConstructorOrder): (buil
 export function loadCheckCrc32(slice: Slice): CheckCrc32 {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0x9d97e7a))) {
         slice.loadUint(32);
-        let a: number = slice.loadUint(32);
+        const a: number = slice.loadUint(32);
         return {
             kind: 'CheckCrc32_a',
             a: a,
         }
-
     }
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xa842b3f0))) {
         slice.loadUint(32);
-        let b: number = slice.loadUint(32);
-        let c: number = slice.loadUint(32);
+        const b: number = slice.loadUint(32);
+        const c: number = slice.loadUint(32);
         return {
             kind: 'CheckCrc32_b',
             b: b,
             c: c,
         }
-
     }
     throw new Error('Expected one of "CheckCrc32_a", "CheckCrc32_b" in loading "CheckCrc32", but data does not satisfy any constructor');
 }
@@ -3239,7 +3032,6 @@ export function storeCheckCrc32(checkCrc32: CheckCrc32): (builder: Builder) => v
             builder.storeUint(0x9d97e7a, 32);
             builder.storeUint(checkCrc32.a, 32);
         })
-
     }
     if ((checkCrc32.kind == 'CheckCrc32_b')) {
         return ((builder: Builder) => {
@@ -3247,7 +3039,6 @@ export function storeCheckCrc32(checkCrc32: CheckCrc32): (builder: Builder) => v
             builder.storeUint(checkCrc32.b, 32);
             builder.storeUint(checkCrc32.c, 32);
         })
-
     }
     throw new Error('Expected one of "CheckCrc32_a", "CheckCrc32_b" in loading "CheckCrc32", but data does not satisfy any constructor');
 }
@@ -3255,36 +3046,32 @@ export function storeCheckCrc32(checkCrc32: CheckCrc32): (builder: Builder) => v
 // a$_ const:# = CheckKeyword;
 
 export function loadCheckKeyword(slice: Slice): CheckKeyword {
-    let const0: number = slice.loadUint(32);
+    const const0: number = slice.loadUint(32);
     return {
         kind: 'CheckKeyword',
         const0: const0,
     }
-
 }
 
 export function storeCheckKeyword(checkKeyword: CheckKeyword): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(checkKeyword.const0, 32);
     })
-
 }
 
 // a$_ {X:Type} t:# y:(Maybe ^X) = RefCombinatorInRefHelper X;
 
 export function loadRefCombinatorInRefHelper<X>(slice: Slice, loadX: (slice: Slice) => X): RefCombinatorInRefHelper<X> {
-    let t: number = slice.loadUint(32);
-    let y: Maybe<X> = loadMaybe<X>(slice, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse(true);
+    const t: number = slice.loadUint(32);
+    const y: Maybe<X> = loadMaybe<X>(slice, ((slice: Slice) => {
+        const slice1 = slice.loadRef().beginParse(true);
         return loadX(slice1)
-
     }));
     return {
         kind: 'RefCombinatorInRefHelper',
         t: t,
         y: y,
     }
-
 }
 
 export function storeRefCombinatorInRefHelper<X>(refCombinatorInRefHelper: RefCombinatorInRefHelper<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
@@ -3292,62 +3079,53 @@ export function storeRefCombinatorInRefHelper<X>(refCombinatorInRefHelper: RefCo
         builder.storeUint(refCombinatorInRefHelper.t, 32);
         storeMaybe<X>(refCombinatorInRefHelper.y, ((arg: X) => {
             return ((builder: Builder) => {
-                let cell1 = beginCell();
+                const cell1 = beginCell();
                 storeX(arg)(cell1);
                 builder.storeRef(cell1);
-
             })
-
         }))(builder);
     })
-
 }
 
 // a$_ msg:^(RefCombinatorInRefHelper Any) = RefCombinatorInRef;
 
 export function loadRefCombinatorInRef(slice: Slice): RefCombinatorInRef {
-    let slice1 = slice.loadRef().beginParse(true);
-    let msg: RefCombinatorInRefHelper<Cell> = loadRefCombinatorInRefHelper<Cell>(slice1, ((slice: Slice) => {
+    const slice1 = slice.loadRef().beginParse(true);
+    const msg: RefCombinatorInRefHelper<Cell> = loadRefCombinatorInRefHelper<Cell>(slice1, ((slice: Slice) => {
         return slice.asCell()
-
     }));
     return {
         kind: 'RefCombinatorInRef',
         msg: msg,
     }
-
 }
 
 export function storeRefCombinatorInRef(refCombinatorInRef: RefCombinatorInRef): (builder: Builder) => void {
     return ((builder: Builder) => {
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         storeRefCombinatorInRefHelper<Cell>(refCombinatorInRef.msg, ((arg: Cell) => {
             return ((builder: Builder) => {
                 builder.storeSlice(arg.beginParse(true));
             })
-
         }))(cell1);
         builder.storeRef(cell1);
     })
-
 }
 
 // _ a:Bool = BoolUser;
 
 export function loadBoolUser(slice: Slice): BoolUser {
-    let a: Bool = loadBool(slice);
+    const a: Bool = loadBool(slice);
     return {
         kind: 'BoolUser',
         a: a,
     }
-
 }
 
 export function storeBoolUser(boolUser: BoolUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeBool(boolUser.a)(builder);
     })
-
 }
 
 /*
@@ -3356,8 +3134,8 @@ anycast_info$_ depth:(#<= 30) { depth >= 1 }
 */
 
 export function loadAnycast(slice: Slice): Anycast {
-    let depth: number = slice.loadUint(bitLen(30));
-    let rewrite_pfx: BitString = slice.loadBits(depth);
+    const depth: number = slice.loadUint(bitLen(30));
+    const rewrite_pfx: BitString = slice.loadBits(depth);
     if ((!(depth >= 1))) {
         throw new Error('Condition (depth >= 1) is not satisfied while loading "Anycast" for type "Anycast"');
     }
@@ -3366,7 +3144,6 @@ export function loadAnycast(slice: Slice): Anycast {
         depth: depth,
         rewrite_pfx: rewrite_pfx,
     }
-
 }
 
 export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
@@ -3377,157 +3154,140 @@ export function storeAnycast(anycast: Anycast): (builder: Builder) => void {
             throw new Error('Condition (anycast.depth >= 1) is not satisfied while loading "Anycast" for type "Anycast"');
         }
     })
-
 }
 
 // _ src:MsgAddressInt = AddressUser;
 
 export function loadAddressUser(slice: Slice): AddressUser {
-    let src: Address = slice.loadAddress();
+    const src: Address = slice.loadAddress();
     return {
         kind: 'AddressUser',
         src: src,
     }
-
 }
 
 export function storeAddressUser(addressUser: AddressUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeAddress(addressUser.src);
     })
-
 }
 
 // _ src:MsgAddressExt = ExtAddressUser;
 
 export function loadExtAddressUser(slice: Slice): ExtAddressUser {
-    let src: ExternalAddress | null = slice.loadMaybeExternalAddress();
+    const src: ExternalAddress | null = slice.loadMaybeExternalAddress();
     return {
         kind: 'ExtAddressUser',
         src: src,
     }
-
 }
 
 export function storeExtAddressUser(extAddressUser: ExtAddressUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeAddress(extAddressUser.src);
     })
-
 }
 
 // _ src:MsgAddress = AnyAddressUser;
 
 export function loadAnyAddressUser(slice: Slice): AnyAddressUser {
-    let src: Address | ExternalAddress | null = slice.loadAddressAny();
+    const src: Address | ExternalAddress | null = slice.loadAddressAny();
     return {
         kind: 'AnyAddressUser',
         src: src,
     }
-
 }
 
 export function storeAnyAddressUser(anyAddressUser: AnyAddressUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeAddress(anyAddressUser.src);
     })
-
 }
 
 // _ inside:AddressUser = InsideAddressUser;
 
 export function loadInsideAddressUser(slice: Slice): InsideAddressUser {
-    let inside: AddressUser = loadAddressUser(slice);
+    const inside: AddressUser = loadAddressUser(slice);
     return {
         kind: 'InsideAddressUser',
         inside: inside,
     }
-
 }
 
 export function storeInsideAddressUser(insideAddressUser: InsideAddressUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeAddressUser(insideAddressUser.inside)(builder);
     })
-
 }
 
 // a$_ b:Bit = BitUser;
 
 export function loadBitUser(slice: Slice): BitUser {
-    let b: boolean = slice.loadBit();
+    const b: boolean = slice.loadBit();
     return {
         kind: 'BitUser',
         b: b,
     }
-
 }
 
 export function storeBitUser(bitUser: BitUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeBit(bitUser.b);
     })
-
 }
 
 // a$_ v:(VarUInteger 5) = VarUIntegerUser;
 
 export function loadVarUIntegerUser(slice: Slice): VarUIntegerUser {
-    let v: bigint = slice.loadVarUintBig(bitLen((5 - 1)));
+    const v: bigint = slice.loadVarUintBig(bitLen((5 - 1)));
     return {
         kind: 'VarUIntegerUser',
         v: v,
     }
-
 }
 
 export function storeVarUIntegerUser(varUIntegerUser: VarUIntegerUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeVarUint(varUIntegerUser.v, bitLen((5 - 1)));
     })
-
 }
 
 // a$_ v:(VarInteger 5) = VarIntegerUser;
 
 export function loadVarIntegerUser(slice: Slice): VarIntegerUser {
-    let v: bigint = slice.loadVarIntBig(5);
+    const v: bigint = slice.loadVarIntBig(5);
     return {
         kind: 'VarIntegerUser',
         v: v,
     }
-
 }
 
 export function storeVarIntegerUser(varIntegerUser: VarIntegerUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeVarInt(varIntegerUser.v, 5);
     })
-
 }
 
 // a$_ g:Grams = GramsUser;
 
 export function loadGramsUser(slice: Slice): GramsUser {
-    let g: bigint = slice.loadCoins();
+    const g: bigint = slice.loadCoins();
     return {
         kind: 'GramsUser',
         g: g,
     }
-
 }
 
 export function storeGramsUser(gramsUser: GramsUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeCoins(gramsUser.g);
     })
-
 }
 
 // a$_ x:(HashmapE 100 VarUIntegerUser) = HashmapVUIUser;
 
 export function loadHashmapVUIUser(slice: Slice): HashmapVUIUser {
-    let x: Dictionary<bigint, VarUIntegerUser> = Dictionary.load(Dictionary.Keys.BigUint(100), {
+    const x: Dictionary<bigint, VarUIntegerUser> = Dictionary.load(Dictionary.Keys.BigUint(100), {
         serialize: () => { throw new Error('Not implemented') },
         parse: loadVarUIntegerUser,
     }, slice);
@@ -3535,7 +3295,6 @@ export function loadHashmapVUIUser(slice: Slice): HashmapVUIUser {
         kind: 'HashmapVUIUser',
         x: x,
     }
-
 }
 
 export function storeHashmapVUIUser(hashmapVUIUser: HashmapVUIUser): (builder: Builder) => void {
@@ -3547,25 +3306,22 @@ export function storeHashmapVUIUser(hashmapVUIUser: HashmapVUIUser): (builder: B
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 // a$_ x:(HashmapE 100 ^TypedParam) = HashmapTPCell;
 
 export function loadHashmapTPCell(slice: Slice): HashmapTPCell {
-    let x: Dictionary<bigint, TypedParam> = Dictionary.load(Dictionary.Keys.BigUint(100), {
+    const x: Dictionary<bigint, TypedParam> = Dictionary.load(Dictionary.Keys.BigUint(100), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse(true);
+        const slice1 = slice.loadRef().beginParse(true);
         return loadTypedParam(slice1)
-
     }),
     }, slice);
     return {
         kind: 'HashmapTPCell',
         x: x,
     }
-
 }
 
 export function storeHashmapTPCell(hashmapTPCell: HashmapTPCell): (builder: Builder) => void {
@@ -3574,28 +3330,24 @@ export function storeHashmapTPCell(hashmapTPCell: HashmapTPCell): (builder: Buil
             serialize: ((arg: TypedParam, builder: Builder) => {
             ((arg: TypedParam) => {
                 return ((builder: Builder) => {
-                    let cell1 = beginCell();
+                    const cell1 = beginCell();
                     storeTypedParam(arg)(cell1);
                     builder.storeRef(cell1);
-
                 })
-
             })(arg)(builder);
         }),
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 // a$_ {n:#} x:(HashmapE n uint5) = HashmapVarKey n;
 
 export function loadHashmapVarKey(slice: Slice, n: number): HashmapVarKey {
-    let x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint(n), {
+    const x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint(n), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return slice.loadUint(5)
-
     }),
     }, slice);
     return {
@@ -3603,7 +3355,6 @@ export function loadHashmapVarKey(slice: Slice, n: number): HashmapVarKey {
         n: n,
         x: x,
     }
-
 }
 
 export function storeHashmapVarKey(hashmapVarKey: HashmapVarKey): (builder: Builder) => void {
@@ -3614,41 +3365,36 @@ export function storeHashmapVarKey(hashmapVarKey: HashmapVarKey): (builder: Buil
                 return ((builder: Builder) => {
                     builder.storeUint(arg, 5);
                 })
-
             })(arg)(builder);
         }),
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 // a$_ x:(HashmapVarKey 5) = HashmapVarKeyUser;
 
 export function loadHashmapVarKeyUser(slice: Slice): HashmapVarKeyUser {
-    let x: HashmapVarKey = loadHashmapVarKey(slice, 5);
+    const x: HashmapVarKey = loadHashmapVarKey(slice, 5);
     return {
         kind: 'HashmapVarKeyUser',
         x: x,
     }
-
 }
 
 export function storeHashmapVarKeyUser(hashmapVarKeyUser: HashmapVarKeyUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHashmapVarKey(hashmapVarKeyUser.x)(builder);
     })
-
 }
 
 // a$_ {n:#} x:(HashmapE (n+2) uint5) = HashmapExprKey n;
 
 export function loadHashmapExprKey(slice: Slice, n: number): HashmapExprKey {
-    let x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint((n + 2)), {
+    const x: Dictionary<bigint, number> = Dictionary.load(Dictionary.Keys.BigUint((n + 2)), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return slice.loadUint(5)
-
     }),
     }, slice);
     return {
@@ -3656,7 +3402,6 @@ export function loadHashmapExprKey(slice: Slice, n: number): HashmapExprKey {
         n: n,
         x: x,
     }
-
 }
 
 export function storeHashmapExprKey(hashmapExprKey: HashmapExprKey): (builder: Builder) => void {
@@ -3667,48 +3412,42 @@ export function storeHashmapExprKey(hashmapExprKey: HashmapExprKey): (builder: B
                 return ((builder: Builder) => {
                     builder.storeUint(arg, 5);
                 })
-
             })(arg)(builder);
         }),
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 // a$_ x:(HashmapExprKey 5) = HashmapExprKeyUser;
 
 export function loadHashmapExprKeyUser(slice: Slice): HashmapExprKeyUser {
-    let x: HashmapExprKey = loadHashmapExprKey(slice, 5);
+    const x: HashmapExprKey = loadHashmapExprKey(slice, 5);
     return {
         kind: 'HashmapExprKeyUser',
         x: x,
     }
-
 }
 
 export function storeHashmapExprKeyUser(hashmapExprKeyUser: HashmapExprKeyUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeHashmapExprKey(hashmapExprKeyUser.x)(builder);
     })
-
 }
 
 // a$_ {A: Type} x:(HashmapE 200 (OneComb A)) = HashmapOneComb A;
 
 export function loadHashmapOneComb<A>(slice: Slice, loadA: (slice: Slice) => A): HashmapOneComb<A> {
-    let x: Dictionary<bigint, OneComb<A>> = Dictionary.load(Dictionary.Keys.BigUint(200), {
+    const x: Dictionary<bigint, OneComb<A>> = Dictionary.load(Dictionary.Keys.BigUint(200), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return loadOneComb<A>(slice, loadA)
-
     }),
     }, slice);
     return {
         kind: 'HashmapOneComb',
         x: x,
     }
-
 }
 
 export function storeHashmapOneComb<A>(hashmapOneComb: HashmapOneComb<A>, storeA: (a: A) => (builder: Builder) => void): (builder: Builder) => void {
@@ -3719,27 +3458,23 @@ export function storeHashmapOneComb<A>(hashmapOneComb: HashmapOneComb<A>, storeA
                 return ((builder: Builder) => {
                     storeOneComb<A>(arg, storeA)(builder);
                 })
-
             })(arg)(builder);
         }),
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 // a$_ x:(HashmapOneComb uint5) = HashmapOneCombUser;
 
 export function loadHashmapOneCombUser(slice: Slice): HashmapOneCombUser {
-    let x: HashmapOneComb<number> = loadHashmapOneComb<number>(slice, ((slice: Slice) => {
+    const x: HashmapOneComb<number> = loadHashmapOneComb<number>(slice, ((slice: Slice) => {
         return slice.loadUint(5)
-
     }));
     return {
         kind: 'HashmapOneCombUser',
         x: x,
     }
-
 }
 
 export function storeHashmapOneCombUser(hashmapOneCombUser: HashmapOneCombUser): (builder: Builder) => void {
@@ -3748,27 +3483,22 @@ export function storeHashmapOneCombUser(hashmapOneCombUser: HashmapOneCombUser):
             return ((builder: Builder) => {
                 builder.storeUint(arg, 5);
             })
-
         }))(builder);
     })
-
 }
 
 export function hashmapAug_get_l(label: HmLabel): number {
     if ((label.kind == 'HmLabel_hml_short')) {
-        let n = label.n;
+        const n = label.n;
         return n
-
     }
     if ((label.kind == 'HmLabel_hml_long')) {
-        let n = label.n;
+        const n = label.n;
         return n
-
     }
     if ((label.kind == 'HmLabel_hml_same')) {
-        let n = label.n;
+        const n = label.n;
         return n
-
     }
     throw new Error('Expected one of "HmLabel_hml_short", "HmLabel_hml_long", "HmLabel_hml_same" for type "HmLabel" while getting "label", but data does not satisfy any constructor');
 }
@@ -3780,9 +3510,9 @@ ahm_edge#_ {n:#} {X:Type} {Y:Type} {l:#} {m:#}
 */
 
 export function loadHashmapAug<X, Y>(slice: Slice, n: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAug<X, Y> {
-    let label: HmLabel = loadHmLabel(slice, n);
-    let l = hashmapAug_get_l(label);
-    let node: HashmapAugNode<X, Y> = loadHashmapAugNode<X, Y>(slice, (n - l), loadX, loadY);
+    const label: HmLabel = loadHmLabel(slice, n);
+    const l = hashmapAug_get_l(label);
+    const node: HashmapAugNode<X, Y> = loadHashmapAugNode<X, Y>(slice, (n - l), loadX, loadY);
     return {
         kind: 'HashmapAug',
         n: n,
@@ -3791,7 +3521,6 @@ export function loadHashmapAug<X, Y>(slice: Slice, n: number, loadX: (slice: Sli
         l: l,
         node: node,
     }
-
 }
 
 export function storeHashmapAug<X, Y>(hashmapAug: HashmapAug<X, Y>, storeX: (x: X) => (builder: Builder) => void, storeY: (y: Y) => (builder: Builder) => void): (builder: Builder) => void {
@@ -3799,7 +3528,6 @@ export function storeHashmapAug<X, Y>(hashmapAug: HashmapAug<X, Y>, storeX: (x: 
         storeHmLabel(hashmapAug.label)(builder);
         storeHashmapAugNode<X, Y>(hashmapAug.node, storeX, storeY)(builder);
     })
-
 }
 
 // ahmn_leaf#_ {X:Type} {Y:Type} extra:Y value:X = HashmapAugNode 0 X Y;
@@ -3811,21 +3539,20 @@ ahmn_fork#_ {n:#} {X:Type} {Y:Type} left:^(HashmapAug n X Y)
 
 export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (slice: Slice) => X, loadY: (slice: Slice) => Y): HashmapAugNode<X, Y> {
     if ((arg0 == 0)) {
-        let extra: Y = loadY(slice);
-        let value: X = loadX(slice);
+        const extra: Y = loadY(slice);
+        const value: X = loadX(slice);
         return {
             kind: 'HashmapAugNode_ahmn_leaf',
             extra: extra,
             value: value,
         }
-
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse(true);
-        let left: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, (arg0 - 1), loadX, loadY);
-        let slice2 = slice.loadRef().beginParse(true);
-        let right: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice2, (arg0 - 1), loadX, loadY);
-        let extra: Y = loadY(slice);
+        const slice1 = slice.loadRef().beginParse(true);
+        const left: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice1, (arg0 - 1), loadX, loadY);
+        const slice2 = slice.loadRef().beginParse(true);
+        const right: HashmapAug<X, Y> = loadHashmapAug<X, Y>(slice2, (arg0 - 1), loadX, loadY);
+        const extra: Y = loadY(slice);
         return {
             kind: 'HashmapAugNode_ahmn_fork',
             n: (arg0 - 1),
@@ -3833,7 +3560,6 @@ export function loadHashmapAugNode<X, Y>(slice: Slice, arg0: number, loadX: (sli
             right: right,
             extra: extra,
         }
-
     }
     throw new Error('Expected one of "HashmapAugNode_ahmn_leaf", "HashmapAugNode_ahmn_fork" in loading "HashmapAugNode", but data does not satisfy any constructor');
 }
@@ -3844,19 +3570,17 @@ export function storeHashmapAugNode<X, Y>(hashmapAugNode: HashmapAugNode<X, Y>, 
             storeY(hashmapAugNode.extra)(builder);
             storeX(hashmapAugNode.value)(builder);
         })
-
     }
     if ((hashmapAugNode.kind == 'HashmapAugNode_ahmn_fork')) {
         return ((builder: Builder) => {
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeHashmapAug<X, Y>(hashmapAugNode.left, storeX, storeY)(cell1);
             builder.storeRef(cell1);
-            let cell2 = beginCell();
+            const cell2 = beginCell();
             storeHashmapAug<X, Y>(hashmapAugNode.right, storeX, storeY)(cell2);
             builder.storeRef(cell2);
             storeY(hashmapAugNode.extra)(builder);
         })
-
     }
     throw new Error('Expected one of "HashmapAugNode_ahmn_leaf", "HashmapAugNode_ahmn_fork" in loading "HashmapAugNode", but data does not satisfy any constructor');
 }
@@ -3864,21 +3588,19 @@ export function storeHashmapAugNode<X, Y>(hashmapAugNode: HashmapAugNode<X, Y>, 
 // a$_ x:(HashmapAugE 16 Grams FixedIntParam) = HashmapAugEUser;
 
 export function loadHashmapAugEUser(slice: Slice): HashmapAugEUser {
-    let x: Dictionary<number, {value: bigint, extra: FixedIntParam}> = Dictionary.load(Dictionary.Keys.Uint(16), {
+    const x: Dictionary<number, {value: bigint, extra: FixedIntParam}> = Dictionary.load(Dictionary.Keys.Uint(16), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
         return {
             extra: loadFixedIntParam(slice),
             value: slice.loadCoins(),
         }
-
     }),
     }, slice);
     return {
         kind: 'HashmapAugEUser',
         x: x,
     }
-
 }
 
 export function storeHashmapAugEUser(hashmapAugEUser: HashmapAugEUser): (builder: Builder) => void {
@@ -3889,63 +3611,53 @@ export function storeHashmapAugEUser(hashmapAugEUser: HashmapAugEUser): (builder
                 return ((builder: Builder) => {
                     storeFixedIntParam(arg)(builder);
                 })
-
             })(arg.extra)(builder);
             ((arg: bigint) => {
                 return ((builder: Builder) => {
                     builder.storeCoins(arg);
                 })
-
             })(arg.value)(builder);
         }),
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 // message$_ {X:Type} body:(Either X ^X) = Message X;
 
 export function loadMessage<X>(slice: Slice, loadX: (slice: Slice) => X): Message<X> {
-    let body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse(true);
+    const body: Either<X, X> = loadEither<X, X>(slice, loadX, ((slice: Slice) => {
+        const slice1 = slice.loadRef().beginParse(true);
         return loadX(slice1)
-
     }));
     return {
         kind: 'Message',
         body: body,
     }
-
 }
 
 export function storeMessage<X>(message: Message<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeEither<X, X>(message.body, storeX, ((arg: X) => {
             return ((builder: Builder) => {
-                let cell1 = beginCell();
+                const cell1 = beginCell();
                 storeX(arg)(cell1);
                 builder.storeRef(cell1);
-
             })
-
         }))(builder);
     })
-
 }
 
 // _ (Message Any) = MessageAny;
 
 export function loadMessageAny(slice: Slice): MessageAny {
-    let anon0: Message<Cell> = loadMessage<Cell>(slice, ((slice: Slice) => {
+    const anon0: Message<Cell> = loadMessage<Cell>(slice, ((slice: Slice) => {
         return slice.asCell()
-
     }));
     return {
         kind: 'MessageAny',
         anon0: anon0,
     }
-
 }
 
 export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => void {
@@ -3954,73 +3666,65 @@ export function storeMessageAny(messageAny: MessageAny): (builder: Builder) => v
             return ((builder: Builder) => {
                 builder.storeSlice(arg.beginParse(true));
             })
-
         }))(builder);
     })
-
 }
 
 // _ x:^FixedIntParam = ShardState;
 
 export function loadShardState(slice: Slice): ShardState {
-    let slice1 = slice.loadRef().beginParse(true);
-    let x: FixedIntParam = loadFixedIntParam(slice1);
+    const slice1 = slice.loadRef().beginParse(true);
+    const x: FixedIntParam = loadFixedIntParam(slice1);
     return {
         kind: 'ShardState',
         x: x,
     }
-
 }
 
 export function storeShardState(shardState: ShardState): (builder: Builder) => void {
     return ((builder: Builder) => {
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         storeFixedIntParam(shardState.x)(cell1);
         builder.storeRef(cell1);
     })
-
 }
 
 // a$_ {X:Type} a:^X = InsideCell X;
 
 export function loadInsideCell<X>(slice: Slice, loadX: (slice: Slice) => X): InsideCell<X> {
-    let slice1 = slice.loadRef().beginParse(true);
-    let a: X = loadX(slice1);
+    const slice1 = slice.loadRef().beginParse(true);
+    const a: X = loadX(slice1);
     return {
         kind: 'InsideCell',
         a: a,
     }
-
 }
 
 export function storeInsideCell<X>(insideCell: InsideCell<X>, storeX: (x: X) => (builder: Builder) => void): (builder: Builder) => void {
     return ((builder: Builder) => {
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         storeX(insideCell.a)(cell1);
         builder.storeRef(cell1);
     })
-
 }
 
 // a$_ inside_cell:^(InsideCell ShardState) = InsideCellUser;
 
 export function loadInsideCellUser(slice: Slice): InsideCellUser {
-    let slice1 = slice.loadRef().beginParse(true);
-    let inside_cell: InsideCell<ShardState> = loadInsideCell<ShardState>(slice1, loadShardState);
+    const slice1 = slice.loadRef().beginParse(true);
+    const inside_cell: InsideCell<ShardState> = loadInsideCell<ShardState>(slice1, loadShardState);
     return {
         kind: 'InsideCellUser',
         inside_cell: inside_cell,
     }
-
 }
 
 export function storeInsideCellUser(insideCellUser: InsideCellUser): (builder: Builder) => void {
     return ((builder: Builder) => {
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         storeInsideCell<ShardState>(insideCellUser.inside_cell, storeShardState)(cell1);
         builder.storeRef(cell1);
     })
-
 }
 
 // vm_stk_null#00 = VmStackValue;
@@ -4047,81 +3751,72 @@ export function loadVmStackValue(slice: Slice): VmStackValue {
         return {
             kind: 'VmStackValue_vm_stk_null',
         }
-
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x01))) {
         slice.loadUint(8);
-        let value: bigint = slice.loadIntBig(64);
+        const value: bigint = slice.loadIntBig(64);
         return {
             kind: 'VmStackValue_vm_stk_tinyint',
             value: value,
         }
-
     }
     if (((slice.remainingBits >= 15) && (slice.preloadUint(15) == 0x0100))) {
         slice.loadUint(15);
-        let value: bigint = slice.loadIntBig(257);
+        const value: bigint = slice.loadIntBig(257);
         return {
             kind: 'VmStackValue_vm_stk_int',
             value: value,
         }
-
     }
     if (((slice.remainingBits >= 16) && (slice.preloadUint(16) == 0x02ff))) {
         slice.loadUint(16);
         return {
             kind: 'VmStackValue_vm_stk_nan',
         }
-
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x03))) {
         slice.loadUint(8);
-        let slice1 = slice.loadRef().beginParse(true);
-        let _cell: Cell = slice1.asCell();
+        const slice1 = slice.loadRef().beginParse(true);
+        const _cell: Cell = slice1.asCell();
         return {
             kind: 'VmStackValue_vm_stk_cell',
             _cell: _cell,
         }
-
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x04))) {
         slice.loadUint(8);
-        let _: VmCellSlice = loadVmCellSlice(slice);
+        const _: VmCellSlice = loadVmCellSlice(slice);
         return {
             kind: 'VmStackValue_vm_stk_slice',
             _: _,
         }
-
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x05))) {
         slice.loadUint(8);
-        let slice1 = slice.loadRef().beginParse(true);
-        let _cell: Cell = slice1.asCell();
+        const slice1 = slice.loadRef().beginParse(true);
+        const _cell: Cell = slice1.asCell();
         return {
             kind: 'VmStackValue_vm_stk_builder',
             _cell: _cell,
         }
-
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x06))) {
         slice.loadUint(8);
-        let cont: VmCont = loadVmCont(slice);
+        const cont: VmCont = loadVmCont(slice);
         return {
             kind: 'VmStackValue_vm_stk_cont',
             cont: cont,
         }
-
     }
     if (((slice.remainingBits >= 8) && (slice.preloadUint(8) == 0x07))) {
         slice.loadUint(8);
-        let len: number = slice.loadUint(16);
-        let data: VmTuple = loadVmTuple(slice, len);
+        const len: number = slice.loadUint(16);
+        const data: VmTuple = loadVmTuple(slice, len);
         return {
             kind: 'VmStackValue_vm_stk_tuple',
             len: len,
             data: data,
         }
-
     }
     throw new Error('Expected one of "VmStackValue_vm_stk_null", "VmStackValue_vm_stk_tinyint", "VmStackValue_vm_stk_int", "VmStackValue_vm_stk_nan", "VmStackValue_vm_stk_cell", "VmStackValue_vm_stk_slice", "VmStackValue_vm_stk_builder", "VmStackValue_vm_stk_cont", "VmStackValue_vm_stk_tuple" in loading "VmStackValue", but data does not satisfy any constructor');
 }
@@ -4131,59 +3826,51 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
         return ((builder: Builder) => {
             builder.storeUint(0x00, 8);
         })
-
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_tinyint')) {
         return ((builder: Builder) => {
             builder.storeUint(0x01, 8);
             builder.storeInt(vmStackValue.value, 64);
         })
-
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_int')) {
         return ((builder: Builder) => {
             builder.storeUint(0x0100, 15);
             builder.storeInt(vmStackValue.value, 257);
         })
-
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_nan')) {
         return ((builder: Builder) => {
             builder.storeUint(0x02ff, 16);
         })
-
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_cell')) {
         return ((builder: Builder) => {
             builder.storeUint(0x03, 8);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             cell1.storeSlice(vmStackValue._cell.beginParse(true));
             builder.storeRef(cell1);
         })
-
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_slice')) {
         return ((builder: Builder) => {
             builder.storeUint(0x04, 8);
             storeVmCellSlice(vmStackValue._)(builder);
         })
-
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_builder')) {
         return ((builder: Builder) => {
             builder.storeUint(0x05, 8);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             cell1.storeSlice(vmStackValue._cell.beginParse(true));
             builder.storeRef(cell1);
         })
-
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_cont')) {
         return ((builder: Builder) => {
             builder.storeUint(0x06, 8);
             storeVmCont(vmStackValue.cont)(builder);
         })
-
     }
     if ((vmStackValue.kind == 'VmStackValue_vm_stk_tuple')) {
         return ((builder: Builder) => {
@@ -4191,7 +3878,6 @@ export function storeVmStackValue(vmStackValue: VmStackValue): (builder: Builder
             builder.storeUint(vmStackValue.len, 16);
             storeVmTuple(vmStackValue.data)(builder);
         })
-
     }
     throw new Error('Expected one of "VmStackValue_vm_stk_null", "VmStackValue_vm_stk_tinyint", "VmStackValue_vm_stk_int", "VmStackValue_vm_stk_nan", "VmStackValue_vm_stk_cell", "VmStackValue_vm_stk_slice", "VmStackValue_vm_stk_builder", "VmStackValue_vm_stk_cont", "VmStackValue_vm_stk_tuple" in loading "VmStackValue", but data does not satisfy any constructor');
 }
@@ -4202,12 +3888,12 @@ _ cell:^Cell st_bits:(## 10) end_bits:(## 10) { st_bits <= end_bits }
 */
 
 export function loadVmCellSlice(slice: Slice): VmCellSlice {
-    let slice1 = slice.loadRef().beginParse(true);
-    let _cell: Cell = slice1.asCell();
-    let st_bits: number = slice.loadUint(10);
-    let end_bits: number = slice.loadUint(10);
-    let st_ref: number = slice.loadUint(bitLen(4));
-    let end_ref: number = slice.loadUint(bitLen(4));
+    const slice1 = slice.loadRef().beginParse(true);
+    const _cell: Cell = slice1.asCell();
+    const st_bits: number = slice.loadUint(10);
+    const end_bits: number = slice.loadUint(10);
+    const st_ref: number = slice.loadUint(bitLen(4));
+    const end_ref: number = slice.loadUint(bitLen(4));
     if ((!(st_bits <= end_bits))) {
         throw new Error('Condition (st_bits <= end_bits) is not satisfied while loading "VmCellSlice" for type "VmCellSlice"');
     }
@@ -4222,12 +3908,11 @@ export function loadVmCellSlice(slice: Slice): VmCellSlice {
         st_ref: st_ref,
         end_ref: end_ref,
     }
-
 }
 
 export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) => void {
     return ((builder: Builder) => {
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         cell1.storeSlice(vmCellSlice._cell.beginParse(true));
         builder.storeRef(cell1);
         builder.storeUint(vmCellSlice.st_bits, 10);
@@ -4241,7 +3926,6 @@ export function storeVmCellSlice(vmCellSlice: VmCellSlice): (builder: Builder) =
             throw new Error('Condition (vmCellSlice.st_ref <= vmCellSlice.end_ref) is not satisfied while loading "VmCellSlice" for type "VmCellSlice"');
         }
     })
-
 }
 
 // vm_tupref_nil$_ = VmTupleRef 0;
@@ -4255,26 +3939,23 @@ export function loadVmTupleRef(slice: Slice, arg0: number): VmTupleRef {
         return {
             kind: 'VmTupleRef_vm_tupref_nil',
         }
-
     }
     if ((arg0 == 1)) {
-        let slice1 = slice.loadRef().beginParse(true);
-        let entry: VmStackValue = loadVmStackValue(slice1);
+        const slice1 = slice.loadRef().beginParse(true);
+        const entry: VmStackValue = loadVmStackValue(slice1);
         return {
             kind: 'VmTupleRef_vm_tupref_single',
             entry: entry,
         }
-
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse(true);
-        let ref: VmTuple = loadVmTuple(slice1, ((arg0 - 2) + 2));
+        const slice1 = slice.loadRef().beginParse(true);
+        const ref: VmTuple = loadVmTuple(slice1, ((arg0 - 2) + 2));
         return {
             kind: 'VmTupleRef_vm_tupref_any',
             n: (arg0 - 2),
             ref: ref,
         }
-
     }
     throw new Error('Expected one of "VmTupleRef_vm_tupref_nil", "VmTupleRef_vm_tupref_single", "VmTupleRef_vm_tupref_any" in loading "VmTupleRef", but data does not satisfy any constructor');
 }
@@ -4283,23 +3964,20 @@ export function storeVmTupleRef(vmTupleRef: VmTupleRef): (builder: Builder) => v
     if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_nil')) {
         return ((builder: Builder) => {
         })
-
     }
     if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_single')) {
         return ((builder: Builder) => {
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmStackValue(vmTupleRef.entry)(cell1);
             builder.storeRef(cell1);
         })
-
     }
     if ((vmTupleRef.kind == 'VmTupleRef_vm_tupref_any')) {
         return ((builder: Builder) => {
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmTuple(vmTupleRef.ref)(cell1);
             builder.storeRef(cell1);
         })
-
     }
     throw new Error('Expected one of "VmTupleRef_vm_tupref_nil", "VmTupleRef_vm_tupref_single", "VmTupleRef_vm_tupref_any" in loading "VmTupleRef", but data does not satisfy any constructor');
 }
@@ -4313,19 +3991,17 @@ export function loadVmTuple(slice: Slice, arg0: number): VmTuple {
         return {
             kind: 'VmTuple_vm_tuple_nil',
         }
-
     }
     if (true) {
-        let head: VmTupleRef = loadVmTupleRef(slice, (arg0 - 1));
-        let slice1 = slice.loadRef().beginParse(true);
-        let tail: VmStackValue = loadVmStackValue(slice1);
+        const head: VmTupleRef = loadVmTupleRef(slice, (arg0 - 1));
+        const slice1 = slice.loadRef().beginParse(true);
+        const tail: VmStackValue = loadVmStackValue(slice1);
         return {
             kind: 'VmTuple_vm_tuple_tcons',
             n: (arg0 - 1),
             head: head,
             tail: tail,
         }
-
     }
     throw new Error('Expected one of "VmTuple_vm_tuple_nil", "VmTuple_vm_tuple_tcons" in loading "VmTuple", but data does not satisfy any constructor');
 }
@@ -4334,16 +4010,14 @@ export function storeVmTuple(vmTuple: VmTuple): (builder: Builder) => void {
     if ((vmTuple.kind == 'VmTuple_vm_tuple_nil')) {
         return ((builder: Builder) => {
         })
-
     }
     if ((vmTuple.kind == 'VmTuple_vm_tuple_tcons')) {
         return ((builder: Builder) => {
             storeVmTupleRef(vmTuple.head)(builder);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmStackValue(vmTuple.tail)(cell1);
             builder.storeRef(cell1);
         })
-
     }
     throw new Error('Expected one of "VmTuple_vm_tuple_nil", "VmTuple_vm_tuple_tcons" in loading "VmTuple", but data does not satisfy any constructor');
 }
@@ -4351,14 +4025,13 @@ export function storeVmTuple(vmTuple: VmTuple): (builder: Builder) => void {
 // vm_stack#_ depth:(## 24) stack:(VmStackList depth) = VmStack;
 
 export function loadVmStack(slice: Slice): VmStack {
-    let depth: number = slice.loadUint(24);
-    let stack: VmStackList = loadVmStackList(slice, depth);
+    const depth: number = slice.loadUint(24);
+    const stack: VmStackList = loadVmStackList(slice, depth);
     return {
         kind: 'VmStack',
         depth: depth,
         stack: stack,
     }
-
 }
 
 export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
@@ -4366,7 +4039,6 @@ export function storeVmStack(vmStack: VmStack): (builder: Builder) => void {
         builder.storeUint(vmStack.depth, 24);
         storeVmStackList(vmStack.stack)(builder);
     })
-
 }
 
 // vm_stk_nil#_ = VmStackList 0;
@@ -4378,19 +4050,17 @@ export function loadVmStackList(slice: Slice, arg0: number): VmStackList {
         return {
             kind: 'VmStackList_vm_stk_nil',
         }
-
     }
     if (true) {
-        let slice1 = slice.loadRef().beginParse(true);
-        let rest: VmStackList = loadVmStackList(slice1, (arg0 - 1));
-        let tos: VmStackValue = loadVmStackValue(slice);
+        const slice1 = slice.loadRef().beginParse(true);
+        const rest: VmStackList = loadVmStackList(slice1, (arg0 - 1));
+        const tos: VmStackValue = loadVmStackValue(slice);
         return {
             kind: 'VmStackList_vm_stk_cons',
             n: (arg0 - 1),
             rest: rest,
             tos: tos,
         }
-
     }
     throw new Error('Expected one of "VmStackList_vm_stk_nil", "VmStackList_vm_stk_cons" in loading "VmStackList", but data does not satisfy any constructor');
 }
@@ -4399,16 +4069,14 @@ export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) =
     if ((vmStackList.kind == 'VmStackList_vm_stk_nil')) {
         return ((builder: Builder) => {
         })
-
     }
     if ((vmStackList.kind == 'VmStackList_vm_stk_cons')) {
         return ((builder: Builder) => {
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmStackList(vmStackList.rest)(cell1);
             builder.storeRef(cell1);
             storeVmStackValue(vmStackList.tos)(builder);
         })
-
     }
     throw new Error('Expected one of "VmStackList_vm_stk_nil", "VmStackList_vm_stk_cons" in loading "VmStackList", but data does not satisfy any constructor');
 }
@@ -4416,7 +4084,7 @@ export function storeVmStackList(vmStackList: VmStackList): (builder: Builder) =
 // _ cregs:(HashmapE 4 VmStackValue) = VmSaveList;
 
 export function loadVmSaveList(slice: Slice): VmSaveList {
-    let cregs: Dictionary<number, VmStackValue> = Dictionary.load(Dictionary.Keys.Uint(4), {
+    const cregs: Dictionary<number, VmStackValue> = Dictionary.load(Dictionary.Keys.Uint(4), {
         serialize: () => { throw new Error('Not implemented') },
         parse: loadVmStackValue,
     }, slice);
@@ -4424,7 +4092,6 @@ export function loadVmSaveList(slice: Slice): VmSaveList {
         kind: 'VmSaveList',
         cregs: cregs,
     }
-
 }
 
 export function storeVmSaveList(vmSaveList: VmSaveList): (builder: Builder) => void {
@@ -4436,7 +4103,6 @@ export function storeVmSaveList(vmSaveList: VmSaveList): (builder: Builder) => v
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 /*
@@ -4445,11 +4111,11 @@ gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ]
 */
 
 export function loadVmGasLimits(slice: Slice): VmGasLimits {
-    let remaining: bigint = slice.loadIntBig(64);
-    let slice1 = slice.loadRef().beginParse(true);
-    let max_limit: bigint = slice1.loadIntBig(64);
-    let cur_limit: bigint = slice1.loadIntBig(64);
-    let credit: bigint = slice1.loadIntBig(64);
+    const remaining: bigint = slice.loadIntBig(64);
+    const slice1 = slice.loadRef().beginParse(true);
+    const max_limit: bigint = slice1.loadIntBig(64);
+    const cur_limit: bigint = slice1.loadIntBig(64);
+    const credit: bigint = slice1.loadIntBig(64);
     return {
         kind: 'VmGasLimits',
         remaining: remaining,
@@ -4457,37 +4123,33 @@ export function loadVmGasLimits(slice: Slice): VmGasLimits {
         cur_limit: cur_limit,
         credit: credit,
     }
-
 }
 
 export function storeVmGasLimits(vmGasLimits: VmGasLimits): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeInt(vmGasLimits.remaining, 64);
-        let cell1 = beginCell();
+        const cell1 = beginCell();
         cell1.storeInt(vmGasLimits.max_limit, 64);
         cell1.storeInt(vmGasLimits.cur_limit, 64);
         cell1.storeInt(vmGasLimits.credit, 64);
         builder.storeRef(cell1);
     })
-
 }
 
 // _ libraries:(HashmapE 256 ^Cell) = VmLibraries;
 
 export function loadVmLibraries(slice: Slice): VmLibraries {
-    let libraries: Dictionary<bigint, Cell> = Dictionary.load(Dictionary.Keys.BigUint(256), {
+    const libraries: Dictionary<bigint, Cell> = Dictionary.load(Dictionary.Keys.BigUint(256), {
         serialize: () => { throw new Error('Not implemented') },
         parse: ((slice: Slice) => {
-        let slice1 = slice.loadRef().beginParse(true);
+        const slice1 = slice.loadRef().beginParse(true);
         return slice1.asCell()
-
     }),
     }, slice);
     return {
         kind: 'VmLibraries',
         libraries: libraries,
     }
-
 }
 
 export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) => void {
@@ -4496,18 +4158,15 @@ export function storeVmLibraries(vmLibraries: VmLibraries): (builder: Builder) =
             serialize: ((arg: Cell, builder: Builder) => {
             ((arg: Cell) => {
                 return ((builder: Builder) => {
-                    let cell1 = beginCell();
+                    const cell1 = beginCell();
                     cell1.storeSlice(arg.beginParse(true));
                     builder.storeRef(cell1);
-
                 })
-
             })(arg)(builder);
         }),
             parse: () => { throw new Error('Not implemented') },
         });
     })
-
 }
 
 /*
@@ -4516,18 +4175,15 @@ cp:(Maybe int16) = VmControlData;
 */
 
 export function loadVmControlData(slice: Slice): VmControlData {
-    let nargs: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
+    const nargs: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
         return slice.loadUint(13)
-
     }));
-    let stack: Maybe<TupleItem[]> = loadMaybe<TupleItem[]>(slice, ((slice: Slice) => {
+    const stack: Maybe<TupleItem[]> = loadMaybe<TupleItem[]>(slice, ((slice: Slice) => {
         return parseTuple(slice.asCell())
-
     }));
-    let save: VmSaveList = loadVmSaveList(slice);
-    let cp: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
+    const save: VmSaveList = loadVmSaveList(slice);
+    const cp: Maybe<number> = loadMaybe<number>(slice, ((slice: Slice) => {
         return slice.loadInt(16)
-
     }));
     return {
         kind: 'VmControlData',
@@ -4536,7 +4192,6 @@ export function loadVmControlData(slice: Slice): VmControlData {
         save: save,
         cp: cp,
     }
-
 }
 
 export function storeVmControlData(vmControlData: VmControlData): (builder: Builder) => void {
@@ -4545,23 +4200,19 @@ export function storeVmControlData(vmControlData: VmControlData): (builder: Buil
             return ((builder: Builder) => {
                 builder.storeUint(arg, 13);
             })
-
         }))(builder);
         storeMaybe<TupleItem[]>(vmControlData.stack, ((arg: TupleItem[]) => {
             return ((builder: Builder) => {
                 copyCellToBuilder(serializeTuple(arg), builder);
             })
-
         }))(builder);
         storeVmSaveList(vmControlData.save)(builder);
         storeMaybe<number>(vmControlData.cp, ((arg: number) => {
             return ((builder: Builder) => {
                 builder.storeInt(arg, 16);
             })
-
         }))(builder);
     })
-
 }
 
 // vmc_std$00 cdata:VmControlData code:VmCellSlice = VmCont;
@@ -4593,124 +4244,114 @@ after:^VmCont = VmCont;
 export function loadVmCont(slice: Slice): VmCont {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b00))) {
         slice.loadUint(2);
-        let cdata: VmControlData = loadVmControlData(slice);
-        let code: VmCellSlice = loadVmCellSlice(slice);
+        const cdata: VmControlData = loadVmControlData(slice);
+        const code: VmCellSlice = loadVmCellSlice(slice);
         return {
             kind: 'VmCont_vmc_std',
             cdata: cdata,
             code: code,
         }
-
     }
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b01))) {
         slice.loadUint(2);
-        let cdata: VmControlData = loadVmControlData(slice);
-        let slice1 = slice.loadRef().beginParse(true);
-        let next: VmCont = loadVmCont(slice1);
+        const cdata: VmControlData = loadVmControlData(slice);
+        const slice1 = slice.loadRef().beginParse(true);
+        const next: VmCont = loadVmCont(slice1);
         return {
             kind: 'VmCont_vmc_envelope',
             cdata: cdata,
             next: next,
         }
-
     }
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1000))) {
         slice.loadUint(4);
-        let exit_code: number = slice.loadInt(32);
+        const exit_code: number = slice.loadInt(32);
         return {
             kind: 'VmCont_vmc_quit',
             exit_code: exit_code,
         }
-
     }
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1001))) {
         slice.loadUint(4);
         return {
             kind: 'VmCont_vmc_quit_exc',
         }
-
     }
     if (((slice.remainingBits >= 5) && (slice.preloadUint(5) == 0b10100))) {
         slice.loadUint(5);
-        let count: bigint = slice.loadUintBig(63);
-        let slice1 = slice.loadRef().beginParse(true);
-        let body: VmCont = loadVmCont(slice1);
-        let slice2 = slice.loadRef().beginParse(true);
-        let after: VmCont = loadVmCont(slice2);
+        const count: bigint = slice.loadUintBig(63);
+        const slice1 = slice.loadRef().beginParse(true);
+        const body: VmCont = loadVmCont(slice1);
+        const slice2 = slice.loadRef().beginParse(true);
+        const after: VmCont = loadVmCont(slice2);
         return {
             kind: 'VmCont_vmc_repeat',
             count: count,
             body: body,
             after: after,
         }
-
     }
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110000))) {
         slice.loadUint(6);
-        let slice1 = slice.loadRef().beginParse(true);
-        let body: VmCont = loadVmCont(slice1);
-        let slice2 = slice.loadRef().beginParse(true);
-        let after: VmCont = loadVmCont(slice2);
+        const slice1 = slice.loadRef().beginParse(true);
+        const body: VmCont = loadVmCont(slice1);
+        const slice2 = slice.loadRef().beginParse(true);
+        const after: VmCont = loadVmCont(slice2);
         return {
             kind: 'VmCont_vmc_until',
             body: body,
             after: after,
         }
-
     }
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110001))) {
         slice.loadUint(6);
-        let slice1 = slice.loadRef().beginParse(true);
-        let body: VmCont = loadVmCont(slice1);
+        const slice1 = slice.loadRef().beginParse(true);
+        const body: VmCont = loadVmCont(slice1);
         return {
             kind: 'VmCont_vmc_again',
             body: body,
         }
-
     }
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110010))) {
         slice.loadUint(6);
-        let slice1 = slice.loadRef().beginParse(true);
-        let cond: VmCont = loadVmCont(slice1);
-        let slice2 = slice.loadRef().beginParse(true);
-        let body: VmCont = loadVmCont(slice2);
-        let slice3 = slice.loadRef().beginParse(true);
-        let after: VmCont = loadVmCont(slice3);
+        const slice1 = slice.loadRef().beginParse(true);
+        const cond: VmCont = loadVmCont(slice1);
+        const slice2 = slice.loadRef().beginParse(true);
+        const body: VmCont = loadVmCont(slice2);
+        const slice3 = slice.loadRef().beginParse(true);
+        const after: VmCont = loadVmCont(slice3);
         return {
             kind: 'VmCont_vmc_while_cond',
             cond: cond,
             body: body,
             after: after,
         }
-
     }
     if (((slice.remainingBits >= 6) && (slice.preloadUint(6) == 0b110011))) {
         slice.loadUint(6);
-        let slice1 = slice.loadRef().beginParse(true);
-        let cond: VmCont = loadVmCont(slice1);
-        let slice2 = slice.loadRef().beginParse(true);
-        let body: VmCont = loadVmCont(slice2);
-        let slice3 = slice.loadRef().beginParse(true);
-        let after: VmCont = loadVmCont(slice3);
+        const slice1 = slice.loadRef().beginParse(true);
+        const cond: VmCont = loadVmCont(slice1);
+        const slice2 = slice.loadRef().beginParse(true);
+        const body: VmCont = loadVmCont(slice2);
+        const slice3 = slice.loadRef().beginParse(true);
+        const after: VmCont = loadVmCont(slice3);
         return {
             kind: 'VmCont_vmc_while_body',
             cond: cond,
             body: body,
             after: after,
         }
-
     }
     if (((slice.remainingBits >= 4) && (slice.preloadUint(4) == 0b1111))) {
         slice.loadUint(4);
-        let value: number = slice.loadInt(32);
-        let slice1 = slice.loadRef().beginParse(true);
-        let next: VmCont = loadVmCont(slice1);
+        const value: number = slice.loadInt(32);
+        const slice1 = slice.loadRef().beginParse(true);
+        const next: VmCont = loadVmCont(slice1);
         return {
             kind: 'VmCont_vmc_pushint',
             value: value,
             next: next,
         }
-
     }
     throw new Error('Expected one of "VmCont_vmc_std", "VmCont_vmc_envelope", "VmCont_vmc_quit", "VmCont_vmc_quit_exc", "VmCont_vmc_repeat", "VmCont_vmc_until", "VmCont_vmc_again", "VmCont_vmc_while_cond", "VmCont_vmc_while_body", "VmCont_vmc_pushint" in loading "VmCont", but data does not satisfy any constructor');
 }
@@ -4722,104 +4363,94 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
             storeVmControlData(vmCont.cdata)(builder);
             storeVmCellSlice(vmCont.code)(builder);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_envelope')) {
         return ((builder: Builder) => {
             builder.storeUint(0b01, 2);
             storeVmControlData(vmCont.cdata)(builder);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmCont(vmCont.next)(cell1);
             builder.storeRef(cell1);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_quit')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1000, 4);
             builder.storeInt(vmCont.exit_code, 32);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_quit_exc')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1001, 4);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_repeat')) {
         return ((builder: Builder) => {
             builder.storeUint(0b10100, 5);
             builder.storeUint(vmCont.count, 63);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmCont(vmCont.body)(cell1);
             builder.storeRef(cell1);
-            let cell2 = beginCell();
+            const cell2 = beginCell();
             storeVmCont(vmCont.after)(cell2);
             builder.storeRef(cell2);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_until')) {
         return ((builder: Builder) => {
             builder.storeUint(0b110000, 6);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmCont(vmCont.body)(cell1);
             builder.storeRef(cell1);
-            let cell2 = beginCell();
+            const cell2 = beginCell();
             storeVmCont(vmCont.after)(cell2);
             builder.storeRef(cell2);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_again')) {
         return ((builder: Builder) => {
             builder.storeUint(0b110001, 6);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmCont(vmCont.body)(cell1);
             builder.storeRef(cell1);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_while_cond')) {
         return ((builder: Builder) => {
             builder.storeUint(0b110010, 6);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmCont(vmCont.cond)(cell1);
             builder.storeRef(cell1);
-            let cell2 = beginCell();
+            const cell2 = beginCell();
             storeVmCont(vmCont.body)(cell2);
             builder.storeRef(cell2);
-            let cell3 = beginCell();
+            const cell3 = beginCell();
             storeVmCont(vmCont.after)(cell3);
             builder.storeRef(cell3);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_while_body')) {
         return ((builder: Builder) => {
             builder.storeUint(0b110011, 6);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmCont(vmCont.cond)(cell1);
             builder.storeRef(cell1);
-            let cell2 = beginCell();
+            const cell2 = beginCell();
             storeVmCont(vmCont.body)(cell2);
             builder.storeRef(cell2);
-            let cell3 = beginCell();
+            const cell3 = beginCell();
             storeVmCont(vmCont.after)(cell3);
             builder.storeRef(cell3);
         })
-
     }
     if ((vmCont.kind == 'VmCont_vmc_pushint')) {
         return ((builder: Builder) => {
             builder.storeUint(0b1111, 4);
             builder.storeInt(vmCont.value, 32);
-            let cell1 = beginCell();
+            const cell1 = beginCell();
             storeVmCont(vmCont.next)(cell1);
             builder.storeRef(cell1);
         })
-
     }
     throw new Error('Expected one of "VmCont_vmc_std", "VmCont_vmc_envelope", "VmCont_vmc_quit", "VmCont_vmc_quit_exc", "VmCont_vmc_repeat", "VmCont_vmc_until", "VmCont_vmc_again", "VmCont_vmc_while_cond", "VmCont_vmc_while_body", "VmCont_vmc_pushint" in loading "VmCont", but data does not satisfy any constructor');
 }
@@ -4827,55 +4458,49 @@ export function storeVmCont(vmCont: VmCont): (builder: Builder) => void {
 // _ t:VmStack = VMStackUser;
 
 export function loadVMStackUser(slice: Slice): VMStackUser {
-    let t: TupleItem[] = parseTuple(slice.asCell());
+    const t: TupleItem[] = parseTuple(slice.asCell());
     return {
         kind: 'VMStackUser',
         t: t,
     }
-
 }
 
 export function storeVMStackUser(vMStackUser: VMStackUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         copyCellToBuilder(serializeTuple(vMStackUser.t), builder);
     })
-
 }
 
 // bool_false_user$_ x:BoolFalse = BoolFalseUser;
 
 export function loadBoolFalseUser(slice: Slice): BoolFalseUser {
-    let x: Bool = loadBoolFalse(slice);
+    const x: Bool = loadBoolFalse(slice);
     return {
         kind: 'BoolFalseUser',
         x: x,
     }
-
 }
 
 export function storeBoolFalseUser(boolFalseUser: BoolFalseUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeBool(boolFalseUser.x)(builder);
     })
-
 }
 
 // bool_true_user$_ x:BoolTrue = BoolTrueUser;
 
 export function loadBoolTrueUser(slice: Slice): BoolTrueUser {
-    let x: Bool = loadBoolTrue(slice);
+    const x: Bool = loadBoolTrue(slice);
     return {
         kind: 'BoolTrueUser',
         x: x,
     }
-
 }
 
 export function storeBoolTrueUser(boolTrueUser: BoolTrueUser): (builder: Builder) => void {
     return ((builder: Builder) => {
         storeBool(boolTrueUser.x)(builder);
     })
-
 }
 
 // tag_calculator_example seq_no : #  seq_no_2 : # { prev_seq_no:  #    } { 2 + ~prev_seq_no +    1 = 2 + seq_no + 2 } { prev_seq_no_2    : # } { ~prev_seq_no_2 = 100 + seq_no_2  *  8   * 7}   =    TagCalculatorExample;
@@ -4883,8 +4508,8 @@ export function storeBoolTrueUser(boolTrueUser: BoolTrueUser): (builder: Builder
 export function loadTagCalculatorExample(slice: Slice): TagCalculatorExample {
     if (((slice.remainingBits >= 32) && (slice.preloadUint(32) == 0xa63f2977))) {
         slice.loadUint(32);
-        let seq_no: number = slice.loadUint(32);
-        let seq_no_2: number = slice.loadUint(32);
+        const seq_no: number = slice.loadUint(32);
+        const seq_no_2: number = slice.loadUint(32);
         return {
             kind: 'TagCalculatorExample',
             prev_seq_no: (((2 + (seq_no + 2)) - 2) - 1),
@@ -4892,7 +4517,6 @@ export function loadTagCalculatorExample(slice: Slice): TagCalculatorExample {
             seq_no: seq_no,
             seq_no_2: seq_no_2,
         }
-
     }
     throw new Error('Expected one of "TagCalculatorExample" in loading "TagCalculatorExample", but data does not satisfy any constructor');
 }
@@ -4903,6 +4527,5 @@ export function storeTagCalculatorExample(tagCalculatorExample: TagCalculatorExa
         builder.storeUint(tagCalculatorExample.seq_no, 32);
         builder.storeUint(tagCalculatorExample.seq_no_2, 32);
     })
-
 }
 
