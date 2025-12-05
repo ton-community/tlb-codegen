@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Fix generate code for cell as ref [issues #59](https://github.com/ton-community/tlb-codegen/issues/59)
+- Fix generator code correct behavior for store method for Bit selection expression [issues #56](https://github.com/ton-community/tlb-codegen/issues/56)
+- Fix: cannot apply Semantics to match failed [issues #41](https://github.com/ton-community/tlb-codegen/issues/41)
+
+### Chore
+
+- Upgrade develop dependencies
+
 ## [2.0.0-beta.3] – 2025-08-25
 
 - Remove node dependency form exports

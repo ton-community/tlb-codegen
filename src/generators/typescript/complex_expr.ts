@@ -33,6 +33,7 @@ import {
     tTypeWithParameters,
     tTypedIdentifier,
     tUnaryOpExpression,
+    tPostfixExpression,
     toCode,
 } from './tsgen';
 import { ExprForParam, convertToAST, getNegationDerivationFunctionBody, isBigIntExpr } from './utils';
@@ -138,12 +139,14 @@ export function storeExprForParam(
     theCell: string,
     exprForParam: ExprForParam,
     insideStoreParameters: Expression[],
+    isOptional: boolean = false,
 ): Statement {
+    let params = insideStoreParameters;
+    if (isOptional && params.length > 0) {
+        params = [tPostfixExpression(params[0], '!'), ...params.slice(1)];
+    }
     return tExpressionStatement(
-        tFunctionCall(
-            tMemberExpression(id(theCell), id('store' + exprForParam.fieldStoreSuffix)),
-            insideStoreParameters,
-        ),
+        tFunctionCall(tMemberExpression(id(theCell), id('store' + exprForParam.fieldStoreSuffix)), params),
     );
 }
 export function returnSliceFunc(): Expression {
@@ -210,17 +213,27 @@ export function loadTupleExpr(arrayLength: Expression, loadExpr: Expression): Ex
         [tArrowFunctionExpression([tTypedIdentifier(id('arg'), id('number'))], [tReturnStatement(loadExpr)])],
     );
 }
-export function storeExprCond(currentParam: Expression, storeExpr: Statement): Statement {
-    return tIfStatement(tBinaryExpression(currentParam, '!=', id('undefined')), [storeExpr]);
+export function storeExprCond(currentParam: Expression, storeExpr: Statement, conditionExpr?: Expression): Statement {
+    let condition: Expression;
+    if (conditionExpr) {
+        const undefinedCheck = tBinaryExpression(currentParam, '!=', id('undefined'));
+        condition = tBinaryExpression(conditionExpr, '&&', undefinedCheck);
+    } else {
+        condition = tBinaryExpression(currentParam, '!=', id('undefined'));
+    }
+    return tIfStatement(condition, [storeExpr]);
 }
 export function storeExpressionNamedType(
     typeName: string,
     insideStoreParameters: Expression[],
     currentCell: string,
+    isOptional: boolean = false,
 ): Statement {
-    return tExpressionStatement(
-        tFunctionCall(tFunctionCall(id('store' + typeName), insideStoreParameters), [id(currentCell)]),
-    );
+    let params = insideStoreParameters;
+    if (isOptional && params.length > 0) {
+        params = [tPostfixExpression(params[0], '!'), ...params.slice(1)];
+    }
+    return tExpressionStatement(tFunctionCall(tFunctionCall(id('store' + typeName), params), [id(currentCell)]));
 }
 export function storeRefObjectStmt(currentCell: string, ctx: ConstructorContext, field: TLBField): Statement {
     return tExpressionStatement(

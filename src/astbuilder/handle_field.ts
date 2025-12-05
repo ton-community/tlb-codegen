@@ -98,6 +98,9 @@ function getField(field: FieldDefinition, constructor: TLBConstructorBuild, fiel
                 fieldType: fieldInfo,
                 subFields: [],
             };
+        } else {
+            const exprType = field.expr.constructor.name;
+            throw new Error(`Unsupported field expression type ${exprType} in field ${fieldName}`);
         }
     }
     return undefined;

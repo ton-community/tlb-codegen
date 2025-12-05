@@ -91,19 +91,13 @@ export function isNameReserved(name: string): boolean {
     if (tsReserved.includes(name)) {
         return true;
     }
-    if (name.startsWith('slice')) {
+    if (name == 'slice' || name == 'cell') {
         return true;
     }
-    if (name.startsWith('cell')) {
-        return true;
-    }
-    if (name == 'builder') {
-        return true;
-    }
-    return false;
+    return name == 'builder';
 }
 export function findNotReservedName(name: string, possibleSuffix: string = '0'): string {
-    if (name.startsWith('slice') || name.startsWith('cell')) {
+    if (name == 'slice' || name == 'cell') {
         name = '_' + name;
     }
     while (isNameReserved(name)) {

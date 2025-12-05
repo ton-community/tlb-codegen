@@ -28,6 +28,7 @@ import {
     TLBMathExpr,
     TLBNumberExpr,
     TLBParameter,
+    TLBUnaryOp,
     TLBType,
     TLBVarExpr,
     TLBVariable,
@@ -441,6 +442,38 @@ function findAvailableVarNamesForCode(tlbCode: TLBCodeBuild) {
         tlbType.constructors.forEach((constructor) => {
             let variablesSet = new Set<string>();
             findAvailableFieldsNames(constructor.fields, variablesSet);
+
+            const renamedVars = new Map<string, string>();
+            constructor.variables.forEach((variable) => {
+                if (variable.name) {
+                    const newName = findNotReservedName(variable.name);
+                    if (newName !== variable.name) {
+                        renamedVars.set(variable.name, newName);
+                        variable.name = newName;
+                    }
+                }
+            });
+            // Update variablesMap with new names
+            if (renamedVars.size > 0) {
+                const newVariablesMap = new Map<string, TLBVariableBuild>();
+                constructor.variablesMap.forEach((variable, oldName) => {
+                    const newName = renamedVars.get(oldName) || oldName;
+                    newVariablesMap.set(newName, variable);
+                });
+                constructor.variablesMap = newVariablesMap;
+                // Update variable names in constraints and deriveExpr
+                for (let i = 0; i < constructor.constraints.length; i++) {
+                    constructor.constraints[i] = updateVariableNamesInExpr(constructor.constraints[i], renamedVars);
+                }
+                constructor.variables.forEach((variable) => {
+                    if (variable.deriveExpr) {
+                        variable.deriveExpr = updateVariableNamesInExpr(variable.deriveExpr, renamedVars);
+                    }
+                    if (variable.initialExpr) {
+                        variable.initialExpr = updateVariableNamesInExpr(variable.initialExpr, renamedVars);
+                    }
+                });
+            }
         });
     });
 }
@@ -460,6 +493,39 @@ function findAvailableFieldName(field: TLBField, variablesSet: Set<string>) {
         index++;
     }
     variablesSet.add(field.name);
+}
+
+function updateVariableNamesInExpr(expr: TLBMathExpr, renamedVars: Map<string, string>): TLBMathExpr {
+    if (expr instanceof TLBVarExpr) {
+        const newName = renamedVars.get(expr.x);
+        if (newName) {
+            const newVars = new Set<string>();
+            newVars.add(newName);
+            return new TLBVarExpr(newName, newVars, expr.hasNeg);
+        }
+        return expr;
+    } else if (expr instanceof TLBBinaryOp) {
+        const newLeft = updateVariableNamesInExpr(expr.left, renamedVars);
+        const newRight = updateVariableNamesInExpr(expr.right, renamedVars);
+        const newVars = new Set<string>();
+        if (newLeft instanceof TLBVarExpr) {
+            newVars.add(newLeft.x);
+        }
+        if (newRight instanceof TLBVarExpr) {
+            newVars.add(newRight.x);
+        }
+        return new TLBBinaryOp(newLeft, newRight, expr.operation, newVars, expr.hasNeg);
+    } else if (expr instanceof TLBUnaryOp) {
+        const newValue = updateVariableNamesInExpr(expr.value, renamedVars);
+        const newVars = new Set<string>();
+        if (newValue instanceof TLBVarExpr) {
+            newVars.add(newValue.x);
+        }
+        return new TLBUnaryOp(newValue, expr.operation, newVars, expr.hasNeg);
+    } else if (expr instanceof TLBNumberExpr) {
+        return expr;
+    }
+    return expr;
 }
 export function convertCodeToReadonly(tlbCode: TLBCodeBuild): TLBCode {
     let newTypes = new Map<string, TLBType>();

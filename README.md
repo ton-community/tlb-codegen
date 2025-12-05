@@ -5,6 +5,9 @@ This package allows you to generate `Typescript` code for serializing and deseri
 
 This package uses [TLB-Parser](https://github.com/ton-community/tlb-parser) to get AST of the scheme. 
 
+[![npm @ton-community/tlb-codegen version](https://img.shields.io/npm/v/@ton-community/tlb-codegen)](https://www.npmjs.com/package/@ton-community/tlb-codegen)
+[![qa](https://github.com/ton-community/tlb-codegen/actions/workflows/qa.yml/badge.svg)](https://github.com/ton-community/tlb-codegen/actions/workflows/qa.yml)
+
 ## Installation 
 
 ```bash

@@ -154,6 +154,12 @@ export interface UnaryOpExpression extends ASTNode {
     expr: Expression;
 }
 
+export interface PostfixExpression extends ASTNode {
+    type: 'PostfixExpression';
+    expr: Expression;
+    operator: string;
+}
+
 export interface BinaryExpression extends ASTNode {
     type: 'BinaryExpression';
     binarySign: string;
@@ -205,7 +211,8 @@ export type Expression =
     | TypeParametersExpression
     | DeclareVariable
     | TernaryExpression
-    | UnaryOpExpression;
+    | UnaryOpExpression
+    | PostfixExpression;
 export type GenDeclaration =
     | ImportDeclaration
     | StructDeclaration
@@ -367,6 +374,14 @@ export function tUnaryOpExpression(unaryOperator: string, expr: Expression): Una
     };
 }
 
+export function tPostfixExpression(expr: Expression, operator: string): PostfixExpression {
+    return {
+        type: 'PostfixExpression',
+        expr: expr,
+        operator: operator,
+    };
+}
+
 export function tBinaryExpression(left: Expression, binarySign: string, right: Expression): BinaryExpression {
     return {
         type: 'BinaryExpression',
@@ -487,7 +502,7 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
 
     if (node.type == 'DeclareVariable') {
         code.add(
-            `let ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}`,
+            `const ${toCode(node.name).render()}${node.typeName ? ': ' + toCode(node.typeName).render() : ''}`,
             false,
         );
         if (node.init) {
@@ -592,6 +607,10 @@ export function toCode(node: TheNode, code: CodeBuilder = new CodeBuilder()): Co
 
     if (node.type == 'UnaryOpExpression') {
         code.add(`(${node.unaryOperator}${toCode(node.expr).render()})`, false);
+    }
+
+    if (node.type == 'PostfixExpression') {
+        code.add(`(${toCode(node.expr).render()}${node.operator})`, false);
     }
 
     if (node.type == 'BinaryExpression') {

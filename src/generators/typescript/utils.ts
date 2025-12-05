@@ -141,11 +141,47 @@ export function addLoadProperty(
     ctx.loadProperties.push(tObjectProperty(nameId, nameId));
 }
 
-export function convertToAST(mathExpr: TLBMathExpr, constructor: TLBConstructor, objectId?: Identifier): Expression {
+export function convertToAST(
+    mathExpr: TLBMathExpr,
+    constructor: TLBConstructor,
+    objectId?: Identifier | Expression,
+): Expression {
     if (mathExpr instanceof TLBVarExpr) {
         let varName = mathExpr.x;
         if (objectId != undefined) {
-            return tMemberExpression(objectId, id(varName));
+            let fieldName = varName;
+            let field = constructor.fields.find((f) => f.name === varName);
+            if (field) {
+                fieldName = field.name;
+            } else {
+                const parameter = constructor.parameters.find((p) => {
+                    let paramName = p.variable.name;
+                    if (p.argName) {
+                        paramName = p.argName;
+                    }
+                    return paramName === varName;
+                });
+                if (parameter) {
+                    const paramVarName = parameter.variable.name;
+                    if (paramVarName) {
+                        field = constructor.fields.find((f) => f.name === paramVarName);
+                        if (field) {
+                            fieldName = field.name;
+                        } else {
+                            fieldName = paramVarName;
+                        }
+                    }
+                } else {
+                    const variable = constructor.variablesMap.get(varName);
+                    if (variable?.isField) {
+                        field = constructor.fields.find((f) => f.name === varName);
+                        if (field) {
+                            fieldName = field.name;
+                        }
+                    }
+                }
+            }
+            return tMemberExpression(objectId, id(fieldName));
         }
         return id(varName);
     }
@@ -157,11 +193,25 @@ export function convertToAST(mathExpr: TLBMathExpr, constructor: TLBConstructor,
         if (operation == '=') {
             operation = '==';
         }
-        return tBinaryExpression(
-            convertToAST(mathExpr.left, constructor, objectId),
-            operation,
-            convertToAST(mathExpr.right, constructor, objectId),
-        );
+        let leftExpr = convertToAST(mathExpr.left, constructor, objectId);
+        let rightExpr = convertToAST(mathExpr.right, constructor, objectId);
+
+        if (mathExpr.left instanceof TLBVarExpr) {
+            const varName = mathExpr.left.x;
+            const field = constructor.fields.find((f) => f.name === varName);
+            if (field && field.fieldType.kind === 'TLBNumberType' && isBigInt(field.fieldType)) {
+                leftExpr = tFunctionCall(id('Number'), [leftExpr]);
+            }
+        }
+        if (mathExpr.right instanceof TLBVarExpr) {
+            const varName = mathExpr.right.x;
+            const field = constructor.fields.find((f) => f.name === varName);
+            if (field && field.fieldType.kind === 'TLBNumberType' && isBigInt(field.fieldType)) {
+                rightExpr = tFunctionCall(id('Number'), [rightExpr]);
+            }
+        }
+
+        return tBinaryExpression(leftExpr, operation, rightExpr);
     }
     if (mathExpr instanceof TLBUnaryOp) {
         if (mathExpr.operation == '.') {
