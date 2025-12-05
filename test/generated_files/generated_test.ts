@@ -2677,8 +2677,8 @@ export function loadConditionalField(slice: Slice): ConditionalField {
 export function storeConditionalField(conditionalField: ConditionalField): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(conditionalField.a, 1);
-        if ((conditionalField.b != undefined)) {
-            builder.storeUint(conditionalField.b, 32);
+        if ((conditionalField.a && (conditionalField.b != undefined))) {
+            builder.storeUint((conditionalField.b!), 32);
         }
     })
 }
@@ -2698,8 +2698,8 @@ export function loadBitSelection(slice: Slice): BitSelection {
 export function storeBitSelection(bitSelection: BitSelection): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(bitSelection.a, 6);
-        if ((bitSelection.b != undefined)) {
-            builder.storeUint(bitSelection.b, 32);
+        if (((bitSelection.a & (1 << 2)) && (bitSelection.b != undefined))) {
+            builder.storeUint((bitSelection.b!), 32);
         }
     })
 }
@@ -2890,7 +2890,7 @@ export function loadConditionalRef(slice: Slice): ConditionalRef {
 export function storeConditionalRef(conditionalRef: ConditionalRef): (builder: Builder) => void {
     return ((builder: Builder) => {
         builder.storeUint(conditionalRef.x, 1);
-        if ((conditionalRef.y != undefined)) {
+        if ((conditionalRef.x && (conditionalRef.y != undefined))) {
             const cell1 = beginCell();
             storeSimple(conditionalRef.y)(cell1);
             builder.storeRef(cell1);

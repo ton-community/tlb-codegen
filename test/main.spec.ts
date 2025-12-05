@@ -12,4 +12,10 @@ describe('main', () => {
     test('generateCode for cell as ref', () => {
         expect(generateCode('_ n:(## 3) c:(n * ^Cell) = T;', 'typescript')).toMatchSnapshot();
     });
+
+    test('generateCode with bit selection', () => {
+        expect(
+            generateCode('_ a:(## 2) b:(a . 1)?uint32 = T1; _ a:(## 2) b:(a . 2)?uint128 = T2;', 'typescript'),
+        ).toMatchSnapshot();
+    });
 });

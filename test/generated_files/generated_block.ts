@@ -8092,10 +8092,10 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
         builder.storeUint(blockInfo.gen_catchain_seqno, 32);
         builder.storeUint(blockInfo.min_ref_mc_seqno, 32);
         builder.storeUint(blockInfo.prev_key_block_seqno, 32);
-        if ((blockInfo.gen_software != undefined)) {
-            storeGlobalVersion(blockInfo.gen_software)(builder);
+        if (((blockInfo.flags & (1 << 0)) && (blockInfo.gen_software != undefined))) {
+            storeGlobalVersion((blockInfo.gen_software!))(builder);
         }
-        if ((blockInfo.master_ref != undefined)) {
+        if ((blockInfo.not_master && (blockInfo.master_ref != undefined))) {
             const cell1 = beginCell();
             storeBlkMasterInfo(blockInfo.master_ref)(cell1);
             builder.storeRef(cell1);
@@ -8103,7 +8103,7 @@ export function storeBlockInfo(blockInfo: BlockInfo): (builder: Builder) => void
         const cell1 = beginCell();
         storeBlkPrevInfo(blockInfo.prev_ref)(cell1);
         builder.storeRef(cell1);
-        if ((blockInfo.prev_vert_ref != undefined)) {
+        if ((blockInfo.vert_seqno_incr && (blockInfo.prev_vert_ref != undefined))) {
             const cell1 = beginCell();
             storeBlkPrevInfo(blockInfo.prev_vert_ref)(cell1);
             builder.storeRef(cell1);
@@ -9188,8 +9188,8 @@ export function storeMcStateExtra(mcStateExtra: McStateExtra): (builder: Builder
         storeOldMcBlocksInfo(mcStateExtra.prev_blocks)(cell1);
         storeBool(mcStateExtra.after_key_block)(builder);
         storeMaybe<ExtBlkRef>(mcStateExtra.last_key_block, storeExtBlkRef)(cell1);
-        if ((mcStateExtra.block_create_stats != undefined)) {
-            storeBlockCreateStats(mcStateExtra.block_create_stats)(cell1);
+        if (((mcStateExtra.flags & (1 << 0)) && (mcStateExtra.block_create_stats != undefined))) {
+            storeBlockCreateStats((mcStateExtra.block_create_stats!))(cell1);
         }
         builder.storeRef(cell1);
         storeCurrencyCollection(mcStateExtra.global_balance)(builder);
@@ -9451,8 +9451,8 @@ export function storeMcBlockExtra(mcBlockExtra: McBlockExtra): (builder: Builder
             })
         }))(cell1);
         builder.storeRef(cell1);
-        if ((mcBlockExtra.config != undefined)) {
-            storeConfigParams(mcBlockExtra.config)(builder);
+        if ((mcBlockExtra.key_block && (mcBlockExtra.config != undefined))) {
+            storeConfigParams((mcBlockExtra.config!))(builder);
         }
     })
 }
@@ -12058,7 +12058,7 @@ export function storeProofChain(proofChain: ProofChain): (builder: Builder) => v
             const cell1 = beginCell();
             cell1.storeSlice(proofChain.root.beginParse(true));
             builder.storeRef(cell1);
-            if ((proofChain.prev != undefined)) {
+            if (((proofChain.n - 1) && (proofChain.prev != undefined))) {
                 const cell1 = beginCell();
                 storeProofChain(proofChain.prev)(cell1);
                 builder.storeRef(cell1);
@@ -13289,8 +13289,8 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
             builder.storeUint(0xad01, 16);
             builder.storeBuffer(dNSRecord.adnl_addr, (256 / 8));
             builder.storeUint(dNSRecord.flags, 8);
-            if ((dNSRecord.proto_list != undefined)) {
-                storeProtoList(dNSRecord.proto_list)(builder);
+            if (((dNSRecord.flags & (1 << 0)) && (dNSRecord.proto_list != undefined))) {
+                storeProtoList((dNSRecord.proto_list!))(builder);
             }
             if ((!(dNSRecord.flags <= 1))) {
                 throw new Error('Condition (dNSRecord.flags <= 1) is not satisfied while loading "DNSRecord_dns_adnl_address" for type "DNSRecord"');
@@ -13302,8 +13302,8 @@ export function storeDNSRecord(dNSRecord: DNSRecord): (builder: Builder) => void
             builder.storeUint(0x9fd3, 16);
             builder.storeAddress(dNSRecord.smc_addr);
             builder.storeUint(dNSRecord.flags, 8);
-            if ((dNSRecord.cap_list != undefined)) {
-                storeSmcCapList(dNSRecord.cap_list)(builder);
+            if (((dNSRecord.flags & (1 << 0)) && (dNSRecord.cap_list != undefined))) {
+                storeSmcCapList((dNSRecord.cap_list!))(builder);
             }
             if ((!(dNSRecord.flags <= 1))) {
                 throw new Error('Condition (dNSRecord.flags <= 1) is not satisfied while loading "DNSRecord_dns_smc_address" for type "DNSRecord"');

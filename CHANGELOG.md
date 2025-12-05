@@ -5,6 +5,7 @@
 ### Fixed
 
 - Fix generate code for cell as ref [issues #59](https://github.com/ton-community/tlb-codegen/issues/59)
+- Fix generator code correct behavior for store method for Bit selection expression [issues #56](https://github.com/ton-community/tlb-codegen/issues/56)
 
 ### Chore
 

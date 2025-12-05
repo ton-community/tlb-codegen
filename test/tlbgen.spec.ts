@@ -1,6 +1,17 @@
-import { Address, BitString, Cell, Dictionary, ExternalAddress, Slice, beginCell } from '@ton/core';
+import { Address, BitString, Cell, Dictionary, ExternalAddress, Slice, beginCell, Builder, address } from '@ton/core';
 
 import { loadBlock, storeBlock } from './generated_files/generated_block';
+import {
+    DNSRecord,
+    storeDNS_RecordSet,
+    loadDNS_RecordSet,
+    ProtoList,
+    DNSRecord_dns_next_resolver,
+    DNSRecord_dns_adnl_address,
+    DNSRecord_dns_storage_address,
+    DNSRecord_dns_smc_address,
+    SmcCapList,
+} from './generated_files/generated_tep-81-dns-standard';
 import {
     AddressUser,
     AnonymousData,
@@ -309,6 +320,7 @@ describe('Generating tlb code', () => {
     beforeAll(async () => {
         await genCodeForTest('block');
         await genCodeForTest('test');
+        await genCodeForTest('tep-81-dns-standard');
     });
 
     test('Basic types', () => {
@@ -989,5 +1001,81 @@ describe('Generating tlb code', () => {
         const slice = finalCell.beginParse();
 
         expect(slice.loadUint(32)).toBe(0xa63f2977);
+    });
+
+    test('DNS RecordSet', () => {
+        const builder = new Builder();
+        const zeroAddress = address(`0:${'00'.repeat(32)}`);
+        const zeroAdnlAddress = Buffer.from('00'.repeat(32), 'hex');
+        const anon0: Dictionary<bigint, DNSRecord> = Dictionary.empty<bigint, DNSRecord>(Dictionary.Keys.BigUint(256));
+        const smcCapList: SmcCapList = {
+            kind: 'SmcCapList_cap_list_next',
+            head: {
+                kind: 'SmcCapability',
+            },
+            tail: {
+                kind: 'SmcCapList_cap_list_nil',
+            },
+        };
+        const protoList: ProtoList = {
+            kind: 'ProtoList_proto_list_next',
+            head: {
+                kind: 'Protocol',
+            },
+            tail: {
+                kind: 'ProtoList_proto_list_nil',
+            },
+        };
+        anon0.set(0n, { kind: 'DNSRecord_dns_smc_address', smc_addr: zeroAddress, flags: 0b0, cap_list: smcCapList });
+        anon0.set(1n, { kind: 'DNSRecord_dns_smc_address', smc_addr: zeroAddress, flags: 0b1, cap_list: smcCapList });
+        anon0.set(2n, { kind: 'DNSRecord_dns_next_resolver', resolver: zeroAddress });
+        anon0.set(3n, {
+            kind: 'DNSRecord_dns_adnl_address',
+            adnl_addr: zeroAdnlAddress,
+            flags: 0b0,
+            proto_list: protoList,
+        });
+        anon0.set(4n, {
+            kind: 'DNSRecord_dns_adnl_address',
+            adnl_addr: zeroAdnlAddress,
+            flags: 0b1,
+            proto_list: protoList,
+        });
+        anon0.set(5n, { kind: 'DNSRecord_dns_storage_address', bag_id: zeroAdnlAddress });
+        storeDNS_RecordSet({
+            kind: 'DNS_RecordSet',
+            anon0,
+        })(builder);
+        const list = loadDNS_RecordSet(builder.endCell().asSlice()).anon0;
+
+        const record0 = list.get(0n)! as DNSRecord_dns_smc_address;
+        expect(record0.kind).toBe('DNSRecord_dns_smc_address');
+        expect(record0.smc_addr.toString()).toEqual(zeroAddress.toString());
+        expect(record0.cap_list).toBeUndefined();
+
+        const record1 = list.get(1n)! as DNSRecord_dns_smc_address;
+        expect(record1.kind).toBe('DNSRecord_dns_smc_address');
+        expect(record0.smc_addr.toString()).toEqual(zeroAddress.toString());
+        expect(record1.cap_list).not.toBeUndefined();
+
+        const record2 = list.get(2n)! as DNSRecord_dns_next_resolver;
+        expect(record2.kind).toBe('DNSRecord_dns_next_resolver');
+        expect(record2.resolver.toString()).toEqual(zeroAddress.toString());
+
+        const record3 = list.get(3n)! as DNSRecord_dns_adnl_address;
+        expect(record3.proto_list).toBeUndefined();
+        expect(record3.kind).toBe('DNSRecord_dns_adnl_address');
+        expect(record3.adnl_addr.toString('hex')).toEqual(zeroAdnlAddress.toString('hex'));
+        expect(record3.proto_list).toBeUndefined();
+
+        const record4 = list.get(4n)! as DNSRecord_dns_adnl_address;
+        expect(record4.proto_list).not.toBeUndefined();
+        expect(record4.kind).toBe('DNSRecord_dns_adnl_address');
+        expect(record4.adnl_addr.toString('hex')).toEqual(zeroAdnlAddress.toString('hex'));
+        expect(record4.proto_list).not.toBeUndefined();
+
+        const record5 = list.get(5n)! as DNSRecord_dns_storage_address;
+        expect(record5.kind).toBe('DNSRecord_dns_storage_address');
+        expect(record5.bag_id.toString('hex')).toEqual(zeroAdnlAddress.toString('hex'));
     });
 });

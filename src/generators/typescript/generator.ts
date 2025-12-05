@@ -558,7 +558,7 @@ export function loadBoolTrue(slice: Slice): Bool {
                 ctx.storeStatements.push(storeRefObjectStmt(currentCell, ctx, field));
             });
         } else if (field.subFields.length == 0) {
-            let fieldInfo = this.handleType(field, field.fieldType, true, ctx, slicePrefix, 0);
+            let fieldInfo = this.handleType(field, field.fieldType, true, ctx, slicePrefix, 0, false);
             if (fieldInfo.loadExpr) {
                 addLoadProperty(field.name, fieldInfo.loadExpr, fieldInfo.typeParamExpr, ctx);
             }
@@ -581,6 +581,7 @@ export function loadBoolTrue(slice: Slice): Bool {
         ctx: ConstructorContext,
         slicePrefix: Array<number>,
         argIndex: number,
+        isConditional: boolean = false,
     ): FieldInfoType {
         let currentSlice = getCurrentSlice(slicePrefix, 'slice');
         let currentCell = getCurrentSlice(slicePrefix, 'cell');
@@ -748,8 +749,18 @@ export function loadBoolTrue(slice: Slice): Bool {
             result.typeParamExpr = id(typeName);
             if (isField) {
                 result.loadExpr = tFunctionCall(id('load' + typeName), [id(theSlice)]);
-                result.storeStmtOutside = storeExpressionNamedType(typeName, storeParametersOutside, currentCell);
-                result.storeStmtInside = storeExpressionNamedType(typeName, storeParametersInside, currentCell);
+                result.storeStmtOutside = storeExpressionNamedType(
+                    typeName,
+                    storeParametersOutside,
+                    currentCell,
+                    isConditional,
+                );
+                result.storeStmtInside = storeExpressionNamedType(
+                    typeName,
+                    storeParametersInside,
+                    currentCell,
+                    isConditional,
+                );
             } else {
                 result.loadExpr = id('load' + typeName);
                 result.storeStmtOutside = tExpressionStatement(id('store' + typeName));
@@ -757,7 +768,7 @@ export function loadBoolTrue(slice: Slice): Bool {
         } else if (fieldType.kind == 'TLBCondType') {
             let subExprInfo: FieldInfoType;
             let conditionExpr: Expression;
-            subExprInfo = this.handleType(field, fieldType.value, true, ctx, slicePrefix, argIndex);
+            subExprInfo = this.handleType(field, fieldType.value, true, ctx, slicePrefix, argIndex, true);
             conditionExpr = convertToAST(fieldType.condition, ctx.constructor);
             if (subExprInfo.typeParamExpr) {
                 result.typeParamExpr = tUnionTypeExpression([subExprInfo.typeParamExpr, id('undefined')]);
@@ -768,14 +779,32 @@ export function loadBoolTrue(slice: Slice): Bool {
             let currentParamOutside = storeParametersOutside[0];
             let currentParamInside = storeParametersInside[0];
             if (currentParamOutside && currentParamInside && subExprInfo.storeStmtOutside) {
-                result.storeStmtOutside = storeExprCond(currentParamOutside, subExprInfo.storeStmtOutside);
-                result.storeStmtInside = storeExprCond(currentParamInside, subExprInfo.storeStmtOutside);
+                let storeConditionExpr: Expression | undefined;
+                if (fieldType.condition) {
+                    let objectParam = id(ctx.typeName);
+                    storeConditionExpr = convertToAST(fieldType.condition, ctx.constructor, objectParam);
+                }
+                result.storeStmtOutside = storeExprCond(
+                    currentParamOutside,
+                    subExprInfo.storeStmtOutside,
+                    storeConditionExpr,
+                );
+                if (storeConditionExpr && fieldType.condition) {
+                    const storeConditionExprInside = convertToAST(fieldType.condition, ctx.constructor, id('arg'));
+                    result.storeStmtInside = storeExprCond(
+                        currentParamInside,
+                        subExprInfo.storeStmtOutside,
+                        storeConditionExprInside,
+                    );
+                } else {
+                    result.storeStmtInside = storeExprCond(currentParamInside, subExprInfo.storeStmtOutside);
+                }
             }
         } else if (fieldType.kind == 'TLBMultipleType') {
             let arrayLength: Expression;
             let subExprInfo: FieldInfoType;
             arrayLength = convertToAST(fieldType.times, ctx.constructor);
-            subExprInfo = this.handleType(field, fieldType.value, false, ctx, slicePrefix, argIndex);
+            subExprInfo = this.handleType(field, fieldType.value, false, ctx, slicePrefix, argIndex, false);
             let currentParamOutside = storeParametersOutside[0];
             let currentParamInside = storeParametersInside[0];
             if (subExprInfo.loadExpr) {
@@ -1002,8 +1031,8 @@ export function loadBoolTrue(slice: Slice): Bool {
                 result.loadFunctionExpr = returnSliceFunc();
             }
             result.typeParamExpr = id(exprForParam.paramType);
-            result.storeStmtOutside = storeExprForParam(theCell, exprForParam, storeParametersOutside);
-            result.storeStmtInside = storeExprForParam(theCell, exprForParam, storeParametersInside);
+            result.storeStmtOutside = storeExprForParam(theCell, exprForParam, storeParametersOutside, isConditional);
+            result.storeStmtInside = storeExprForParam(theCell, exprForParam, storeParametersInside, isConditional);
         }
 
         if (result.loadExpr && !result.loadFunctionExpr) {
