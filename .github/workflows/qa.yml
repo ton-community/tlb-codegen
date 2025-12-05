@@ -41,6 +41,8 @@ jobs:
         os:
           - ubuntu-latest
         node_version:
+          - 25
+          - 24
           - 18
           - 20
           - 22
@@ -62,4 +64,9 @@ jobs:
       - name: run build
         run: npm run build
       - name: run test
-        run: npm test
+        run: |
+          if [ "${{ matrix.node_version }}" = "25" ]; then
+            npm test -- --coverage
+          else
+            npm test
+          fi
