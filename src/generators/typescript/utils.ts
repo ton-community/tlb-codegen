@@ -193,11 +193,25 @@ export function convertToAST(
         if (operation == '=') {
             operation = '==';
         }
-        return tBinaryExpression(
-            convertToAST(mathExpr.left, constructor, objectId),
-            operation,
-            convertToAST(mathExpr.right, constructor, objectId),
-        );
+        let leftExpr = convertToAST(mathExpr.left, constructor, objectId);
+        let rightExpr = convertToAST(mathExpr.right, constructor, objectId);
+
+        if (mathExpr.left instanceof TLBVarExpr) {
+            const varName = mathExpr.left.x;
+            const field = constructor.fields.find((f) => f.name === varName);
+            if (field && field.fieldType.kind === 'TLBNumberType' && isBigInt(field.fieldType)) {
+                leftExpr = tFunctionCall(id('Number'), [leftExpr]);
+            }
+        }
+        if (mathExpr.right instanceof TLBVarExpr) {
+            const varName = mathExpr.right.x;
+            const field = constructor.fields.find((f) => f.name === varName);
+            if (field && field.fieldType.kind === 'TLBNumberType' && isBigInt(field.fieldType)) {
+                rightExpr = tFunctionCall(id('Number'), [rightExpr]);
+            }
+        }
+
+        return tBinaryExpression(leftExpr, operation, rightExpr);
     }
     if (mathExpr instanceof TLBUnaryOp) {
         if (mathExpr.operation == '.') {

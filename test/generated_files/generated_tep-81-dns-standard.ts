@@ -115,14 +115,14 @@ export interface HmLabel_hml_short {
     readonly m: number;
     readonly n: number;
     readonly len: Unary;
-    readonly s: Array<boolean>;
+    readonly s: number[];
 }
 
 export interface HmLabel_hml_long {
     readonly kind: 'HmLabel_hml_long';
     readonly m: number;
     readonly n: number;
-    readonly s: Array<boolean>;
+    readonly s: number[];
 }
 
 export interface HmLabel_hml_same {
@@ -378,8 +378,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         slice.loadUint(1);
         const len: Unary = loadUnary(slice);
         const n = hmLabel_hml_short_get_n(len);
-        const s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBit()
+        const s: number[] = Array.from(Array(n).keys()).map((() => {
+            return slice.loadUint(1)
         }));
         if ((!(n <= m))) {
             throw new Error('Condition (n <= m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -395,8 +395,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
         slice.loadUint(2);
         const n: number = slice.loadUint(bitLen(m));
-        const s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBit()
+        const s: number[] = Array.from(Array(n).keys()).map((() => {
+            return slice.loadUint(1)
         }));
         return {
             kind: 'HmLabel_hml_long',
@@ -424,8 +424,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
             storeUnary(hmLabel.len)(builder);
-            hmLabel.s.forEach(((arg: boolean) => {
-                builder.storeBit(arg);
+            hmLabel.s.forEach(((arg: number) => {
+                builder.storeUint(arg, 1);
             }));
             if ((!(hmLabel.n <= hmLabel.m))) {
                 throw new Error('Condition (hmLabel.n <= hmLabel.m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -436,8 +436,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b10, 2);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
-            hmLabel.s.forEach(((arg: boolean) => {
-                builder.storeBit(arg);
+            hmLabel.s.forEach(((arg: number) => {
+                builder.storeUint(arg, 1);
             }));
         })
     }

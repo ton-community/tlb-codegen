@@ -170,14 +170,14 @@ export interface HmLabel_hml_short {
     readonly m: number;
     readonly n: number;
     readonly len: Unary;
-    readonly s: Array<boolean>;
+    readonly s: number[];
 }
 
 export interface HmLabel_hml_long {
     readonly kind: 'HmLabel_hml_long';
     readonly m: number;
     readonly n: number;
-    readonly s: Array<boolean>;
+    readonly s: number[];
 }
 
 export interface HmLabel_hml_same {
@@ -897,7 +897,7 @@ storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7)
 
 export interface StorageUsed {
     readonly kind: 'StorageUsed';
-    readonly _cells: bigint;
+    readonly cells: bigint;
     readonly bits: bigint;
     readonly public_cells: bigint;
 }
@@ -909,7 +909,7 @@ storage_used_short$_ cells:(VarUInteger 7)
 
 export interface StorageUsedShort {
     readonly kind: 'StorageUsedShort';
-    readonly _cells: bigint;
+    readonly cells: bigint;
     readonly bits: bigint;
 }
 
@@ -2595,7 +2595,7 @@ export interface ConfigProposalSetup {
     readonly min_store_sec: number;
     readonly max_store_sec: number;
     readonly bit_price: number;
-    readonly _cell_price: number;
+    readonly cell_price: number;
 }
 
 // cfg_vote_setup#91 normal_params:^ConfigProposalSetup critical_params:^ConfigProposalSetup = ConfigVotingSetup;
@@ -2738,7 +2738,7 @@ export interface ComplaintPricing {
     readonly kind: 'ComplaintPricing';
     readonly deposit: bigint;
     readonly bit_price: bigint;
-    readonly _cell_price: bigint;
+    readonly cell_price: bigint;
 }
 
 /*
@@ -2761,7 +2761,7 @@ export interface StoragePrices {
     readonly kind: 'StoragePrices';
     readonly utime_since: number;
     readonly bit_price_ps: bigint;
-    readonly _cell_price_ps: bigint;
+    readonly cell_price_ps: bigint;
     readonly mc_bit_price_ps: bigint;
     readonly mc_cell_price_ps: bigint;
 }
@@ -2846,7 +2846,7 @@ export interface MsgForwardPrices {
     readonly kind: 'MsgForwardPrices';
     readonly lump_price: bigint;
     readonly bit_price: bigint;
-    readonly _cell_price: bigint;
+    readonly cell_price: bigint;
     readonly ihr_price_factor: number;
     readonly first_frac: number;
     readonly next_frac: number;
@@ -4030,8 +4030,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         slice.loadUint(1);
         const len: Unary = loadUnary(slice);
         const n = hmLabel_hml_short_get_n(len);
-        const s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBit()
+        const s: number[] = Array.from(Array(n).keys()).map((() => {
+            return slice.loadUint(1)
         }));
         if ((!(n <= m))) {
             throw new Error('Condition (n <= m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -4047,8 +4047,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
         slice.loadUint(2);
         const n: number = slice.loadUint(bitLen(m));
-        const s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBit()
+        const s: number[] = Array.from(Array(n).keys()).map((() => {
+            return slice.loadUint(1)
         }));
         return {
             kind: 'HmLabel_hml_long',
@@ -4076,8 +4076,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
             storeUnary(hmLabel.len)(builder);
-            hmLabel.s.forEach(((arg: boolean) => {
-                builder.storeBit(arg);
+            hmLabel.s.forEach(((arg: number) => {
+                builder.storeUint(arg, 1);
             }));
             if ((!(hmLabel.n <= hmLabel.m))) {
                 throw new Error('Condition (hmLabel.n <= hmLabel.m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -4088,8 +4088,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b10, 2);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
-            hmLabel.s.forEach(((arg: boolean) => {
-                builder.storeBit(arg);
+            hmLabel.s.forEach(((arg: number) => {
+                builder.storeUint(arg, 1);
             }));
         })
     }
@@ -6045,12 +6045,12 @@ storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7)
 */
 
 export function loadStorageUsed(slice: Slice): StorageUsed {
-    const _cells: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
+    const cells: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
     const bits: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
     const public_cells: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
     return {
         kind: 'StorageUsed',
-        _cells: _cells,
+        cells: cells,
         bits: bits,
         public_cells: public_cells,
     }
@@ -6058,7 +6058,7 @@ export function loadStorageUsed(slice: Slice): StorageUsed {
 
 export function storeStorageUsed(storageUsed: StorageUsed): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeVarUint(storageUsed._cells, bitLen((7 - 1)));
+        builder.storeVarUint(storageUsed.cells, bitLen((7 - 1)));
         builder.storeVarUint(storageUsed.bits, bitLen((7 - 1)));
         builder.storeVarUint(storageUsed.public_cells, bitLen((7 - 1)));
     })
@@ -6070,18 +6070,18 @@ storage_used_short$_ cells:(VarUInteger 7)
 */
 
 export function loadStorageUsedShort(slice: Slice): StorageUsedShort {
-    const _cells: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
+    const cells: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
     const bits: bigint = slice.loadVarUintBig(bitLen((7 - 1)));
     return {
         kind: 'StorageUsedShort',
-        _cells: _cells,
+        cells: cells,
         bits: bits,
     }
 }
 
 export function storeStorageUsedShort(storageUsedShort: StorageUsedShort): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeVarUint(storageUsedShort._cells, bitLen((7 - 1)));
+        builder.storeVarUint(storageUsedShort.cells, bitLen((7 - 1)));
         builder.storeVarUint(storageUsedShort.bits, bitLen((7 - 1)));
     })
 }
@@ -10447,7 +10447,7 @@ export function loadConfigProposalSetup(slice: Slice): ConfigProposalSetup {
         const min_store_sec: number = slice.loadUint(32);
         const max_store_sec: number = slice.loadUint(32);
         const bit_price: number = slice.loadUint(32);
-        const _cell_price: number = slice.loadUint(32);
+        const cell_price: number = slice.loadUint(32);
         return {
             kind: 'ConfigProposalSetup',
             min_tot_rounds: min_tot_rounds,
@@ -10457,7 +10457,7 @@ export function loadConfigProposalSetup(slice: Slice): ConfigProposalSetup {
             min_store_sec: min_store_sec,
             max_store_sec: max_store_sec,
             bit_price: bit_price,
-            _cell_price: _cell_price,
+            cell_price: cell_price,
         }
     }
     throw new Error('Expected one of "ConfigProposalSetup" in loading "ConfigProposalSetup", but data does not satisfy any constructor');
@@ -10473,7 +10473,7 @@ export function storeConfigProposalSetup(configProposalSetup: ConfigProposalSetu
         builder.storeUint(configProposalSetup.min_store_sec, 32);
         builder.storeUint(configProposalSetup.max_store_sec, 32);
         builder.storeUint(configProposalSetup.bit_price, 32);
-        builder.storeUint(configProposalSetup._cell_price, 32);
+        builder.storeUint(configProposalSetup.cell_price, 32);
     })
 }
 
@@ -10890,12 +10890,12 @@ export function loadComplaintPricing(slice: Slice): ComplaintPricing {
         slice.loadUint(8);
         const deposit: bigint = slice.loadCoins();
         const bit_price: bigint = slice.loadCoins();
-        const _cell_price: bigint = slice.loadCoins();
+        const cell_price: bigint = slice.loadCoins();
         return {
             kind: 'ComplaintPricing',
             deposit: deposit,
             bit_price: bit_price,
-            _cell_price: _cell_price,
+            cell_price: cell_price,
         }
     }
     throw new Error('Expected one of "ComplaintPricing" in loading "ComplaintPricing", but data does not satisfy any constructor');
@@ -10906,7 +10906,7 @@ export function storeComplaintPricing(complaintPricing: ComplaintPricing): (buil
         builder.storeUint(0x1a, 8);
         builder.storeCoins(complaintPricing.deposit);
         builder.storeCoins(complaintPricing.bit_price);
-        builder.storeCoins(complaintPricing._cell_price);
+        builder.storeCoins(complaintPricing.cell_price);
     })
 }
 
@@ -10947,14 +10947,14 @@ export function loadStoragePrices(slice: Slice): StoragePrices {
         slice.loadUint(8);
         const utime_since: number = slice.loadUint(32);
         const bit_price_ps: bigint = slice.loadUintBig(64);
-        const _cell_price_ps: bigint = slice.loadUintBig(64);
+        const cell_price_ps: bigint = slice.loadUintBig(64);
         const mc_bit_price_ps: bigint = slice.loadUintBig(64);
         const mc_cell_price_ps: bigint = slice.loadUintBig(64);
         return {
             kind: 'StoragePrices',
             utime_since: utime_since,
             bit_price_ps: bit_price_ps,
-            _cell_price_ps: _cell_price_ps,
+            cell_price_ps: cell_price_ps,
             mc_bit_price_ps: mc_bit_price_ps,
             mc_cell_price_ps: mc_cell_price_ps,
         }
@@ -10967,7 +10967,7 @@ export function storeStoragePrices(storagePrices: StoragePrices): (builder: Buil
         builder.storeUint(0xcc, 8);
         builder.storeUint(storagePrices.utime_since, 32);
         builder.storeUint(storagePrices.bit_price_ps, 64);
-        builder.storeUint(storagePrices._cell_price_ps, 64);
+        builder.storeUint(storagePrices.cell_price_ps, 64);
         builder.storeUint(storagePrices.mc_bit_price_ps, 64);
         builder.storeUint(storagePrices.mc_cell_price_ps, 64);
     })
@@ -11161,7 +11161,7 @@ export function loadMsgForwardPrices(slice: Slice): MsgForwardPrices {
         slice.loadUint(8);
         const lump_price: bigint = slice.loadUintBig(64);
         const bit_price: bigint = slice.loadUintBig(64);
-        const _cell_price: bigint = slice.loadUintBig(64);
+        const cell_price: bigint = slice.loadUintBig(64);
         const ihr_price_factor: number = slice.loadUint(32);
         const first_frac: number = slice.loadUint(16);
         const next_frac: number = slice.loadUint(16);
@@ -11169,7 +11169,7 @@ export function loadMsgForwardPrices(slice: Slice): MsgForwardPrices {
             kind: 'MsgForwardPrices',
             lump_price: lump_price,
             bit_price: bit_price,
-            _cell_price: _cell_price,
+            cell_price: cell_price,
             ihr_price_factor: ihr_price_factor,
             first_frac: first_frac,
             next_frac: next_frac,
@@ -11183,7 +11183,7 @@ export function storeMsgForwardPrices(msgForwardPrices: MsgForwardPrices): (buil
         builder.storeUint(0xea, 8);
         builder.storeUint(msgForwardPrices.lump_price, 64);
         builder.storeUint(msgForwardPrices.bit_price, 64);
-        builder.storeUint(msgForwardPrices._cell_price, 64);
+        builder.storeUint(msgForwardPrices.cell_price, 64);
         builder.storeUint(msgForwardPrices.ihr_price_factor, 32);
         builder.storeUint(msgForwardPrices.first_frac, 16);
         builder.storeUint(msgForwardPrices.next_frac, 16);

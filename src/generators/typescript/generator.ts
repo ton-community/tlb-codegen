@@ -87,6 +87,7 @@ import {
     tUnionTypeDeclaration,
     tUnionTypeExpression,
     toCode,
+    tDeclareVariable,
 } from './tsgen';
 import {
     ExprForParam,
@@ -807,9 +808,81 @@ export function loadBoolTrue(slice: Slice): Bool {
             subExprInfo = this.handleType(field, fieldType.value, false, ctx, slicePrefix, argIndex, false);
             let currentParamOutside = storeParametersOutside[0];
             let currentParamInside = storeParametersInside[0];
-            if (subExprInfo.loadExpr) {
-                // Special handling for arrays of Cell references - use loadRef() instead of asCell()
-                if (fieldType.value.kind == 'TLBCellType') {
+
+            // For arrays of primitive types (TLBNumberType, TLBBitsType), generate Slice instead of Array
+            // This matches C++ implementation which uses fetch_subslice_to for such cases
+            // Also handle arrays of named types that represent primitives (e.g., uint8, uint32)
+            const isPrimitiveArray =
+                fieldType.value.kind === 'TLBNumberType' ||
+                fieldType.value.kind === 'TLBBitsType' ||
+                (fieldType.value.kind === 'TLBNamedType' &&
+                    (fieldType.value.name.startsWith('uint') ||
+                        fieldType.value.name.startsWith('int') ||
+                        fieldType.value.name === 'Uint' ||
+                        fieldType.value.name === 'Int'));
+
+            if (isPrimitiveArray) {
+                // Calculate total bits: arrayLength * bitsPerElement
+                let bitsPerElement: Expression;
+                let isFixedBits = false;
+                let fixedBitsValue: number | undefined = undefined;
+
+                if (fieldType.value.kind === 'TLBNumberType') {
+                    bitsPerElement = convertToAST(fieldType.value.bits, ctx.constructor);
+                    // Check if bits is a fixed number (TLBNumberExpr with a number)
+                    if (fieldType.value.bits instanceof TLBNumberExpr) {
+                        isFixedBits = true;
+                        fixedBitsValue = fieldType.value.bits.n;
+                    }
+                } else if (fieldType.value.kind === 'TLBBitsType') {
+                    bitsPerElement = convertToAST(fieldType.value.bits, ctx.constructor);
+                    if (fieldType.value.bits instanceof TLBNumberExpr) {
+                        isFixedBits = true;
+                        fixedBitsValue = fieldType.value.bits.n;
+                    }
+                } else if (fieldType.value.kind === 'TLBNamedType') {
+                    // Handle named types like uint8, uint32, etc.
+                    // Extract number from name (e.g., "uint8" -> 8, "uint32" -> 32)
+                    const name = fieldType.value.name;
+                    let numBits: number | undefined;
+                    if (name.startsWith('uint')) {
+                        numBits = parseInt(name.substring(4));
+                    } else if (name.startsWith('int')) {
+                        numBits = parseInt(name.substring(3));
+                    } else if (name === 'Uint') {
+                        numBits = 257; // Uint is 257 bits
+                    } else if (name === 'Int') {
+                        numBits = 257; // Int is 257 bits
+                    }
+                    if (numBits === undefined || isNaN(numBits)) {
+                        throw new Error(`Could not extract bit size from named type: ${name}`);
+                    }
+                    bitsPerElement = tNumericLiteral(numBits);
+                    isFixedBits = true;
+                    fixedBitsValue = numBits;
+                } else {
+                    throw new Error(`Unexpected primitive type in TLBMultipleType: ${fieldType.value.kind}`);
+                }
+
+                // Special handling for arrays of bytes (8 bits per element) - use Buffer
+                if (isFixedBits && fixedBitsValue === 8) {
+                    // For arrays of bytes, use loadBuffer/storeBuffer
+                    result.loadExpr = tFunctionCall(tMemberExpression(id(theSlice), id('loadBuffer')), [
+                        tFunctionCall(id('Number'), [arrayLength]),
+                    ]);
+                    result.typeParamExpr = id('Buffer');
+
+                    if (currentParamOutside && currentParamInside) {
+                        result.storeStmtOutside = tExpressionStatement(
+                            tFunctionCall(tMemberExpression(id(currentCell), id('storeBuffer')), [currentParamOutside]),
+                        );
+                        result.storeStmtInside = tExpressionStatement(
+                            tFunctionCall(tMemberExpression(id(currentCell), id('storeBuffer')), [currentParamInside]),
+                        );
+                    }
+                } else if (isFixedBits && fixedBitsValue !== undefined) {
+                    // For arrays of fixed-size numbers, generate array of numbers
+                    // Generate code to load array of numbers
                     result.loadExpr = tFunctionCall(
                         tMemberExpression(
                             tFunctionCall(tMemberExpression(id('Array'), id('from')), [
@@ -823,30 +896,29 @@ export function loadBoolTrue(slice: Slice): Bool {
                         [
                             tArrowFunctionExpression(
                                 [],
-                                [tReturnStatement(tFunctionCall(tMemberExpression(id(theSlice), id('loadRef')), []))],
+                                [
+                                    tReturnStatement(
+                                        tFunctionCall(tMemberExpression(id(theSlice), id('loadUint')), [
+                                            tNumericLiteral(fixedBitsValue),
+                                        ]),
+                                    ),
+                                ],
                             ),
                         ],
                     );
-                } else {
-                    result.loadExpr = loadTupleExpr(arrayLength, subExprInfo.loadExpr);
-                }
-            }
-            if (
-                currentParamOutside &&
-                currentParamInside &&
-                subExprInfo.typeParamExpr &&
-                subExprInfo.storeStmtOutside
-            ) {
-                if (subExprInfo.storeFunctionExpr && subExprInfo.storeStmtInside) {
-                    // Special handling for arrays of Cell references - use storeRef() instead of storeSlice()
-                    if (fieldType.value.kind == 'TLBCellType') {
+                    result.typeParamExpr = id('number[]');
+
+                    if (currentParamOutside && currentParamInside) {
                         result.storeStmtOutside = tExpressionStatement(
                             tFunctionCall(tMemberExpression(currentParamOutside, id('forEach')), [
                                 tArrowFunctionExpression(
-                                    [tTypedIdentifier(id('arg'), id('Cell'))],
+                                    [tTypedIdentifier(id('arg'), id('number'))],
                                     [
                                         tExpressionStatement(
-                                            tFunctionCall(tMemberExpression(id(theCell), id('storeRef')), [id('arg')]),
+                                            tFunctionCall(tMemberExpression(id(currentCell), id('storeUint')), [
+                                                id('arg'),
+                                                tNumericLiteral(fixedBitsValue),
+                                            ]),
                                         ),
                                     ],
                                 ),
@@ -855,31 +927,157 @@ export function loadBoolTrue(slice: Slice): Bool {
                         result.storeStmtInside = tExpressionStatement(
                             tFunctionCall(tMemberExpression(currentParamInside, id('forEach')), [
                                 tArrowFunctionExpression(
-                                    [tTypedIdentifier(id('arg'), id('Cell'))],
+                                    [tTypedIdentifier(id('arg'), id('number'))],
                                     [
                                         tExpressionStatement(
-                                            tFunctionCall(tMemberExpression(id(theCell), id('storeRef')), [id('arg')]),
+                                            tFunctionCall(tMemberExpression(id(currentCell), id('storeUint')), [
+                                                id('arg'),
+                                                tNumericLiteral(fixedBitsValue),
+                                            ]),
                                         ),
                                     ],
                                 ),
                             ]),
                         );
-                    } else {
-                        result.storeStmtOutside = storeTupleStmt(
-                            currentParamOutside,
-                            subExprInfo.storeStmtInside,
-                            subExprInfo.typeParamExpr,
+                    }
+                } else {
+                    // For arrays of variable-length numbers, generate Slice (existing behavior)
+                    // Convert to Number for multiplication to avoid BigInt mixing issues
+                    // The result will be used as number of bits, which should fit in Number
+                    let totalBits = tBinaryExpression(
+                        tFunctionCall(id('Number'), [arrayLength]),
+                        '*',
+                        tFunctionCall(id('Number'), [bitsPerElement]),
+                    );
+
+                    // Generate code to load a subslice: clone slice, load bits, create cell, return slice
+                    // This matches C++ fetch_subslice_to behavior
+                    let subsliceVar = getCurrentSlice(slicePrefix, 'subslice');
+                    let tempCellVar = getCurrentSlice(slicePrefix, 'tempCell');
+                    // Create an IIFE (Immediately Invoked Function Expression) to load the subslice
+                    result.loadExpr = tFunctionCall(
+                        tArrowFunctionExpression(typedSlice(), [
+                            tExpressionStatement(
+                                tDeclareVariable(
+                                    id(subsliceVar),
+                                    tFunctionCall(tMemberExpression(id(theSlice), id('clone')), []),
+                                ),
+                            ),
+                            tExpressionStatement(tDeclareVariable(id(tempCellVar), tFunctionCall(id('beginCell'), []))),
+                            tExpressionStatement(
+                                tFunctionCall(tMemberExpression(id(tempCellVar), id('storeBits')), [
+                                    tFunctionCall(tMemberExpression(id(subsliceVar), id('loadBits')), [totalBits]),
+                                ]),
+                            ),
+                            tReturnStatement(
+                                tFunctionCall(
+                                    tMemberExpression(
+                                        tFunctionCall(tMemberExpression(id(tempCellVar), id('endCell')), []),
+                                        id('beginParse'),
+                                    ),
+                                    [id('true')],
+                                ),
+                            ),
+                        ]),
+                        [id(theSlice)],
+                    );
+                    result.typeParamExpr = id('Slice');
+
+                    // For store, we need to store the slice bits
+                    // Slice is already a slice, so we can use storeSlice directly
+                    if (currentParamOutside && currentParamInside) {
+                        result.storeStmtOutside = tExpressionStatement(
+                            tFunctionCall(tMemberExpression(id(currentCell), id('storeSlice')), [currentParamOutside]),
                         );
-                        result.storeStmtInside = storeTupleStmt(
-                            currentParamInside,
-                            subExprInfo.storeStmtInside,
-                            subExprInfo.typeParamExpr,
+                        result.storeStmtInside = tExpressionStatement(
+                            tFunctionCall(tMemberExpression(id(currentCell), id('storeSlice')), [currentParamInside]),
                         );
                     }
                 }
-            }
-            if (subExprInfo.typeParamExpr) {
-                result.typeParamExpr = arrayedType(subExprInfo.typeParamExpr);
+            } else {
+                // For non-primitive arrays, use the existing array logic
+                if (subExprInfo.loadExpr) {
+                    // Special handling for arrays of Cell references - use loadRef() instead of asCell()
+                    if (fieldType.value.kind == 'TLBCellType') {
+                        result.loadExpr = tFunctionCall(
+                            tMemberExpression(
+                                tFunctionCall(tMemberExpression(id('Array'), id('from')), [
+                                    tFunctionCall(
+                                        tMemberExpression(tFunctionCall(id('Array'), [arrayLength]), id('keys')),
+                                        [],
+                                    ),
+                                ]),
+                                id('map'),
+                            ),
+                            [
+                                tArrowFunctionExpression(
+                                    [],
+                                    [
+                                        tReturnStatement(
+                                            tFunctionCall(tMemberExpression(id(theSlice), id('loadRef')), []),
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        );
+                    } else {
+                        result.loadExpr = loadTupleExpr(arrayLength, subExprInfo.loadExpr);
+                    }
+                }
+                if (
+                    currentParamOutside &&
+                    currentParamInside &&
+                    subExprInfo.typeParamExpr &&
+                    subExprInfo.storeStmtOutside
+                ) {
+                    if (subExprInfo.storeFunctionExpr && subExprInfo.storeStmtInside) {
+                        // Special handling for arrays of Cell references - use storeRef() instead of storeSlice()
+                        if (fieldType.value.kind == 'TLBCellType') {
+                            result.storeStmtOutside = tExpressionStatement(
+                                tFunctionCall(tMemberExpression(currentParamOutside, id('forEach')), [
+                                    tArrowFunctionExpression(
+                                        [tTypedIdentifier(id('arg'), id('Cell'))],
+                                        [
+                                            tExpressionStatement(
+                                                tFunctionCall(tMemberExpression(id(theCell), id('storeRef')), [
+                                                    id('arg'),
+                                                ]),
+                                            ),
+                                        ],
+                                    ),
+                                ]),
+                            );
+                            result.storeStmtInside = tExpressionStatement(
+                                tFunctionCall(tMemberExpression(currentParamInside, id('forEach')), [
+                                    tArrowFunctionExpression(
+                                        [tTypedIdentifier(id('arg'), id('Cell'))],
+                                        [
+                                            tExpressionStatement(
+                                                tFunctionCall(tMemberExpression(id(theCell), id('storeRef')), [
+                                                    id('arg'),
+                                                ]),
+                                            ),
+                                        ],
+                                    ),
+                                ]),
+                            );
+                        } else {
+                            result.storeStmtOutside = storeTupleStmt(
+                                currentParamOutside,
+                                subExprInfo.storeStmtInside,
+                                subExprInfo.typeParamExpr,
+                            );
+                            result.storeStmtInside = storeTupleStmt(
+                                currentParamInside,
+                                subExprInfo.storeStmtInside,
+                                subExprInfo.typeParamExpr,
+                            );
+                        }
+                    }
+                }
+                if (subExprInfo.typeParamExpr) {
+                    result.typeParamExpr = arrayedType(subExprInfo.typeParamExpr);
+                }
             }
         } else if (fieldType.kind == 'TLBCellInsideType') {
             let currentCell = getCurrentSlice([1, 0], 'cell');

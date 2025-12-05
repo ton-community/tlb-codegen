@@ -500,7 +500,7 @@ export interface DollarTag {
 
 export interface TupleCheck {
     readonly kind: 'TupleCheck';
-    readonly s: Array<number>;
+    readonly s: number[];
 }
 
 /*
@@ -551,14 +551,14 @@ export interface HmLabel_hml_short {
     readonly m: number;
     readonly n: number;
     readonly len: Unary;
-    readonly s: Array<boolean>;
+    readonly s: number[];
 }
 
 export interface HmLabel_hml_long {
     readonly kind: 'HmLabel_hml_long';
     readonly m: number;
     readonly n: number;
-    readonly s: Array<boolean>;
+    readonly s: number[];
 }
 
 export interface HmLabel_hml_same {
@@ -1667,10 +1667,10 @@ export function loadCellTypedField(slice: Slice): CellTypedField {
     }
 }
 
-export function storeCellTypedField(_cellTypedField: CellTypedField): (builder: Builder) => void {
+export function storeCellTypedField(cellTypedField: CellTypedField): (builder: Builder) => void {
     return ((builder: Builder) => {
         const cell1 = beginCell();
-        storeExprArgUser(_cellTypedField.a)(cell1);
+        storeExprArgUser(cellTypedField.a)(cell1);
         builder.storeRef(cell1);
     })
 }
@@ -1702,22 +1702,22 @@ export function loadCellsSimple(slice: Slice): CellsSimple {
     }
 }
 
-export function storeCellsSimple(_cellsSimple: CellsSimple): (builder: Builder) => void {
+export function storeCellsSimple(cellsSimple: CellsSimple): (builder: Builder) => void {
     return ((builder: Builder) => {
-        builder.storeUint(_cellsSimple.t, 32);
+        builder.storeUint(cellsSimple.t, 32);
         const cell1 = beginCell();
-        cell1.storeUint(_cellsSimple.q, 32);
+        cell1.storeUint(cellsSimple.q, 32);
         builder.storeRef(cell1);
         const cell2 = beginCell();
-        cell2.storeUint(_cellsSimple.a, 32);
+        cell2.storeUint(cellsSimple.a, 32);
         const cell21 = beginCell();
-        cell21.storeUint(_cellsSimple.e, 32);
+        cell21.storeUint(cellsSimple.e, 32);
         cell2.storeRef(cell21);
         const cell22 = beginCell();
-        cell22.storeUint(_cellsSimple.b, 32);
-        cell22.storeUint(_cellsSimple.d, 32);
+        cell22.storeUint(cellsSimple.b, 32);
+        cell22.storeUint(cellsSimple.d, 32);
         const cell221 = beginCell();
-        cell221.storeUint(_cellsSimple.c, 32);
+        cell221.storeUint(cellsSimple.c, 32);
         cell22.storeRef(cell221);
         cell2.storeRef(cell22);
         builder.storeRef(cell2);
@@ -2429,8 +2429,8 @@ export function storeDollarTag(dollarTag: DollarTag): (builder: Builder) => void
 // a$_ s:(3 * int5) = TupleCheck;
 
 export function loadTupleCheck(slice: Slice): TupleCheck {
-    const s: Array<number> = Array.from(Array(3).keys()).map(((arg: number) => {
-        return slice.loadInt(5)
+    const s: number[] = Array.from(Array(3).keys()).map((() => {
+        return slice.loadUint(5)
     }));
     return {
         kind: 'TupleCheck',
@@ -2441,7 +2441,7 @@ export function loadTupleCheck(slice: Slice): TupleCheck {
 export function storeTupleCheck(tupleCheck: TupleCheck): (builder: Builder) => void {
     return ((builder: Builder) => {
         tupleCheck.s.forEach(((arg: number) => {
-            builder.storeInt(arg, 5);
+            builder.storeUint(arg, 5);
         }));
     })
 }
@@ -2559,8 +2559,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
         slice.loadUint(1);
         const len: Unary = loadUnary(slice);
         const n = hmLabel_hml_short_get_n(len);
-        const s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBit()
+        const s: number[] = Array.from(Array(n).keys()).map((() => {
+            return slice.loadUint(1)
         }));
         if ((!(n <= m))) {
             throw new Error('Condition (n <= m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -2576,8 +2576,8 @@ export function loadHmLabel(slice: Slice, m: number): HmLabel {
     if (((slice.remainingBits >= 2) && (slice.preloadUint(2) == 0b10))) {
         slice.loadUint(2);
         const n: number = slice.loadUint(bitLen(m));
-        const s: Array<boolean> = Array.from(Array(n).keys()).map(((arg: number) => {
-            return slice.loadBit()
+        const s: number[] = Array.from(Array(n).keys()).map((() => {
+            return slice.loadUint(1)
         }));
         return {
             kind: 'HmLabel_hml_long',
@@ -2605,8 +2605,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b0, 1);
             storeUnary(hmLabel.len)(builder);
-            hmLabel.s.forEach(((arg: boolean) => {
-                builder.storeBit(arg);
+            hmLabel.s.forEach(((arg: number) => {
+                builder.storeUint(arg, 1);
             }));
             if ((!(hmLabel.n <= hmLabel.m))) {
                 throw new Error('Condition (hmLabel.n <= hmLabel.m) is not satisfied while loading "HmLabel_hml_short" for type "HmLabel"');
@@ -2617,8 +2617,8 @@ export function storeHmLabel(hmLabel: HmLabel): (builder: Builder) => void {
         return ((builder: Builder) => {
             builder.storeUint(0b10, 2);
             builder.storeUint(hmLabel.n, bitLen(hmLabel.m));
-            hmLabel.s.forEach(((arg: boolean) => {
-                builder.storeBit(arg);
+            hmLabel.s.forEach(((arg: number) => {
+                builder.storeUint(arg, 1);
             }));
         })
     }

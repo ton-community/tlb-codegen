@@ -4,6 +4,8 @@ import {
     CellRefExpr,
     CombinatorExpr,
     CondExpr,
+    FieldAnonExpr,
+    FieldExprDef,
     MathExpr,
     NameExpr,
     NegateExpr,
@@ -41,7 +43,11 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
             if (expr.arg instanceof NameExpr) {
                 let parameter = constructor.parametersMap.get(expr.arg.name);
                 if (!parameter || !parameter.variable.deriveExpr || !parameter.variable.initialExpr) {
-                    throw new Error(`Couldn't handle expression ${expr}`);
+                    const argType = expr.arg.constructor.name;
+                    const argName = expr.arg.name;
+                    throw new Error(
+                        `Couldn't handle ## expression with NameExpr arg '${argName}' (type: ${argType}): parameter not found or missing deriveExpr/initialExpr`,
+                    );
                 }
                 return {
                     kind: 'TLBNumberType',
@@ -50,8 +56,19 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
                     signed: false,
                     maxBits: undefined,
                 };
+            } else if (expr.arg instanceof MathExpr) {
+                return {
+                    kind: 'TLBNumberType',
+                    bits: getCalculatedExpression(convertToMathExpr(expr.arg), constructor),
+                    storeBits: convertToMathExpr(expr.arg),
+                    signed: false,
+                    maxBits: undefined,
+                };
             } else {
-                throw new Error(`Couldn't handle expression ${expr}`);
+                const argType = expr.arg.constructor.name;
+                throw new Error(
+                    `Couldn't handle ## expression with arg of type ${argType} (expected NumberExpr, NameExpr, or MathExpr)`,
+                );
             }
         } else if (expr.name == '#<') {
             if (expr.arg instanceof NumberExpr || expr.arg instanceof NameExpr) {
@@ -71,7 +88,10 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
                     maxBits: 32,
                 };
             } else {
-                throw new Error(`Couldn't handle expression ${expr}`);
+                const argType = expr.arg.constructor.name;
+                throw new Error(
+                    `Couldn't handle #< expression with arg of type ${argType} (expected NumberExpr or NameExpr)`,
+                );
             }
         } else if (expr.name == '#<=') {
             if (expr.arg instanceof NumberExpr || expr.arg instanceof NameExpr) {
@@ -84,8 +104,13 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
                     maxBits: 32,
                 };
             } else {
-                throw new Error(`Couldn't handle expression ${expr}`);
+                const argType = expr.arg.constructor.name;
+                throw new Error(
+                    `Couldn't handle #<= expression with arg of type ${argType} (expected NumberExpr or NameExpr)`,
+                );
             }
+        } else {
+            throw new Error(`Couldn't handle BuiltinOneArgExpr with name ${expr.name}`);
         }
     } else if (expr instanceof CombinatorExpr) {
         if (
@@ -169,9 +194,22 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
             };
         } else {
             let argumentTypes: TLBFieldType[] = [];
-            expr.args.forEach((arg) => {
-                let thefield = getType(arg, constructor, fieldTypeName);
-                argumentTypes.push(thefield);
+            expr.args.forEach((arg, index) => {
+                try {
+                    const argType = arg.constructor.name;
+                    if (argType === 'FieldAnonExpr' || argType.includes('Field')) {
+                        throw new Error(
+                            `CombinatorExpr '${expr.name}' argument ${index} is of type ${argType}, which is a field expression, not a type expression`,
+                        );
+                    }
+                    let thefield = getType(arg, constructor, fieldTypeName);
+                    argumentTypes.push(thefield);
+                } catch (error) {
+                    const argType = arg.constructor.name;
+                    throw new Error(
+                        `Couldn't handle CombinatorExpr '${expr.name}' argument ${index} of type ${argType}: ${error instanceof Error ? error.message : String(error)}`,
+                    );
+                }
             });
             return {
                 kind: 'TLBNamedType',
@@ -273,6 +311,27 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
                         };
                     }
                 }
+
+                if (expr.right instanceof FieldAnonExpr && expr.right.fields.length === 1) {
+                    const fieldDef = expr.right.fields[0];
+                    if (fieldDef instanceof FieldExprDef && fieldDef.expr instanceof NameExpr) {
+                        const typeName = fieldDef.expr.name;
+                        const numBits = splitForTypeValue(typeName, 'uint') || splitForTypeValue(typeName, 'int');
+                        if (numBits !== undefined) {
+                            return {
+                                kind: 'TLBMultipleType',
+                                times: getCalculatedExpression(convertToMathExpr(expr.left), constructor),
+                                value: {
+                                    kind: 'TLBNumberType',
+                                    bits: new TLBNumberExpr(numBits),
+                                    storeBits: new TLBNumberExpr(numBits),
+                                    signed: typeName.startsWith('int'),
+                                    maxBits: numBits,
+                                },
+                            };
+                        }
+                    }
+                }
                 let subExprInfo = getType(expr.right, constructor, fieldTypeName);
                 return {
                     kind: 'TLBMultipleType',
@@ -280,7 +339,10 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
                     value: subExprInfo,
                 };
             } else {
-                throw new Error(`Couldn't handle expression ${expr}`);
+                const op = expr.op;
+                throw new Error(
+                    `Couldn't handle MathExpr with operation '${op}' when fieldTypeName is empty (only '*' is supported)`,
+                );
             }
         } else {
             return {
@@ -301,9 +363,45 @@ export function getType(expr: ParserExpression, constructor: TLBConstructorBuild
                 );
             }
             return { kind: 'TLBCondType', value: subExprInfo, condition: condition };
+        } else {
+            try {
+                let condition: TLBMathExpr = getCalculatedExpression(convertToMathExpr(expr.left), constructor);
+                if (expr.dotExpr != null) {
+                    condition = new TLBBinaryOp(
+                        condition,
+                        new TLBBinaryOp(new TLBNumberExpr(1), new TLBNumberExpr(expr.dotExpr), '<<'),
+                        '&',
+                    );
+                }
+                return { kind: 'TLBCondType', value: subExprInfo, condition: condition };
+            } catch (error) {
+                const leftType = expr.left.constructor.name;
+                throw new Error(
+                    `Couldn't handle CondExpr with left side of type ${leftType}: ${error instanceof Error ? error.message : String(error)}`,
+                );
+            }
         }
     } else {
-        throw new Error(`Couldn't handle expression ${expr}`);
+        const exprType = expr.constructor.name;
+        if (exprType === 'FieldAnonExpr') {
+            return { kind: 'TLBCellType' };
+        }
+        if (
+            exprType.includes('Field') &&
+            exprType !== 'FieldExprDef' &&
+            exprType !== 'FieldNamedDef' &&
+            exprType !== 'FieldAnonymousDef' &&
+            exprType !== 'FieldBuiltinDef' &&
+            exprType !== 'FieldCurlyExprDef'
+        ) {
+            throw new Error(`Field expression type ${exprType} should not be processed as a type expression`);
+        }
+        let exprDetails: string;
+        try {
+            exprDetails = JSON.stringify(expr, null, 2);
+        } catch {
+            exprDetails = String(expr);
+        }
+        throw new Error(`Couldn't handle expression of type ${exprType}: ${exprDetails}`);
     }
-    throw new Error(`Couldn't handle expression ${expr}`);
 }

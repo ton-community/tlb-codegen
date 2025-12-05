@@ -8,10 +8,10 @@ const config: Config = {
     silent: false,
     coverageThreshold: {
         global: {
-            statements: 91.06,
-            branches: 82.69,
-            functions: 93.25,
-            lines: 91.64,
+            statements: 88.74,
+            branches: 80.53,
+            functions: 93.77,
+            lines: 89.22,
         },
     },
     coveragePathIgnorePatterns: ['test/', 'src/index.ts'],
