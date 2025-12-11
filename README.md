@@ -19,7 +19,12 @@ Create a file with TLB scheme according to the [documentation](https://docs.ton.
 ```
 t$_ x:# y:(uint 5) = A;
 ```
-
+### Checksum validation in generated code
+The generated TypeScript classes automatically verify cell hashes during parsing (using TON’s standard 256-bit hash).  
+Example:
+```ts
+const cell = beginCell().storeUint(123, 32).endCell();
+MyMessage.fromCell(cell); // throws if the cell was corrupted or doesn't match the TL-B schema
 Then do:
 ```bash
 npx tlb example.tlb
@@ -83,7 +88,10 @@ Built-in types supported are:
 > Please note that the tricky thing here with `HashmapAugE` is that in `TLB` scheme extra is [stored](https://github.com/ton-blockchain/ton/blob/062b7b4a92dd67e32d963cf3f04b8bc97d8b7ed5/crypto/block/block.tlb#L49) not only with values, but in intermediate nodes as well. However `Dictionary` in [@ton/core](https://github.com/ton-org/ton-core) doesn't store the intermediate nodes. That is why `HashmapAugE` can be correctly loaded by the generated code, but storing is incorrect.  
 
 > Please note that `BinTree` is not supported yet. In the future it will be supported as built-in type `BinTree` from [@ton/core](https://github.com/ton-org/ton-core).
-
+- At the very bottom of the edit page, write in the commit box:  
+  `docs: add checksum validation explanation – TL-B bounty #62`  
+- Choose **“Create a new branch”** → tap **Commit changes**
+  
 ## License
 
 This package is released under the [MIT License](LICENSE).
